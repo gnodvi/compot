@@ -1,0 +1,350 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec wish "$0" ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+
+
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+
+package require compot::common 1.0
+
+# тут надо сначала перейти в текущую директорию?
+# 
+#cd [file normalize [file dirname [info script]]]
+
+
+lappend auto_path \
+  [file join [file dirname [info script]] "."] 
+
+package require compot::dialog 
+
+source "v_0000.tl"
+
+
+#-------------------------------------------------------------------------------
+#
+#   PULT-1    PULT-1    PULT-1    PULT-1    PULT-1    PULT-1    PULT-1        
+#
+#-------------------------------------------------------------------------------
+proc run_asteroids {fid} {
+  
+  set frameid [winfo id $fid]
+
+  set PROG1 "COMPOT/O/N/asteroids.tcl"
+  set PROG2 "COMPOT/O/N/dial.tk"
+
+  catch {set pid [exec $PROG1 -use $frameid &]} ret
+
+  puts ""
+  puts "run_asteroids: ret = $ret"
+  puts ""
+
+  #
+  # вроде запустилось, но тогда не работает плейер !? !?
+  #
+  #set mvname "./V/BigBuckBunny_320x180.mp4"
+  #catch { set pid [exec mplayer -wid $frameid $mvname 2> /dev/null > /dev/null & ]}
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc MAIN_TOP_LEFT_draw  {w bgcolor} {
+
+  if {[winfo exists $w]} {
+    return
+  }
+
+  frame $w   -bg $bgcolor 
+  pack  $w -side left       -fill both -expand true -padx 3 -pady 3 
+  
+
+  frame $w.t -bg white 
+  frame $w.b -bg white 
+
+  pack  $w.t $w.b -side top -fill both -expand true -padx 2 -pady 2
+
+}
+#-------------------------------------------------------------------------------
+proc MAIN_TOP_CENTRE_draw  {w bgcolor} {
+
+  if {[winfo exists $w]} {
+    return
+  }
+
+  frame $w   -bg $bgcolor -width 200  
+  pack  $w -side left     -fill both -expand true -padx 3 -pady 3 
+
+}
+#-------------------------------------------------------------------------------
+proc MAIN_TOP_RIGHT_draw  {w bgcolor} {
+
+  if {[winfo exists $w]} {
+    return
+  }
+
+  frame $w   -bg  $bgcolor 
+  
+  foreach but {0 1 2 3 4} {
+
+    frame $w.$but -bg white  
+    pack  $w.$but -side top -fill both -expand true -padx 2 -pady 2 
+  }
+  pack  $w -side left       -fill both -expand true -padx 3 -pady 3 
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc open_TOP {fid  x y w h} {
+  
+  #if {[winfo exists $fid]} {
+  #  return
+  #}  ?????????????????????
+ 
+  YPlaceFrame $fid   $x $y $w $h  "gray" ;#"yellow"
+  #
+  #YFrameContainer $fid   $x $y $w $h  "yellow" ;# ??? не обязательно?
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #
+  #MAIN_TOP_LEFT_draw    $fid.l "green" 
+
+  #MAIN_TOP_CENTRE_draw  $fid.c "green"
+
+  #MAIN_TOP_RIGHT_draw   $fid.r "green"
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set wleft [expr $w / 5] ;# left_and_right
+  set hhalf [expr $h / 2] ;# 
+
+  set space1 5
+  set space2 [expr $space1 * 2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # левый верхний блок информации : 
+  # 
+  set x1 $space2
+  set y1 $x1
+  set w1 [expr $wleft - $x1 - $space1]
+  set h1 [expr $hhalf - $space1]
+
+  # левый нижний блок информации : 
+  # 
+  set x2 $x1
+  set y2 [expr $y1 + $h1 + $space2]
+  set w2 $w1
+  set h2 [expr  $h - $y2 - $space2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # центральный блок информации : 
+  # 
+  set x3 [expr $x1 + $w1 + $space2]
+  set y3 $y1
+  set w3 [expr  $w - 2 * $wleft - 4 * $space2]
+  set h3 [expr  $h - $y3 - $space2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # правый верхний блок информации : 
+  # 
+  set x4 [expr $x3 + $w3 + $space2]
+  set y4 $y1
+  set w4 [expr  $w - $x4 - $space2]
+  set h4 [expr $w3 / 5]
+
+  # правый нижний блок информации : 
+  # 
+  set x5 $x4
+  set y5 [expr $y4 + $h4 + $space2]
+  set w5 $w4
+  set h5 [expr  $h - $y5 - $space2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # запускаем сторонние программы, но надо так же следить, чтобы
+  # оин не перезапускались повторно !!!!! 
+  #
+
+  YPlaceFrame  $fid.1   $x1 $y1 $w1 $h1  "yellow" 
+  YPlaceFrame  $fid.2   $x2 $y2 $w2 $h2  "purple"
+
+  #YPlaceFrame $fid.3   $x3 $y3 $w3 $h3  "cyan" 
+  #set h3 460
+
+  #YFrameScript  $fid.3   $x3 $y3 $w3 $h3  "cyan" "p3_mrl.tl"  "0 0 $w3 $h3" 
+  #YPlaceScript  $fid.3   $x3 $y3 $w3 $h3  "cyan" "p3_mrl.tl"  "0 0 $w3 $h3" 
+  YPlaceFrame  $fid.3   $x3 $y3 $w3 $h3  "cyan" 
+
+  YPlaceFrame  $fid.4   $x4 $y4 $w4 $h4  "pink" 
+  YPlaceFrame  $fid.5   $x5 $y5 $w5 $h5  "green"
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set label_x3 [expr $x3 + $w3 / 2]
+  set label_y3 [expr $y3 + $h3 / 2]
+
+  set W 270
+  set H  50
+
+  YPlaceLabelCentre $fid.label3 [koi_to_utf \
+    "Электронная карта местности \n с дополнительными отметками"] \
+    $label_x3 $label_y3  $W $H
+
+
+  run_asteroids $fid.3
+  #run_tkscript_in_frame "P/tcl-tk/O/asteroids.tcl" $fid.3 "" ;# забивает работу плейера?
+  
+  #run_tkscript_in_frame "sensor.msd.tl" $fid.3
+  
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc open_BOT {fid   x y w h} {
+
+  
+
+  YPlaceFrame $fid $x $y $w $h  "blue"
+  #YCanvasFrame $fid $x $y $w $h  "blue"
+
+  set but_x 5
+  set but_y 5
+  set but_w 40
+  set but_h 20
+
+  foreach but {1 2 3 4 5 6 7 8 9 10} {
+    YPlaceButton  $fid.$but "F$but"  $but_x $but_y $but_w $but_h
+    #YCanvasButton  $fid.$but "F$but"  $but_x $but_y $but_w $but_h
+
+    set but_x [expr $but_x + 40 + 5]    
+  }
+
+}
+#-------------------------------------------------------------------------------
+#
+# Связм, определенные для окна верхнего уровня, могут использоваться
+# содержащимеся в нем компонентами ! стр.626
+#
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc OPEN_next {fid_parent  ww hh} {
+
+
+  set x_child 10
+  set y_child 10
+  set w_child     [expr $ww - 20]
+  set h_child_top [expr $hh * 0.8]
+
+
+  open_TOP [N $fid_parent "t"]  \
+                      $x_child $y_child  $w_child $h_child_top 
+
+
+  set y0 [expr $y_child + $h_child_top + 10]
+  set hb [expr $hh - $y0 - 10]  
+  
+
+  open_BOT [N $fid_parent "b"] $x_child $y0  $w_child $hb 
+
+}
+#-------------------------------------------------------------------------------
+proc place_frame_and_open {fid  xx yy ww hh} {
+
+
+  puts "---------------------------------"
+  puts "place_frame_and_open: fid = $fid"
+  puts "---------------------------------"
+
+  YPlaceFrame  $fid  $xx $yy $ww $hh
+
+  OPEN_next    $fid  $ww $hh
+
+}
+#-------------------------------------------------------------------------------
+proc OPEN_proc {mop from message mes1 mes2 mes3 mes4  args} {
+
+    
+  metaswitch -- $message {
+
+  "YCREATE" {
+  }
+
+  "*" * {
+    set fid [FID $mop]
+    #puts "****************************************"
+  }
+
+  "YOPEN"   {
+    set xx $mes1
+    set yy $mes2
+    set ww $mes3
+    set hh $mes4
+    #set color [GET $mop "color"] 
+
+    place_frame_and_open  $fid  $xx $yy $ww $hh
+  }
+
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc OPEN {fid_parent  xx yy ww hh} {
+
+
+  if {0} {
+
+    set fid_next [N $fid_parent "next"]
+    place_frame_and_open  $fid_next  $xx $yy $ww $hh
+  } else {
+
+    OPEN_next  $fid_parent  $ww $hh
+  }
+
+
+}
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc MAIN {} {
+
+  global argc argv
+ 
+  get_123_geom_NEW  x0 y0 w0 h0  x1 y1 w1 h1  x2 y2 w2 h2
+
+  # set x0 100
+  # set y0 100
+  # set w0 640
+  # set h0 480
+
+  if {1} {
+    YBigWindowOld .  "OPEN" $x0 $y0 $w0 $h0 -title "MAIN DISPLAW"
+
+    # почему-то выдает еще одно системное окошко?
+    # 
+    #YBigWindowOld .main  "OPEN" $x1 $y1 $w1 $h1 -title "MAIN DISPLAW"
+  } else {
+
+    YBigWindowNew . "next"  "OPEN_proc" $x1 $y1 $w1 $h1 -title "MAIN DISPLAW"
+  }
+
+  return
+}
+#-------------------------------------------------------------------------------
+
+
+MAIN
+
+#-------------------------------------------------------------------------------
+# 
+#-------------------------------------------------------------------------------

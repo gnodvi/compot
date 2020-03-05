@@ -1,0 +1,37 @@
+
+
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            1 
+Size of Population:                       1 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  2048 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 0.0 
+Best    standardized fitness = 0.0 and 2048 hits. 
+It was: 
+RPB0: (IF A0 (IF A2 (IF A1 D7 D5) (IF A1 D3 D1)) (IF A2 (IF A1 D6 D4) (IF A1 D2 D0))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 0, standardized fitness = 0.0 and 2048 hits.  
+It was: 
+RPB0: (IF A0 (IF A2 (IF A1 D7 D5) (IF A1 D3 D1)) (IF A2 (IF A1 D6 D4) (IF A1 D2 D0))) 
+
+

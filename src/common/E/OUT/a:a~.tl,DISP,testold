@@ -1,0 +1,96 @@
+TEST #1, should match #1...
+MATCHED #1
+
+TEST #2, should match #2...
+MATCHED #2
+
+TEST #3, should match #3...
+MATCHED #3
+
+TEST #4, should match #4...
+MATCHED #4
+
+TEST #4a, should DEFAULT...
+MATCHED DEFAULT!
+
+TEST #5, should match #5,#6,#7...
+MATCHED #5,#6,#7
+
+TEST #6, should match #5,#6,#7...
+MATCHED #5,#6,#7
+
+TEST #7, should match #5,#6,#7...
+MATCHED #5,#6,#7
+
+TEST #8, should not match anything...
+
+TEST #9, should match, but not evaluate anything...
+
+TEST #10, should give error...
+ERROR: `` cannot match #3 ``
+
+TEST #11, should give error (malformed dispatch)...
+ERROR: `` wrong # args: should be "dispatch ?switches? string pattern body ... ?default body?" ``
+
+TEST #12, should match glob...
+MATCHED *
+
+TEST #13, should match regexp IP...
+MATCHED, VALID IP
+
+TEST #14, should NOT match regexp...
+NOT MATCHED REGEXP
+
+TEST #15, should NOT match regexp...
+NOT MATCHED REGEXP
+
+TEST #16, should match regexp email...
+MATCHED, VALID EMAIL ADDRESS
+
+TEST #17, should match regexp hyperlink...
+MATCHED, VALID HYPERLINK
+
+TEST #18, should match command test...
+MATCHED TEST
+
+TEST #19, should match command test * 2...
+MATCHED TEST * 2
+
+TEST #20, should match fake command...
+MATCHED FAKE COMMAND
+
+TEST #21, should match command test * 3 OR 4...
+MATCHED TEST * 3 OR 4
+
+MATCHED TEST * 3
+
+TEST #22, should match command test * 3 OR 4...
+MATCHED TEST * 3 OR 4
+
+MATCHED TEST * 4
+
+TEST #23, default string test...
+MATCHED DEFAULT!
+
+TEST #24, multiple test 1, should match 1, glob 1*, and default...
+MATCHED #1
+
+MATCHED GLOB 1*
+
+MATCHED DEFAULT!
+
+TEST #25, multiple test 2, should match 2, glob 2*, and default...
+MATCHED #2
+
+MATCHED GLOB 2*
+
+MATCHED DEFAULT!
+
+TEST #26, multiple test 3, should match default...
+MATCHED DEFAULT!
+
+TEST #27, invalid switch test, should give error...
+ERROR: `` bad option, must be one of: -exact -nocase -expr -glob -regexp -all ``
+TEST #28, switch-like argument after end of switches test, should match -notvalid...
+MATCHED -notvalid
+

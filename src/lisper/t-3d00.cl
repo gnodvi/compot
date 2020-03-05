@@ -1,0 +1,199 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+
+(defpackage :gol
+  (:use #:cl))
+
+(in-package :gol)
+
+(export '(xycell cell live-neighbours-count cell-value next-generation 
+                 do-cells setxycell list-or-live-cells-instance-to-list 
+                 make-live-cells cells-matrix extreme-coord cells-x-out 
+                 cells-y-out y-size x-size))
+
+;-------------------------------------------------------------------------------
+(defclass live-cells ()
+
+  (
+   (cells-matrix
+    :accessor :cells-matrix
+    :initarg  :cells-matrix)
+
+   ;;;(can-expand-edges-p :initform t :initarg :can-expand-edges-p)
+
+   (cells-x-out :initform 0 :accessor :cells-x-out)
+   (cells-y-out :initform 0 :accessor :cells-y-out)
+
+   ))
+
+;-------------------------------------------------------------------------------
+(defun make-live-cells (&optional cells)
+
+  (make-instance 'live-cells 
+                 :cells-matrix cells)
+
+)
+;-------------------------------------------------------------------------------
+(defmethod cell-by-coords (live-cells  x y)
+
+  (with-slots (cells-x-out cells-y-out) live-cells
+
+    (let ((x (+ cells-x-out x))
+          (y (+ cells-y-out y)))
+
+      (xycell  x y (slot-value live-cells 'cells-matrix))))
+
+)
+;-------------------------------------------------------------------------------
+(defun xcell (x cells)
+
+  (if (and (>= x 0) (< x (length cells)))
+      (nth x cells)
+    )
+
+)
+;-------------------------------------------------------------------------------
+(defun xycell (x y cells)
+
+  (if (listp cells)
+      (xcell x 
+             (xcell y cells))
+      (cell-by-coords cells x y)))
+
+;-------------------------------------------------------------------------------
+(defmethod extreme-coord (live-cells way)
+
+  (case way
+    (:up    (- (slot-value live-cells 'cells-y-out)))
+    (:down  (- (length (slot-value live-cells 'cells-matrix)) 
+               (slot-value live-cells 'cells-y-out)))
+    (:left  (- (slot-value live-cells 'cells-x-out)))
+    (:right (- (length (first (slot-value live-cells 'cells-matrix))) 
+               (slot-value live-cells 'cells-x-out)))
+    )
+)
+;-------------------------------------------------------------------------------
+(defmethod y-size (live-cells)
+
+  (length (slot-value live-cells 'cells-matrix))
+  
+)
+;-------------------------------------------------------------------------------
+(defmethod x-size (live-cells)
+
+  (length (first (slot-value live-cells 'cells-matrix)))
+
+)
+;-------------------------------------------------------------------------------
+(defun list-or-live-cells-instance-to-list (list-or-live-cells-instance)
+
+  (if (listp list-or-live-cells-instance)
+      list-or-live-cells-instance
+      (slot-value list-or-live-cells-instance 'cells-matrix))
+
+)
+;-------------------------------------------------------------------------------
+(defmacro setxycell (x y cells value)
+
+  `(let* ((listp (listp ,cells))
+         (y (if listp ,y (+ ,y (slot-value ,cells 'cells-y-out))))
+         (x (if listp ,x (+ ,x (slot-value ,cells 'cells-x-out)))))
+         (setf (nth x 
+             (nth y (if listp ,cells (slot-value ,cells 'cells-matrix)))) ,value))
+
+)
+;-------------------------------------------------------------------------------
+(defun neighbours-values (x y c)
+
+  (list 
+    (xycell (1+ x)  y c)
+    (xycell  x      (1+ y) c)
+    (xycell (1- x)  y c)
+    (xycell  x      (1- y) c)
+    (xycell (1+ x)  (1+ y) c)
+    (xycell (1- x)  (1- y) c)
+    (xycell (1- x)  (1+ y) c)
+    (xycell (1+ x)  (1- y) c))
+
+)
+;-------------------------------------------------------------------------------
+(defun live-neighbours-count (x y cells)
+
+  (count-if-not #'null (neighbours-values x y cells))
+
+)
+;-------------------------------------------------------------------------------
+(defun cell-value (x y cells)
+
+  "Returns t if cell will be alive (t) or dead (nil) on next step"
+
+  (let ((live-neighbours (live-neighbours-count x y cells)))
+    (cond 
+      ((= live-neighbours 3) t)
+      ((or (< live-neighbours 2) (> live-neighbours 3)) nil)
+      (t (xycell x y cells)))
+    )
+
+)
+;-------------------------------------------------------------------------------
+(defun next-generation (cells)
+
+  (if (listp cells)
+      (loop for y from 0 to (1- (length cells))
+        collect (loop for x from 0 to (1- (length (nth y cells)))
+                  collect (cell-value x y cells)))
+    
+    (let* ((matrix (slot-value cells 'cells-matrix))
+           (matrix+1-to-borders (mapcar 
+                                 (lambda (list) (append (list nil) list (list nil)))
+                                 (append 
+                                  (list (make-list (length (first matrix))))
+                                  matrix
+                                  (list (make-list (length (first matrix)))))))
+           
+           (newestmatrix (next-generation matrix+1-to-borders))
+           (x-out 1)
+           (y-out 1))
+      (when (every #'null (car (last newestmatrix)))
+        (setf newestmatrix (butlast newestmatrix)))
+      (when (every #'null (first newestmatrix))
+        (setf y-out 0)
+        (pop newestmatrix))
+      (when (every #'null (mapcar #'first newestmatrix))
+        (setf x-out 0)
+        (setf newestmatrix (mapcar #'cdr newestmatrix)))
+      (when (every #'null (mapcar (lambda (item) (car (last item))) newestmatrix))
+        (setf newestmatrix (mapcar #'butlast newestmatrix)))
+      (setf (slot-value cells 'cells-matrix) newestmatrix)
+      (incf (slot-value cells 'cells-x-out) x-out)
+      (incf (slot-value cells 'cells-y-out) y-out)
+      (slot-value cells 'cells-matrix))
+    )
+  
+)                      
+;-------------------------------------------------------------------------------
+(defmacro do-cells (cells &body body)
+
+`(let* (
+        (listp (listp ,cells))
+        (cells (if listp ,cells (slot-value ,cells 'cells-matrix)))
+        (xt (if listp 0 (slot-value ,cells 'cells-x-out)))
+        (yt (if listp 0 (slot-value ,cells 'cells-y-out)))
+        )
+   
+   (dotimes (y (length        cells))
+   (dotimes (x (length (nth y cells)))
+
+     (let (
+       (cell (nth x (nth y cells)))
+       )
+       (funcall (lambda (x y cell)
+                  ,@body) (- x xt) (- y yt) cell))))
+   )
+
+)
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+

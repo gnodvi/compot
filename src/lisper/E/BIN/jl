@@ -1,0 +1,7 @@
+#!/bin/sh
+#----------------------
+
+julia --color=yes --precompiled=yes  $*
+#julia $*
+
+##----------------------

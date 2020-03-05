@@ -1,0 +1,36 @@
+
+=== Runtime error: joy-check-stack:  Stack underflow ===
+2
+==> *
+^
+ret
+=== Data Stack trace follows ===
+
+
+[ 0 ; 31 mERROR ......... run_builtin_or_defined_func
+[ 0 ; 0 m
+datastack: {integer 2} {integer 2}
+
+Definition needed for symbol: 'haha'
+
+=== Runtime error: .... run_builtin_or_defined_func ===
+2
+==> haha
+*
+^
+ret
+=== Data Stack trace follows ===
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Type mismatch. Expected 'list', got 'integer'
+e = integer 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== Runtime error: ERROR: joy-check-stack 
+ ===
+2
+==> i
+ret
+=== Data Stack trace follows ===
+

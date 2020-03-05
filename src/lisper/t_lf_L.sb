@@ -1,0 +1,379 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+
+; абвгдеЁжзийклмнопрстуфхцчшщьыъэюя
+
+;-------------------------------------------------------------------------------
+
+;; Tamil Programmer   ://tamillisper.blogspot.ru/
+
+;; Game Of Life using CommonLisp SDL/OpenGL
+;; May 07, 2013
+;; Game of Life Using CommonLisp SDL/OpenGL.
+
+;; We need following packages.
+;;  1. lispbuilder-sdl
+;;  2. cl-opengl
+;;  3. cl-glu
+
+;;;=============================================================================
+
+(require 'asdf)
+
+(push "L/common-lisp/" asdf:*central-registry*)
+
+;(push "S/"             asdf:*central-registry*)
+
+
+(asdf:load-system :lispbuilder-sdl)
+
+(asdf:load-system :cl-opengl)  
+(asdf:load-system :cl-glu)                   
+
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+
+(defclass bb ()
+
+  ((cells :accessor cells-of :initarg :cells))
+
+)
+
+;(defvar *width*  640)
+;(defvar *height* 480)
+
+(defvar *width*  400)
+(defvar *height* 400)
+
+;-------------------------------------------------------------------------------
+(defun make-brain (w h)
+
+  (make-array (list h w) :initial-element :off)
+
+)
+;-------------------------------------------------------------------------------
+(defun make-conway-array-brain(w h)
+
+(let (
+  (dst (make-brain w h))
+)
+
+  (loop for i below h  do 
+  (loop for j below w  do 
+
+    (let (
+      (cellval (random 2))
+      )
+      (if (= 0 cellval)
+          (setf (aref dst j i) :off)
+          (setf (aref dst j i) :on))
+      )
+  ))
+
+  dst
+))
+;-------------------------------------------------------------------------------
+
+(defvar *oo* (make-instance 'bb :cells 
+                            (make-conway-array-brain  50 50)
+                            )
+  )
+
+;-------------------------------------------------------------------------------
+;  
+;;(defmacro restartable (&amp;body body)
+;
+(defmacro restartable (&body body)
+
+  `(restart-case
+       (progn ,@body)
+     (continue () :report "Continue"))
+
+)
+;-------------------------------------------------------------------------------
+;
+; Conway Game of life
+;
+;-------------------------------------------------------------------------------
+(defun alive-cells-p (state)
+
+  (if (equal state :on)
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun 2-or-3-alive-p (state neibhours)
+
+  (if (and (alive-cells-p state)
+           (or (= 2 (count :on neibhours))
+               (= 3 (count :on neibhours))))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun more-than-3-neibhours-p (state neibhours)
+
+  (if (and (alive-cells-p state)
+           (> 3 (count :on neibhours)))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun fewer-than-2-live-cells-p (state neibhours)
+  
+  (if (and (alive-cells-p state)
+           (< 2 (count :on neibhours)))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun  exactly-3-live-cells-p (state neibhours)
+
+  (if (and (not (alive-cells-p state))
+           (= 3 (count :on neibhours)))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun conway_rules (state neibhours)
+
+  (cond 
+
+   ((2-or-3-alive-p            state neibhours) :on)
+   ((more-than-3-neibhours-p   state neibhours) :off)
+   ((fewer-than-2-live-cells-p state neibhours) :off)
+   ((exactly-3-live-cells-p    state neibhours) :on)
+
+   (t :dying))
+
+)      
+;------------------------------------------------------------------------------- 
+(defun neibhours (cells x y)
+
+(let* (
+
+  (mx (1- (array-dimension cells 1)))
+  (my (1- (array-dimension cells 0)))
+
+  (l  (if (zerop x) mx (1- x)))
+  (r  (if (= x mx)   0 (1+ x)))
+
+  (u  (if (zerop y) my (1- y)))
+  (d  (if (= y my)   0 (1+ y)))
+  )
+
+  (mapcar (lambda (x y)
+            (aref cells y x)
+            )
+
+          (list  l x r l r l x r)
+          (list  u u u y y d d d)
+          )
+
+))
+;-------------------------------------------------------------------------------
+(defun evolve (src)
+
+(let* (
+  (w   (array-dimension src 1))
+  (h   (array-dimension src 0))
+  (dst (make-brain  w h))
+  )
+
+  (loop for j below h  do 
+  (loop for i below w  do 
+
+    (setf (aref dst j i)
+          (funcall 'conway_rules (aref src j i) (neibhours src i j)))
+    ))
+
+  dst
+))
+;-------------------------------------------------------------------------------
+
+;Graphical
+;-------------------------------------------------------------------------------
+; 
+; flet   - аналог let  для функций
+; labels - аналог let* для функций  
+;
+; но мне удобнее явно задать функции
+;
+;-------------------------------------------------------------------------------
+(defun draw-cell_new (x y)
+
+(gl:with-pushed-matrix
+   
+   (gl:translate x y 0)
+   
+   ;(gl:scale 2.0 2.0 0) ;; !! работает !! и даже проявился интересный эфект
+   ;; сглаживания, т.е. типа Smooth. Но если нам это эффект не нужен, то надо
+   ;; пропорционально увеличивать видимо размеры и положение ??
+   
+   (gl:with-primitive :polygon
+                      (gl:vertex  0.1 0.1  0)
+                      (gl:vertex  0.9 0.1  0)
+                      (gl:vertex  0.9 0.9  0)
+                      (gl:vertex  0.1 0.9  0))
+
+))
+;-------------------------------------------------------------------------------
+(defun render-cell (x y cell)
+
+  (case cell
+    (:on  (gl:color 1 1 1)        (draw-cell_new x y))
+    (:off (gl:color 0.5 0.5 0.5)  (draw-cell_new x y))
+
+;    (:on  (gl:color 1 1 1)        )
+;    (:off (gl:color 0.5 0.5 0.5)  )
+
+    )
+
+
+;  (gl:with-pushed-matrix
+   
+;   (gl:translate x y 0)
+   
+;   ;(gl:scale 2.0 2.0 0) ;; !! работает !! и даже проявился интересный эфект
+;   ;; сглаживания, т.е. типа Smooth. Но если нам этот эффект не нужен, то надо
+;   ;; пропорционально увеличивать видимо размеры и положение ??
+   
+;   (gl:with-primitive :polygon
+;                      (gl:vertex  0.1 0.1  0)
+;                      (gl:vertex  0.9 0.1  0)
+;                      (gl:vertex  0.9 0.9  0)
+;                      (gl:vertex  0.1 0.9  0))
+;   )
+
+)
+;-------------------------------------------------------------------------------
+(defun  display ()
+
+  (gl:clear :color-buffer)
+  
+  (let* (
+
+    (cells (cells-of *oo*))
+
+    (w  (array-dimension cells 1))
+    (h  (array-dimension cells 0))
+    )
+    
+    ;(format t "~%")
+    (format t "display: w = ~2d  h = ~2d ~%"  w h)
+    ;(format t "~%")
+
+    (loop for j below w  do
+    (loop for i below h  do
+      (render-cell i j (aref cells j i))
+      ))
+  )
+
+  (sdl:update-display)
+
+)
+;-------------------------------------------------------------------------------
+(defun flush-disp ()
+
+  (setf (cells-of *oo*) (evolve (cells-of *oo*)))
+
+  (gl:flush)
+
+  (sdl:update-display)
+
+)
+;-------------------------------------------------------------------------------
+(defun idle ()
+  
+  (gl:clear-color 0 0 0 0)
+
+  (flush-disp)
+
+  (display)
+  
+)
+;-------------------------------------------------------------------------------
+(defun init () 
+
+  (gl:viewport 0 0 *width* *height*)
+
+  (gl:matrix-mode :projection)
+  (gl:load-identity)
+
+  ;(gl:ortho -50 250  -50 250 -1 1)
+  ;
+  (let (
+        (cells (cells-of *oo*))
+        )
+    (gl:ortho 0 (array-dimension cells 1) 0 (array-dimension cells  0) -1 1)
+    )
+
+
+  (gl:matrix-mode :modelview)
+
+  (gl:load-identity)
+
+)
+;-------------------------------------------------------------
+    ;; Note: To control the position on the screen when creating a windowed surface, 
+    ;; set the environment variables 
+    ;; SDL_VIDEO_CENTERED=center or SDL_VIDEO_WINDOW_POS=x,y. 
+    ;; These may be set using SDL-PUT-ENV. ???
+
+;    (sdl:set-window-position "center")
+;    The symbol "SET-WINDOW-POSITION" is not external in the LISPBUILDER-SDL package.
+
+; initialize-instance ????????
+
+;(setf sdl:*default-position* "center") ; ???
+
+; video.lisp:
+;
+;(defun set-window-position (position)
+;  (let ((window-position (if (symbolp position)
+;                           "center"
+;                           (format nil "~A,~A" (elt position 0) (elt position 1)))))
+;    (if position
+;      (sdl-cffi::sdl-put-env (format nil "SDL_VIDEO_WINDOW_POS=~A" window-position))
+;      (sdl-cffi::sdl-put-env (format nil "SDL_VIDEO_WINDOW_POS=")))))
+
+
+;(sdl-cffi::sdl-put-env (format nil "SDL_VIDEO_WINDOW_POS=~A" "center"))
+;(sdl-cffi::sdl-put-env "SDL_VIDEO_WINDOW_POS=100,100") ;; ??? не работает??
+
+
+;(sdl-cffi::sdl-put-env "SDL_VIDEO_CENTERED=center") ;; ??? не работает??
+
+;-------------------------------------------------------------------------------
+(defun cube-main-sdl ()
+
+(sdl:with-init ()
+
+  (sdl:window *width* *height* 
+              :title-caption "LIFE !!!! SDL OPENGL"
+              :flags sdl:sdl-opengl)
+  
+  (sdl-cffi::sdl-put-env "SDL_VIDEO_CENTERED=center") ;; ??? не работает??
+  
+  
+  (setf cl-opengl-bindings:*gl-get-proc-address* 
+        #'sdl-cffi::sdl-gl-get-proc-address)
+  
+  (init)
+
+  (display)
+  
+  (sdl:with-events ()
+                   (:quit-event () t)
+                   (:idle ()
+                          (restartable (idle))) )
+  
+))
+;;===============================================================================
+
+
+(cube-main-sdl)
+
+;;===============================================================================

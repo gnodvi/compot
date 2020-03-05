@@ -1,0 +1,7 @@
+
+
+PRG_22 =  M M M M   R  M M  L  M M    BEG nop END   BEG prog1 BEG prog2 END END 
+
+PRG_11 = M M M M R M M L M M ~nop {prog1 ~prog2}
+
+

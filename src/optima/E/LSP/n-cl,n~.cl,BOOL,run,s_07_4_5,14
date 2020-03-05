@@ -1,0 +1,63 @@
+
+
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            10 
+Size of Population:                       200 
+Reproduction fraction:                    0.1 
+Selection method:                         TOURNAMENT 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    7 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  8 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 3.68 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(NOT
+ (OR (AND (NOT (OR A0 D0)) (NOT (OR A0 D0)))
+  (NOT (OR (AND A0 D1) (AND D1 D0))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 2.52 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(AND (NOT (AND (OR (AND D0 A0) (OR D1 A0)) (NOT (OR A0 D0))))
+ (OR (OR (OR (AND D0 D0) (AND A0 D1)) (OR (OR D1 D0) (OR D0 D1)))
+  (AND (OR (OR D1 A0) (AND A0 D0)) (AND (OR D0 A0) (AND D1 D0))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 2: 
+Average standardized fitness = 2.14 
+Best    standardized fitness = 0.0 and 8 hits. 
+It was: 
+RPB0: 
+(AND (NOT (AND (OR (AND D0 A0) (OR D1 A0)) (NOT (OR D1 D1))))
+ (OR (OR (AND A0 D1) D0) (NOT (NOT (AND D1 D0))))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 2, standardized fitness = 0.0 and 8 hits.  
+It was: 
+RPB0: 
+(AND (NOT (AND (OR (AND D0 A0) (OR D1 A0)) (NOT (OR D1 D1))))
+ (OR (OR (AND A0 D1) D0) (NOT (NOT (AND D1 D0))))) 
+
+

@@ -1,0 +1,192 @@
+
+
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            10 
+Size of Population:                       200 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        FULL 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  8 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 4.125 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(NOT
+ (AND
+  (OR (OR (NOT (OR D0 A0)) (OR (AND D1 D0) (AND D0 D0)))
+   (OR (AND (NOT D1) (OR D0 A0)) (AND (AND D0 D0) (NOT D0))))
+  (NOT (NOT (OR (OR A0 A0) (NOT D0)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 3.94 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(NOT
+ (AND
+  (OR (OR (NOT (OR D0 A0)) (OR (AND D1 D0) (AND D0 D0)))
+   (OR (AND (NOT D1) (OR D0 A0))
+    (AND (AND D0 D0) (AND (AND D1 D0) (OR D0 D0)))))
+  (NOT (NOT (OR (OR A0 A0) (NOT D0)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 2: 
+Average standardized fitness = 3.715 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(AND
+ (OR (NOT (OR (AND (NOT A0) (AND A0 D1)) (AND (AND A0 D1) (OR A0 D0))))
+  (AND (NOT (AND (NOT D0) (NOT A0)))
+   (OR (AND (OR D0 D1) (OR D1 D0)) (AND (OR D1 D0) (OR A0 D1)))))
+ (OR (NOT (NOT (AND (AND D1 D1) (OR A0 A0))))
+  (AND
+   (OR (NOT (NOT D0))
+    (AND (OR (NOT D1) (AND D1 D1)) (AND (AND A0 D1) (OR A0 D0))))
+   (OR (AND (NOT A0) (AND D1 D1)) (OR (OR D1 A0) (OR D1 D0)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 3: 
+Average standardized fitness = 3.52 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(OR
+ (AND
+  (AND (OR (AND (NOT D1) (AND A0 A0)) (OR (OR D1 D0) (AND D1 A0)))
+   (OR (OR (OR A0 D0) (OR A0 A0)) (OR (NOT D1) (NOT A0))))
+  (AND
+   (AND
+    (OR (AND D1 (AND (OR (OR D1 A0) (OR D1 D1)) (OR (AND D1 D0) (AND D0 D1))))
+     (AND (NOT D0) (OR D0 D0)))
+    (AND (AND D0 D1) (NOT A0)))
+   (OR (NOT (AND D1 D1)) (OR (OR A0 D0) (AND A0 D1)))))
+ (NOT (NOT (AND (OR (AND A0 D1) (OR A0 D0)) (OR (AND A0 D1) (AND A0 D1)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 4: 
+Average standardized fitness = 3.22 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(AND (OR (NOT (AND D1 D0)) (AND (NOT (AND (NOT D0) (NOT A0))) (OR A0 D0)))
+ (OR
+  (NOT
+   (NOT
+    (AND (NOT (NOT (NOT (NOT (NOT (OR (NOT D1) (AND D1 A0)))))))
+     (OR (AND (OR A0 D0) (NOT A0)) D0))))
+  (AND
+   (OR (AND (OR D1 D0) (AND D1 A0))
+    (AND (OR (NOT D1) (AND D1 D1)) (AND (AND A0 D1) (OR A0 D0))))
+   (OR (AND (NOT A0) (AND D1 D1)) (OR (OR D1 A0) (OR D1 D0)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 5: 
+Average standardized fitness = 2.825 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(OR
+ (AND
+  (AND (OR (AND (NOT D1) (AND A0 A0)) (OR (OR A0 D0) (AND D1 A0)))
+   (OR (OR (OR A0 D0) (OR A0 A0))
+    (OR (NOT D1)
+     (AND
+      (AND (AND (AND (NOT A0) (AND D1 A0)) (AND (NOT D1) (OR D0 D1)))
+       (AND (NOT (NOT D1)) (AND (OR D0 D1) (AND D1 D1))))
+      (NOT (NOT (NOT (NOT D0))))))))
+  (AND
+   (AND (OR (AND D1 D1) (NOT D0))
+    (AND
+     (OR (NOT (OR (AND D0 D1) (AND D0 D0)))
+      (OR (NOT (AND D0 A0)) (AND (AND D0 D1) (AND D0 D1))))
+     (NOT A0)))
+   (OR (NOT (AND D1 D1)) (OR (OR A0 D0) (AND D0 D0)))))
+ (NOT
+  (NOT
+   (AND
+    (AND
+     (AND
+      (OR (AND (NOT D1) (AND A0 A0))
+       (OR (OR A0 D0)
+        (NOT
+         (NOT
+          (NOT
+           (OR (OR (AND D1 D1) (NOT A0)) (AND (AND A0 D1) (AND D1 D1))))))))
+      (OR (OR (OR A0 D0) (OR A0 A0)) (OR (NOT D1) (NOT A0))))
+     (OR (AND (OR D1 D1) (AND A0 A0)) (NOT (OR (OR A0 D0) (AND D1 D1)))))
+    (OR (AND A0 D1) (AND A0 D1)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 6: 
+Average standardized fitness = 2.445 
+Best    standardized fitness = 0.0 and 8 hits. 
+It was: 
+RPB0: 
+(OR
+ (AND
+  (AND
+   (OR
+    (OR (NOT (OR (OR (OR D1 A0) (NOT A0)) (OR (NOT D0) (NOT A0))))
+     (NOT (NOT D0)))
+    (OR (OR A0 D0) (AND D1 A0)))
+   (OR (OR (OR A0 D0) (OR A0 A0)) (OR (NOT D1) (NOT A0))))
+  (AND
+   (AND (NOT A0)
+    (AND
+     (OR (NOT (OR (AND D0 D1) (AND D0 D0)))
+      (OR (NOT (AND D0 A0)) (AND (AND D0 D1) (AND D0 D1))))
+     (NOT A0)))
+   (OR (NOT (AND D1 D1))
+    (OR (OR A0 D0)
+     (AND A0 (AND (OR (AND D1 D1) (NOT D0)) (AND (AND D0 D1) (NOT A0))))))))
+ (NOT (NOT (AND (OR (AND A0 D1) (OR A0 D0)) (OR (AND A0 D1) (AND A0 D1)))))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 6, standardized fitness = 0.0 and 8 hits.  
+It was: 
+RPB0: 
+(OR
+ (AND
+  (AND
+   (OR
+    (OR (NOT (OR (OR (OR D1 A0) (NOT A0)) (OR (NOT D0) (NOT A0))))
+     (NOT (NOT D0)))
+    (OR (OR A0 D0) (AND D1 A0)))
+   (OR (OR (OR A0 D0) (OR A0 A0)) (OR (NOT D1) (NOT A0))))
+  (AND
+   (AND (NOT A0)
+    (AND
+     (OR (NOT (OR (AND D0 D1) (AND D0 D0)))
+      (OR (NOT (AND D0 A0)) (AND (AND D0 D1) (AND D0 D1))))
+     (NOT A0)))
+   (OR (NOT (AND D1 D1))
+    (OR (OR A0 D0)
+     (AND A0 (AND (OR (AND D1 D1) (NOT D0)) (AND (AND D0 D1) (NOT A0))))))))
+ (NOT (NOT (AND (OR (AND A0 D1) (OR A0 D0)) (OR (AND A0 D1) (AND A0 D1)))))) 
+
+

@@ -1,0 +1,34 @@
+# -*-   mode: tcl  coding: koi8   -*- ------------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+
+
+set COMPOT "./COMPOT" 
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+#lappend auto_path \
+  [file join [file dirname [info script]] "."] ;# "COM
+
+
+package require compot::common 1.0
+
+################################################################################
+
+
+set CUR_DIR "j"
+  
+
+#READ_AND_CALL_ARGUS_more  $CUR_DIR
+READ_AND_CALL_ARGUS  $CUR_DIR
+
+puts "" 
+
+#-------------------------------------------------------------------------------
+#
+#
+################################################################################

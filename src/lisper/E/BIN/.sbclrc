@@ -1,0 +1,8 @@
+
+;;;
+
+(sb-ext:restrict-compiler-policy 'debug 3)
+
+(require :sb-posix)
+
+;;;

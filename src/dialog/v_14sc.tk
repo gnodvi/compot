@@ -1,0 +1,233 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+# -*- mode: tcl -*- ------------------------------------------------------------
+
+#!/bin/sh
+# \
+exec wish "$0" ${1+"$@"}
+#-------------------------------------------------------------------------------
+
+# if {! [info exists ::source_run]} {
+
+#   set auto_path [linsert $auto_path 0 "COM"]
+# }
+
+
+#set COMPOT "./COMPOT"
+
+set ::COMPOT "COMPOT"
+
+set auto_path [linsert $auto_path 0 "COMPOT"]
+
+#
+#
+package require compot::common 1.0
+
+#-------------------------------------------------------------------------------
+
+#package require snit
+
+# тут надо сначала перейти в текущую директорию!
+cd [file normalize [file dirname [info script]]]
+#
+
+lappend auto_path \
+  [file join [file dirname [info script]] "."] 
+
+package require compot::dialog
+
+source "v_0000.tl"
+
+#-------------------------------------------------------------------------------
+## \file pultos.tcl
+
+
+#-------------------------------------------------------------------------------
+
+#set ::MAIN_DIR "../.."
+#set ::MAIN_DIR  "D"
+#set ::MEDIA_DIR "D"
+
+set ::MEDIA_DIR "O"
+
+set ::prog_mtk "p4_mtk.tl" ;# модуль технического контроля
+set ::prog_mrd "p5_mrd.tl" ;# модуль регистрации и документирования
+ 
+
+#-------------------------------------------------------------------------------
+#
+#   PULT-2    PULT-2    PULT-2    PULT-2    PULT-2    PULT-2    PULT-2        
+#
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc MAIN_P3 {fid  x y  w h} {
+
+  #set fid "" ;# поскольку здесь окно верхнего уровня, то так удобнее
+
+  set fid [M $fid]
+
+
+  #puts ""
+  #puts "WORK_draw: w= $w  h= $h"
+  #puts ""
+
+  set whalf [expr $w / 2] ;# совер
+
+  set space1 5
+  set space2 [expr $space1 * 2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # левый верхний блок информации : диагностика и контроль состояния (по группам)
+  # 
+  set x1 $space2
+  set y1 $x1
+  set w1 [expr $whalf - $x1 - $space1]
+  set h1 [expr $h / 3]
+
+  # левый нижний блок информации : поле вспомогательной информации ()
+  # 
+  set x2 $x1
+  set y2 [expr $y1 + $h1 + $space2]
+  set w2 $w1
+  set h2 [expr  $h - $y2 - $space2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # правый верхний блок информации : единый массив навигационных данных
+  # 
+  set x3 [expr $x1 + $w1 + $space2]
+  set y3 $y1
+  set w3 $w1
+  set h3 [expr $h / 8]
+
+  # правый средний блок информации : параметры работы РЛС-Х
+  # 
+  set x4 $x3
+  set y4 [expr $y3 + $h3 + $space2]
+  set w4 $w1
+  set h4 [expr $h3 * 3]
+
+  # правый нижний блок информации : поле видеоинформации
+  # 
+  set x5 $x3
+  set y5 [expr $y4 + $h4 + $space2]
+  set w5 $w1
+  set h5 [expr $h - $y5 - $space2]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #set ::is_demo 1
+
+  #if {$::is_demo} {
+  #  YFrameScript  $fid.1   $x1 $y1 $w1 $h1  "red" "${::COMPOT}/O/O/d-volt.tk" {}
+  #  #YFrameScript  $fid.1   $x1 $y1 $w1 $h1  "red" $::prog_mtk  "0 0 $w1 $h1" 
+
+  #} else {
+  #YFrame        $fid.1   $x1 $y1 $w1 $h1  "red"
+  #}
+
+  #if {$::is_demo} {
+  #  # ???
+  #  YPlaceProgram $fid.2   $x2 $y2 $w2 $h2  "cyan" "${::COMPOT}/O/little/little_black"
+
+  #  #YFrameScript  $fid.2   $x2 $y2 $w2 $h2  "blue" $::prog_mrd  "0 0 $w2 $h2" 
+
+  #} else {
+  #  YFrame        $fid.2   $x2 $y2 $w2 $h2  "cyan"
+  #}
+
+
+  #YFrame $fid.3   $x3 $y3 $w3 $h3  "blue"
+
+  #YFrame $fid.4   $x4 $y4 $w4 $h4  "green"
+
+  #YFrame $fid.5   $x5 $y5 $w5 $h5  "purple"
+
+
+  #set label_x1 [expr $x1 + $w1 / 2]
+  #set label_y1 [expr $y1 + $h1 / 2]
+  #set label_y2 [expr $y2 + $h2 / 2]
+
+  set W 270
+  set H  50
+
+  #YPlaceLabelCentre $fid.label1 [koi_to_utf \
+  #  "Диагностика и контроль \n состояния (по группам узлов)"] \
+  #  $label_x1 $label_y1  $W $H
+
+  #   YPlaceLabelCentre $fid.label2 [koi_to_utf \
+  #     "Поле вспомогательной информации \n (документирование, регистрация, ...)"] \
+  #     $label_x1 $label_y2  $W $H
+
+  set label_x3 [expr $x3 + $w3 / 2]
+  set label_y3 [expr $y3 + $h3 / 2]
+  #set label_y4 [expr $y4 + $h4 / 2]
+  #set label_y5 [expr $y5 + $h5 / 2]
+
+  YPlaceLabelCentre  $fid.label3  [koi_to_utf "Единый массив навигационных данных"] \
+    $label_x3 $label_y3  $W $H
+
+  #YPlaceLabelCentre  $fid.label4  [koi_to_utf "Параметры работы системы"] \
+  #  $label_x3 $label_y4  $W $H
+
+  #YPlaceLabelCentre  $fid.label5  [koi_to_utf "Поле видеоинформации"] \
+  #  $label_x3 $label_y5  $W $H
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc MainP3 {} {
+
+  #global argc argv
+ 
+  get_123_geom_NEW  x0 y0 w0 h0  x1 y1 w1 h1  x2 y2 w2 h2
+
+  #if {$argc == 0} {
+
+    #set x0  850
+    #set y0  350
+    #set w0  800
+    #set h0  600
+
+  #     set x0  100
+  #     set y0  100
+  #     set w0  640
+  #     set h0  480
+
+  #} else {
+
+  #  set x0  [lindex $argv 0]
+  #  set y0  [lindex $argv 1]
+  #  set w0  [lindex $argv 2]
+  #  set h0  [lindex $argv 3]
+  #}
+
+
+  YBigWindowOld . "MAIN_P3" $x2 $y2 $w2 $h2 -title "WORK DISPLAW"   
+                    
+  #run_video_player .  "${::COMPOT}/O/M/6-240p.flv"
+
+  run_video_player .  "O/V/6-240p.flv"
+
+  return
+}
+#-------------------------------------------------------------------------------
+
+
+if {! [info exists ::source_run]} {
+
+  MainP3
+}
+
+#-------------------------------------------------------------------------------
+
+# TODO: 
+# переделать на запуск внутри окошка, но сначала пеерделать на PROC-структуру
+# 
+
+# 
+#-------------------------------------------------------------------------------

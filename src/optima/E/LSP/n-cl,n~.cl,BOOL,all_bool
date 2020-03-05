@@ -1,0 +1,192 @@
+
+
+Fitness cases: 
+
+ 1)     T      T       T        ->   T  
+ 2)     T      T       NIL      ->   T  
+ 3)     T      NIL     T        ->   T  
+ 4)     T      NIL     NIL      ->   NIL  
+ 5)     NIL    T       T        ->   T  
+ 6)     NIL    T       NIL      ->   NIL  
+ 7)     NIL    NIL     T        ->   NIL  
+ 8)     NIL    NIL     NIL      ->   NIL  
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            1 
+Size of Population:                       1 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  8 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 0.0 
+Best    standardized fitness = 0.0 and 8 hits. 
+It was: 
+RPB0: 
+(OR (AND D2 D1 (NOT D0)) (AND D2 (NOT D1) D0)
+ (OR (AND (NOT D2) D1 D0) (AND D2 D1 D0))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 0, standardized fitness = 0.0 and 8 hits.  
+It was: 
+RPB0: 
+(OR (AND D2 D1 (NOT D0)) (AND D2 (NOT D1) D0)
+ (OR (AND (NOT D2) D1 D0) (AND D2 D1 D0))) 
+
+
+
+Fitness cases: 
+
+ 1)     T      T       T        ->   T  
+ 2)     T      T       NIL      ->   T  
+ 3)     T      NIL     T        ->   T  
+ 4)     T      NIL     NIL      ->   NIL  
+ 5)     NIL    T       T        ->   T  
+ 6)     NIL    T       NIL      ->   NIL  
+ 7)     NIL    NIL     T        ->   NIL  
+ 8)     NIL    NIL     NIL      ->   NIL  
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            21 
+Size of Population:                       100 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  8 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 3.29 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(OR (AND (AND (AND D2 D0) (OR D2 D0)) (OR (AND D1 D0) (NOT D1)))
+ (OR (AND (AND D1 D1) (AND D1 D0) (AND D1 D2 D1))
+  (AND (AND D0 D1 D1) (AND D0 D0)))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 2.91 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: (AND D2 (OR D1 D0)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 2: 
+Average standardized fitness = 2.74 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(AND (OR (NOT (OR D1 D2)) (OR (OR D0 D2) (AND D2 D1 D2)))
+ (NOT (NOT (OR D0 D1)))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 3: 
+Average standardized fitness = 2.74 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(OR (AND (AND (AND D2 D0) (OR D2 D0)) (OR (AND D1 D0) (NOT D1)))
+ (OR
+  (AND (AND D1 D1) (AND D1 D0)
+   (AND (OR (NOT (OR D1 D2)) (OR (OR D0 D2) (AND D1 D0)))
+    (AND D1 D0 (OR (OR D0 D0) D0))))
+  (AND (AND D0 D1 D1) (AND D2 D2 D2)))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 4: 
+Average standardized fitness = 2.46 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: 
+(OR (AND (AND (AND D2 D0) (OR D2 D0)) (OR (OR (AND D0 D0) D1) (NOT D1)))
+ (OR
+  (AND (AND D1 D1) (AND D1 D0)
+   (AND (OR (NOT (OR D1 D2)) (OR (OR D0 D2) (AND D1 D0)))
+    (NOT (NOT (OR D0 D1)))))
+  (AND (AND D0 D1 D1) (AND D2 D2 D2)))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 5: 
+Average standardized fitness = 2.48 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: (OR (AND D1 D2 D1) (OR D0 D0)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 6: 
+Average standardized fitness = 2.24 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: (OR (AND D1 D2 D1) (AND D2 D0)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 7: 
+Average standardized fitness = 2.29 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: (OR (AND D1 D0 D0) (AND D1 D2 D1)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 8: 
+Average standardized fitness = 2.23 
+Best    standardized fitness = 0.0 and 8 hits. 
+It was: 
+RPB0: 
+(OR (AND (AND (AND D2 D0) (OR D2 D0)) (OR (AND D1 D0) (OR D2 (AND D1 D2))))
+ (OR
+  (AND (AND D1 D1) (AND D1 D0)
+   (AND (OR (NOT (OR D1 D2)) (OR (OR D1 D2) (AND D1 D0)))
+    (AND D1 D0 (AND D1 D2))))
+  (OR (AND (AND D1 D2) (AND D1 (AND D2 D2)) (AND D1 D1 D1))
+   (AND (AND D0 D1 D1) (AND D0 D0))))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 8, standardized fitness = 0.0 and 8 hits.  
+It was: 
+RPB0: 
+(OR (AND (AND (AND D2 D0) (OR D2 D0)) (OR (AND D1 D0) (OR D2 (AND D1 D2))))
+ (OR
+  (AND (AND D1 D1) (AND D1 D0)
+   (AND (OR (NOT (OR D1 D2)) (OR (OR D1 D2) (AND D1 D0)))
+    (AND D1 D0 (AND D1 D2))))
+  (OR (AND (AND D1 D2) (AND D1 (AND D2 D2)) (AND D1 D1 D1))
+   (AND (AND D0 D1 D1) (AND D0 D0))))) 
+
+

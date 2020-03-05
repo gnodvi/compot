@@ -1,0 +1,22 @@
+
+------------------------------- 
+NN    = 4
+NODES = ::G_LIST_2
+NODES = YES YES YES YES
+ii    = 4
+jj    = 4
+array = 
+      YES NOS NOS YES 
+      NOS YES NOS YES 
+      NOS NOS YES NOS 
+      NOS YES NOS YES 
+------------------------------- 
+EDGES = 
+   |    0    1    2    3 
+------------------------------- 
+ 0 |   *    o    o    *  
+ 1 |   o    *    o    *  
+ 2 |   o    o    *    o  
+ 3 |   o    *    o    *  
+------------------------------- 
+

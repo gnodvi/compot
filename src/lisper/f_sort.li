@@ -1,0 +1,492 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;===============================================================================
+
+;void sort_main_44 ();
+;void sort_main_55 ();
+;void sort_main_03 (int argc, char** argv, int j);
+
+;===============================================================================
+
+(defclass T_SORTING (Bdata) (
+;  Bdata  parent;
+
+;  int  Num;
+;  int *Array, *Sorts, *Orign;
+  (Num   :accessor NUM)
+  (Arrey :accessor ARREY)
+  (Sorts :accessor SORTS)
+  (Orign :accessor ORIGN)
+
+;  int num_randoms, sorted, reversed;
+  (num_randoms :accessor NUM_RANDOMS)
+  (sorted      :accessor SORTED)
+  (reversed    :accessor REVERSED)
+
+))
+
+;===============================================================================
+
+;-------------------------------------------------------------------------------
+;/* void */
+;/* sorting_begin (void *s, long long1, long long2)  */
+;/* { */
+;/*   T_SORTING *sorting = (T_SORTING *) s; */
+
+;/*   ai_initialize (sorting->Sorts, sorting->Num); */
+
+;/*   return; */
+;/* } */
+;-------------------------------------------------------------------------------
+;void 
+;sort_check (int *Orign, int *Array, int *Sorts, int Num, 
+;            char *message)
+;-------------------------------------------------------------------------------
+(defun sort_check (Orign Arrey Sorts Num message)
+
+(let (
+;  // если хотя бы одни элемент массива не совпал, то G_FAILURE=-1
+  (status  (ai_check_compare Arrey Sorts Num))
+  )
+
+;  if (status == G_SUCCESS)  printf ("PASS: ");
+;  else                      printf ("FAIL: ");    
+  (if (eq status t)  (format t "PASS: ")
+                     (format t "FAIL: ")
+                     )
+    
+;  //printf ("%-*s  \n", NAMELENG, p_i->name);
+  (format t "~s  ~%" message)
+
+  (when (eq status NIL)
+    (ai_print Orign)     
+    (ai_print Arrey)     
+    )
+
+))
+;-------------------------------------------------------------------------------
+;void 
+;sorting_check_print (void *s, char *message)
+;-------------------------------------------------------------------------------
+(defun sorting_check_print (s message)
+
+(let* (
+;  T_SORTING *sorting = (T_SORTING *) s; // делаем реальный указатель
+
+;  int    Num = sorting->Num;
+
+;  int *Array = sorting->Array; 
+;  int *Sorts = sorting->Sorts; 
+;  int *Orign = sorting->Orign; 
+  )
+
+;  sort_check (Orign, Array, Sorts, Num, message);
+  (sort_check  (Orign s) (Arrey s) (Sorts s) (Num s) message)
+
+))
+;-------------------------------------------------------------------------------
+;void 
+;sorting_init (T_SORTING *sorting, char *name, int Num,
+;              int num_randoms, int sorted, int reversed)
+;-------------------------------------------------------------------------------
+(defun sorting_init (sorting name Num num_randoms 
+                              sorted reversed)
+
+(declare (ignore name))
+;  //Bdata *bd = (Bdata*)sorting;
+
+;  //b_data_init (bd, name, midata_begin, midata_print_name, midata_check_print);
+;  //---------------------------------
+
+;  sorting->Num = Num;
+  (setf (Num sorting) Num)
+
+;  sorting->Array = (int *) malloc (Num * sizeof (int));
+;  sorting->Sorts = (int *) malloc (Num * sizeof (int));
+;  sorting->Orign = (int *) malloc (Num * sizeof (int));
+
+  (setf (ARREY sorting) (make-list Num))
+  (setf (SORTS sorting) (make-list Num))
+  (setf (ORIGN sorting) (make-list Num))
+
+;  sorting->num_randoms = num_randoms;
+;  sorting->sorted      = sorted;
+;  sorting->reversed    = reversed;
+
+  (setf (NUM_RANDOMS sorting) num_randoms)
+  (setf (SORTED      sorting) sorted)
+  (setf (REVERSED    sorting) reversed)
+
+)
+;-------------------------------------------------------------------------------
+;void *
+;sorting_create (char *name, int Num,
+;                int num_randoms, int sorted, int reversed) 
+;-------------------------------------------------------------------------------
+(defun sorting_create (name Num num_randoms sorted reversed) 
+
+(let (
+;  T_SORTING *s = malloc (sizeof (T_SORTING));
+  (s (make-instance 'T_SORTING))
+  )
+
+  (sorting_init  s name Num  num_randoms sorted reversed)
+
+;  return ((void*) s);
+  s
+))
+;-------------------------------------------------------------------------------
+;void
+;sorting_end (/* T_SORTING *sorting */void *s) 
+;{
+;  T_SORTING *sorting = (T_SORTING *) s; // делаем реальный указатель
+
+;  free (sorting->Sorts);
+;  free (sorting->Orign);
+;  free (sorting->Array);
+
+;  return;
+;}
+;-------------------------------------------------------------------------------
+
+
+;#define BOT_VAR   int message, void *m, long long1, long long2, long long3, double d1
+;#define BOT_RETURN return (1)
+
+;-------------------------------------------------------------------------------
+;///////////////////////////////////////////////////////////////////////////////
+;-------------------------------------------------------------------------------
+;T_BOT_RETURN
+;sortbot_common (/* int message, void *m, long long1, long long2 */BOT_VAR)
+;-------------------------------------------------------------------------------
+(defun sortbot_common (message m long1 long2 long3 d1)
+
+(declare (ignore long2 long3 d1))
+
+(let (
+;  T_SORTPROG sortprog = (T_SORTPROG) m;
+
+;  int  *Array = (int*) long1;
+;  int   Num = long2;
+  )
+
+;  switch (message) {
+;  case Y_BEG:
+;    break;
+;  case YTODO:
+;  sortprog (Array, Num); 
+
+  (unless (= message Y_BEG)
+    (funcall m long1) ;  
+    )
+; *** - APPLY: too many arguments given to #<COMPILED-FUNCTION QSORT_AF>
+
+;    break;
+;  default:
+;    ;;;
+;  }
+
+))
+;-------------------------------------------------------------------------------
+;void 
+;sort_by_one_bot (YT_BOT *bot, T_SORTING *s, char *message)
+;-------------------------------------------------------------------------------
+(defun sort_by_one_bot (bot s message)
+  
+;  ai_copy (s->Array, s->Orign, s->Num);     
+  (ai_copy (ARREY s) (ORIGN s) (NUM s))
+
+;  YT_PROG lbot = (YT_PROG) bot->long3;
+
+;  bot->prog (YTODO, lbot, (long)(s->Array), s->Num, 0,0);
+  (funcall (YPROG bot) YTODO (LONG3 bot) (ARREY s) (NUM s) 0 0)
+ 
+  (sorting_check_print s message)
+
+)
+;-------------------------------------------------------------------------------
+;void
+;sorting_set_result (YT_PLAYER *player, double t) 
+;-------------------------------------------------------------------------------
+(defun sorting_set_result (player tval) 
+
+  ;(format t "1--- ~%")
+  (setf (SUM player) tval) ;  player->sum  = tval; 
+
+  (setf (INT1 player) (TO_COUNT))
+  (setf (INT2 player) (LG_COUNT))
+  (setf (INT3 player) (+ (TO_COUNT) (LG_COUNT)))
+
+  ;(format t "2--- ~%")
+)
+;-------------------------------------------------------------------------------
+;void 
+;sorting_draw_line (YT_PLAYER *table, int i)
+;-------------------------------------------------------------------------------
+(defun sorting_draw_line (table i)
+
+(let (
+  tabl
+  )
+
+  (if (= i 0) 
+  (progn 
+    (format t " ")
+    (format t "   TO+LG   ")
+    (format t "    Time  ")
+    (format t "      TO  ")
+    (format t "      LG  ")
+    (format t "~%")
+    )
+  (progn 
+;    printf (" %8d  " , table[i].int3); // TO+LG
+;    printf (" {%8.6f} ", table[i].sum);
+;    printf (" %8d "  , table[i].int1); // TO
+;    printf (" %8d "  , table[i].int2); // LG
+    (setf tabl (nth i table))
+
+    (format t " ~7d  "    (INT3 tabl)) ; // TO+LG
+    (format t " {~7,5f} " (SUM  tabl))
+    (format t " ~7d "     (INT1 tabl)); // TO
+    (format t " ~7d "     (INT2 tabl)); // LG
+    (format t "~%");
+     ))
+
+))
+;-------------------------------------------------------------------------------
+;void 
+;sorting_print_sort_results (Y_BOTTOP *top)
+;-------------------------------------------------------------------------------
+(defun sorting_print_sort_results (top)
+
+;  bottop_print_sort_results (top, SORT_MIN_MAX, /* SORT_0 */ SORT_3, sorting_draw_line);
+  (bottop_print_sort_results  top  SORT_MIN_MAX  SORT_3  'sorting_draw_line)
+
+)
+;-------------------------------------------------------------------------------
+;void
+;sorting_calc_data (void *t, /* YT_BOT* bot */void *p) 
+;-------------------------------------------------------------------------------
+;(defun sorting_calc_data (tval  p) 
+(defun sorting_calc_data (top  bot) 
+
+(let* (
+  ;(top tval) ;  Y_BOTTOP *top = (Y_BOTTOP *) t;
+  ;(bot p)    ;  YT_BOT* bot = (YT_BOT *) p;
+
+;  T_SORTING *sorting = (T_SORTING *) top->dat; // делаем реальный указатель
+  (sorting (DAT top))
+
+  Num Sorts Orign num_randoms sorted reversed 
+  )
+
+  ;(format t "..... ~s ~%" (YPROG bot))
+;  bot->prog (Y_BEG, sorting, bot->long1, bot->long2, 0,0);
+  (funcall (YPROG bot) Y_BEG sorting (LONG1 bot) (LONG2 bot) 0 0) 
+
+;  //sorting_begin (sorting, 0,0);
+  (ai_initialize (SORTS sorting) (NUM sorting))
+
+;  //------------------------------ 
+
+  (setf Num (Num sorting))
+;  //int *Array = sorting->Array; 
+  (setf Sorts (SORTS sorting)) 
+  (setf Orign (ORIGN sorting)) 
+
+;  //int num_randoms = data_bot->long2;
+  (setf num_randoms (NUM_RANDOMS sorting))
+  (setf sorted      (SORTED   sorting))
+  (setf reversed    (REVERSED sorting))
+
+  (TO_RESET)
+  (LG_RESET)
+
+;  // будем сортировать случайные наборы
+  (when  (> num_randoms 0) 
+
+     (dotimes (n num_randoms)
+      (ai_copy Orign Sorts Num)    
+      (ai_randomize Orign Num)   ;    /* Perform some shuffling */  
+      (sort_by_one_bot bot sorting "....")
+      )
+     )
+
+;  // будем сортировать уже отсортированные
+  (when (> sorted 0) 
+    (ai_copy  Orign Sorts Num)       
+    (sort_by_one_bot  bot sorting "--->")
+    )
+
+;  // теперь попробуем уже отсортированные в обратном порядке
+  (when (> reversed 0) 
+    (ai_copy  Orign Sorts Num)       
+    (ai_reverse Orign Num)  
+    ;(ai_print Orign)     
+    ;(ai_print Sorts)     
+    (sort_by_one_bot  bot sorting "<---")
+  )
+
+;  //----------------------------
+;  //sorting_end (s); 
+
+))
+;-------------------------------------------------------------------------------
+;/* void  */
+;/* sortbot_print_name (void *s) */
+;/* { */
+;/*   YT_BOT *bot = (YT_BOT *) s; */
+
+;/*   printf ("%s ", b_prog_get_name ((Bprog *) bot));  */
+
+;/*   return; */
+;/* } */
+;-------------------------------------------------------------------------------
+;/* Y_BOTTOP * */
+;/* sort_bottop_create_old ()  */
+;/* { */
+
+;/*   Y_BOTTOP *top = bottop_create (20); */
+
+;/*   YT_PROG sbot = sortbot_common; */
+
+;/*   bottop_add_bot (top, "bubblesort"       , sbot, 0,0,  (long) bubblesort,       0); */
+;/*   bottop_add_bot (top, "shakersort"       , sbot, 0,0,  (long) shakersort,       0); */
+;/*   bottop_add_bot (top, "s_insertion_swap" , sbot, 0,0,  (long) s_insertion_swap, 0); */
+;/*   bottop_add_bot (top, "s_insertion_take" , sbot, 0,0,  (long) s_insertion_take, 0); */
+;/*   bottop_add_bot (top, "s_selection"      , sbot, 0,0,  (long) s_selection,      0); */
+;/*   bottop_add_bot (top, "shellsort_AF"     , sbot, 0,0,  (long) shellsort_AF,     0); */
+;/*   bottop_add_bot (top, "qsort_AF"         , sbot, 0,0,  (long) qsort_AF,         0); */
+  
+
+;/*   return (top); */
+;/* } */
+;-------------------------------------------------------------------------------
+;Y_BOTTOP *
+;sort_bottop_create () 
+;-------------------------------------------------------------------------------
+(defun sort_bottop_create () 
+
+(let (
+;  Y_BOTTOP *top = bottop_create (20);
+  (top (bottop_create 20))
+
+;  YT_PROG sbot = sortbot_common;
+  (sbot 'sortbot_common)
+  )
+
+
+;  bottop_add_player (top, "bubblesort", bot_make (sbot, 0,0, (long) bubblesort,  0));
+;  bottop_add_player (top, "shakersort", bot_make (sbot, 0,0, (long) shakersort,  0));
+
+;  bottop_add_player (top, "s_insertion_swap" ,
+;                     bot_make (sbot, 0,0,  (long) s_insertion_swap, 0));
+;  bottop_add_player (top, "s_insertion_take" ,
+;                  bot_make (sbot, 0,0,  (long) s_insertion_take, 0));
+;  bottop_add_player (top, "s_selection"      ,
+;                  bot_make (sbot, 0,0,  (long) s_selection,      0));
+;  bottop_add_player (top, "shellsort_AF"     ,
+;                  bot_make (sbot, 0,0,  (long) shellsort_AF,     0));
+
+;  bottop_add_player (top, "qsort_AF"         ,
+;                  bot_make (sbot, 0,0,  (long) qsort_AF,         0));
+  (bottop_add_player  top "qsort_AF"
+                  (bot_make sbot 0 0 'qsort_AF 0))
+  
+;  //bottop_add_bot (top, "heapsort_gsl", heapsort_gsl);
+;  //bottop_add_bot (top, "qsort_unix" , qsort_unix);
+
+  top
+))
+;-------------------------------------------------------------------------------
+(defun sort_main_44 (argus)  (declare (ignore argus))
+
+(let* (
+;  Y_BOTTOP *top = sort_bottop_create (); 
+  (top (sort_bottop_create))
+
+  (Orign '(44 55 12 42 94 18  6 67))
+  (Sorts '( 6 12 18 42 44 55 67 94))
+
+;  int Num = sizeof (Orign)/sizeof (Orign[0]);
+  (Num (list-length Orign))
+;  int  i;
+
+;  T_SORTING *s = sorting_create ("", Num, 0,0,0);
+  (s  (sorting_create "" Num 0 0 0))
+  )
+
+  (setf (ORIGN s) Orign) ;  s->Orign = Orign;
+  (setf (SORTS s) Sorts) ;  s->Sorts = Sorts;
+  (setf (DAT top) s) ;  top->dat = s;
+
+;  for (i = 1; i <= top->num_players; i++) {
+  (loop for i from 1 to (NUM_PLAYERS top) do
+;    sort_by_one_bot (IGROK(i)->bot, s, "");
+    (sort_by_one_bot (BOT (IGROK i)) s "")
+    )
+
+  (format t "~%")
+
+))
+;===============================================================================
+;void 
+;sort_bottop_init_03 (Y_BOTTOP *top, int argc, char** argv,  int j)
+;-------------------------------------------------------------------------------
+(defun sort_bottop_init_03 (top)
+
+;e~test sort 100 - 2 1 1
+
+(let* (
+  sorting
+;  int  Num, num_randoms, sorted, reversed;
+
+  (Num  10) ;  Num  = atoi (argv[j++]); // 100
+  ;(flag '-)  ;  char *flag = argv[j++];  // - 
+
+;  if (!strcmp (flag, "+")) BOTPRINT = TRUE;
+;  else                     BOTPRINT = FALSE;
+
+  (num_randoms 0) ;  num_randoms = atoi (argv[j++]); // 2
+  (sorted      0) ;  sorted      = atoi (argv[j++]); // 1
+  (reversed    1) ;  reversed    = atoi (argv[j++]); // 1
+  )
+
+  (bottop_init  top 0 ;/* SRAND_TIME */
+               'sorting_set_result 'sorting_print_sort_results
+
+               NUL NUL NUL 
+               NUL NUL NUL
+
+               'sorting_calc_data 
+               )
+
+;  T_SORTING *sorting = sorting_create ("MIXEDSORT", Num, 
+;                                       num_randoms,sorted,reversed);
+;  top->dat = sorting;
+
+  (setf sorting (sorting_create "MIXEDSORT" Num 
+                                num_randoms sorted reversed))
+  (setf (DAT top) sorting)
+
+))
+;-------------------------------------------------------------------------------
+;void
+;sort_main_03 (int argc, char** argv, int j)
+;-------------------------------------------------------------------------------
+(defun sort_main_03 (argus)  (declare (ignore argus))
+
+(let (
+;  Y_BOTTOP *top = sort_bottop_create (); 
+  (top  (sort_bottop_create))
+  )
+
+;  sort_bottop_init_03 (top, argc, argv,  j);
+  (sort_bottop_init_03  top)
+
+  (bottop_prog_data  top)
+
+))
+;===============================================================================
+

@@ -1,0 +1,18 @@
+
+joyprg = dup *
+v3_prg = {symbol dup} {symbol *}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+i_v3   = integer 1
+result = 1
+
+i_v3   = integer 2
+result = 4
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+v3_fit = 0
+
+

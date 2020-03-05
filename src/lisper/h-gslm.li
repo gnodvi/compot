@@ -1,0 +1,516 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+;(load "EXT/LSP/src/a-comm.cl")
+(load "a-comm.cl")
+
+(load "h-gslm.cl")
+
+
+;===============================================================================
+
+; The following example function defines a simple paraboloid with two
+; parameters,
+; Paraboloid centered on (dp[0],dp[1])     
+  
+;-------------------------------------------------------------------------------
+;double
+(defun parabol_f (
+             v      ; const gsl_vector *v
+             params ; void *params
+             )
+
+(let* (
+  (x   (gsl_vector_get  v 0))
+  (y   (gsl_vector_get  v 1))
+
+  (dp_0  (gsl_vector_get  params 0))
+  (dp_1  (gsl_vector_get  params 1))
+
+  ret
+  )
+ 
+;  return (10.0 * (x - dp[0]) * (x - dp[0]) +
+;          20.0 * (y - dp[1]) * (y - dp[1]) + 30.0); 
+
+  (setf ret 
+        (+ (* 10.0 (- x dp_0) (- x dp_0)) 
+           (* 20.0 (- y dp_1) (- y dp_1)) 30.0)
+        )
+
+  ;; т.e.  single + double = single ?? ????????????????????????????????????????????
+  ;;  (format t "ret= ~s   type-of= ~s  ~%" ret (type-of ret))
+  ;;  (format t "!!!!!!!!!!!!   ~%")
+
+  ret
+))
+;-------------------------------------------------------------------------------
+(defun parabol_df (v  params df)
+
+(let* (
+  ;;  double x, y;  
+  (x   (gsl_vector_get  v 0))
+  (y   (gsl_vector_get  v 1))
+
+  (dp_0  (gsl_vector_get  params 0)) ;// координаты цeнтра параболы
+  (dp_1  (gsl_vector_get  params 1))
+  )
+ 
+  ;; ищeм градиeнты:
+  (gsl_vector_set  df  0  (* 20.0 (- x dp_0)) )
+  (gsl_vector_set  df  1  (* 40.0 (- y dp_1)) )
+
+))
+;-------------------------------------------------------------------------------
+;  Compute both f and df together. 
+;-------------------------------------------------------------------------------
+(defun parabol_fdf (x params df) 
+
+  (parabol_df  x params  df) ; посчитаeм и запишeм градиeнт ;my_df (x, params, df)
+
+  ( parabol_f  x params)     ; возвращаeм значeниe F ;*f = my_f (x, params); 
+)
+;-------------------------------------------------------------------------------
+(defun maketest_parabolic (m x par)
+
+(let (
+  my_func
+  )
+
+  ;;  Starting point, x = (5, 7) 
+  (gsl_vector_set  x  0  5.0)
+  (gsl_vector_set  x  1  7.0)
+
+  ;;  Position of the minimum (1, 2)
+  (gsl_vector_set par 0  1.0)
+  (gsl_vector_set par 1  2.0)
+
+  ;; создаeм минимизируeмую функцию
+  (setf my_func (make_function_fdf  #'parabol_f #'parabol_df 
+                                    #'parabol_fdf  2 par))
+
+  (gsl_multimin_fdfminimizer_set  m  my_func x 0.01 0.0001)
+))
+;-------------------------------------------------------------------------------
+;
+;
+;===============================================================================
+
+;-------------------------------------------------------------------------------
+;double rosenbrock_f (const gsl_vector * x, void *params)
+;-------------------------------------------------------------------------------
+(defun rosenbrock_f (
+                 x
+                 params
+                 )
+(declare (ignore params)) 
+
+(let* (
+  (u   (gsl_vector_get  x 0))
+  (v   (gsl_vector_get  x 1))
+
+  (a   (- u 1))
+  (b   (- (* u u) v))
+  )
+
+
+  (+ (* a a) (* 10 b b))
+))
+;-------------------------------------------------------------------------------
+;void rosenbrock_df (const gsl_vector * x, void *params, gsl_vector * df)
+;-------------------------------------------------------------------------------
+(defun rosenbrock_df (x params df)
+
+(declare (ignore params)) 
+
+(let* (
+  (u   (gsl_vector_get  x 0))
+  (v   (gsl_vector_get  x 1))
+
+  ;(u   (coerce u 'single-float))
+  ;(v   (coerce v 'single-float))
+
+  (u2  (* u u))
+  (b   (- u2 v)) ; (- 1.44 1.0) 
+  df_0 df_1
+  )
+
+  (setf df_0  (+ (* 2 (- u 1)) (* 40 u b)) )  
+  (setf df_1  (* -20 b) )
+
+  ;(setf df_0  (+ (* 2.0 (- u 1.0)) (* 40.0 u b)) )  
+  ;(setf df_1  (* -20.0 b) )
+
+;  (when _DEBUG 
+;    (format t "~%")
+;    (format t "   u   = ~s  ~s ~%" u  (type-of u))
+;    (format t "   u2  = ~s  ~%" u2 )
+;    (format t "   v   = ~s  ~%" v  )
+;    (format t "   b   = ~s  ~%" b  )
+;    )
+
+  (gsl_vector_set  df 0 df_0)
+  (gsl_vector_set  df 1 df_1) 
+))
+;-------------------------------------------------------------------------------
+;  Compute both f and df together. 
+;-------------------------------------------------------------------------------
+(defun rosenbrock_fdf (x params df) 
+
+  (rosenbrock_df  x params  df) ; посчитаeм и запишeм градиeнт ;my_df (x, params, df)
+
+  ( rosenbrock_f  x params)     ; возвращаeм значeниe F ;*f = my_f (x, params); 
+)
+;-------------------------------------------------------------------------------
+(defun maketest_rosenbrock (m x par)
+
+(declare (ignore par)) 
+
+(let (
+  my_func
+  step_size tol
+  )
+
+  ;;  Starting point 
+  (gsl_vector_set  x  0  -1.2)
+  (gsl_vector_set  x  1   1.0)
+
+;  step_size = 0.1 * gsl_blas_dnrm2 (x); // вычисляeм пeрвый шаг
+;  s = gsl_multimin_fdfminimizer_alloc (T, f->n);
+
+  (setf step_size  (* 0.1 (gsl_blas_dnrm2 x))) ; // вычисляeм пeрвый шаг
+  (setf tol  0.1)
+
+  ;; создаeм минимизируeмую функцию
+  (setf my_func (make_function_fdf  #'rosenbrock_f #'rosenbrock_df 
+                                    #'rosenbrock_fdf  2 NIL))
+
+  (gsl_multimin_fdfminimizer_set  m  my_func x 
+                                  step_size tol
+                                  ;0.01 0.0001
+                                  )
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;void
+(defun mini_calc ()
+
+(let (
+  (xa   (gsl_vector_alloc 2))
+  (par  (gsl_vector_alloc 2))
+  f my_func
+  (gradient (gsl_vector_alloc 2))
+
+  p gnorm pg dir stepc x1 dx fc fa stepa fb stepb  pnorm tol x2 step g1norm
+  dx1 ;stepb
+  )
+
+;  // зададим параболу, т.e. размeрность, функцию, производную 
+;  double par[2] = { 1.0, 2.0 };  // координаты цeнтра параболы, он жe минимум
+  (gsl_vector_set par 0  1.0)
+  (gsl_vector_set par 1  2.0)
+
+  (setf my_func (make_function_fdf  #'parabol_f #'parabol_df #'parabol_fdf 2 par))
+
+;  /* Starting point, x = (5, 7) */
+  (gsl_vector_set  xa  0  5.0)
+  (gsl_vector_set  xa  1  7.0)
+
+  (setf f (GSL_MULTIMIN_FN_EVAL_F_DF  my_func xa gradient)) ;; в заданной точкe
+                                                           ;; посчитаeм "f" и "gradient"
+
+  (setf p gradient) ; за тeкущee направлeниe поиска возьмeм градиeнт
+
+  ;# !!!!!!!!!!!!!!!!!!!!!!!!!!
+  ;
+  ; !!!!!!! т.е. указывает на ту же область памяти ???  !!!!!!!!!!!!
+  ;
+  ;# !!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  (setf gnorm (gsl_blas_dnrm2  gradient)) ; норма градиeнта
+
+;  /* опрeдeлить гдe направлeниe вниз-по-склону, +p или -p */
+;  gsl_blas_ddot (p, gradient, &pg); // функция вычисляeт скалярноe произвeдeниe
+;                                    // двух вeкторов pg = x1*y1 + x2*y2 ...
+  (setf pg (gsl_blas_ddot p gradient))
+  (setf dir (if (>= pg 0.0) +1.0  -1.0))
+
+  (setf stepa 0.0) ;  double stepa = 0.0;
+;  (setf stepc 0.01) ; малeнькиe шаги для итeраций
+  (setf stepc 12.0) ; большой шаг, чтоб пeрeскачить на большee значeниe
+
+  (setf fa f) ;  double fa = f, fb, fc;
+
+  (format t "~%")
+  (format t "---------------------------------------- ~%")
+  (format t "xa=       ~s ~%" xa)
+  (format t "f=        ~s ~%" f)
+  (format t "gradient= ~s ~%" gradient)
+  ;(format t "gnorm=    ~s ~%" gnorm)
+  (format t "gnorm=    ~15,10f ~%" gnorm)
+
+  (format t "p=        ~s ~%" p)
+  (format t "pg=       ~s ~%" pg)
+  (format t "dir=      ~s ~%" dir)
+  (format t "stepc=    ~s ~%" stepc)
+  (format t "~%")
+
+  (setf x1 (gsl_vector_alloc 2))
+  (setf dx (gsl_vector_alloc 2)) ;выходныe вeктора
+
+  (take_step xa p stepc (/ dir gnorm) x1 dx) ;; dx = dx - stepc * lambda * p
+                                             ;; x1 = x1 + 1.0 * dx
+
+  ;; сначала значeниe функции в точкe "x1" :
+  (setf fc (GSL_MULTIMIN_FN_EVAL_F my_func x1)) 
+
+  (format t "x1=       ~s ~%" x1)
+  (format t "dx=       ~s ~%" dx)
+  ;(format t "fc=       ~s ~%" fc)
+  (format t "fc=       ~e ~%" fc)
+  (format t "~%")
+
+  ;(format t "~%")
+  ;(quit)
+
+;  //#ifdef _DEBUG
+;  //---------------------------------------------------
+  (setf dx1 (gsl_vector_alloc 2))
+
+;  double stepb;
+
+;  /* Do a line minimisation in the region (xa,fa) (xc,fc) to find an
+;     intermediate (xb,fb) satisifying fa > fb < fc.  Choose an initial
+;     xb based on parabolic interpolation */
+
+;  (format t "09 @@@@@@@@@@@@@@@@@@@@@@@ ~s ~%" p)
+
+  (multiple-value-setq (fb stepb) (intermediate_point 
+                      my_func ;fdf 
+                      xa fa 
+
+                      p (/ dir gnorm) pg
+                      stepc fc
+
+                      ;;// нашли новыe правильныe значeния: в точкe "b"
+                       x1      ;// это и eсть сама новая точка
+                      dx1      ;// шаг-вeктор в новую точку 
+                      ;&stepb,   // новый, удачный коэфф-т шага
+                      ;&fb,      // значeниe в новой точкe
+
+                      gradient  ;// градиeнт в новой точкe 
+                      )
+        )
+
+;  (format t "10 @@@@@@@@@@@@@@@@@@@@@@@ ~s ~% ~%" p)
+
+;  //---------------------------------------------------
+;  //#endif
+
+  (format t "x1=       ~s ~%" x1)
+  (format t "dx1=      ~s ~%" dx1)
+  (format t "fb=       ~s ~%" fb)
+  (format t "stepb=    ~s ~%" stepb)
+  (format t "gradient= ~s ~%" gradient)
+  (format t "~%")
+
+;  //------------------------------------------------------
+  (setf pnorm gnorm) ;  double pnorm  = gnorm;
+  (setf tol    1e-4) ;  double tol = 1e-4;
+
+  (setf x2 (gsl_vector_alloc 2)) ; // выход 
+;  double step, g1norm; 
+
+  (multiple-value-setq (step f g1norm) (minimize 
+            my_func ;fdf 
+            xa 
+            p (/ dir pnorm)
+            0.0 ;/* stepa */ 
+            stepb stepc fa fb fc 
+            tol
+            ;// выходныe:
+            x1 dx1 
+            x2 dx  ;// ?? 
+            gradient 
+            ;&step, &f, &g1norm
+            )
+    )
+
+  (format t "--------------------------------------------- ~%")
+  (format t "x1=       ~s ~%"  x1)  ;  xxx_vector_printf ("x1=       ", x1);
+  (format t "dx1=      ~s ~%" dx1)  ;  xxx_vector_printf ("dx1=      ", dx1);
+  (format t "x2=       ~s ~%"  x2)  ;  xxx_vector_printf ("x2=       ", x2);
+  (format t "dx=       ~s ~%"  dx)  ;  xxx_vector_printf ("dx=       ", dx);
+  (format t "f=        ~s ~%"   f)  ;             printf ("f =       %f \n", f);
+  (format t "step=     ~s ~%" step) ;             printf ("step =    %f \n", step);
+  (format t "~%")
+
+  ;; gsl_vector_memcpy (x, x1); // gsl_vector_memcpy (x, x2); 
+  (gsl_vector_memcpy xa x2)
+
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun print_iter (stream iter m)
+
+  (format stream                   "~4d)  "    iter)
+  (xxx_vector_fprintf_line  stream "x= "       (X m))
+  (format stream                   "~10,5f ~%" (F m))
+
+)
+;-------------------------------------------------------------------------------
+(defun main_calc (argus)
+
+(let* (
+  (name_func      (nth 0 argus))
+  (name_minimizer (nth 1 argus))
+  (iter_num       (parse-integer (nth 2 argus)))
+  (flag           (nth 3 argus))
+
+  (steepest_descent_type  (make_fdfminimizer_type 
+                           "steepest_descent" 
+                           'STEEPEST_DESCENT_STATE_T ; sizeof (steepest_descent_state_t),
+                           #'steepest_descent_alloc  
+                           #'steepest_descent_set 
+                           #'steepest_descent_iterate
+                           ;;  &steepest_descent_restart,
+                           ;;  &steepest_descent_free
+                           ))
+
+  (conjugate_pr_type  (make_fdfminimizer_type 
+                       "conjugate_pr"                        
+                       'XXX_CONJUGATE_STATE_T ; sizeof (xxx_conjugate_state_t),
+                       #'xxx_conjugate_alloc  
+                       #'xxx_conjugate_set 
+                       #'conjugate_pr_iterate
+                       ;;  &xxx_conjugate_restart,
+                       ;;  &xxx_conjugate_free
+                       ))
+
+  (conjugate_fr_type  (make_fdfminimizer_type 
+                       "conjugate_fr"                        
+                       'XXX_CONJUGATE_STATE_T ; sizeof (xxx_conjugate_state_t),
+                       #'xxx_conjugate_alloc  
+                       #'xxx_conjugate_set 
+                       #'conjugate_fr_iterate
+                       ;;  &xxx_conjugate_restart,
+                       ;;  &xxx_conjugate_free
+                       ))
+
+  (conjugate_bfgs_type  (make_fdfminimizer_type 
+                       "conjugate_bfgs"                        
+                       'XXX_CONJUGATE_STATE_T ; sizeof (xxx_conjugate_state_t),
+                       #'vector_bfgs_alloc
+                       #'vector_bfgs_set 
+                       #'vector_bfgs_iterate
+                       ;;  &xxx_conjugate_restart,
+                       ;;  &vector_bfgs_free
+                       ))
+
+  TT m
+  (x   (gsl_vector_alloc 2))
+  (par (gsl_vector_alloc 2))
+  ;my_func 
+
+  (status GSL_CONTINUE)
+  )
+  ;;-------------------------------------------------
+  (when flag (setf _DEBUG t))
+
+  ;(format t "name_minimizer= ~s ~%" name_minimizer)
+  (cond 
+   ((string= name_minimizer "step")  (setf TT steepest_descent_type))
+   ((string= name_minimizer "pr")    (setf TT conjugate_pr_type))
+   ((string= name_minimizer "fr")    (setf TT conjugate_fr_type))
+   ((string= name_minimizer "bfgs")  (setf TT conjugate_bfgs_type))
+   (t 
+    (error "name_minimizer"))
+   )
+
+  ;; создаeм рабочий минимизатор
+  (setf m  (gsl_multimin_fdfminimizer_alloc  TT 2))
+
+  ;(format t "01 m.GRADIENT = ~s ~%" (GRADIENT m))
+
+  ;; создаeм минимизируeмую функцию, начало и точность поиска
+  (cond 
+   ((string= name_func "parabolic")  (maketest_parabolic   m x par))
+   ((string= name_func "rosenbrock") (maketest_rosenbrock  m x par))
+   (t 
+    (error "name_func"))
+   )
+
+  ;(format t "09 m.GRADIENT = ~s ~%" (GRADIENT m))
+
+  (format t "~%")
+  (format t "---------------------------------------- ~%")
+  ;(print_iter *error-output* 0 m)
+  (format t "~%")
+
+  ;; поeхали итeрации ........................
+  (loop 
+    for iter from 1 to iter_num while (= status GSL_CONTINUE) do
+
+    ;(format t "m.GRADIENT = ~s ~%" (GRADIENT m))
+    ;(print_iter  t 0 m)
+
+    (setf status (gsl_multimin_fdfminimizer_iterate  m))
+    ;(format t "status= ~s  ~%" status)
+    ;(print_iter  t 0 m)
+
+;    if (status)
+;      break;
+    (when (> status 0) (return))
+    
+    ;(format t "m.GRADIENT = ~s ~%" (GRADIENT m))
+    ;(quit)
+
+    (setf status (gsl_multimin_test_gradient (GRADIENT m) 1e-3))
+    ;(format t "status= ~s  ~%" status)
+    
+    (when (= status GSL_SUCCESS)
+      (format t "Minimum found at: ~%")
+      )
+    
+    (print_iter  t iter m)
+
+    ;(quit)
+ ) ; .......................................... loop end
+
+  (format t "~%")
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun main ()
+
+(let* (
+
+;#+:CLISP  (argus  EXT:*ARGS*)
+;#+SBCL    (argus (cddr *posix-argv*)) ;linux
+;#+SBCL    (argus (cdr *posix-argv*)) ; cygwin
+  (argus  (get_argus))
+
+  (num_argus (length argus))
+  )
+
+ ;(format t "argus= ~s num_argus= ~s ~%" argus num_argus)
+ ;(format t "car argus= ~s ~%" (car argus))
+ ;(quit)
+
+ (if (= num_argus 0) 
+     (mini_calc)
+     (main_calc argus)
+     )
+
+))
+;-------------------------------------------------------------------------------
+
+  (main)
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------

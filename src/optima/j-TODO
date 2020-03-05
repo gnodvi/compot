@@ -1,0 +1,272 @@
+#-------------------------------------------------------------------------------
+# README:
+# 
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#
+# http://wiki.tcl.tk/10870
+#-------------------------------------------------------------------------------
+
+# if you can read this, Salvatore, would you be interested to write a contribution 
+# to the joint paper about concatenative languages that we are writing? Your 
+# implementation seems to be significantly different from others, and your 
+# contribution to the paper would be most welcome.
+
+#   - Manfred
+
+# SS 2004-02-10: I used the last weekend to implement Joy in Tcl. It's not very 
+# fast of course, and still not complete, but does tail call optimization, has 
+# first class continuations, and is stackless (The interpreter never call itself), 
+# so it's simple to transfer an entire running program from an interpreter to 
+# another one.
+
+# Changelog
+
+#  2004-02-11 Now the implementation is a superset of Joy, that I called 'Apathy'. 
+# It's basically Joy with locals designed
+#             to don't break the Joy semantics. Now Joy primitives are 
+# implemented in Apathy and there are more primitives.
+
+# Too big to put it here on the Wiki, so download it from 
+# http://www.hping.org/tclsbignum/joy.tcl if you are interested.
+
+# Run it with
+
+#   tclsh joy.tcl
+
+# to use the interactive mode, or pass an file name to execute a program 
+# written in Joy.
+
+# As stated, it's still not finished. Many primitives are missing, but can 
+# easily implemented in Joy itself. Also note that currently the 'set' data 
+# type is missing.
+
+#-------------------------------------------------------------------------------
+# joy> help
+
+# {} != * + - . / < <= = > >= and at auxpop auxpush binrec body branch callcc 
+# character concat cond cons continue dip dup dupd exit filter first float fold 
+# help i ifte integer intern linrec list local map newstack not null or pairlist 
+# pairstring pop popd pred primrec put putchars rem rest ret rolldown rollup 
+# rotate second size small split stack stacktrace step string succ swap swapd 
+# swons tailrec tclrepr third times truth uncons uncons2 unconsd unitlist 
+# unitstring unpair unstack unswons unswons2 while xor y
+
+#-------------------------------------------------------------------------------
+#
+# TODO:
+#
+# - Sets data type.
+# - prirec should work on aggregates. The semantic is to return
+#   a different element of the aggregate for every iteration
+#   starting from the last element, and finally to return
+#   the empty aggregate.
+# - When we get the continuation (and even in function call), there
+#   is no need to get the "full" current, as long as the bytecode
+#   execution can't "return back". We can just get from the current
+#   ip to the end of current. This way the continuation (and the
+#   program environment if applied to function calls) will be
+#   mush smaller.
+# - joy-set-current shouldn't add a ret istruction if there is already
+#   one at the end of the program.
+# - Create aphaty: joy with locals, (a b c ...) $a $b..
+# - Modify not,and,or,xor to support sets (once implemented).
+#
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+#
+# Apathy и локальность.
+#
+# Apathy - это надмножество Joy, с поддержкой локальных переменных.
+# The variables are used in order to create complex quoted programs
+# without to use too stack manipulation primitives that tends to
+# make the code hard to read.
+#
+# Apathy locals are designed in order to retain the theoretical
+# features of Joy. Local's scope is the quoted program.
+#
+# The syntax is simple. To bind stack objects to local symbols
+# a special "capture" form is used. The capture is a list
+# of symbols between a '(' and ')'.
+#
+# In order to push the object bound to a local on the stack
+# the program should contain a symbol that is composed
+# using a $ character followed by the local name, like "$this"
+#
+# An example to swap two elements on the swap:
+#
+# 1 2 (a b) $b $a -> 2 1
+#
+# The local scope is local to the quoted program, so the following
+# program will raise an error:
+#
+# 1 (a) [$a] i
+#
+# This basically means that like a Joy quoted program, Apathy programs
+# don't have any state or behaviour that is non evident from
+# the program itself.
+#
+# Apathy locals are not meant to add semantic to Joy, but just
+# to make it more pratical. They should be seen as a tool
+# to make composition of quoted programs, or to take local
+# status, simpler.
+#
+# Many Joy primitives are simpler to implement in Apathy than
+# in Joy. Often in the primitive description you can read
+# something like "Save X". Where to save? You can create
+# quoted programs in order to take some status, but that's
+# non comfortable. With locals, creation of quoted programs 
+# and local state saving, is simple enough that starting with 'branch'
+# it's possible to very easily implement
+# the recursion and interation primitives like linrec, while, and
+# so on, without to break the theoretical advantages of Joy.
+
+#-------------------------------------------------------------------------------
+################################################################################
+# j00ovr.html:
+#
+# To add two integers, say 2 and 3, and to write their sum, you type the program
+
+#         2  3  +
+
+# This is how it works internally: the first numeral causes the integer 2 to be 
+# pushed onto a stack. The second numeral causes the integer 3 to be pushed on 
+# top of that. Then the addition operator pops the two integers off the stack 
+# and pushes their sum, 5. The system reads inputs like the above and executes 
+# them when they are terminated by a period ".", like this:
+
+#         2  3  + .
+
+# In the default mode there is no need for an explicit output instruction, so 
+# the numeral 5 is now written to the output file which normally is the screen. 
+# So, in the default mode the terminating "." may be taken to be an instruction 
+# to write the top element of the stack. In what follows the terminating 
+# period will not be shown any further. 
+
+#-------------------------------------------------------------------------------
+# j01tut.html
+#
+
+# Sometimes it is necessary to add or multiply or otherwise combine all elements 
+# of an aggregate value. The fold combinator can do just that. It requires three 
+# parameters: the aggregate to be folded, the quoted value to be returned when 
+# the aggregate is empty, and the quoted binary operation to be used to combine 
+# the elements. In some languages the combinator is called reduce (because it 
+# turns the aggregate into a single value), or insert (because it looks as though 
+# the binary operation has been inserted between any two members). The following 
+# two programs compute the sum of the members of a list and the sum of the 
+# squares of the members of a list. They evaluate to 10 and 38, respectively.
+  
+#         [2 5 3]  0  [+]  fold
+#         [2 5 3]  0  [dup * +]  fold
+
+# ...
+
+# null  - predicate which yields the truth value true for empty aggregates (zero)
+#         and false for others.
+
+# pred  - takes the predecessor  of a number (предшественник)
+# succ  - takes the successor    of a number (приемник, наследник)
+
+# There are two unary operators which are defined on characters and on integers: 
+# pred takes the predecessor, succ takes the successor. For example,
+#         'A  32  +  succ  succ
+# evaluates to 'c, the third lower case letter. 
+
+# Joy has a useful device, the linrec combinator, which allows computation of 
+# anonymous functions that might have been defined recursively using a linear 
+# recursive pattern. Whereas the ifte combinator requires three quoted parameters, 
+# the linrec combinator requires four: an if-part, a then-part, an else1-part 
+# and an else2-part. For example, the factorial function could be computed by
+  
+#         [null]  [succ]  [dup pred]  [*]  linrec
+
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+
+SS: The "next step" of Genetic Algorithms is Genetic Programming. Instead to 
+evolve the input of a program you directy evolve the program itself! This is 
+a little genetic programming framework for Tcl, based on a stack based virtual 
+machine where every program is valid. I had no time to hack more on this, so 
+it's probably better to just post it as a starting point for others interested 
+in this subject.
+
+Currently there is an "experiment" already configured that search the best 
+function to square a number. It will reach "dup *" after some iteration. 
+Please if you have specific questions about the code write them at the bottom 
+of this page.
+
+Example output:
+
+ BEST: 'peek' with fitness 41
+ BEST: 'peek' with fitness 41
+ BEST: 'peek' with fitness 41
+ BEST: 'peek' with fitness 41
+ BEST: 'peek' with fitness 41
+ BEST: '{const 9}' with fitness 37
+ BEST: '{const 9}' with fitness 37
+ BEST: '{const 9}' with fitness 37
+ BEST: '{const 9}' with fitness 37
+ BEST: 'mod dup *' with fitness 3
+ BEST: 'mod dup *' with fitness 3
+ BEST: 'mod dup *' with fitness 3
+ BEST: 'dup *' with fitness 2
+
+#-------------------------------------------------------------------------------
+#This is the code:
+
+# Genetic programming in Tcl, using a stack based approach.
+# Copyright (C) 2004 Salvatore Sanfilippo <antirez@invece.org>
+# This code is released under the BSD license.
+
+# определим простую стековую виртуальную машину (ВМ) - она очень проста, 
+# в ней нет программ дающих ошибку и каждая программа составленная из верных 
+# слов - тоже верна; 
+
+...
+...
+...
+#-------------------------------------------------------------------------------
+
+See also Brute force meets Goedel
+
+#-------------------------------------------------------------------------------
+
+Harm Olthof: This is not what is generally considered with the phrase Genetic 
+Programming (GP) In GP you have a tree: each node is a function or a terminal 
+(constant) The parameters of the function are the branches of the subtrees, 
+which is a function or a terminal. You start with the root and work your way 
+through the branches, resulting in one nested call to the main function in the 
+root. Take a population of trees and in the evolutionary cycle exchange 
+subbranches between the trees. Trees with higher fitness have higher change to 
+exchange their subbranches with other trees. see [1]. This is not exacty the 
+sameas Genetic Algorithms: see eg. Una-May O'Reilly thesis. ([2])
+
+#-------------------------------------------------------------------------------
+
+Note that the tree is just an implementation detail. To use the tree or the 
+stack is the same, and actually there is quite a lot of literature about 
+stack-based GP. See for example [3]. Both with the tree or the stack-based 
+approach programs are mixed together, and resulting programs are always valid. 
+With the stack-based approach GP is more directly related to GA because the 
+program looks a lot like random "data".
+
+#-------------------------------------------------------------------------------
+
+AM (6 april 2005) Some musings:
+
+* How to randomly select floating-point numbers - the problem is that very 
+  small and very large values may be necessary - you need to come up with a 
+  decent distribution...
+* Converting a stack-based program into a nice little mathematical formula 
+  may not be trivial
+* A nice little exercise: let the script come up with a solution for 
+  squaring a number without *
+* I wonder what happens if the cost (fitness is not very intuitive a word here)
+  does not depend on the size ...
+
+#-------------------------------------------------------------------------------
+################################################################################

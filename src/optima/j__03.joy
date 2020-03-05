@@ -1,0 +1,47 @@
+(*-------------------------------------------------------------*)
+(* Overview of the language JOY : это мои первые тесты         *)
+(*-------------------------------------------------------------*)
+
+"./J/inilib.joy" include.
+"./J/numlib.joy" include.
+"./J/mthlib.joy" include.
+
+"./J/seqlib.joy" include.
+
+(* ----------- можно определять в библиотеке ------------------*)
+LIBRA
+
+mylist == [5 6 0 1]
+END. 
+(* ----------- end HIDE and LIBRA -----------------------------*)
+newline .
+(*-------------------------------------------------------------*)
+
+
+mylist putlist
+newline .
+mylist qsort  putlist 
+newline .
+
+argc .
+argv .
+
+newline .
+
+1001.1  cube-root.
+
+newline .
+
+(* ============================================================
+
+mylist frontlist putlist 
+
+quit.
+
+
+[5 2 3 4] qsort putlist
+mylist putlist
+
+ =============================================================*)
+
+

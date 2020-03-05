@@ -1,0 +1,7 @@
+
+
+PRG_11 =  M M M M   {L ~L R M  {L L}}  ~M 
+
+PRG_22 = M M M M BEG L BEG L END R M BEG L L END END BEG M END
+
+

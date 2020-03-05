@@ -1,0 +1,26 @@
+#!/bin/sh
+#----------------------
+
+# по другому не получилось запустить 
+#
+
+#sbcl --noinform --script $1 $2 $3 $4 $5
+
+#LANG=C sbcl --noinform   --script $*
+
+#LANG=C sbcl --noinform   --script $*  --eval '(require :sb-posix)'
+
+# ------------------------------------------------------------------
+# 
+LANG=C sbcl --noinform --eval '(require :sb-posix)'   --script $*  
+#
+# !!! --------------- только так работает !!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#--disable-debugger  не отключает backtrace  ??!!
+
+# надо тут разобраться с количеством переменных ..
+# 
+
+#cd /home/Admin/MSOFT/sbcl/1.0.38/R/bin && sbcl --core ../lib/sbcl/sbcl.cor
+
+#----------------------

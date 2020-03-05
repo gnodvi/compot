@@ -1,0 +1,248 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+;; 
+;; byl-automaton
+;; 
+;;; As in The (New) Turing Omnibus, Chapter 46 [with some corrections]
+
+;-------------------------------------------------------------------------------
+
+(require 'asdf)
+
+(format t "~% ")
+
+;-------------------------------------------------------------------------------
+
+#+SBCL (declaim (sb-ext:muffle-conditions sb-ext:compiler-note))
+#+SBCL (declaim (sb-ext:muffle-conditions style-warning))
+
+(setf *read-default-float-format* 'long-float) 
+
+#+SBCL (sb-ext:enable-debugger)  ; наоборот, запустит дебагер !
+
+;-------------------------------------------------------------------------------
+
+(asdf:load-system :alexandria)
+
+(asdf:load-system :iterate)
+
+;-------------------------------------------------------------------------------
+
+;(push "./"  asdf:*central-registry*)
+
+;(asdf:load-system :lt---ltk)  ; (:file "ltk-2010")
+
+(asdf:load-system :ltk) 
+
+;(require :ltk)
+
+;-------------------------------------------------------------------------------
+
+(in-package :cl-user)
+
+(defpackage :byl
+  (:use :common-lisp :alexandria :iterate :ltk)
+  (:export :byl))
+
+(in-package :byl)
+
+;-------------------------------------------------------------------------------
+
+(defparameter *size*        40)
+(defparameter *edge-length* 10)
+(defparameter *delay*       100 "ms")
+
+; Вообще-то это похоже на правила клеточного атомата Жизнь, только не усредняются 
+; а более конкретно и самих состояний больше (6). Зачем?
+; 
+
+(define-constant +transitions+
+
+  '(((0 0 0 0 3) . 1) ((0 0 0 1 2) . 2) ((0 0 0 1 3) . 1) ((0 0 0 1 5) . 2)
+    ((0 0 0 2 5) . 5) ((0 0 0 3 1) . 5) ((0 0 0 3 2) . 3) ((0 0 0 4 2) . 2) ((0 x x x x) . 0)
+    ((1 0 0 0 0) . 0) ((1 0 0 0 1) . 0) ((1 0 0 0 3) . 3) ((1 0 0 0 4) . 0) ((1 0 0 3 3) . 0)
+    ((1 0 0 4 3) . 1) ((1 0 3 2 1) . 3) ((1 1 2 5 3) . 1) ((1 2 4 5 3) . 3) ((1 x x x x) . 4)
+    ((2 0 0 0 0) . 0) ((2 0 0 1 5) . 5) ((2 0 0 2 2) . 0) ((2 0 2 0 2) . 0)
+    ((2 0 2 1 5) . 5) ((2 0 2 3 5) . 3) ((2 0 2 5 2) . 5) ((2 x x x x) . 2)
+    ((3 0 0 0 1) . 0) ((3 0 0 0 3) . 0) ((3 0 0 1 1) . 0) ((3 0 0 1 2) . 1)
+    ((3 0 1 2 1) . 1) ((3 0 1 2 3) . 1) ((3 1 1 2 2) . 1) ((3 1 1 2 3) . 1)
+    ((3 1 2 1 5) . 1) ((3 1 2 2 3) . 1) ((3 1 2 3 3) . 1) ((3 1 2 3 5) . 5)
+    ((3 1 4 3 2) . 1) ((3 1 4 5 2) . 5) ((3 1 5 2 3) . 1) ((3 x x x x) . 3)
+    ((4 0 0 0 3) . 5) ((4 0 0 4 3) . 4) ((4 0 2 1 2) . 4) ((4 0 2 3 2) . 4)
+    ((4 0 2 4 2) . 4) ((4 0 2 5 2) . 0) ((4 0 3 2 5) . 5) ((4 x x x x) . 3)
+    ((5 0 0 2 2) . 5) ((5 0 0 3 2) . 5) ((5 0 2 1 2) . 4)
+    ((5 0 2 2 2) . 0) ((5 0 3 2 2) . 0) ((5 x x x x) . 2))
+
+  :test 'equal
+
+  :documentation "Rules are in the order CNWSE->C' (not CNESW, as in the book/paper!),
+where the NWSE part can be rotated. The 31523->1 rule was missing even from the original article.")
+
+(define-constant +start+
+
+  '((0 2 2 0)
+    (2 3 1 0)
+    (2 3 4 2)
+    (0 2 5 0))
+  :test 'equal)
+
+(defvar *cells*)
+(defvar *rectangles*)
+(defvar *canvas*)
+
+;-------------------------------------------------------------------------------
+
+; зачем let вынесено наружу? для скорости?? ((
+; 
+(let (
+  (colors '("white" "yellow" "orange" "red" "brown" "black"))
+  )
+
+(defun color (n)
+    (elt colors n)
+)
+
+)
+
+;-------------------------------------------------------------------------------
+(defun update-colors ()
+
+  (dotimes (i *size*)
+  (dotimes (j *size*)
+
+    (itemconfigure *canvas* (aref *rectangles* i j) :fill 
+                   (color (aref *cells* i j)))
+  ))
+
+)
+;-------------------------------------------------------------------------------
+(defun next-state (c n e s w)
+
+  ;; assoc, assoc-if, and assoc-if-not return the first cons in alist whose car 
+  ;; satisfies the test, or nil if no such cons is found. 
+  
+  ;; с учетом вращения по кругу
+  ;; 
+  (or (cdr (assoc (list c   w s e n)  +transitions+ :test 'equal))
+      (cdr (assoc (list c   s e n w)  +transitions+ :test 'equal))
+      (cdr (assoc (list c   e n w s)  +transitions+ :test 'equal))
+      (cdr (assoc (list c   n w s e)  +transitions+ :test 'equal))
+
+      (cdr (assoc (cons c '(x x x x)) +transitions+ :test 'equal)))
+
+)
+;-------------------------------------------------------------------------------
+(defun one-cycle ()
+
+(let (
+  (tmp (make-array (array-dimensions *cells*))) ; для новыъх значений
+  )
+
+  (iter (for i from 1 below (1- *size*))
+  (iter (for j from 1 below (1- *size*))
+
+        (for n = (aref *cells* i     (1- j)))  ; верх
+        (for s = (aref *cells* i     (1+ j)))  ; низ
+        (for w = (aref *cells* (1- i) j))      ; лево
+        (for e = (aref *cells* (1+ i) j))      ; право
+
+        (for c = (aref *cells* i      j))      ; центр
+
+        (setf (aref tmp i j)
+              (next-state   c n e s w)) ; основной расчет нового значения
+        ))
+  
+
+  (setf *cells* tmp) ; переприсваиваем сразу все значения
+  
+  (update-colors)    ; обновляем на экране
+  
+  (after *delay* #'one-cycle) ; после паузы снова пересчитываем шаг
+
+))
+;-------------------------------------------------------------------------------
+(defun byl ()
+
+(with-ltk ()
+
+(let* (
+  (size (* *size* *edge-length*)) ; размер в пикселах всего холста?
+  )
+
+  (setf *canvas* (make-instance 'canvas 
+                                :width size :height size :background "white"))
+
+  (setf *cells*      (make-array (list *size* *size*) :initial-element 0))
+  (setf *rectangles* (make-array (list *size* *size*)))
+  
+  ; создаем на холсте маленькие квадратики (почему не просто линии?)
+  ; 
+
+  (dotimes (i *size*)
+  (dotimes (j *size*)
+    
+    (let ((x (* i *edge-length*))
+          (y (* j *edge-length*)))
+
+      (setf (aref *rectangles* i j)
+            (create-rectangle *canvas* x y 
+                              (+ x *edge-length* -1) 
+                              (+ y *edge-length* -1)
+                              ))
+
+      (itemconfigure *canvas* (aref *rectangles* i j) :outline "grey")
+      )
+    ))
+
+  ; инициируем начальную конфигурацию в центре холста (4 клетки)
+  ; 
+  ;;  '((0 2 2 0)
+  ;;    (2 3 1 0)
+  ;;    (2 3 4 2)
+  ;;    (0 2 5 0))
+
+  (let (
+    ;; floor - частное и остаток от деления
+    (start (- (floor *size* 2) 2))
+    )
+    
+    (dotimes (i 4)
+    (dotimes (j 4)
+      ;
+      ;
+      (setf (aref *cells* (+ start i) (+ start j)) 
+            (elt (elt +start+ j) i))
+      ))
+    )
+
+  ; размещаем (публикуем, рисуем) холст и его содержимое
+  ; 
+  (update-colors)
+  (wm-title *tk* "Byl Automaton")
+  (pack *canvas*)
+  
+  ; кнопка выхода из программы - ESC
+  ; 
+  (bind *tk* "<Escape>"
+        (lambda (event)
+          (declare (ignore event))
+          (setf *exit-mainloop* t)))
+  
+
+  ;(after *delay* #'one-cycle) ; зачем здесь задержка, она же есть пусле цикла?
+  (one-cycle)
+  
+  )) ; let ; with-ltk
+
+)
+;-------------------------------------------------------------------------------
+
+(byl)
+
+;-------------------------------------------------------------------------------
+;; 
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------

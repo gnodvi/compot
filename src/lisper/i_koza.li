@@ -1,0 +1,1116 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+; 7
+; Four Introductory Examples of Genetic Programming
+
+; This chapter contains examples of the genetic programming paradigm applied to 
+; four simple introductory problems. The goal here is to genetically breed a 
+; computer program to solve one illustrative example problem from each of the 
+; following four fields:
+
+; 7.1 Cart Centering ....................................... 122 ( 88)
+; 7.2 Artificial Ant ....................................... 147 (106)
+; 7.3 Simple Symbolic Regression ........................... 162 (118)
+; 7.4 Boolean Multiplexer .................................. 169 (123)
+; 7.5 Recapitulation ....................................... 189 (138)
+
+
+
+;;;=============================================================================
+; 20
+; Evolution of Building Blocks
+
+; 20.1 The Idea of Function Definition ........................... 528 (385)
+; 20.2 Symbolic Regression of Even-Parity Functions .............. 529 (386)
+; 20.3 The Idea of Automatic Function Definition ................. 534 (390)
+; 20.4 Even-4-Parity ............................................. 535 (390)
+; 20.5 Even-5-Parity ............................................. 544 (396)
+; 20.6 Odd-5-Parity .............................................. 548 (399)
+; 20.7 Even-6-Parity ............................................. 549 (400)
+
+
+; 21
+; Evolution of Hierarchies of Building Blocks
+
+; 21.1 The Idea of Hierarchical Automatic Function Definition .... 553 (402)
+; 21.2 Even-4-Parity Function .................................... 554 (403)
+; 21.3 Even-5-Parity Function .................................... 559 (407)
+; 21.4 Even-6-Parity Function .................................... 561 (408)
+; 21.5 Variations ................................................ 562 (409)
+; 21.6 Recapitulation ............................................ 562 (409)
+
+
+;
+;
+;
+;
+;
+;;;=============================================================================
+; 25
+; Operational Issues
+
+; There are a large number of operational questions surrounding the use of 
+; genetic programming for which no definitive answer is known at this time. This 
+; chapter discusses some of these operational issues and presents evidence from 
+; limited experiments in limited problem domains.
+ 
+; None of these questions is definitively answered here; however, the results of 
+; these limited experiments may suggest further work (experimental and 
+; theoretical) that might lead to general conclusions.
+
+;;;=============================================================================
+
+; 25.1 Effect of Different Generative Methods ...................... 597 (433)
+; 25.2 Effect of the Mutation Operation ............................ 599 (435)
+; 25.3 Effect of the Permutation Operation ......................... 601 (436)
+; 25.4 Effect of the Encapsulation Operation ....................... 601 (436)
+; 25.5 Effect of the Editing Operation ............................. 602 (437)
+; 25.6 Effect of Greedy Over-Selection ............................. 602 (437)
+; 25.7 Effect of Tournament Selection versus
+;      Fitness-Proportionate Selection ............................. 604 (439)
+; 25.8 Test of 'Mutating and Saving the Best' ...................... 607 (441) 
+; 25.9 Importance of Genetic Diversity ............................. 608 (442)
+; 25.10 Effect of Arguments in Automatic Function Definitions ...... 608 (442)
+; 25.11 Effect of Limiting Structure-Preserving Crossover .......... 610 (444)
+; 25.12 Parsimony .................................................. 612 (445)
+; 25.13 Extended Run of the 6-Multiplexer .......................... 614 (447)
+
+
+;;;=============================================================================
+
+; 25.1 Effect of Different Generative Methods
+
+; In this section, we compare the effects of using the three different methods 
+; of creating the initial random population described in section 6.2,
+; namely full, grow, and ramped half-and-half.
+
+; -------------------------------------------------------------
+; Figure 25.1 graphs the probability of success P(M, i) that at least one 
+; S-expression comes within 0.01 of the target amount for all 20 fitness
+; cases for the simple symbolic regression problem (section 7.3). 
+; The three graphs apply to three different methods of creating the initial
+; random population. 
+
+; The population size is 500, and the graph runs from 0 to 50 
+; generations. These graphs are based on 132 runs with full, 213 runs with grow, 
+; and 295 runs with ramped half-and-half. 
+; The probability of success P(M, i) is 3% with full, 17% with grow, 
+; and 23% with ramped half-and-half for generation 50.
+
+; -------------------------------------------------------------
+; пока не получилось повторить хотя бы результаты (section 7.3)
+; -------------------------------------------------------------
+
+
+; -------------------------------------------------------------
+; Figure 25.2 graphs the probability of success P(M, i), for three different 
+; methods of creating the initial random population, that at least one 
+; Sexpression exactly matches the value of the Boolean 6-multiplexer function 
+; for all 64 fitness cases (subsection 7.4.3). The population size is
+; 500 and the graph runs from 0 to 50 generations. The function set is
+
+; F = {AND, OR, IF, NOT),
+
+; taking two, two, three, and one argument, respectively. These graphs are 
+; based on 60 runs with full, 200 runs with grow, and 140 runs with
+; ramped half-and-half. The probability of success P(M, i) is 42% with full, 
+; 53% with grow, and 66% with ramped half-and-half for generation 50.
+
+;;;=============================================================================
+
+
+
+
+;;;=============================================================================
+
+; Appendix B:
+; Problem-Specific Part of Simple LISP Code
+
+;;;=============================================================================
+
+; The creation of the necessary problem-specific code will be illustrated with 
+; the following three simple problems:
+
+; 1) The first problem is a symbolic regression problem involving discovering the 
+; polynomial function x2/2 from a sample of data (see section 7.3 for a similar 
+; problem).
+
+; 1) The second problem involves discovering the Boolean majority-on function 
+; with three arguments (see subsection 7.4.5 and chapter 9 for similar problems).
+
+; 3) The third problem is a two-person pursuer-evader game played on a discrete 
+; grid (which is similar to the differential pursuer-evader game described in 
+; section 15.2 and somewhat similar to the artificial ant problem in section 7.2).
+
+
+; B.1 Symbolic Regression ........................................ 706 (512)
+; B.2 Boolean Majority-On Function ............................... 719 (522)
+; B.3 Discrete Non-Hamstrung Squad Car Game ...................... 725 (527)
+
+
+
+
+
+;;;=============================================================================
+;; 10.11 Numeric Roots of Equations
+
+; An important special case of the process of solving functional equations occurs 
+; when the terminal set is degenerate and consists only of numeric constants. 
+; This special case permits solution of a mathematical equation for its numeric 
+; roots.
+; We are not interested in solving equations for their roots per se. Numerous 
+; approximation methods (e.g., Newton's method) are available for finding the 
+; roots of an equation by either bifurcating intervals to locate the zero 
+; crossing or using the derivative (if it is known). 
+; This special case is important because it illustrates how genetic programming 
+; dynamically and adaptively changes the representation scheme to achieve 
+; ever-better solutions to the given problem. This special case also illustrates 
+; how genetic programming differs from the conventional genetic algorithm 
+; operating on fixed-length character strings. The conventional genetic 
+; algorithm cannot dynamically change the representation scheme during the 
+; course of solving the problem.
+; For this problem, the terminal set will consist only of numeric constants, so 
+; the S-expressions will consist only of numeric constants. That is,
+
+; T = {A},
+
+; where A is the ephemeral random floating-point constant ranging from 
+; -1.000 to +1.000. There are no variables (such as X) in the terminal set.
+
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-ROOTS ()
+
+  (setf *number-of-fitness-cases*                      10)
+
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.2)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+
+  (setf *method-of-selection*      :fitness-proportionate)
+  (setf *method-of-generation*      :ramped-half-and-half)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+(defun evaluate-standardized-fitness-for-ROOTS	             
+  (program fitness-cases)	                                     
+
+  (declare (ignore fitness-cases))	                     
+
+(let (
+   x     ; найденная программа-значение
+   diff  ; невязка уравнения
+   ) 
+  
+  (setf x (funcall *eval_prog* program))	     
+
+  (setf diff (abs (- (* x x x) 2)))	             
+
+  (values 
+      diff 
+      x    ; вернем вместо хитов само искомое значение корня (для контроля)
+      )	                               
+))	                                                             
+;;;=============================================================================
+(defun ROOTS ()
+
+  (set_sms_list ;(list 
+        (list  '(+ - * %)  '(2 2 2 2)  '(:floating-point-random-constant))
+        ;)
+        )
+
+
+  (values 
+
+          NIL ;'define_fitness_cases_NULL
+          'evaluate-standardized-fitness-for-ROOTS
+
+          'define-parameters-for-ROOTS
+          NIL ;'define_termination_criterion_MAXI
+  )
+)
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+;(defun 10_test (num)
+(defun s_10 (num)
+
+  (case num
+
+  (10  '(run-genetic-programming-system  'ROOTS 1.0  10  100) ) 
+
+   
+))
+;;;=============================================================================
+
+
+
+
+
+
+
+
+
+;;;=============================================================================
+;; 17
+;; Evolution of Classification
+
+;; 17.1 Decision-Tree Induction ........................... 439 (318)
+;; 17.2 Grammar Induction ................................. 442 (320)
+;; 17.3 Intertwined Spirals ............................... 445 (322)
+
+;;;=============================================================================
+
+;; 17.1 Decision-Tree Induction                                         Page 439
+
+;;;=============================================================================
+;; The terminal set is Quinlan's set of class names. Since there are two classes, 
+;; the terminal set is
+
+;; T = {0, 1}.
+
+(defvar *temperature* :unbound)
+(defvar *humidity* :unbound)
+(defvar *outlook* :unbound)
+(defvar *windy* :unbound)
+
+;-------------------------------------------------------------------------------
+;(defun define-terminal-set_SATURDAY ()
+
+;  ;;(values '(:integer-random-constant)) ;; получаем диапазон [-10 , +10]
+
+;  ;; вообще то надо всего лишь булевые значения 0 и 1 !!!
+;  (values '(0 1)) 
+
+;)
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun OUT (v1 v2 v3)
+
+  (case *outlook*    
+    (:sunny    v1)
+    (:overcast v2)
+    (:raining  v3)
+    )
+)
+;-------------------------------------------------------------------------------
+(defun TEMP (v1 v2 v3)
+
+  (case *temperature*    
+    (:hot  v1)
+    (:mild v2)
+    (:cool v3)
+    )
+)
+;-------------------------------------------------------------------------------
+(defun HUM (v1 v2)
+
+  (case *humidity*    
+    (:high   v1)
+    (:normal v2)
+    )
+)
+;-------------------------------------------------------------------------------
+(defun WIND (v1 v2)
+
+  (case *windy*    
+    (:true  v1)
+    (:false v2)
+    )
+)
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+;(defun define-function-set_SATURDAY ()
+
+;  (values '(TEMP HUM OUT WIND)
+;          '(   3   2   3    2))
+;)
+;-------------------------------------------------------------------------------
+; When an object is presented to the LISP S-expression (i.e., the decision tree), 
+; the function at the root of the tree tests the designated attribute
+; of the object and then executes the particular argument designated by the 
+; outcome of the test. If the designated argument is a terminal, the
+; function returns the class name. If the designated argument is another function, 
+; that particular function tests the designated attribute of the
+; object and then executes the particular argument designated by the outcome 
+; of the test. In any event, the S-expression as a whole eventually
+; returns a class name. The S-expression is a decision tree that classifies 
+; an object into one of the classes.
+
+(defstruct SATURDAY_FC
+  outlook      ; видимость   =  (sunny  overcast  raining)
+  temperature  ; температура =  (hot  mild  cool)
+  humidity     ; влажность   =  (high  normal)
+  windy        ; ветренность =  (true  false)
+
+  target       ; SATURDAY morning class = (positive_class_1  negative_class_0)
+)
+
+;-------------------------------------------------------------------------------
+(defun set_fc (fitness-cases index
+               outlook temperature humidity windy 
+               target)
+
+(let ((_fc (make-SATURDAY_FC))
+      )
+
+  (setf (SATURDAY_FC-temperature  _fc) temperature)
+  (setf (SATURDAY_FC-humidity     _fc) humidity)
+  (setf (SATURDAY_FC-outlook      _fc) outlook)
+  (setf (SATURDAY_FC-windy        _fc) windy)
+
+  (setf (SATURDAY_FC-target       _fc) target)
+
+  ;; запоминаем полученную численную структуру в массив
+  (setf (aref fitness-cases (- index 1)) _fc)
+
+))
+;-------------------------------------------------------------------------------
+(defun define-fitness-cases_SATURDAY ()
+
+(let (
+      ;fc 
+      fitness-cases 
+      )
+
+  (setf fitness-cases (make-array *number-of-fitness-cases*))
+
+  ;; создаем структуру, описывающую проблему (переменные и цель)
+  ;;(setf fc (make-SATURDAY_FC))
+    
+  ;; заполняем ее конкретными вычислениями для каждого набора входов
+  ;; запоминаем полученную численную структуру в массив
+
+  ;; ----------------------------------------------------------------
+  ;;                             OUT     TEMP    HUM     WIND
+  ;; ----------------------------------------------------------------
+  (set_fc fitness-cases   1  :sunny    :hot   :high   :false   0)
+  (set_fc fitness-cases   2  :sunny    :hot   :high   :true    0)
+  (set_fc fitness-cases   3  :overcast :hot   :high   :false   1)
+  (set_fc fitness-cases   4  :raining  :mild  :high   :false   1)
+  (set_fc fitness-cases   5  :raining  :cool  :normal :false   1)
+  
+  (set_fc fitness-cases   6  :raining  :cool  :normal :true    0)
+  (set_fc fitness-cases   7  :overcast :cool  :normal :true    1)
+  (set_fc fitness-cases   8  :sunny    :mild  :high   :false   0)
+  (set_fc fitness-cases   9  :sunny    :cool  :normal :false   1)
+  (set_fc fitness-cases  10  :raining  :mild  :normal :false   1)
+  (set_fc fitness-cases  11  :sunny    :mild  :normal :true    1)
+  (set_fc fitness-cases  12  :overcast :mild  :high   :true    1)
+  (set_fc fitness-cases  13  :overcast :hot   :normal :false   1)
+  (set_fc fitness-cases  14  :raining  :mild  :high   :true    0)
+  
+    
+  (values fitness-cases)
+))
+;-------------------------------------------------------------------------------
+(defun SATURDAY_wrapper (result-from-program)
+
+  (values result-from-program)
+
+)
+;-------------------------------------------------------------------------------
+; The fitness cases are Quinlan's 14 given training cases. The raw fitness of 
+; an S-expression is the number of training cases for which the Sexpression
+; returns the correct class, and it ranges from 0 to 14. Since a raw fitness 
+; of 14 corresponds to a perfect score, standardized fitness is
+; the total number of training cases (i.e., 14) minus raw fitness.
+;-------------------------------------------------------------------------------
+(defun evaluate-standardized-fitness_SATURDAY
+  (program fitness-cases)
+
+(let 
+  (
+   ;raw-fitness 
+   hits standardized-fitness target-value
+   match-found value-from-program fc)
+
+  (setf hits 0)
+
+  (dotimes (index *number-of-fitness-cases*)
+    (setf fc (aref fitness-cases index))
+
+    ;; установим глобальные параметры для функций-оценок:
+    (setf  *outlook*      (SATURDAY_FC-outlook     fc))
+    (setf  *temperature*  (SATURDAY_FC-temperature fc))
+    (setf  *humidity*     (SATURDAY_FC-humidity    fc))
+    (setf  *windy*        (SATURDAY_FC-windy       fc))
+
+    (setf  target-value   (SATURDAY_FC-target      fc))
+
+    (setf  value-from-program
+           (SATURDAY_wrapper (funcall *eval_prog* program)))
+
+    (setf match-found (eq target-value value-from-program))
+
+;    (format t "~2A  ~10A ~5A ~7A ~5A   ~A  |  ~A  ~A  ~%" (+ index 1) 
+;            *outlook* *temperature* *humidity* *windy* 
+;            target-value value-from-program
+;            (if match-found '+ '-))
+
+    (when match-found (incf hits))
+    )
+;  (format t "~%")
+
+  (setf standardized-fitness (- *number-of-fitness-cases* hits))
+
+  (values standardized-fitness hits)
+))
+;-------------------------------------------------------------------------------
+;(defun define-termination-criterion_SATURDAY
+;  (current-generation
+;   maximum-generations
+;   best-standardized-fitness
+;   best-hits)
+
+;  (declare (ignore best-standardized-fitness))
+
+;  (values (or (>= current-generation  maximum-generations)
+;              (>= best-hits          *number-of-fitness-cases*)
+;              )
+;  )
+;)
+;-------------------------------------------------------------------------------
+(defun define-parameters_SATURDAY ()
+
+  (setf *number-of-fitness-cases*                      14)
+
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.7)
+
+  (setf *method-of-selection*      :fitness-proportionate)
+  (setf *method-of-generation*      :ramped-half-and-half)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+(defun SATURDAY ()
+
+  (set_sms_list ;(list 
+        (list  '(TEMP HUM OUT WIND)  '(   3   2   3    2)  '(0 1))
+        ;)
+        )
+
+  ;(setf *is_ADF_as_OLD* t)
+
+  (values 
+;          'define-function-set_SATURDAY
+;          'define-terminal-set_SATURDAY
+
+          'define-fitness-cases_SATURDAY
+          'evaluate-standardized-fitness_SATURDAY
+          'define-parameters_SATURDAY
+          ;'define-termination-criterion_SATURDAY
+          'define_termination_criterion_HITS
+  )
+)
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+(defun s_17_1 (num)
+
+  (case num
+
+  (40  '(run-genetic-programming-system  'Saturday  1.0  20  109) ) 
+
+  (41  '(run-genetic-programming-system  'Saturday  1.0  20  101 
+       ;'(OUT (HUM 0 (WIND (TEMP 0 1 1) (TEMP 1 1 1))) 1 (WIND 0 1)) ; было найдено
+
+       ; In one run, the following S-expression emerged on generation 8:
+       ;'(OUT (WIND 1 0) (WIND 1 1) (HUM 0 1))
+
+       (list 
+       '(OUT (HUM 0 1)  1 (WIND 0 1)) ; Figure 17.1
+       )
+       )) 
+   
+))
+;;;=============================================================================
+;;;=============================================================================
+;
+;
+;
+;
+;
+;
+;
+;;;;=============================================================================
+; 19
+; Evolution of Constrained Syntactic Structures
+
+; 19.1 Symbolic Multiple Regression ............................ 480 (348)
+; 19.2 Design of a Two-Bit Adder Circuit ....................... 484 (351)
+; 19.3 Solving Pairs of Linear Equations ....................... 487 (354)
+; 19.4 Finding a Global Optimum Point .......................... 490 (356)
+; 19.5 Solving Quadratic Equations ............................. 493 (358)
+; 19.6 Finding a Fourier Series ................................ 496 (361)
+; 19.7 Inverse Kinematics ...................................... 502 (366)
+; 19.8 Local Tracking of a Dynamical System .................... 507 (370)
+; 19.9 Designing a Neural Network .............................. 513 (375)
+; 19.10 Recapitulation ......................................... 525 (384)
+
+;;;=============================================================================
+
+; В книжке используется парадигма "вынужденной синтаксической структуры",
+; т.е. используются несколько (два) типов точек с разными правилами представлений
+; и изменений..
+; 
+; Пока, предварительно, можно попробовать воспользоваться уже готовой структурой
+; ADF-функций, используя ее для представления нужной списочной структуры..
+; чтобы не  городить огород типов точек и особых случаев..
+; Но такой подход: - только для простых "линейных" проблем;
+;                  - исключает использование ADF-парадигмы;
+
+;;;=============================================================================
+; This chapter presents problems where the individuals in the population have 
+; a constrained syntactic structure that is defined by means of special 
+; problem-specific syntactic rules of construction.
+
+; Three new considerations arise when one is implementing genetic programming 
+; with S-expressions that have such constrained syntactic structure.
+
+; 1) The initial population of random individuals must be created so that every 
+; individual computer program in the population has the required syntactic 
+; structure.
+
+; 2) When crossover (or any other genetic operation that modifies an individual) 
+; is performed, the required syntactic structure must be preserved. The 
+; required syntactic structure can be preserved by means of structure-preserving 
+; crossover. Structure-preserving crossover is a restricted form of crossover 
+; that always produces offspring conforming to the syntactic structure of the 
+; problem. Similar structure-preserving genetic operations (e.g., mutation) 
+; can be defined as needed.
+
+; 3) The fitness measure must take the syntactic structure into account.
+
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+;(defun 19_test (num)
+
+;  (case num
+
+;  (10  '(run-genetic-programming-system  'OPTIMUM 1.0  10  1000) ) 
+
+;  ;; -----------------------
+;  (20  '(run-genetic-programming-system  'OPTIMUM 1.0  50  2000) ) 
+;  ;; -----------------------
+;  ;; In generation 45 of one run, the following S-expression containing 92 points 
+;  ;; scored 5 hits out of 5 and had a fitness of 0.00186:
+;  ;; This S-expression is equivalent to (LIST5 1.0007 1.414 1.732 2.0005 2.2364).
+
+
+;))
+;;;=============================================================================
+
+
+;;;=============================================================================
+;;; B.3  Discrete Non-Hamstrung Squad Car Game
+
+; We now illustrate a third problem. The discrete non-hamstrung squad car is a 
+; game of perfect information involving two players moving on a checkerboard 
+; grid of indefinite size. The pursuing player is a squad car with a speed 
+; advantage over the pedestrian evader. The object is to discover a strategy for 
+; the pursuer that results in capture of the evader in optimal (i.e., minimal) 
+; time.
+; This problem is a simplification of the intriguing hamstrung squad car game 
+; first proposed by Isaacs (1965) in that the squad car is not hamstrung (i.e., 
+; it can turn in either direction); however, this problem can be readily be 
+; converted into the discrete hamstrung squad car problem. The vexacious
+; research problem posed by Isaacs in 1965 for the conditions for the existence 
+; of a universal solution for this problem for all initial conditions was only 
+; recently solved (Baston and Bostock 1987). They are based on the speed ratio 
+; of the pursuer and the evader.
+;;;=============================================================================
+
+; As in the differential pursuer-evader game described in section 15.2, the 
+; coordinate system is transformed after every move so that the pursuer
+; is always at the origin. The reduced state variables of the system are 
+; therefore merely the horizontal and vertical coordinates of the evader 
+; (i.e., X and Y).
+
+; As will be seen, solution of this problem involves the use of macros to define 
+; conditional operators.
+
+; The first items in the problem-specific part of the LISP code that we must 
+; write are declarations proclaiming the state variables of the problem
+; as global variables.
+
+(defvar x)
+(defvar y)
+
+;-------------------------------------------------------------------------------
+; Second, the terminal set T for this problem consists of
+; T = {(goN), (goE), (goS), (goW)}.
+
+; These four terminals are each functions of zero arguments which operate via 
+; their side effects on the system. In particular, these functions cause the 
+; pursuer in the game to go north, east, south, or west, respectively. 
+; In the 
+; more complicated hamstrung version of this game where the squad car can only 
+; turn right, the terminal set would consist only of (goE).
+
+; This function is to return the list of all terminals used in the problem.
+;-------------------------------------------------------------------------------
+;(defun define-terminal-set-for-NON-HAMSTRUNG-SQUAD-CAR ()
+
+;  (values '((goN) (goE) (goS) (goW)))
+;)
+;-------------------------------------------------------------------------------
+; Third, the function set F for this problem consists of the two functions
+; F = (ifX, ifY}
+; taking three arguments each. These two functions test X (or Y) for being less 
+; than zero, equal to zero, or greater than zero.
+;-------------------------------------------------------------------------------
+;(defun define-function-set-for-NON-HAMSTRUNG-SQUAD-CAR ()
+
+;  (values '(ifX ifY)
+;          '(  3   3))
+;)
+;-------------------------------------------------------------------------------
+; The fourth set of items in the problem-specific part of the LISP code that we 
+; must write are the problem-specific functions. However, before we do this for 
+; this problem, we must define a global variable that is needed by the 
+; problem-specific functions for this problem.
+
+; The *speed-ratio* is the ratio of the speed of the pursuer to the speed of the 
+; evader. Its importance is discussed in Baston and Bostock (1987).
+
+(defvar *speed-ratio* 2)
+
+
+;-------------------------------------------------------------------------------
+; We now define the problem-specific functions required in this problem. The 
+; first four functions move the pursuer around the grid by the step
+; size *speedratio*.
+;-------------------------------------------------------------------------------
+(defun goN ()
+
+  (setf y (- y *speed-ratio*))
+)
+;---------------------------------------------
+(defun goS ()
+
+  (setf y (+ y *speed-ratio*))
+)
+;---------------------------------------------
+(defun goE ()
+
+  (setf x (- x *speed-ratio*))
+)
+;---------------------------------------------
+(defun goW ()
+
+  (setf x (+ x *speed-ratio*))
+)
+;-------------------------------------------------------------------------------
+
+; In addition, we must define the conditional branching operators ifX and ifY 
+; for this problem.
+; Certain operators (notably conditional or iterative operators) cannot be 
+; implemented directly as ordinary LISP functions. The reason is that Common LISP 
+; evaluates all arguments to a function prior to entry into the function and then 
+; passes the value to which each argument evaluates into the function. If the 
+; argument has a side effect, the side effect would occur unconditionally at the 
+; time of the evaluation of the argument (i.e., outside the function). This 
+; early evaluation is not what is desired if the operator is intended to perform 
+; a certain side effect in a conditional manner or in a certain sequential order.
+
+; For example, in evaluating (ifX (goW) (goN) (goE))
+; the desired effect is that we go in one particular direction depending on the 
+; value of X. The testing of X occurs inside the function ifX. If this
+; operator were implemented as an ordinary LISP function, LISP would evaluate 
+; the three arguments of ifX prior to entry to the ifX function.
+; Thus, we would go west and go north and go east prior to even getting inside 
+; the ifX function where we were planning to test X.
+
+; Thus, the conditional branching operators ifX and ifY must be implemented 
+; using a macro as described in subsection 6.1.1. as follows:
+
+;-------------------------------------------------------------------------------
+; An additional aspect to this issue is that some implementations of Common LISP 
+; (e.g., the Texas Instruments Explorer machines) use a technique called 
+; ''macro displacement'' to side-effect programs being interpreted that contain 
+; references of macros. This technique has the beneficial effect of speeding up 
+; execution by incurring the cost of the macro-expansion only once. However, 
+; because this technique sideeffects the program itself, then crossover that 
+; occurs on individuals after macro-expansion may see forms that are introduced 
+; by the macroexpander, not forms that are really part of the problem. On Texas 
+; Instruments machines, this behavior can be disabled by setting
+
+#+TI (setf sys:inhibit-displacing-flag t) 
+
+;-------------------------------------------------------------------------------
+(defmacro ifX (lt-0-arg eq-0-arg gt-0-arg)
+
+  `(cond ((>= x    *speed-ratio*)  (eval ',gt-0-arg))
+         ((<= x (- *speed-ratio*)) (eval ',lt-0-arg))
+         (t                        (eval ',eq-0-arg))
+   )
+)
+;---------------------------------------------
+(defmacro ifY (lt-0-arg eq-0-arg gt-0-arg)
+
+  `(cond ((>= y    *speed-ratio*)  (eval ',gt-0-arg))
+         ((<= y (- *speed-ratio*)) (eval ',lt-0-arg))
+         (t                        (eval ',eq-0-arg))
+   )
+)
+;-------------------------------------------------------------------------------
+; In addition, it is convenient to have an additional six corresponding functions 
+; for the evader. 
+; These functions do not appear in the terminal set or function 
+; set and they do not appear in the individual S-expressions in the population. 
+; They merely allow the convenient writing of the opposing strategy for the 
+; evader which is used in measuring the fitness of the individual pursuers.
+;-------------------------------------------------------------------------------
+(defmacro ifX-evader (lt-0-arg eq-0-arg gt-0-arg)
+
+  `(cond ((>= x  1) (eval ',gt-0-arg))
+         ((<= x -1) (eval ',lt-0-arg))
+         (t         (eval ',eq-0-arg))
+   )
+)
+;---------------------------------------------
+(defmacro ifY-evader (lt-0-arg eq-0-arg gt-0-arg)
+
+  `(cond ((>= y  1) (eval ',gt-0-arg))
+         ((<= y -1) (eval ',lt-0-arg))
+         (t         (eval ',eq-0-arg))
+   )
+)
+;---------------------------------------------
+(defun goN-evader ()
+
+  (setf y (+ y 1))
+)
+;---------------------------------------------
+(defun goS-evader ()
+
+  (setf y (- y 1))
+)
+;---------------------------------------------
+(defun goE-evader ()
+
+  (setf x (+ x 1))
+)
+;---------------------------------------------
+(defun goW-evader ()
+
+  (setf x (- x 1))
+)
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+; |
+;-------------------------------------------------------------------------------
+(defun ifX-implementation (lt-0-arg eq-0-arg gt-0-arg)
+
+  (cond ((>= x    *speed-ratio*)  (fast-eval gt-0-arg))
+        ((<= x (- *speed-ratio*)) (fast-eval lt-0-arg))
+        (t                        (fast-eval eq-0-arg))
+  )
+)
+;-------------------------------------------------------------------------------
+(defun ifY-implementation (lt-0-arg eq-0-arg gt-0-arg)
+
+  (cond ((>= y    *speed-ratio*)  (fast-eval gt-0-arg))
+        ((<= y (- *speed-ratio*)) (fast-eval lt-0-arg))
+        (t                        (fast-eval eq-0-arg))
+  )
+)
+;-------------------------------------------------------------------------------
+(defun ifX-evader-implementation (lt-0-arg eq-0-arg gt-0-arg)
+
+  (cond ((>= x  1) (fast-eval gt-0-arg))
+        ((<= x -1) (fast-eval lt-0-arg))
+        (t         (fast-eval eq-0-arg))
+  )
+)
+;-------------------------------------------------------------------------------
+(defun ifY-evader-implementation (lt-0-arg eq-0-arg gt-0-arg)
+
+  (cond ((>= y  1) (fast-eval gt-0-arg))
+        ((<= y -1) (fast-eval lt-0-arg))
+        (t         (fast-eval eq-0-arg))
+  )
+)
+;-------------------------------------------------------------------------------
+; почему-то не работает переопределение на псевдо-макросы
+
+;(install-pseudo-macro 'ifX #'ifX-implementation)
+;(install-pseudo-macro 'ifY #'ifY-implementation)
+;(install-pseudo-macro 'ifX-evader #'ifX-evader-implementation)
+;(install-pseudo-macro 'ifY-evader #'ifY-evader-implementation)
+
+;===============================================================================
+; |
+;-------------------------------------------------------------------------------
+
+(defstruct NON-HAMSTRUNG-SQUAD-CAR-fitness-case
+  x
+  y
+)
+
+;-------------------------------------------------------------------------------
+(defun define-fitness-cases-for-NON-HAMSTRUNG-SQUAD-CAR ()
+
+(let (fitness-case fitness-cases index
+      (OUT (if *is_print* t nil))             
+      )
+;  (let (fitness-case fitness-cases index)
+
+    (setf fitness-cases (make-array *number-of-fitness-cases*))
+
+    (format OUT "~%")
+    (format OUT "Fitness cases: ~%")
+    (format OUT "~%")
+
+    (setf index 0)
+
+    (dolist (x '(-5 5))
+    (dolist (y '(-5 5))
+      (setf fitness-case (make-NON-HAMSTRUNG-SQUAD-CAR-fitness-case))
+
+      (setf (NON-HAMSTRUNG-SQUAD-CAR-fitness-case-x
+             fitness-case)
+            x)
+      (setf (NON-HAMSTRUNG-SQUAD-CAR-fitness-case-y
+             fitness-case)
+            y)
+      (setf (aref fitness-cases index) fitness-case)
+
+      (incf index)
+      (format OUT " ~D)   ~5T~S  ~14T~S ~%" index x y)
+    )
+    )
+    (format OUT "~%")
+
+    (values fitness-cases)
+  )
+)
+;-------------------------------------------------------------------------------
+(defun NON-HAMSTRUNG-SQUAD-CAR-wrapper (argument)
+
+  (values argument)
+
+)
+;-------------------------------------------------------------------------------
+; Raw fitness is the 
+; sum, over the fitness cases, of the time taken to capture the evader (or, if no 
+; capture occurs, the maximum allowed amount of time).
+;-------------------------------------------------------------------------------
+(defun evaluate-standardized-fitness-for-NON-HAMSTRUNG-SQUAD-CAR
+           (program fitness-cases)
+
+(let (
+      raw-fitness hits standardized-fitness
+      e-delta-x e-delta-y p-delta-x p-delta-y
+      time-tally old-x old-y
+      criterion
+      (number-of-time-steps 50)
+      )
+
+  (setf criterion *speed-ratio*)
+  (setf raw-fitness 0.0)
+  (setf hits 0)
+ 
+  (dotimes (icase *number-of-fitness-cases*)
+    (setf x 
+          (NON-HAMSTRUNG-SQUAD-CAR-fitness-case-x (aref fitness-cases icase)))
+    (setf y 
+          (NON-HAMSTRUNG-SQUAD-CAR-fitness-case-y (aref fitness-cases icase)))
+    
+    (setf time-tally 0.0)
+    
+    (catch :terminate-fitness-case-simulation
+    (dotimes (istep number-of-time-steps)
+        
+      (setf old-x x)
+      (setf old-y y)
+      (when (and (<= (abs x) criterion)
+                 (<= (abs y) criterion))
+        (incf hits)
+        (throw :terminate-fitness-case-simulation
+               :scored-a-hit
+               ))
+      
+      ;; Note: (x,y) is position of the Evader.
+      ;; Changing the position of EVADER changes X and Y.
+      ;; Execute evader player for this time step
+      (funcall *eval_prog* '(ifY-evader
+              (goS-evader)
+              (ifX-evader (goW-evader) (goS-evader) (goE-evader))
+              (goN-evader)
+              )
+            )
+     
+      (setf e-delta-x (- old-x x))
+      (setf e-delta-y (- old-y y))
+      
+      ;; Reset position for Pursuer player.
+      (setf x old-x)
+      (setf y old-y)
+      
+      (NON-HAMSTRUNG-SQUAD-CAR-wrapper (funcall *eval_prog* program))
+      
+      (setf p-delta-x (- old-x x))
+      (setf p-delta-y (- old-y y))
+      
+      ;; Integrate x and y changes.
+      (setf x (- old-x (+ p-delta-x e-delta-x)))
+      (setf y (- old-y (+ p-delta-y e-delta-y)))
+      
+      (incf time-tally)
+      ))
+    
+    (incf raw-fitness time-tally)
+    )
+  
+  (setf standardized-fitness raw-fitness)
+  (values standardized-fitness hits)
+
+))
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-NON-HAMSTRUNG-SQUAD-CAR ()
+
+  (setf *number-of-fitness-cases*                       4)
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.7)
+
+  (setf *method-of-selection*      :fitness-proportionate)
+  (setf *method-of-generation*      :ramped-half-and-half)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+; The tenth item that we must write is the 
+; define-termination-criterion-for-NON-HAMSTRUNG-SQUAD-CAR. Since fitness is
+; measured by time in this problem, we may be interested in game-playing 
+;  which minimize the time to capture (as opposed to strategies which 
+; merely succeed in making a capture, as measured by hits). If we want a run to 
+; continue even after an S-expression in the population attains the maximum value 
+;  hits, the termination criterion should not refer to best-hits. In fact, 
+; best-hits should be placed into the ignore statement and the termination 
+; criterion should be altered so as to not involve an or function.
+;-------------------------------------------------------------------------------
+;(defun define-termination-criterion-for-NON-HAMSTRUNG-SQUAD-CAR
+;  (current-generation
+;   maximum-generations
+;   best-standardized-fitness
+;   best-hits)
+
+;  (declare (ignore best-hits best-standardized-fitness))
+
+;  (values 
+;   (>= current-generation maximum-generations)
+;   )
+;)
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun NON-HAMSTRUNG-SQUAD-CAR ()
+
+
+  (set_sms_list ;(list 
+        (list  '(ifX ifY) ; function-set
+               '( 3   3) 
+               '((goN) (goE) (goS) (goW)) ; terminal-set 
+               )
+        );)
+
+  (setf *is_ADF_as_OLD* t)
+
+  (values
+
+   'define-fitness-cases-for-NON-HAMSTRUNG-SQUAD-CAR
+   'evaluate-standardized-fitness-for-NON-HAMSTRUNG-SQUAD-CAR
+   'define-parameters-for-NON-HAMSTRUNG-SQUAD-CAR
+
+   ;'define-termination-criterion-for-NON-HAMSTRUNG-SQUAD-CAR
+   NIL ;'define_termination_criterion_MAXI
+   )
+)
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+
+
+
+;===============================================================================
+;-------------------------------------------------------------------------------
+;(defun B3_test (num)
+(defun s_30_3 (num)
+
+  (case num
+
+  ;; We can test the programs using a known good individual as follows:  
+
+  (20  '(run-genetic-programming-system  'NON-HAMSTRUNG-SQUAD-CAR 1.0  1  1  
+                                         ;(list 
+                                         '(ifX (goW) (ifY (goS) (goS) (goN)) (goE))
+                                         ;)
+                                         ))    
+
+  ;; We can execute an actual
+  ;; run with a randomizer seed of 1.0 for 31 generations and a population size 
+  ;; of 100 by executing (evaluating) the following expression:
+
+  (30  '(run-genetic-programming-system  'NON-HAMSTRUNG-SQUAD-CAR 1.0 21 100) ) 
+
+  ;; ...... результат не очень совпадает с тестом из книги
+  ;; ...... 
+
+  ;; If a population of 100 is used for 21 generations, approximately 95% of the 
+  ;; runs will produce a strategy that results in the capture of the
+  ;; evader for 100% of the fitness cases (but not necessarily in optimal time).
+  (735 (runs_GPS 330  'NON-HAMSTRUNG-SQUAD-CAR 0.0 21 100))
+
+  ;; 0 ]   34  34    10.30 %    R=    42.4    I=    4235.29 [   4200     4300]
+  ;; 1 ]   14  48    14.55 %    R=    29.3    I=    5859.53 [   5800     6000]
+  ;; 2 ]   13  61    18.48 %    R=    22.5    I=    6759.68 [   6600     6900]
+  ;; 3 ]   22  83    25.15 %    R=    15.9    I=    6358.44 [   6000     6400]
+  ;; 4 ]   37  120   36.36 %    R=    10.2    I=    5094.38 [   5000     5500]
+  ;; 5 ]   21  141   42.73 %    R=     8.3    I=    4957.61 [   4800     5400]
+  ;; 6 ]   25  166   50.30 %    R=     6.6    I=    4610.27 [   4200     4900]
+  ;; 7 ]   23  189   57.27 %    R=     5.4    I=    4332.58 [   4000     4800]
+  ;; 8 ]   17  206   62.42 %    R=     4.7    I=    4234.38 [   3600     4500]
+  ;; 9 ]   14  220   66.67 %    R=     4.2    I=    4191.81 [   4000     5000]
+  ;; 10]   11  231   70.00 %    R=     3.8    I=    4207.48 [   3300     4400]
+  ;; 11]   26  257   77.88 %    R=     3.1    I=    3663.05 [   3600     4800]
+  ;; 12]   9   266   80.61 %    R=     2.8    I=    3649.97 [   2600     3900]
+  ;; 13]   8   274   83.03 %    R=     2.6    I=    3634.83 [   2800     4200]
+  ;; 14]   11  285   86.36 %    R=     2.3    I=    3467.00 [   3000     4500]
+  ;; 15]   14  299   90.61 %    R=     1.9    I=    3115.41 [   1600     3200]
+  ;; 16]   4   303   91.82 %    R=     1.8    I=    3127.44 [   1700     3400]
+  ;; 17]   6   309   93.64 %    R=     1.7    I=    3009.29 [   1800     3600]
+  ;; 18]   5   314   95.15 %    R=     1.5    I=    2891.07 [   1900     3800]
+  ;; 19]   6   320   96.97 %    R=     1.3    I=    2634.15 [   2000     4000]
+  ;; 20]   5   325   98.48 %    R=     1.1    I=    2308.27 [   2100     4200]
+
+
+
+))
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+;-------------------------------------------------------------------------------
+(defun all_koza (argus) (declare (ignore argus))    
+
+  (koza_test_num "s_30_3" "20")
+  (koza_test_num "s_30_3" "30")
+
+  (koza_test_num "s_17_1" "40")
+)
+;===============================================================================

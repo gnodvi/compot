@@ -1,0 +1,23 @@
+
+inilib  is loaded
+numlib  is loaded
+agglib  is loaded
+seqlib  is loaded
+mthlib  is loaded
+
+    = 5
+    = 25
+    = [1 2 3 4 5 6 7]
+    = [1 4 9 16]
+    = [1 4 9 16]
+    = [1 4 9 16]
+    = 120
+
+    = 10.0036655923186
+    = 2
+    = "3333 TEST_file_02"
+
+    = 55.0
+    = ["Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday"]
+
+

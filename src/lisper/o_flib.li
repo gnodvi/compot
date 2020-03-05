@@ -1,0 +1,302 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+(defclass FGAME (GAME) (
+  (size  :accessor  FGAME-size)  ; длина массивов
+  (inp   :accessor  FGAME-inp)   ; входной массив
+  (out   :accessor  FGAME-out)   ; выходной (предсказания)
+  (i     :accessor  FGAME-i)     ; текущий индекс
+))
+
+(defmacro make-FGAME ()
+  `(make-instance 'FGAME)
+)
+
+;-------------------------------------------------------------------------------
+(defun SET_0 ()
+
+(let (
+  (i (FGAME-i *gameptr*))
+  )
+
+  (setf (nth (1+ i) (FGAME-out *gameptr*)) 0)
+  (incf (FGAME-i *gameptr*))
+
+))
+;-------------------------------------------------------------------------------
+(defun SET_1 ()
+
+(let (
+  (i (FGAME-i *gameptr*))
+  )
+
+  (setf (nth (1+ i) (FGAME-out *gameptr*)) 1)
+  (incf (FGAME-i *gameptr*))
+
+))
+;-------------------------------------------------------------------------------
+(defun IF-0 ()
+
+  (if (= (nth (FGAME-i *gameptr*) (FGAME-inp *gameptr*)) 0)
+      T
+      NIL
+      )
+
+)
+;-------------------------------------------------------------------------------
+(defun IF-1 ()
+
+  (if (= (nth (FGAME-i *gameptr*) (FGAME-inp *gameptr*)) 1)
+      T
+      NIL
+      )
+
+)
+;-------------------------------------------------------------------------------
+(defun fgame_inp_init (fg size l_init)
+
+(let* (
+  l
+  (l_init_size  (list-length l_init))
+  )
+
+  (dotimes (i size)
+    (setf l (mod i l_init_size))
+    (setf (nth i (FGAME-inp fg)) (nth l l_init))
+    )
+
+))
+;-------------------------------------------------------------------------------
+(defun fgame_out_init (fg)
+
+  (dotimes (i (FGAME-size fg))
+    (setf (nth i (FGAME-out fg)) NIL)
+    )
+
+  (setf (nth 0 (FGAME-out fg)) '*) ; первый символ не определяется ?
+
+  (setf (GAME-fit      fg) 0)
+  (setf (GAME-fitness  fg) 999999)
+  (setf (FGAME-i       fg) 0)
+
+fg
+)
+;-------------------------------------------------------------------------------
+(defun fgame_create_doit_tabl (fg)
+
+(let* (
+  (doit_tabl (list
+              (list '(0) '(SET_0))
+              (list '(1) '(SET_1))
+              ))
+  )
+
+  (setf (GAME-ifs fg) (list '(IF-0) '(IF-1) ))
+  (setf *doit_tabl*  doit_tabl)
+
+  (setf (GAME-mvs fg) (get_mvs_from_doittabl  *doit_tabl*))
+  (setf *num_bits_for_doit* 1)
+
+  fg
+))
+;-------------------------------------------------------------------------------
+(defun fgame_create (size)
+
+(let* (
+  (fg  (make-FGAME)) ; создадим новую структуру
+  )
+
+  (setf (FGAME-inp  fg) (make-list size))
+  (setf (FGAME-out  fg) (make-list size))
+  (setf (FGAME-size fg) size)
+
+  (setf (GAME-print  fg) 'fgame_print)
+  (setf *gameptr*    fg) ; установим глобально
+  (fgame_create_doit_tabl fg)
+
+fg
+))
+;-------------------------------------------------------------------------------
+(defun fgame_create_init  (size l_init)
+
+(let* (
+  (fg  (fgame_create  size))
+  )
+
+  ; заполним входной поток повторяющимся шаблоном
+  (fgame_inp_init  fg size l_init)
+
+  ; обнуляем выходной поток
+  (fgame_out_init  fg)
+
+fg
+))
+;-------------------------------------------------------------------------------
+(defun make_flib_1_doing_01_amat ()
+
+(let* (
+  (am  (anet_create))
+  (l_init (list  '(0 0 (     IF-0)  (SET_1))
+                 '(0 0 (NOT (IF-0)) (SET_0))
+                 ))
+  )
+
+  (make_am_from_l_init   am l_init)
+
+  am
+))
+;-------------------------------------------------------------------------------
+(defun fgame_print (fg)
+
+(let* (
+  (fit  (GAME-fit  fg))
+  (all (1- (FGAME-size fg)))
+  (p   (* 100 (/ fit all)))
+  )
+
+  (format *error-output* "=============================================== ~%")
+  (format t "INP = ~s ~%" (FGAME-inp fg))
+  (format t "OUT = ~s ~%" (FGAME-out fg))
+  (format t "~%")
+  (format t "FIT = ~s / ~s = ~f %  ~%" fit all p)
+  (format *error-output* "=============================================== ~%")
+  (format t "~%")
+
+))
+;-------------------------------------------------------------------------------
+(defun fgame_calc_fit_ness (fg)
+
+(let (
+  inp out
+  (fit  0)
+  (all  (1- (FGAME-size  fg)))
+  )
+
+  (loop for i from 1 to (1- (FGAME-size fg)) do
+    (setf inp (nth i (FGAME-inp fg)))
+    (setf out (nth i (FGAME-out fg)))
+
+    (when (= inp out) (incf fit)
+          ))
+
+  (setf (GAME-fit     fg) fit)
+  (setf (GAME-fitness fg) (- all fit))
+
+  fit
+))
+;-------------------------------------------------------------------------------
+(defun fgame_calc (fg am)
+
+  (fint_do_step_s  am (1- (FGAME-size  fg)))
+  (fgame_calc_fit_ness  fg) ; а пошагово оно не считается ?
+
+  (values (GAME-fitness fg) (GAME-fit fg))
+)
+;-------------------------------------------------------------------------------
+(defun test_1 (argus) (declare (ignore argus))
+
+(let* (
+  (fg  (fgame_create_init  10 ; размерность последовательности битов для "игры"
+                           '( 0 1) ; шаблон
+                           ))
+
+  (am (make_flib_1_doing_01_amat)) ; простенький flib, шаблон 01
+  )
+
+  (anet_print am)
+  (game_print)
+
+  (fint_do_step_s  am (1- (FGAME-size fg)))
+  (fgame_calc_fit_ness  fg)
+  
+  (game_print) ; образ игры после распознования
+
+))
+;-------------------------------------------------------------------------------
+(defun test_perebor (argus) (declare (ignore argus))
+
+(let* (
+  (size       15)
+  (mask   '(0 1))
+  (num_states  1)
+  (fg  (fgame_create_init  size mask))
+  )
+
+  (genomo_perebor_and_calc_best  fg num_states
+                                 'fgame_out_init  'fgame_calc)
+
+))
+;-------------------------------------------------------------------------------
+(defun test_ga (argus)
+
+(let* (
+  (size     10)
+  (mask  '(0 1))
+
+;------------------------------------------------
+; (size  100) (mask '(0 1 1 1 0)
+; cl r~.cl FLIB test_ga 3 @ 15 10
+;
+; (size 101)  ; тест литмо
+; (mask '(1 1 1 1 0 1 0 0 1 0 1 1 1 1 0 1 0 0 1)
+; cl r~.cl FLIB test_ga 20 ! 100 400 ; запустить 30 раз  выдать стат.
+;------------------------------------------------
+  (fg  (fgame_create_init  size mask))
+  )
+
+  (game_print)
+  (main_amat_test_ga  fg argus 'fgame_out_init 'fgame_calc)
+
+))
+;-------------------------------------------------------------------------------
+(defun test_litmo (argus) (declare (ignore argus))
+
+(let* (
+  (num_tests  10)
+  ret_fit
+  (ret_sum  0)
+  (ret_min  9999999)
+  (ret_max  0)
+  (size   101)
+  (mask '(1 1 1 1 0 1 0 0 1 0 1 1 1 1 0 1 0 0 1))
+
+  (fg  (fgame_create_init  size mask))
+  (num_states    20)
+  (size-of-population 100)
+  (maximum-generation 400)
+  (crossover-fraction 0.1)
+  (reproduction-fraction  0.1)
+  )
+
+  (seed_set_random)
+
+  (dotimes (i num_tests)
+    (setf ret_fit (amat_ga_run_test  fg num_states
+                                     size-of-population
+                                     maximum-generation
+                                     'fgame_out_init 'fgame_calc
+                                     crossover-fraction reproduction-fraction)
+          )
+    (incf ret_sum ret_fit)
+    (setf ret_min (min ret_min ret_fit))
+    (setf ret_max (max ret_max ret_fit))
+    )
+
+  (format t "~%")
+  (format t "RET_MIN= ~s ~%" ret_min)
+  (format t "REt_MID= ~f ~%" (/ ret_sum num_tests))
+  (format t "RET_MAX= ~s ~%" ret_max)
+  (format t "~%")
+  (format t "============================================================ ~%")
+
+))
+;-------------------------------------------------------------------------------
+;----------------------------------------
+; sl r~.cl FLIB test_litmo &> r_litmo.t
+; RET_MIN= 85
+; RET_MID= 90.2
+; RET_MAX= 95
+;----------------------------------------
+;-------------------------------------------------------------------------------

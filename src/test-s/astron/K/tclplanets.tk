@@ -1,0 +1,118 @@
+#!/bin/sh
+# \
+exec tclsh "$0" "$@"
+
+#-------------------------------------------------------------------------------
+# https://wiki.tcl-lang.org/4551
+
+# TclPlanets
+# Updated 2007-06-29 19:28:46 by LV ▲
+#-------------------------------------------------------------------------------
+
+# A starkit of this code is available on sdarchive.
+
+# Richard Suchenwirth 2002-11-10 - This educational Tcltoy shows the solar
+# system on a canvas, with some info displayed in the title bar when you mouse
+# over a planet (or its orbit, which are constantly shown). Zoom in with left,
+# out with right mouse button. Very simple, but enjoy - comment - improve! }
+
+ package require Tk
+
+#-------------------------------------------------------------------------------
+
+ # Fundamental planet data:
+ #  Name eq.diameter mass  orbit   distance color
+ set data {
+    Mercury 4840    0.053   .24     58      pink
+    Venus   12400   0.815   .62     108     orange
+    Terra   12757   1.0     1.0     149.6   blue
+    Mars    6790    .107    1.88    228     red
+    Jupiter 142800  318     11.86   778.3   brown
+    Saturn  120800  95.22   29.46   1428    yellow
+    Uranus  52400   14.54   84.02   2872    bisque
+    Neptune 44600   17.23   164.79  4501    gold
+    Pluto   3000    .07     249.17  5912    purple
+ }
+ foreach {name dia mass orbit distance color} $data {
+    foreach column {dia mass orbit distance color} {
+        set g($name,$column) [set $column]
+        lappend g(planets) $name
+    }
+ }
+ array set g {Sun,dia 1392000 Sun,mass - Sun,orbit 0 sun,distance 0}
+ proc movePlanets {w} {
+    global g
+    foreach planet $g(planets) {
+        foreach {x0 y0 x1 y1} [$w coords $planet:] break
+        set x [expr {($x0+$x1)/2.}]
+        set y [expr {($y0+$y1)/2.}]
+        set rad [expr {hypot($y,$x)}]
+        set ang [expr {atan2($y,$x)+.003/$g($planet,orbit)}]
+        set x2 [expr {$rad*cos($ang)}]
+        set y2 [expr {$rad*sin($ang)}]
+        $w move $planet: [expr {$x2-$x}] [expr {$y2-$y}]
+        $w move $planet- [expr {$x2-$x}] [expr {$y2-$y}]
+    }
+ }
+ proc every {ms body} {eval $body; after $ms [info level 0]}
+ proc planetInfo {w tags} {
+    global g
+    regsub -all {[^A-Za-z]} [lindex $tags 0] "" p
+    set title ""
+    set title "diameter: $g($p,dia) km mass: $g($p,mass)"
+    append title " orbit(yrs): $g($p,orbit)"
+    return "$p: $title"
+ }
+
+ set tcl_precision 17
+ pack [canvas .c -bg black -width 600 -height 600] -fill both -expand 1
+ set s 0.3
+ .c create oval -$s -$s $s $s -fill white -outline white -tag "Sun info"
+ foreach planet $g(planets) {
+    set r [expr $g($planet,distance) * 0.06]
+    set color $g($planet,color)
+    .c create oval -$r -$r $r $r -outline grey50 -tag "$planet track info"
+    set radius [expr $g($planet,dia)*0.00001]
+    #if {$radius<.1} {set radius .1} ;# make the little ones visible
+    .c create oval -$radius [expr $r-$radius] $radius [expr $r+$radius]\
+        -tag "$planet $planet: info" -fill $color -outline $color
+    .c create text $radius $r -anchor w -text " $planet" \
+        -fill $color -tag $planet-
+ }
+ .c config -scrollregion [.c bbox all]
+ .c bind info <Enter> {wm title . [planetInfo .c [.c gettags current]]}
+ .c bind info <Leave> {wm title . "TclPlanets"}
+ bind . <1> {.c scale all 0 0 2 2}
+ bind . <3> {.c scale all 0 0 .5 .5}
+ every 40 {movePlanets .c}
+
+#-------------------------------------------------------------------------------
+
+# From the Tcl chatroom:
+
+# am Re TclPlanets: an (amateur) astronomer would probably complain that the
+# orbits are NOT circles, but rather ellipses tick :1037091601: 09:00 GMT,
+# Tuesday, 12 November 2002
+
+# suchenwi Arjen - right! But my physics dictionary says that circles are a
+# close approximation, and I only had one radius per planet. But feel free to
+# improve it!
+
+# am Richard, it would not show up (i.e. probably less than 1 pixel), except
+# for the outer planets, Neptune and Pluto at least
+
+#-------------------------------------------------------------------------------
+
+# I have since been taught that such a solar system model is called an
+# "orrery", and a much fancier version in Java is e.g. at
+# http://www.schoolsobservatory.org.uk/uninow/orrery/ (but it probably took
+# them more than 1.5 pages of code...)
+
+#-------------------------------------------------------------------------------
+
+# [pdh] Nice work. I believe "Neptun" should be "Neptune". RS: Thanks, fixed -
+# this was imperfectly translated from a German school atlas...
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+											  

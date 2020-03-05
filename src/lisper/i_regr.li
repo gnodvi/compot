@@ -1,0 +1,549 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+;;;                        SYMBOLIC REGRESSION
+;;;=============================================================================
+
+; We start by defining each variable in the terminal set (other than the ephemeral 
+; random floating-point constant A) as a global variable. Thus, the first item in 
+; the problem specific part of the LISP code that we must write is:
+
+(defvar x)
+(defvar *target_func*)
+(defvar *x_min*)
+(defvar *x_max*)
+
+;-------------------------------------------------------------------------------
+; We use  the LISP keyword :floating-point-random-constant
+; to represent the ephemeral random floating-point constant A. which produces 
+; random floating-point numbers between -5.0 and +5.0. 
+;-------------------------------------------------------------------------------
+;(defun define-terminal-set-for-REGRESSION ()
+
+;  (values '(x :floating-point-random-constant))
+
+;)
+;-------------------------------------------------------------------------------
+;(defun define-function-set-for-REGRESSION ()
+
+;  (values '(+ - * %)   ; набор "элементов конструктора" - функций
+;          '(2 2 2 2))  ; кол-во аргументов для этих функций (описание типов)
+;)
+;-------------------------------------------------------------------------------
+; структура для хранения расчетов (фитнес-кейсов)
+
+(defstruct REGRESSION-FCASE
+    indvar 
+    target
+)
+
+;-------------------------------------------------------------------------------
+; This function returns a one-dimensional array of fitness cases. The size of the 
+; array is specified by the global variable *number-of-fitness-cases*. 
+;-------------------------------------------------------------------------------
+(defun define_fitness_cases_for_REGRESSION ()	                     
+
+(let* (
+     fitness-cases this-fitness-case 
+     (OUT (if *is_print* t nil)) 
+ 
+     (x_min   *x_min*)
+     (x_max   *x_max*)
+     (x_intr  (- x_max x_min))
+     (x_nums  (- *number-of-fitness-cases* 1)) ; число интервалов
+     (x_step  (/ x_intr x_nums))               ; шаг (длина интервала)
+     )	                     
+
+;  (format t "~%")	                         
+;  (format t "x_intr= ~F x_nums= ~A  x_step= ~F ~%" x_intr x_nums x_step)
+;  (format t "3  ~F ~%" (coerce (* 3 x_step) 'short-float))
+;  (format t "~%")	                         
+;  (exit)
+
+  (setf fitness-cases (make-array *number-of-fitness-cases*))	     
+  (format OUT "~%")	                         
+  (format OUT "Fitness cases: ~%")	                             
+  (format OUT "~%")	                         
+  
+  (dotimes (index *number-of-fitness-cases*)	                     
+    
+    ;; As index loops from 0 to 9, X
+    ;; will therefore range from 0.0 to 0.9 in steps of 0.1.       
+    ;(setf x (/ index *number-of-fitness-cases*)) 
+
+    (setf x (+ x_min (* index x_step))) ; точность немного не та..
+  
+    (setf this-fitness-case (make-REGRESSION-FCASE))	     
+    (setf (aref fitness-cases index) this-fitness-case)	    
+    
+    (setf (REGRESSION-FCASE-indvar this-fitness-case) x)                   
+    (setf (REGRESSION-FCASE-target this-fitness-case) (eval *target_func*))           
+    
+    ;(format OUT " ~D      ~D      ~D ~%"
+    (format OUT " ~2D      ~,2F     ~,4F ~%"	                     
+            index	                                             
+            (float x)	                                             
+            (REGRESSION-FCASE-target this-fitness-case))	     
+    )
+  
+  (format OUT "~%")
+  
+  (values fitness-cases)	                                    
+))	                                                            
+;-------------------------------------------------------------------------------
+; In this problem (and most problems), the wrapper (output interface) merely 
+; returns what it is given. 
+
+; However, in some problems (e.g., bangbang control problems), the output of 
+; the computer program (i.e., S-expression) from the population must be 
+; converted, via the wrapper, into the special domain of the problem (e.g., 
+; -1 and +1 for a bang-bang problem).
+;-------------------------------------------------------------------------------
+(defun REGRESSION_wrapper (result-from-program)
+
+  (values result-from-program)
+
+)
+;-------------------------------------------------------------------------------
+; Standardized fitness is the driving force of genetic programming. 
+
+; The hits measure is a highly useful auxiliary measure that facilitates the 
+; monitoring of runs; however, the number of hits is not
+; directly used by genetic programming (except possibly as part of the termination 
+; criterion for a run).
+;-------------------------------------------------------------------------------
+(defun evaluate_standardized_fitness_for_REGRESSION (program fitness-cases)                     
+
+(let (
+      raw-fitness hits standardized-fitness target-value 	     
+      difference value-from-program this-fitness-case
+      x   ; почему не делает эту Х локальной ??
+      ) 
+
+  (setf raw-fitness 0.0)	                                     
+  (setf hits 0)	                                             
+
+  (if *debug_print* (format t "evaluate_PROGRAM= ~A ~%" program))
+
+
+  (dotimes (index *number-of-fitness-cases*)	
+
+    (setf this-fitness-case (aref fitness-cases index))	    
+    
+    (setf x (REGRESSION-FCASE-indvar	this-fitness-case)) ; глобальная ?                    
+    (setf target-value (REGRESSION-FCASE-target this-fitness-case))          
+    
+    (if *debug_print* (format t "index= ~D  x= ~A  ~%" index x))
+
+    (setf value-from-program	                                     
+          (REGRESSION_wrapper (funcall *eval_prog* program)))
+
+    ;; проверим на ошибочное вычисление особи (и оценим ее с НАИХУДШЕЙ стороны)
+    (when *flag_error* (progn
+          (setf raw-fitness 5000000000000000000) ;; кажется не очень правильныо
+          (setf hits 0)                          ;; 
+          (setf *flag_error* nil)
+          (return) ; выйти из цикла 
+          ;; (а может надо продолжать, слегка подправив ФИТНЕСС ?)
+      ))
+
+    (setf difference (abs (- target-value value-from-program)))	             
+    (incf raw-fitness difference)	                             
+    
+    (when (< difference 0.01) (incf hits))	                     
+    )
+  
+
+  (setf standardized-fitness raw-fitness)	                     
+  (values standardized-fitness hits)	                            
+))	                                                             
+;-------------------------------------------------------------------------------
+; In the symbolic regression problem (where floating-point values are involved), 
+; we might be satisfied  with a run if the best computer program from the 
+; population came close to the target for 100% of the fitness cases.
+;-------------------------------------------------------------------------------
+;(defun define-termination-criterion-for-REGRESSION (
+;        current-generation                                 
+;        maximum-generations	                                     
+;        best-standardized-fitness	                             
+;        best-hits)
+	                                             
+
+;  (define_termination_criterion_HITS 
+;        current-generation                                 
+;        maximum-generations	                                     
+;        best-standardized-fitness	                             
+;        best-hits)
+
+;)	                                                             
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+; Some of the 19 control parameters described in section 6.9 do not apply to 
+; this simplified LISP code. The operations of mutation, permutation, editing, 
+; encapsulation, and decimation are not implemented in this simplified LISP code, 
+; so the six control parameters concerning these operations do not apply here. 
+
+; All nine parameters set in this function are global variables, so this function 
+; explicitly returns no values via values.
+
+; We do not set the population size M, the maximum number G of generations to be 
+; run, or the seed to the randomizer in this function because they are likely 
+; to change frequently. These three parameters are established when genetic 
+; programming is invoked.
+;-------------------------------------------------------------------------------
+(defun define_parameters_for_REGRESSION ()
+
+  ;(setf *number-of-fitness-cases*                      10)
+
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.2)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+
+  (setf *method-of-selection*      :fitness-proportionate)
+
+  (setf *method-of-generation*      :ramped-half-and-half)
+
+  (setf *is_ADF_as_OLD* t) ;; надо было для совместимости результатов
+
+  (values)
+)
+;===============================================================================
+
+
+
+;;;=============================================================================
+;
+;
+;;;=============================================================================
+; 7.3 Simple Symbolic Regression
+
+; As a third illustration of genetic programming, consider a simple form of the 
+; problem of symbolic regression (symbolic function identification).
+
+; .............
+
+; Of course, it is left to the researcher to decide whether to do a linear 
+; regression, a quadratic regression, a higher-order polynomial regression, 
+; or whether to try to fit the data points to some non-polynomial family of 
+; functions. But often, the issue is deciding what type of function most
+; appropriately fits the data, not merely computing the numerical coefficients 
+; after the type of function for the model has already been chosen.
+
+; In other words, the real problem is often both the discovery of the correct 
+; functional form that fits the data and the discovery of the appropriate numeric 
+; coefficients that go with that functional form. We call the problem of finding 
+; a function, in symbolic form, that fits a given finite sample of data symbolic 
+; regression. It is 'data-to-function' regression. The desirability of doing 
+; regression without specifying in advance the functional form of the eventual 
+; solution was recognized by Dallemand (1958), Westervelt (1960), 
+; and Collins (1968).
+
+
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-SIMPLE ()
+
+  (setf *number-of-fitness-cases*   20)
+
+  (define_parameters_for_REGRESSION)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+(defun SIMPLE ()
+
+
+  (set_sms_list (list ;(list  
+
+       '(+ - *   rEXP )  
+       '(2 2 2   1)  
+       ;; деление  % (на почти ноль?) тоже иногда вызывает переполнение
+
+;       '(+ - * %  SIN COS rEXP rLOG)  
+;       '(2 2 2 2  1   1   1    1)  
+
+;       '(+  -  *  %   SIN COS rLOG)  
+;       '(2  2  2  2   1   1   1)  
+
+;       '(+  -  *  %   rEXP SIN COS)  
+;       '(2  2  2  2   1    1   1  )  
+
+;       '( %   rEXP )  
+;       '( 2   1)  
+
+       '(x :floating-point-random-constant))
+  );)
+
+  (setf *target_func* '(+ (* x x x x) (* x x x) (* x x) x))
+  (setf *x_min* -1.0)
+  (setf *x_max* +1.0)
+  ;(setf *debug_print* +1.0)
+
+  (values 
+          'define_fitness_cases_for_REGRESSION
+          'evaluate_standardized_fitness_for_REGRESSION
+
+          'define-parameters-for-SIMPLE
+          'define_termination_criterion_HITS
+  )
+)
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+;(defun 07_test (num)
+(defun s_07_3 (num)
+
+  (case num
+
+  (01  '(run-genetic-programming-system  'SIMPLE  1.0  1  1  (list '(rexp 85) )) )
+  ; *** - floating point overflow
+  ; Handling such errors will usually require becoming familiar with the error 
+  ; handling features of both the machine and LISP software being used or, possibly, 
+  ; writing protected arithmetic functions which prevent the error conditions from 
+  ; arising.
+  ; Steele (1990) describes some portable error handling mechanisms which may be 
+  ; helpful.
+
+  (02  '(run-genetic-programming-system  'SIMPLE  1.0  2  10) ) 
+  (03  '(run-genetic-programming-system  'SIMPLE  1.0  2  100) ) 
+
+  (05  '(run-genetic-programming-system  'SIMPLE  1.0  5  100) ) 
+  (10  '(run-genetic-programming-system  'SIMPLE  1.0  10  100) ) 
+  (50  '(run-genetic-programming-system  'SIMPLE  1.0  50  500) ) 
+
+   
+))
+;;;=============================================================================
+;;;=============================================================================
+
+
+;
+;
+;
+;
+;
+;
+;
+;
+;;;=============================================================================
+
+;;;=============================================================================
+; 10
+; Symbolic Regression -- Error-Driven Evolution
+
+; 10.1 Discovery of Trigonometric Identities .............. 238 (173)
+; 10.2 Symbolic Regression with Constant Creation ......... 242 (176)
+; 10.3 Econometric Modeling and Forecasting ............... 245 (178)
+; 10.4 Empirical Discovery of Kepler's Third Law .......... 256 (187)
+; 10.5 Symbolic Integration ............................... 259 (189)
+; 10.6 Symbolic Differentiation ........................... 263 (192)
+; 10.7 Differential Equations ............................. 264 (193)
+; 10.8 Integral Equations ................................. 271 (198)
+; 10.9 Inverse Functions .................................. 272 (199)
+; 10.10 General Functional Equations ...................... 274 (200)
+; 10.11 Numeric Roots of Equations ........................ 275 (201)
+; 10.12 Sequence Induction ................................ 281 (205)
+; 10.13 Programmatic Image Compression .................... 283 (207)
+; 10.14 Recapitulation of Symbolic Regression ............. 288 (211)
+
+
+;;;=============================================================================
+
+
+;;;=============================================================================
+;;; B.1 Symbolic Regression
+
+;;; необходимо найти символьну форму и соответствующие коэффициенты
+;;; функции, совпадающей в некотрых точках с  0.5x**2.
+;;;=============================================================================
+
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-REGRESSION ()
+
+  (setf *number-of-fitness-cases*                      10)
+
+  (define_parameters_for_REGRESSION)
+)
+;-------------------------------------------------------------------------------
+(defun REGRESSION ()
+
+
+  (set_sms_list (list ;(list  
+
+       '(+ - * %)  
+       '(2 2 2 2)  
+       '(x :floating-point-random-constant))
+  );)
+
+  (setf *target_func* '(* 0.5 x x))
+  (setf *x_min* 0.0)
+  (setf *x_max* 0.9)
+
+  (values 
+          'define_fitness_cases_for_REGRESSION
+          'evaluate_standardized_fitness_for_REGRESSION
+
+          'define-parameters-for-REGRESSION
+          'define_termination_criterion_HITS
+  )
+)
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun s_30_1 (num)
+
+  (case num
+
+  ;; Мы рекомендуем, чтобы пользователь всегда выполнял по крайней мере 
+  ;; следующие три теста после создания новой "проблемы":
+
+  ;;---------------------------------------------
+  ;; First, it is advisable to create a population of 50 or so random individuals 
+  ;; and to carefully examine the appearance of the S-expressions that
+  ;; are actually produced and to verify that a plausible values of 
+  ;; standardized-fitness and hits are computed for each S-expression.
+  ;; For example, execution of
+
+  (10  '(run-genetic-programming-system  'REGRESSION ; проблема (задача)
+                                         1.0   ; seed
+                                         1     ; число поколений
+                                         50    ; размер популяции
+                                         ))                
+  ;; causes a population of 50 initial random individuals to be created and 
+  ;; evaluated for fitness over only one generation.
+
+  ;; Execution of the population_print function causes the population to be 
+  ;; printed out. For example,
+
+  (11  '(population_print                                                       
+        (run-genetic-programming-system  'REGRESSION  1.0  1  50) ))
+
+  ;; This test will also establish that the problem turns over.
+
+  ;;---------------------------------------------
+  ;; Secondly, it is advisable to test your fitness measure by testing particular 
+  ;; individuals for which you know the answer. For example, execution of
+
+  ;(20  '(run-genetic-programming-system  'REGRESSION  1.0  1   1 (list '(* 0.5 x x))  )) 
+  (20  '(run-genetic-programming-system  'REGRESSION  1.0  1   1  '(* 0.5 x x)  )) 
+   
+  ;; causes one generation of a population of size 1 to be run with the LISP 
+  ;; S-expression (* 0.5 x x) as a primed individual. In this particular problem,
+  ;; you know that this S-expression should attain a standardized fitness of 0.0 
+  ;; (i.e., a perfect score) and 10 hits corresponding to each of the 10
+  ;; fitness cases. In addition, you may be able to further test the fitness 
+  ;; measure because you know that certain other primed individuals will score
+  ;; a particular number of hits. For example, the S-expression (- 2.0 X) will 
+  ;; score 1 out of 10 hits for this problem because this S-expression
+  ;; represents a straight line that intersects the curve for x2/2 on the interval 
+  ;; [0, 1] only when X is zero.  
+
+  ;;---------------------------------------------
+  ;; Finally, execution of
+
+  (30  '(run-genetic-programming-system  'REGRESSION  1.0 31 200))  
+
+  ;; causes a full run with a randomizer seed of 1.0, a maximum number of 
+  ;; generations to be run G of 31, and a population size M of 200. The
+  ;; seed for the randomizer should be greater than zero and less than or equal to 1.0.
+
+  ;; The user can verify that he has entered the code correctly for this REGRESSION 
+  ;; problem by actually executing the above form with the above randomizer seed 
+  ;; of 1.0. On Texas Instruments ExplorerO computers and on a Macintosh computer 
+  ;; using Allegro Common LISP 1.3.2, the result should be that the 
+
+  ;; Generation 0:
+  ;; Average standardized fitness = 1186.3
+  ;; Best    standardized fitness = 0.42013 and 2 hits. 
+  ;; It was: 
+  ;; (% X 2.7838948)
+
+  ;; Generation 5:
+  ;; Average standardized fitness = 4.3141365
+  ;; Best    standardized fitness = 0.0052807606 and 10 hits. 
+  ;; It was: 
+  ;; (% (* X (- X (% X 2.2290492))) 1.1068583)
+
+  ;; Because different Common LISP implementations represent floating-point numbers 
+  ;; with different precisions, one may obtain somewhat different results for this 
+  ;; problem in other environments. If this is the case, the user might consider 
+  ;; using the benchmark for the Boolean MAJORITY-ON problem found in appendix B.2 
+  ;; below.
+  ;;---------------------------------------------
+
+  ;; Пользователь может далее проверить правильность работы своей программы
+  ;; "набирая статистику", т.е. например запуская тесты определенное число раз
+  ;; с обычными параметрами и  M = 200 , G = 31; 
+
+  ;; Когда мы выполнили на этой проблеме 190 запусков, совокупная вероятность        
+  ;; успеха P(M, i) составила:
+  ;; 5 ]   18% 
+  ;; 10]   41%  
+  ;; 15]   52% 
+  ;; 20]   61% 
+  ;; 25]   64%
+  ;; 30]   67% 
+
+  ;; 0 ]   0   0      0.00 %    R=     NIL    
+  ;; 1 ]   5   5      2.63 %    R=   172.7    I=   69073.42 [  68800    69200]
+  ;; 2 ]   5   10     5.26 %    R=    85.2    I=   51104.97 [  51000    51600]
+  ;; 3 ]   11  21    11.05 %    R=    39.3    I=   31454.65 [  31200    32000]
+  ;; 4 ]   11  32    16.84 %    R=    25.0    I=   24969.89 [  24000    25000]
+  ;; 5 ]   13  45    23.68 %    R=    17.0    I=   20445.44 [  20400    21600] ****
+  ;; 6 ]   2   47    24.74 %    R=    16.2    I=   22687.21 [  22400    23800]
+  ;; 7 ]   2   49    25.79 %    R=    15.4    I=   24703.85 [  24000    25600]
+  ;; 8 ]   13  62    32.63 %    R=    11.7    I=   20985.92 [  19800    21600] 
+  ;; 9 ]   0   62    32.63 %    R=    11.7    I=   23317.69 [  22000    24000]
+  ;; 10]   4   66    34.74 %    R=    10.8    I=   23741.20 [  22000    24200]
+  ;; 11]   1   67    35.26 %    R=    10.6    I=   25417.21 [  24000    26400]
+  ;; 12]   0   67    35.26 %    R=    10.6    I=   27535.31 [  26000    28600]
+  ;; 13]   3   70    36.84 %    R=    10.0    I=   28060.00 [  28000    30800]
+  ;; 14]   0   70    36.84 %    R=    10.0    I=   30064.29 [  30000    33000]
+  ;; 15]   0   70    36.84 %    R=    10.0    I=   32068.57 [  32000    35200]
+  ;; 16]   4   74    38.95 %    R=     9.3    I=   31731.87 [  30600    34000]
+  ;; 17]   0   74    38.95 %    R=     9.3    I=   33598.46 [  32400    36000]
+  ;; 18]   0   74    38.95 %    R=     9.3    I=   35465.04 [  34200    38000]
+  ;; 19]   1   75    39.47 %    R=     9.2    I=   36687.87 [  36000    40000]
+  ;; 20]   5   80    42.11 %    R=     8.4    I=   35389.15 [  33600    37800]
+  ;; 21]   2   82    43.16 %    R=     8.2    I=   35870.09 [  35200    39600]
+  ;; 22]   4   86    45.26 %    R=     7.6    I=   35152.04 [  32200    36800]
+  ;; 23]   0   86    45.26 %    R=     7.6    I=   36680.39 [  33600    38400]
+  ;; 24]   0   86    45.26 %    R=     7.6    I=   38208.74 [  35000    40000]
+  ;; 25]   0   86    45.26 %    R=     7.6    I=   39737.09 [  36400    41600]
+  ;; 26]   5   91    47.89 %    R=     7.1    I=   38146.59 [  37800    43200]
+  ;; 27]   0   91    47.89 %    R=     7.1    I=   39559.43 [  39200    44800]
+  ;; 28]   0   91    47.89 %    R=     7.1    I=   40972.26 [  40600    46400]
+  ;; 29]   0   91    47.89 %    R=     7.1    I=   42385.10 [  42000    48000]
+  ;; 30]   1   92    48.42 %    R=     7.0    I=   43126.32 [  37200    43400]
+
+  ;; Figure B.1 (страница 719) 
+  ;; The numbers in the oval: 
+  ;; generation 10,  individuals  19,800 = 200 x 11 x 9 runs;
+
+  (719  (runs_GPS 190  'REGRESSION  0.0 31 200))  
+  
+  ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ;; мои новые тесты 
+
+  ;(12  '(run-genetic-programming-system  'REGRESSION  1.0  5  50))                
+  ;(13  '(run-genetic-programming-system  'REGRESSION  0.0 31 200) ) ;*** - *seed* cannot be zero.
+  ;(13  '(run-genetic-programming-system  'REGRESSION  0.001 31 200) ) 
+
+
+))
+;;;=============================================================================
+
+;-------------------------------------------------------------------------------
+(defun all_real (argus) (declare (ignore argus))   
+
+  (koza_test_num "s_30_1" "10")
+  (koza_test_num "s_30_1" "11")
+  (koza_test_num "s_30_1" "20")
+  (koza_test_num "s_30_1" "30")
+
+)
+;;;=============================================================================
+

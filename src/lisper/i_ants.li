@@ -1,0 +1,277 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+;;  GENP    GENP    GENP    GENP    GENP    GENP    GENP    GENP    GENP    
+
+;;;=============================================================================
+; 7.2 Artificial Ant
+
+; As a second illustration of genetic programming, consider the task of 
+; navigating an artificial ant attempting to find all the food lying along an
+; irregular trail as described in subsection 3.3.2 (Jefferson et al. 1991; 
+; Collins and Jefferson 1991a, 1991b). The problem involves primitive
+; operations enabling the ant to move forward, turn right, turn left, and sense 
+; food along the irregular Santa Fe trail (figure 3.6).
+
+; When Jefferson, Collins, et al. used the conventional genetic algorithm 
+; operating on strings to find the finite-state automaton to solve this
+; problem, it was first necessary to develop a representation scheme that 
+; converted the potential automaton into binary strings of length 453. In
+; genetic programming, the problem can be approached and solved in a far more 
+; direct way using 
+; the natural terminology of the problem.
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+
+(defvar  number_of_foods     :unbound)
+(defvar  max_steps           :unbound)
+(defvar  array_make_func     :unbound)
+
+;-------------------------------------------------------------------------------
+(defun define_fitness_cases_NIL ()
+
+  (values NIL)
+)
+;-------------------------------------------------------------------------------
+(defun evaluate_standardized_fitness_ANTS (program fitness-cases)                     
+
+(declare (ignore fitness-cases))
+
+(let (
+  raw-fitness hits standardized-fitness
+  (pol  (pole_create_  array_make_func))	     
+  ) 
+
+  (setf raw-fitness 0.0)	                                     
+  (setf hits 0)	                                             
+
+  ;(pole_create_init 'arr_make_0)
+  ;(pole_create_init array_make_func)
+  (pole_init  pol)
+
+  ;; Each move operation and each turn operation takes one step. In our version 
+  ;; of this problem, we limited the ant to 400 time steps
+
+  ;; Time was computed here in the same way as in the work of Jefferson, Collins, 
+  ;; et al. That is, the three primitive functions RIGHT, LEFT,
+  ;; and MOVE each take one time step to execute, whereas the IF-FOOD-AHEAD 
+  ;; conditional branching operator and the unconditional
+  ;; connectives PROGN2 and PROGN3 each take no time steps to execute.
+
+  (game_loop_all_num program max_steps)
+
+  (setf raw-fitness (GAME-fit *gameptr*))
+  (setf hits raw-fitness)
+
+  (setf standardized-fitness (- number_of_foods raw-fitness))
+	                     
+  (values standardized-fitness hits)	                            
+))	                                                             
+;-------------------------------------------------------------------------------
+(defun define_parameters_ANTS ()
+
+  ;(setf *number-of-fitness-cases*                 89) ;; ЧТОБЫ БЫЛ КРИТEРИЙ ОСТАНОВА
+
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.2)
+
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+
+  (setf *method-of-selection*      :fitness-proportionate)
+  (setf *method-of-generation*     :ramped-half-and-half)
+
+  (setf *is_ADF_as_OLD* t) ;; надо было для совместимости результатов
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+(defun define_termination_criterion_ANTS (
+        current-generation                                 
+        maximum-generations	                                     
+        best-standardized-fitness	                             
+        best-hits)
+	                                             
+  (declare (ignore best-standardized-fitness))	                     
+
+  (values	                                                     
+    (or (>= current-generation  maximum-generations)	             
+        (>= best-hits           number_of_foods) ;!!!!
+    ))	                                                             
+)	                                                             
+;-------------------------------------------------------------------------------
+(defun ANTS_ ()
+
+  (set_sms_list (list ;(list  
+
+       '(IF-FOOD-AHEAD  PROGN  PROGN)  
+       '(2              2      3)  
+
+       '((LEFT) (RIGHT) (MOVE))
+       );)
+  )
+
+  ;(setf array_make_func 'arr_make_0)
+  (setf number_of_foods  89)
+  ;(setf max_steps 400)
+
+  (values 
+          'define_fitness_cases_NIL
+          'evaluate_standardized_fitness_ANTS
+
+          'define_parameters_ANTS
+          'define_termination_criterion_ANTS
+  )
+)
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+(defun ANT_2 ()
+
+  (setf array_make_func 'arr_make_2)
+  (setf max_steps 200)
+
+  (ANTS_)
+)
+;-------------------------------------------------------------------------------
+(defun ant_test_gp_new (argus)
+
+(let (
+  (random_flag  (read-from-string (nth 0 argus)))
+  (size         (parse-integer    (nth 1 argus))) ; размер популяции
+  (maxi         (parse-integer    (nth 2 argus))) ; сколько поколений считать
+  )
+
+  (if (eq random_flag '!) ; флаг для полностью случайного запуска
+    (seed_set_random)
+    (seed_set 1.0)
+    )
+
+  (run-g-p-system 'ANT_2 ; problem-function
+                    maxi ; minimum-generation
+                    size ; size-of-population
+                     NIL ; seeded-programs
+                     )
+
+  (evaluate_standardized_fitness_ANTS
+   ;;(funcall *get_starter* (ORGANISM-genotype *best-of-run*))
+   (ORGANISM-genotype *best-of-run*)
+   NIL)
+
+  (game_print)
+
+))
+;-------------------------------------------------------------------------------
+(defun check_best_ant (argus) (declare (ignore argus))
+
+(let* (
+  (steps  200)
+;;  NUM = 200
+;--------------------------------------
+;EAT 58 / 89
+;(ant '(PROGN (MOVE)
+;             (PROGN (LEFT)
+;                    (IF-FOOD-AHEAD (LEFT) (RIGHT))
+;                    (IF-FOOD-AHEAD (MOVE) (RIGHT))))
+;     )
+;--------------------------------------
+
+;--------------------------------------
+;EAT = 42 / 89
+;(ant = '(IF-FOOD-AHEAD (IF-FOOD-AHEAD (MOVE)
+;                                      (RIGHT))
+;                       (IF-FOOD-AHEAD  (IF-FOOD-AHEAD (RIGHT) (RIGHT))
+;                                       (LEFT)))
+;     )
+; понятно, что такая конструкция эквивалентна этой:
+;(ant '(IF-FOOD-AHEAD (MOVE) (LEFT)) )
+;--------------------------------------
+                 
+;--------------------------------------
+;EAT = 57 / 89
+(ant '(IF-FOOD-AHEAD (PROGN (MOVE) (MOVE) (MOVE))
+                     (PROGN (LEFT) (MOVE) (RIGHT)) )
+     )
+;--------------------------------------
+                    
+  )
+
+  (game_do_eval_steps  ant steps)
+
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;
+;
+;-------------------------------------------------------------------------------
+(defun my_gp_test_1 (argus) (declare (ignore argus))
+
+(let (
+;  (size         (parse-integer    (nth 1 argus))) ; размер популяции
+  (size         2)
+  pop
+  )
+
+  (format t "my_gp_test .. 1 ~%")
+  (format t "~%")
+
+  (seed_set_random)
+  ;;  (seed_set 1.0)
+
+  (setf pop (create_gp_population 'ANT_2 ; problem-function
+                         size   ; size-of-population
+                         NIL    ; seeded-programs
+                        ))
+
+  (population_print pop)
+
+  (format t "~%")
+))
+;-------------------------------------------------------------------------------
+(defun my_gp_test_2 (argus) (declare (ignore argus))
+
+(let (
+;  (size         (parse-integer    (nth 1 argus))) ; размер популяции
+;  (size         2)
+  prog ;prog_new
+  )
+
+  (format t "my_gp_test .. 2 ~%")
+  (format t "~%")
+
+  (seed_set_random)
+  ;;  (seed_set 1.0)
+
+  (gp_init_0)
+  (gp_init_1  'ANT_2)
+
+  (setf prog (create_gp_program  22))
+  (format t "prog = ~s ~%" prog)
+
+
+
+  ;(setf prog_new (mutate  prog))
+  ;(format t "prog_new = ~s ~%" prog_new)
+
+
+  (format t "~%")
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;
+; cl p~.cl GENP ant_test_gp_new ! 40 10
+; cl p~.cl GENP ant_test_gp_new @ 10 2
+;
+;
+; cl p~.cl GENP my_gp_test_1
+; cl p~.cl GENP my_gp_test_2
+;
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+

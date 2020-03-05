@@ -1,0 +1,45 @@
+
+
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            10 
+Size of Population:                       1000 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE-WITH-OVER-SELECTION 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  8 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 3.685 
+Best    standardized fitness = 1.0 and 7 hits. 
+It was: 
+RPB0: (AND (OR A0 D0) (AND D1 D1)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 2.825 
+Best    standardized fitness = 0.0 and 8 hits. 
+It was: 
+RPB0: (AND (OR (NOT A0) D1) (OR (AND D0 D0) A0)) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 1, standardized fitness = 0.0 and 8 hits.  
+It was: 
+RPB0: (AND (OR (NOT A0) D1) (OR (AND D0 D0) A0)) 
+
+

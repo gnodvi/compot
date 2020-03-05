@@ -1,0 +1,382 @@
+; -*-   mode: lisp ; coding: utf-8   -*- ---------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+(require 'asdf)
+
+;(push "./L/common-lisp/"        asdf:*central-registry*)
+
+;===============================================================================
+
+;This is free and unencumbered software released into the public domain.
+
+;Anyone is free to copy, modify, publish, use, compile, sell, or
+;distribute this software, either in source code form or as a compiled
+;binary, for any purpose, commercial or non-commercial, and by any
+;means.
+
+;In jurisdictions that recognize copyright laws, the author or authors
+;of this software dedicate any and all copyright interest in the
+;software to the public domain. We make this dedication for the benefit
+;of the public at large and to the detriment of our heirs and
+;successors. We intend this dedication to be an overt act of
+;relinquishment in perpetuity of all present and future rights to this
+;software under copyright law.
+
+;THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+;IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+;OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+;ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+;OTHER DEALINGS IN THE SOFTWARE.
+
+;For more information, please refer to <http://unlicense.org/>
+
+;===============================================================================
+
+;# cl-ca: common lisp cellular automata
+
+;cl-ca is a common lisp library for implementing programs using cellular
+;automata (e. g. Conway's game of life).
+
+;## usage
+;There some [example programs](./examples) to introduce you.
+
+;Most functions also include a docstring.
+
+;## architecture
+;cl-ca is build around three functions which access the hash table all automata are stored in. This hash-table is located in a closure, therefore only these
+;functions can access it.
+
+;The functions are:
+
+;* `set-automaton` used to modify/add automata
+;* `get-automaton` used to get informations about an automaton
+;	(The Hacker's note: It is just a call to `gethash`)
+;* `run-step` walks over a specified part of the hash-table and calculates the new states of the automatons.
+
+;The data about the automata is stored this way in the hash-table:
+
+;	(x . y) . (state function)
+
+;(the cons pair `(x . y)` is the key and the list ist the value)
+
+;The function gets called each step with the list representing the automaton
+;itself and a list of lists representing its neighbors (more on that later).
+;It must return a list representing itself (this one then gets put in the hash-table). This allows an automaton not only change its state but also to modify its behavior.
+
+;The functions `moore-neighbors` and `von-neumann-neighbors` implement neighborhood (See the corresponding Wikipedia articles: [Moore Neighborhood](https://en.wikipedia.org/wiki/Moore_neighborhood) and [Von Neumann Neighborhood](https://en.wikipedia.org/wiki/Von_Neumann_neighborhood)). One of these functions (or another one doing something reasonable in this context) should be passed to `run-step` and is used to calculate neighborhood then.
+
+;## can I ql:quickload it?
+;[Yes](https://github.com/quicklisp/quicklisp-projects/tree/master/projects/cl-ca)
+
+;===============================================================================
+
+;(push "./M/"        asdf:*central-registry*)
+
+;(asdf:load-system :cl-ca) 
+
+
+;(asdf:defsystem "cl-ca"
+; :description "cellular automaton library"
+; :version "0.0.1"
+; :author "Lukas Epple <post@lukasepple.de>"
+; :licence "Public Domain"
+; :components ((:file "packages")
+;	 (:file "cl-ca" :depends-on ("packages"))))
+
+;===============================================================================
+
+(defpackage :cl-ca
+
+  (:documentation "cellular automaton library")
+  (:use :common-lisp)
+
+  (:export
+
+    #:set-automaton
+    #:get-automaton
+    #:get-dimensions
+    #:set-dimensions
+    #:run-step
+    #:create-automata
+    #:print-automata
+    #:von-neumann-neighbors
+    #:moore-neighbors
+    
+))
+
+;===============================================================================
+
+(in-package :cl-ca)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; non-functional part managing the automata   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(let ((automata (make-hash-table :test 'equal))
+      (dimensions (cons (cons 0 0) (cons 0 0))))
+
+  (defun set-dimensions (dim)
+    "Sets the dimensions (bondaries) of the
+    simulation (cons upperleft lowerright)"
+    (setf dimensions dim))
+
+  (defun get-dimensions ()
+    dimensions)
+
+  (defun set-automaton (pos state fun)
+   "sets an automaton in the hash table (in the closure)"
+    (setf (gethash pos automata) (list state fun)))
+
+  (defun get-automaton (pos)
+    "gets an automaton from the hash table (in the closure)"
+    (gethash pos automata))
+
+  (defun run-step (neighborhood)
+    "runs the the simulation for one step. it invokes the
+    automata in the 2d grid defined by set-dimensions"
+    (let ((new-hash-table (make-hash-table :test 'equal)))
+      (loop for x
+            from (caar dimensions)
+            to   (cadr dimensions)
+            do (loop for y
+                     from (cdar dimensions)
+                     to   (cddr dimensions)
+                     do (let* ((pos (cons x y))
+                               (automaton (get-automaton pos))
+                               (neighbors-pos (delete-if-not
+                                                (lambda (pos)
+                                                  (cadr (multiple-value-list (get-automaton pos))))
+                                                (funcall neighborhood pos dimensions)))
+                               (neighbors (mapcar #'get-automaton neighbors-pos)))
+                          (setf (gethash pos new-hash-table)
+                                (funcall (cadr automaton) automaton neighbors)))))
+      (setf automata new-hash-table)))
+    )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; neighborhood functions ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun moore-neighbors (pos dim)
+  "calculates the moore neighbors of an automaton"
+  (let ((neighbors '()))
+  (loop for y
+      from (1- (cdr pos))
+      to  (1+ (cdr pos))
+      do (loop
+         for x
+         from (1- (car pos))
+         to   (1+ (car pos))
+         do (let ((neighborpos (cons x y)))
+          (if (not (equal pos neighborpos))
+            (push (wrap-if-necessary neighborpos dim) neighbors)))))
+  neighbors))
+
+(defun von-neumann-neighbors (pos dim)
+  "calculates the von Neumann neighbors of an automaton"
+  (let ((x (car pos))
+        (y (cdr pos)))
+    (mapcar (lambda (pos) (wrap-if-necessary pos dim))
+         (list (cons (1- x) y)
+               (cons (1+ x) y)
+               (cons x (1- y))
+               (cons x (1+ y))))))
+
+(defun wrap-one-dim (n min max)
+  "makes sure that a position is
+  always in the boundary min - max
+  and wraps it around if necessary"
+  (+ min (mod (- n min) max)))
+
+(defun wrap-if-necessary (pos dim)
+  "Makes sure that pos is always between
+  the boundaries of (car dim) and (cdr dim).
+  Wraps pos if necessary"
+  (cons
+    (wrap-one-dim (car pos) (caar dim) (cadr dim))
+    (wrap-one-dim (cdr pos) (cdar dim) (cddr dim))))
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; helper functions ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(defun create-automata (gen-state fun)
+  "adds the automata between from-pos to to-pos in a
+  2d grid. For the initial state it calls gen-state each
+  time with the position as argument"
+  (let* ((dimensions (get-dimensions))
+         (from-pos   (car dimensions))
+         (to-pos     (cdr dimensions)))
+    (loop for x
+          from (car from-pos)
+          to   (car to-pos)
+          do (loop for y
+                   from (cdr from-pos)
+                   to   (cdr to-pos)
+                   do (set-automaton (cons x y) (funcall gen-state (cons x y)) fun)))))
+
+(defun print-automata (conversion-fun)
+  "prints the automata between two positions. It uses a conversion
+  function to determine which char to use"
+  (let* ((dimensions (get-dimensions))
+         (from-pos   (car dimensions))
+         (to-pos     (cdr dimensions)))
+    ; perform a shell clear (unix and sbcl/clisp only working)
+    #+clisp
+    (ext:shell "clear")
+    #+sbcl
+    (sb-ext:run-program "/usr/bin/clear" '() :input nil :output *standard-output*)
+
+    (loop for y
+          from (cdr from-pos)
+          upto (cdr to-pos)
+          do (progn
+               (loop for x
+                     from (car from-pos)
+                     upto (car to-pos)
+                     do (format t "~a" (funcall conversion-fun (car (get-automaton (cons x y))))))
+               (format t "~%")))))
+
+;===============================================================================
+
+;(load "M/examples/pattern.lisp") 
+
+;;; pattern.lisp
+;;; simple example program
+;;; showing the capability to generate a pattern using
+;;; cl-ca:create-automata
+
+;(ql:quickload :cl-ca)
+
+;-------------------------------------------------------------------------------
+
+(defparameter *from* '( 0 .  0))
+(defparameter *to*   '(20 . 10))
+
+;-------------------------------------------------------------------------------
+(defun pattern (pos)
+
+  (if (= 0 (mod (+ (car pos) (cdr pos)) 2))
+    'nil
+    't)
+
+)
+;-------------------------------------------------------------------------------
+(defun toggle (me neighbors)
+
+  (list (not (car me)) (cadr me))
+
+)
+;===============================================================================
+
+;(load "M/examples/gameof.lisp")
+
+;-------------------------------------------------------------------------------
+;;; gameof.lisp
+;;; example program implementing Conway's game of life
+
+;(ql:quickload :cl-ca)
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+; "implements the rules of Conway's Game of Life for cl-ca"
+;-------------------------------------------------------------------------------
+(defun liferules (automaton neighbors)
+
+(let (
+  (alive-neighbors (reduce (lambda (val el) 
+                             (if (car el)
+                                 (1+ val)
+                               val))
+                           neighbors :initial-value 0))
+  )
+  (list 
+   ;; the cond construct determinates the new state
+   (cond
+    ((and      (car automaton)       (>  alive-neighbors  3))                      'nil)
+    ((and      (car automaton)       (<  alive-neighbors  2))                      'nil)
+    ((and      (car automaton)       (>= alive-neighbors  2) (<= alive-neighbors 3)) 't)
+    ((and (not (car automaton))      ( = alive-neighbors  3))                        't)
+    ((and (not (car automaton)) (not ( = alive-neighbors  3)))                     'nil)
+    )
+
+   (cadr automaton))
+  
+))
+;-------------------------------------------------------------------------------
+(defun init-random (pos)
+  "returns the initial state of each automaton"
+  (if (= 0 (random 2))
+    'nil
+    't))
+
+;-------------------------------------------------------------------------------
+(defun only-glider (pos)
+  "inits the simulation so that there's only one hacker glider :)"
+  (cond
+    ((equal pos '(1 . 0)) 't)
+    ((equal pos '(2 . 1)) 't)
+    ((equal pos '(2 . 2)) 't)
+    ((equal pos '(0 . 2)) 't)
+    ((equal pos '(1 . 2)) 't)
+    (t 'nil)))
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun run_pattern_test ()
+
+  (cl-ca:set-dimensions   (cons *from* *to*))
+
+  (cl-ca:create-automata #'pattern #'toggle)
+  
+  (loop for i from 1 to 3 do 
+    
+    (progn
+      (cl-ca:print-automata (lambda (x)
+                              (if x
+                                  #\#
+                                #\space)))
+      (cl-ca:run-step (lambda (pos dim) '()))
+      (sleep 0.5))
+  )
+
+)
+;-------------------------------------------------------------------------------
+(defun MAIN ()
+
+  (setf *random-state* 
+        (make-random-state t)) ; we want more random stuff /o/
+ 
+  (defparameter *from* '( 0 .  0)  "starting point of the simulation")
+
+  (defparameter *to*   '(80 . 24)  "ending point of the simulation")
+
+
+  (cl-ca:set-dimensions (cons *from* *to*))
+
+  (cl-ca:create-automata #'init-random #'liferules)
+
+  (loop do 
+    ;(progn
+      
+    (cl-ca:print-automata (lambda (x)
+                            (if x
+                                #\#
+                              #\space)))
+    (sleep 1)
+    (cl-ca:run-step #'cl-ca:moore-neighbors)
+     ; )
+    )
+
+)
+;-------------------------------------------------------------------------------
+
+(run_pattern_test)
+
+(MAIN)
+
+;===============================================================================

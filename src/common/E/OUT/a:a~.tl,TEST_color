@@ -1,0 +1,28 @@
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[ 0 ; 31 m  COLOR_RED
+[ 1 ; 31 m  COLOR_LIGHT_RED
+
+[ 0 ; 32 m  COLOR_GREEN
+[ 1 ; 32 m  COLOR_LIGHT_GREEN
+
+[ 0 ; 34 m  COLOR_BLUE
+[ 1 ; 34 m  COLOR_LIGHT_BLUE
+
+[ 0 ; 36 m  COLOR_CYAN
+[ 1 ; 36 m  COLOR_LIGHT_CYAN
+
+[ 0 ; 35 m  COLOR_PURPLE
+[ 1 ; 35 m  COLOR_LIGHT_PURPLE
+
+[ 0 ; 33 m  COLOR_YELLOW
+[ 1 ; 33 m  COLOR_LIGHT_YELLOW
+
+[ 0 ; 30 m  COLOR_BLACK
+[ 1 ; 30 m  COLOR_LIGHT_BLACK
+
+[ 0 ; 37 m  COLOR_WHITE
+[ 1 ; 37 m  COLOR_LIGHT_WHITE
+
+[ 0 ; 0 m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

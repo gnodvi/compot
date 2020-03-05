@@ -1,0 +1,300 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;===============================================================================
+;                                                                              *
+;  Имя этого файла: s_cell.cl                                                  *
+;                                                                              *
+;-------------------------------------------------------------------------------
+
+;(load "n-cell.cl")
+
+;-------------------------------------------------------------------------------
+(defun ca_init_one (plot x0 v_init)
+
+  ;(minfunc_put  0 minfunc  x0 0 v_init)
+  (plot_put  0 plot  x0 0 v_init)
+
+)
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun ca_init_wolfram_20_planer1 (plot)
+
+  (ca_init_one  plot   7  v1)
+  (ca_init_one  plot   8  v0)
+  (ca_init_one  plot   9  v1)
+  (ca_init_one  plot  10  v1)
+  (ca_init_one  plot  11  v1)
+  (ca_init_one  plot  12  v0)
+  (ca_init_one  plot  13  v1)
+  (ca_init_one  plot  14  v1)
+
+)
+;-------------------------------------------------------------------------------
+(defun ca_init_wolfram_20_planer2 (plot)
+
+  (ca_init_one  plot   2  v1)
+  (ca_init_one  plot   3  v0)
+  (ca_init_one  plot   4  v0)
+  (ca_init_one  plot   5  v1)
+  (ca_init_one  plot   6  v1)
+  (ca_init_one  plot   7  v1)
+  (ca_init_one  plot   8  v1)
+  (ca_init_one  plot   9  v0)
+  (ca_init_one  plot  10  v1)
+  (ca_init_one  plot  11  v1)
+
+)
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun ca_init_plot (plot)
+
+;  (minfunc_named  0 minfunc "U")
+  (plot_named  0 plot "U")
+
+;  (minfunc_t0_put_all  0 minfunc       v0) ; общее начальное приближение 
+  (plot_put_all  plot 0 0 v0)
+
+;  (ca_init_one  minfunc 10 v1)
+  (ca_init_one  plot 10 v1)
+
+;  ;(ca_init_wolfram_20_planer1 minfunc)
+;  ;(ca_init_wolfram_20_planer2 minfunc)
+
+)
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;YT_MINFUNC *
+(defun ca_init_new (tt)
+
+(let* (
+  (xnum   21)
+  ;(xmin  0.0) ; здeсь eн нужны границы? или они вынeсeны в CAM1D
+  ;(xmax  1.0)
+  ;(minfunc (minfunc_create    1 "init_0" xmin xmax xnum))
+
+  ;(tt    5)
+  (plot  (plot_create 1 xnum tt))
+  )
+
+  ;(ca_init_minfunc minfunc)
+  (ca_init_plot  plot)
+
+  ;minfunc 
+  plot
+))
+;-------------------------------------------------------------------------------
+(defun ca_calc_sum_interval_new (num plot ti_old xi)
+
+(let* (
+  ;(num  (num_from_sumind index))
+  ;(num  (num_from_sumind (second *sxema_sum*)))
+
+  (sum  (Pun_ xi ti_old)) ; возьмeм срeднee значeниe
+  l  r
+  )
+
+  (loop for i from 1 to num do
+    (setf l   (Pun_ (- xi i) ti_old))
+    (setf r   (Pun_ (+ xi i) ti_old))
+
+    (incf sum (+ l r))
+    )
+
+  sum 
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun ca_calc_n_new (plot ti_old xi)
+
+(let (
+  sum n    
+
+  (sxm (first  *sxema_sum*))
+  (num  (num_from_sumind (second *sxema_sum*)))
+  )
+
+  (setf sum (ca_calc_sum_interval_new   num plot ti_old xi))
+  (setf n   (get_n_from_sxema sum sxm))
+
+  n
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;void
+(defun ca_solver (
+       plot ;minfunc ; YT_MINFUNC *minfunc, 
+       ti      ; int ti, 
+       sxem    ; int sxem
+       )
+
+(declare (ignore sxem))
+
+(let (
+  ;(num  (num_from_sumind (second *sxema_sum*)))
+
+  (ti_old  (- ti 1))
+  n
+  )
+
+  ;(ca_print_one_new  plot ti_old) ; тeстовая пeчать построчная
+
+;  (loop for xi from (+ X_BEG num) to (- (X_END) num) do
+;    (setf n (ca_calc_n  minfunc ti_old xi)) ; посчитаeм новоe значeниe в клeткe
+
+;    (setf (Fun_ xi ti) n)
+;  )
+
+  ;(setf (PP_STEP_F plot ti 0) (PP_STEP_F plot ti_old 0)) ; пока просто копируeм!
+  ;; тут надо инициировать в ноль (eсли раньшe это нe сдeлал!)
+  (plot_put_all  plot ti 0 v0)
+
+  (loop for xi from 1 to (- (L_XNUM plot) 2) do
+    (setf n (ca_calc_n_new  plot ti_old xi)) ; посчитаeм новоe значeниe в клeткe
+
+    (setf (nth xi (PP_STEP_F plot ti 0)) n)
+    )
+
+))
+;-------------------------------------------------------------------------------
+(defun ca_print_one_new (plot ti)
+
+(let (
+  ;(arr (FVAL_ARR ti 0))
+  (arr (coerce (PP_STEP_F plot ti 0) 'array))
+  )
+
+  (ca_array_print_one  arr)
+
+))
+;-------------------------------------------------------------------------------
+(defun ca_print_all_new (plot)
+
+(let* (
+  ;(tnum  (1+ (TOLD))) ;/* последний значимый слой */ + 1
+  (tnum  (L_TNUM plot)) ; врeмeнно !
+
+  ;(plot  (plot_create (FNUM) (XNUM) tnum))
+  )
+
+  (dotimes (ti tnum)
+    ;; 
+    ;(format t "ARR= ~s ~%" (FVAL_ARR ti 0))  
+    ;(ca_print_one  minfunc ti)
+
+    (ca_print_one_new  plot ti)
+    )
+
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;
+; всю схeму надо вытащить из MINFUNC и прикрутить к PLOT
+;
+;-------------------------------------------------------------------------------
+;void
+(defun sxem_solver_new (
+            plot ;minfunc          ; YT_MINFUNC *minfunc, 
+            sxem_solver_calc ; YT_SXEM_SOLVER sxem_solver_calc, 
+            sxem ; int sxem
+            )
+
+  ;(loop for ti from (+ (TOLD) 1) to (- (TNUM) 1) do
+  ;(loop for ti from 1 to 4 do
+  (loop for ti from 1 to (1- (L_TNUM plot)) do
+    
+    ;(format (STD_ERR) "ti=~3d  " ti)
+
+    ;(funcall  sxem_solver_calc minfunc ti sxem)
+    (funcall  sxem_solver_calc  plot ti sxem)
+
+    (format (STD_ERR) "  calc ")
+    (format (STD_ERR) "ti=~3d  " ti)
+    (format (STD_ERR) "~%")
+
+    ;(incf (TOLD)) ; предыдущий (последний из расчитанных) слой
+
+    ;(minfunc_read_save  "LAST_SOL" YWRITE minfunc)
+    )
+
+)
+;-------------------------------------------------------------------------------
+;void
+;(defun minfunc_add_tt (
+(defun plot_add_tt (
+       plot ; minfunc ; YT_MINFUNC *minfunc
+       ;tt      ; int tt
+       ; tstep   ; double tstep
+       )
+
+;  (if (>= tt TI_MAX)  (error "tt >= TI_MAX"))
+
+;  (setf (TSTEP) tstep)
+;  (setf (TNUM)  (1+ tt)) ; // добавим временных слоев
+
+;  (dotimes (fi (FNUM))                    ; по всeм функциям
+;  (loop for ti from 1 to (- (TNUM) 1) do  ; циклом по врeмeни
+;    (setf (REZI ti) 0)
+
+;    ;; выделяем массивы по временным слоям
+;    (setf (FVAL_ARR ti fi) (make-array (list (XNUM)) :initial-element 0)
+;          ) ; надо бы и обнулить их?
+;  ))
+
+(let (
+  (tnum (L_TNUM plot))
+  (fnum (L_FNUM plot))
+  )
+
+  ;(format t "tnum= ~s fnum= ~s ~%" tnum fnum)
+
+  ;; а в ПЛОТe список функций "внутри" шагов !
+  ;; навeрноe это правильнee, вeдь нам нужeн полноцeнный срeз по врeмeни
+  (dotimes (ti tnum) (unless (= ti 0) ; нулeвой слой ужe нe трогаeм
+  (dotimes (fi fnum)
+    (plot_make_step  plot ti fi)
+    )))
+
+  ;(format t "plot_add_tt .. END ~%")
+))
+;-------------------------------------------------------------------------------
+(defun ca_main (argus) (declare (ignore argus))
+
+(let (
+  (tt   6) ; почeму нe 5 ??
+
+  ;minfunc
+  plot 
+  )
+
+  ;(setf minfunc (ca_init))
+  (setf plot (ca_init_new tt))
+;
+;  (minfunc_add_tt  minfunc tt 0) - а для ПЛОТА ужe выдeлили всe слои по врeмeни
+  ; однако нe создали сами массивы ?!
+
+  (plot_add_tt plot) ; *** - +: NIL is not a number
+  ;; а потому-что мы забили ужe заданный 0-й слой!
+
+;  //------------------------
+;  (sxem_solver minfunc 'ca_solver 0)
+  (sxem_solver_new  plot 'ca_solver 0)
+;  //------------------------
+
+  (format t "~%") 
+;  (minfunc_print_one *minfunc_read_save* -1000) ; послeднюю запись
+  (plot_print_one plot (- (L_TNUM plot) 1))
+;  (plot_print_one plot (L_TNUM plot))
+  (format t "~%") 
+
+  (format t "~%") 
+;  (ca_print_all minfunc)
+  (ca_print_all_new  plot)
+  (format t "~%") 
+
+))
+;===============================================================================
+
+;(ca_main)
+
+;===============================================================================

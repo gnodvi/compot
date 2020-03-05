@@ -1,0 +1,667 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh 
+# the next line restarts using wish \
+exec wish "$0" ${1+"$@"} 
+
+#-------------------------------------------------------------------------------
+# 
+
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+#lappend auto_path \
+  [file join [file dirname [info script]] "."] 
+
+package require compot::common 1.0
+
+#-------------------------------------------------------------------------------
+
+source "./e-0000.tl"
+    
+#namespace import ctext::* ??
+
+
+#-------------------------------------------------------------------------------
+#set tcl_traceExec 1
+
+# ctext_test.tcl
+#
+# test_interactive.tcl
+#
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc linemap_mark_cmd {win type line} {
+
+  puts "line $line was $type in $win"
+
+}
+#-------------------------------------------------------------------------------
+proc set_colors_tcl_dark2 {txt} {
+
+
+  $txt configure -bg "black" -fg "white" -insertbackground "yellow" \
+                 -linemap_mark_command linemap_mark_cmd 
+
+
+  ctext::addHighlightClass  $txt widgets purple [list obutton button label text frame toplevel \
+         cscrollbar scrollbar checkbutton canvas listbox menu menubar menubutton \
+         radiobutton scale entry message tk_chooseDir tk_getSaveFile \
+         tk_getOpenFile tk_chooseColor tk_optionMenu]
+  
+  ctext::addHighlightClass  $txt flags orange [list -text -command -yscrollcommand \
+         -xscrollcommand -background -foreground -fg -bg \
+         -highlightbackground -y -x -highlightcolor -relief -width \
+         -height -wrap -font -fill -side -outline -style -insertwidth \
+         -textvariable -activebackground -activeforeground -insertbackground \
+         -anchor -orient -troughcolor -nonewline -expand -type -message \
+         -title -offset -in -after -yscroll -xscroll -forward -regexp -count \
+         -exact -padx -ipadx -filetypes -all -from -to -label -value -variable \
+         -regexp -backwards -forwards -bd -pady -ipady -state -row -column \
+         -cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor \
+         -underline -tags -tag]
+  
+  ctext::addHighlightClass  $txt stackControl red \
+    {proc uplevel namespace while for foreach if else}
+
+  ctext::addHighlightClassWithOnlyCharStart  $txt vars mediumspringgreen "\$"
+  ctext::addHighlightClass          $txt htmlText yellow "<b> </b> <i> </i>"
+  ctext::addHighlightClass          $txt variable_funcs gold {set global variable unset}
+  ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}}
+  ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
+
+  ctext::addHighlightClassForRegexp $txt comments khaki {#[^\n\r]*}
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc set_colors_tcl_dark1 {txt} {
+
+
+  $txt configure -bg "black" -fg "white" -insertbackground "yellow" 
+
+
+  ctext::addHighlightClass $txt widgets purple \
+    [list obutton button label text frame toplevel \
+        cscrollbar scrollbar checkbutton canvas listbox menu menubar menubutton \
+        radiobutton scale entry message tk_chooseDir tk_getSaveFile \
+        tk_getOpenFile tk_chooseColor tk_optionMenu]
+  
+  ctext::addHighlightClass $txt flags orange [list -text -command -yscrollcommand \
+        -xscrollcommand -background -foreground -fg -bg \
+        -highlightbackground -y -x -highlightcolor -relief -width \
+        -height -wrap -font -fill -side -outline -style -insertwidth \
+        -textvariable -activebackground -activeforeground -insertbackground \
+        -anchor -orient -troughcolor -nonewline -expand -type -message \
+        -title -offset -in -after -yscroll -xscroll -forward -regexp -count \
+        -exact -padx -ipadx -filetypes -all -from -to -label -value -variable \
+        -regexp -backwards -forwards -bd -pady -ipady -state -row -column \
+        -cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor \
+        -underline -tags -tag]
+  
+  ctext::addHighlightClass $txt stackControl red \
+    {proc uplevel namespace while for foreach if else}
+
+  ctext::addHighlightClassWithOnlyCharStart $txt vars mediumspringgreen "\$"
+  ctext::addHighlightClass          $txt htmlText yellow "<b> </b> <i> </i>"
+  ctext::addHighlightClass          $txt variable_funcs gold {set global variable unset}
+  ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}}
+  ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
+  ctext::addHighlightClassForRegexp $txt comments khaki {#[^\n\r]*}
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc set_colors_c_dark {txt} {
+
+
+  $txt configure -bg "black" -fg "white" -insertbackground "yellow" 
+
+  ctext::addHighlightClassForSpecialChars $txt brackets green   {[]}
+  ctext::addHighlightClassForSpecialChars $txt braces lawngreen {{}}
+  ctext::addHighlightClassForSpecialChars $txt parentheses palegreen {()}
+
+  # сбивают всю расцветку и парсинг!
+  #
+  #ctext::addHighlightClassForSpecialChars $txt quotes "#c65e3c" {"'}
+
+  ctext::addHighlightClass $txt control red \
+        [list namespace while for if else do switch case]
+		
+  ctext::addHighlightClass $txt types purple [list \
+        int char u_char u_int long double float typedef unsigned signed]
+	
+  ctext::addHighlightClass $txt macros mediumslateblue [list \
+	#define #undef #if #ifdef #ifndef #endif #elseif #include #import #exclude]
+	
+  ctext::addHighlightClassForSpecialChars $txt math cyan {+=*-/&^%!|<>}
+
+
+  ctext::enableComments $txt
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc remove_and_high_proc {txt} {
+
+  puts [time {
+    foreach tag [.f.t tag names] {
+      .f.t tag remove $tag 1.0 end
+    }
+    update idletasks
+    .f.t highlight 1.0 end
+  }]
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc set_controls_main {wid  txt} {
+
+  option add *buttons*font times ;# не работает ??
+
+  set W 3
+  set F {times 10} ;# {times 12}
+
+  set b1  [button $wid.append -text "Open  " -command [list $txt open_cmd] -width $W]
+  set b2  [button $wid.cut    -text "Cut"    -command [list $txt cut     ] -width $W] 
+  set b3  [button $wid.copy   -text "Copy"   -command [list $txt copy    ] -width $W]
+  set b4  [button $wid.paste  -text "Paste"  -command [list $txt paste   ] -width $W]
+  set b5  [button $wid.exit   -text "Exit"   -command exit        -font $F -width $W]
+
+  pack $b1  -side left
+  pack $b2  -side left
+  pack $b3  -side left
+  pack $b4  -side left 
+  pack $b5  -side left
+
+  #.f.t configure -font {courier 11 bold}
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc main_s {} {
+
+  scrollbar .y -orient   vertical -command {.t yview}
+  scrollbar .x -orient horizontal -command {.t xview}
+  
+  ctext .t -xscrollcommand {.x set} -yscrollcommand {.y set} -wrap none
+  
+  #scrollbar .x -orient horizontal -command {.t xview}
+  
+  
+  grid .y -sticky ns
+  grid .t -row 0 -column 1
+  grid .x -column 1 -sticky we
+  
+}
+#-------------------------------------------------------------------------------
+proc main_w {} {
+
+  pack [ctext {.t blah}]
+  
+  ctext::addHighlightClass {.t blah} c  blue [list  bat  ball boot cat hat]
+  ctext::addHighlightClass {.t blah} c2  red [list  bozo bull bongo]
+  
+  {.t blah} highlight 1.0 end
+  
+}
+#-------------------------------------------------------------------------------
+
+# !------------------------------------------------------------------------------
+# ! . .....
+# !Emacs.geometry: 94x58+450+150
+# Emacs.geometry: 94x58+860+205
+
+# !Emacs.default.attributeFont:  -*-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*
+# Emacs.default.attributeFont: -rfx-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*
+# !-rfx-fixed-bold-*-*-*-13-120-75-75-c-80-koi8-*
+
+# Emacs.italic.attributeFont:  -*-times-bold-i-*-*-14-*-*-*-*-*-koi8-*
+# Emacs.bold.attributeFont:    -*-times-bold-r-*-*-14-*-*-*-*-*-koi8-*
+
+# Emacs*menubar*Font:          -*-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*
+# Emacs*popup*Font:            -*-fixed-bold-*-*-*-13-*-*-*-*-80-koi8-*
+
+#-------------------------------------------------------------------------------
+proc make_menu {} {
+
+
+  frame .fluff -bd 1 -relief groove  
+
+
+  tk::menubutton .fluff.mb   -text File        -menu .fluff.mb.f 
+  tk::menubutton .fluff.ed   -text Edit        -menu .fluff.ed.t
+  tk::menubutton .fluff.hp   -text Help        -menu .fluff.hp.h
+
+  pack .fluff.mb -in .fluff -side left
+  pack .fluff.ed -in .fluff -side left
+  pack .fluff.hp -in .fluff -side right
+
+  #############################
+  # file menu
+  menu .fluff.mb.f -tearoff 1
+
+  .fluff.mb.f add command -label "New" -command {eval exec tcltext &} -accelerator Ctrl+n
+  #   .fluff.mb.f add separator
+  #   .fluff.mb.f add command -label "Open"   -command {OpenFile} -accelerator Ctrl+o
+  #   .fluff.mb.f add command -label  "Save"  -command {file_save} -accelerator Ctrl+s
+  #   .fluff.mb.f add command -label "SaveAs" -command {file_saveas} -accelerator Ctrl-b
+  #   .fluff.mb.f add command -label "Close"  -command {clear} -accelerator Ctrl+q
+  #   .fluff.mb.f add separator
+  #   .fluff.mb.f add command -label "Tcl Template"    -command {tcltemp}
+  #   .fluff.mb.f add command -label "Perl Template"   -command {pltemp}
+  #   .fluff.mb.f add command -label "Python Template" -command {pytemp}
+  #   .fluff.mb.f add separator
+  #   .fluff.mb.f add command -label "Print" -command {prnt} -accelerator Ctrl+p
+  #   .fluff.mb.f add command -label "Export to PDF" -command {pdfout} 
+  .fluff.mb.f add separator
+  .fluff.mb.f add command -label "Quit"  -command {leave} -accelerator Escape
+  #############################
+  
+
+  # edit menu
+  ######################################3
+  menu .fluff.ed.t -tearoff 1
+  .fluff.ed.t add command -label "Cut" -command cut_text -accelerator Ctrl+x
+  .fluff.ed.t add command -label "Copy" -command copy_text -accelerator Ctrl+c
+  .fluff.ed.t add command -label "Paste" -command paste_text -accelerator Ctrl+v
+  #   .fluff.ed.t add command -label "Select all" -command ".txt.txt tag add sel 1.0 end" -accelerator Ctrl+a
+  #   .fluff.ed.t add command -label "Undo" -command {catch {.txt.txt edit undo}} -accelerator Ctrl+z
+  #   .fluff.ed.t add command -label "Redo" -command {catch {.txt.txt edit redo}} -accelerator Ctrl+r
+
+  .fluff.ed.t add command -label "Comment" -command {Comment} -accelerator F9
+  #   .fluff.ed.t add command -label "Uncomment" -command {Uncomment} -accelerator F10
+
+  #   .fluff.ed.t add separator
+  #   .fluff.ed.t add command -label "Search" -command {FindPopup} -accelerator F3
+  #   .fluff.ed.t add separator
+  #   .fluff.ed.t add comman -label "Toggle Word Wrap" -command {wwrap} -accelerator F6
+  #   .fluff.ed.t add command -label "Toggle Line Nos." -command {linenums .txt.txt} -accelerator F1
+  #   .fluff.ed.t add command -label "Word Count" -command {wordcount} -accelerator F5
+  #   .fluff.ed.t add command -label "Time Stamp" -command {indate}
+  #   .fluff.ed.t add command -label "Special Characters" -underline 0 -command specialbox -accelerator F4
+  .fluff.ed.t add separator
+  .fluff.ed.t add command -label "Preferences" -command {prefs} -accelerator F8
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  menu .fluff.hp.h -tearoff 1
+
+  .fluff.hp.h add command -label "Manual" -command {eval exec tcltext &} -accelerator Ctrl+n
+  .fluff.hp.h add separator
+  .fluff.hp.h add command -label "About"  -command {leave} -accelerator Escape
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  pack .fluff -in . -fill x
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc make_main_txtframe {} {
+
+  set scrollbar_width 40
+  set is_linemap 0 ;# 1 - нумерация строк и т.д.
+
+
+  pack [frame .f] -fill both -expand 1
+
+
+  pack [scrollbar .f.s -command {.f.t yview} -width $scrollbar_width] -side right -fill y
+  
+  set ct  [ctext     .f.t -linemap $is_linemap \
+          -yscrollcommand {.f.s set}]
+
+  pack $ct -fill both -expand 1
+  
+
+  set_font_for_txt
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc print_testvals {txt} {
+
+  puts ""
+  puts "linemap   = [$txt cget -linemap]"
+  puts "linemapfg = [$txt cget -linemapfg]"
+  puts "linemapbg = [$txt cget -linemapbg]"
+  puts "bg        = [$txt cget -bg]"
+
+  puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc make_top_contols {txt} {
+
+  pack [frame .f1] -fill x 
+   
+  set_controls_main .f1 .f.t
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc set_controls_test {wid  txt} {
+
+
+  pack [button $wid.test2 -text {Scrollbar Command {}} \
+          -command [list $txt config -yscrollcommand {} ]] -side left
+
+  pack [button $wid.cl -text {Clear Classes} \
+          -command [list ctext::clearHighlightClasses $txt]] -side left
+
+  pack [button $wid.des -text Destroy -command [list destroy $txt]] -side left
+
+  pack [button $wid.editModSet0 -text "Set Modified 0" \
+          -command [list puts [$txt edit modified 0]]] -side left
+
+  pack [button $wid.editModGet -text "Print Modified" \
+          -command [list puts [$txt edit modified]]] -side left
+  
+
+  # Remove all Tags and Highlight
+  #
+  pack [button $wid.test -text {Remove and High} \
+          -command [list remove_and_high_proc $txt]] -side left
+
+  pack [button $wid.fastdel -text {Fast Delete} \
+          -command [list $txt fastdelete 1.0 end]]   -side left
+  
+  return
+}
+#-------------------------------------------------------------------------------
+proc make_bot_contols {txt} {
+
+  pack [frame .f2] -fill x
+
+  set_controls_test .f2 .f.t
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc make_bot_comands {txt} {
+
+  pack [entry .e] -side bottom -fill x
+  
+  #.e insert end "ctext::deleteHighlightClass .f.t "    ??? что это было ???
+  .e insert end "ctext::clearHighlightClasses .f.t "
+
+  
+  bind .e <Return> {puts [eval [.e get]]}
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc get_colors_proc {fname} {
+
+  set ext [file extension $fname]
+
+  #puts "EXT = $ext"
+
+  if {$ext == ".cc"} {
+
+    set cproc "set_colors_c_dark"
+
+  } else {
+
+    #set cproc "set_colors_tcl_dark1"
+    #set cproc "set_colors_tcl_dark2"
+    set cproc "set_colors_tcl_lite1"
+
+  }
+
+  return $cproc
+}
+#-------------------------------------------------------------------------------
+
+# (defun my-color-sxema0 ()
+#  (interactive)
+
+#  (set-face-background 'default "bisque")
+#  (set-face-foreground 'default "black")  
+
+#  ;(set-face-background 'highlight    "yellow") ;
+#  ;(set-face-background 'isearch      "yellow") ; When highlighting  while searching
+
+#  (set-face-foreground 'font-lock-comment-face       "Red")    
+#  (set-face-foreground 'font-lock-string-face 	    "purple") 
+#  (set-face-foreground 'font-lock-keyword-face 	    "dark violet")
+#  (set-face-foreground 'font-lock-function-name-face "Blue")  
+#  (set-face-foreground 'font-lock-variable-name-face "DarkBlue") 
+#  (set-face-foreground 'font-lock-type-face	    "DarkGreen") 
+#  (set-face-foreground 'font-lock-warning-face	    "Red")       
+#  (set-face-foreground 'font-lock-reference-face     "tomato") 
+#  (set-face-foreground 'font-lock-preprocessor-face  "forest green") 
+#  (set-face-foreground 'font-lock-doc-string-face    "chartreuse4")  
+# ) 
+
+#-------------------------------------------------------------------------------
+proc set_colors_tcl_lite1 {txt} {
+
+  $txt configure -bg "bisque" -fg "black" \
+       -insertbackground "red" -blockcursor $::is_blockcursor -insertontime 3600000
+
+
+  ctext::addHighlightClass $txt widgets "purple" \
+    [list obutton button label text frame toplevel \
+        cscrollbar scrollbar checkbutton canvas listbox menu menubar menubutton \
+        radiobutton scale entry message tk_chooseDir tk_getSaveFile \
+        tk_getOpenFile tk_chooseColor tk_optionMenu]
+  
+  ctext::addHighlightClass $txt flags "darkgreen" [list -text -command -yscrollcommand \
+        -xscrollcommand -background -foreground -fg -bg \
+        -highlightbackground -y -x -highlightcolor -relief -width \
+        -height -wrap -font -fill -side -outline -style -insertwidth \
+        -textvariable -activebackground -activeforeground -insertbackground \
+        -anchor -orient -troughcolor -nonewline -expand -type -message \
+        -title -offset -in -after -yscroll -xscroll -forward -regexp -count \
+        -exact -padx -ipadx -filetypes -all -from -to -label -value -variable \
+        -regexp -backwards -forwards -bd -pady -ipady -state -row -column \
+        -cursor -highlightcolors -linemap -menu -tearoff -displayof -cursor \
+        -underline -tags -tag]
+  
+  ctext::addHighlightClass $txt stackControl "blue" \
+    {proc uplevel namespace while for foreach if else}
+
+#   ctext::addHighlightClassWithOnlyCharStart $txt vars mediumspringgreen "\$"
+#   ctext::addHighlightClass          $txt htmlText     yellow "<b> </b> <i> </i>"
+#   ctext::addHighlightClass          $txt variable_funcs gold {set global variable unset}
+#   ctext::addHighlightClassForSpecialChars $txt brackets green {[]{}}
+#   ctext::addHighlightClassForRegexp $txt paths lightblue {\.[a-zA-Z0-9\_\-]+}
+
+   ctext::addHighlightClassForRegexp $txt comments "red" {#[^\n\r]*}
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc set_font_for_txt {} {
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # плохо:
+  
+
+  #set myfont -adobe-helvetica-bold-r-normal--14-*-*-*-*-*-*
+  #set myfont -rfx-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*
+
+  #font configure .f.t -size [list [$combo get]]
+  #.f.t configure -font {fixed 10 bold}
+
+  #.f.t configure -font "-*-courier-*-r-*-*-*-*-*-*-*-*-*-*"
+  #.f.t configure -font -*-courier-bold-r-*-*-12-*-*-*-*-*-*-*
+  #.f.t configure -font -*-courier-bold-r-*-*-14-*-*-*-*-*-*-*
+  #.f.t configure -font -*-courier-bold-r-*-*-14-*-75-*-*-*-*-*
+  #.f.t configure -font -*-courier-bold-r-*-*-14-*-*-*-*-90-*-*
+  #.f.t configure -font -*-courier-bold-r-*-*-14-140-*-*-*-*-*-*
+
+  #.f.t configure -font -*-courier-bold-r-*-*-*-*-*-*-*-90-*-*
+
+  #.f.t configure -font -*-fixed-bold-r-*-*-14-*-*-*-*-*-*-*
+  #.f.t configure -font -rfx-fixed-bold-r-*-*-13-*-*-*-*-80-*-*
+  #.f.t configure -font -rfx-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*
+
+  #font metrics {times 12} 
+  #-ascent 9 -descent 3 -linespace 12 -fixed 0
+
+  #.f.t configure -font "-*-courier 10 pitch-bold-r-*-*-*-*-*-*-*-*-*-*"
+  #.f.t configure -font "-rfx-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*"
+  #.f.t configure -font -*-fixed-*-*-*-*-10-*-*-*-*-*-iso8859-*
+  #.f.t configure -font -*-fixed-bold-*-*-*-13-*-*-*-*-*-iso8859-*
+
+
+  #.f.t configure -font {"cmr10" 10 bold} 
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # более менее нормально (т.е. моноширные хоть):
+
+  #puts [.f.t configure -font {courier 11 bold}]
+  #.f.t configure -font {Inconsolata  12 bold} ;# что-то русские толстые !
+
+  #.f.t configure -font {"Liberation Sans" 10 bold}
+
+  #.f.t configure -font {LMMono10     10 bold}
+  #.f.t configure -font {LMMonoCaps10 10 bold}
+
+  #.f.t configure -font {"TlwgMono" 10 bold} 
+  #.f.t configure -font {"WenQuanYi Micro Hei Mono" 10 bold}
+
+  #.f.t configure -font {"Courier 10 Pitch" 10 bold} ;# а это нормально!
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # хорошо:
+
+  #.f.t configure -font {"Nimbus Mono L" 11 bold}
+  #.f.t configure -font {"Liberation Mono" 10 bold}
+  
+  #.f.t configure -font {"Ubuntu Mono" 12 bold}
+
+  #.f.t configure -font {-family monospace -size 10 -weight bold} ;# тоже
+
+  #.f.t configure -font {"FreeMono" 11 bold}
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  .f.t configure -font {"DejaVu Sans mono" 10 bold} ;# а это нормально!
+
+
+  #set MYFONT [font create -family "-rfx-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*"]
+  #set MYFONT [font create -family "rfx" -size 13 -weight bold]
+
+  #.f.t configure -font $MYFONT
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #set myfont -rfx-fixed-bold-r-*-*-13-*-*-*-*-80-koi8-*
+  # 
+  #.f.t configure -font {-family rfx -size 13 -weight bold -registry koi8} ;# тоже
+  #Error in startup script: bad option "-registry": must be -family, -size, -weight, -slant, -underline, or -overstrike
+
+  return
+}
+#-------------------------------------------------------------------------------
+  #After overloading, insertion is a little slower with the 
+  #regular insert, so use fastinsert.
+  #
+#-------------------------------------------------------------------------------
+proc read_file_and_fastinsert {fname coding  txt set_colors_proc} {
+
+  $set_colors_proc $txt
+  # 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+  set fi [open $fname r]
+
+  # считаем, что входной вайл в этой кодировке
+  # 
+  fconfigure $fi -encoding $coding
+
+  $txt fastinsert end [read $fi]
+
+  close $fi
+
+    
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+  # 
+  $txt highlight 1.0 end ;# цвет
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc main_e {fname coding} {
+
+  wm title    . "TclText" 
+
+  if {$::OS == "Windows" } {
+    set ::is_blockcursor 0
+    wm geometry . 800x600+300+100
+  } else {
+    set ::is_blockcursor 1 ;# в Windows есть ошибка на некоторых  пустых строках
+
+    wm geometry . 800x840+280+205
+  }
+
+  # определим расцветку по  типу файла
+  #
+  set set_colors_proc [get_colors_proc $fname]
+
+  # делаем меню
+  #
+  make_menu 
+
+  # кнопки управления основные
+  #
+  make_top_contols .f.t
+
+
+  # основной текстовый фрейм со скролбарами
+  #
+  make_main_txtframe 
+
+  # читаем текст из файла, расцвечиваем и вставляем
+  #
+  read_file_and_fastinsert $fname $coding  .f.t  $set_colors_proc
+
+
+  # кнопки управления для тестов
+  #
+  #make_bot_contols .f.t
+
+  # посмотрим значения
+  #
+  print_testvals  .f.t
+ 
+  # нижняя командная строчка
+  #
+  make_bot_comands .f.t
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+  
+#main_w
+#main_s 
+
+#main_e "e-0000.cc"  
+ 
+main_e "e-0000.tl" "koi8-r"  ;# "utf-8" ;#  "koi8-r" 
+
+# читаем из файла в указанной кодировке (конвертация на лету), а внутри уже
+# всегда utf-8 ?
+
+#main_e "e_1111.tl"
+
+#-------------------------------------------------------------------------------
+
+# xlsfonts 
+# xfontsel 
+# fc-match 
+
+#-------------------------------------------------------------------------------
+ 

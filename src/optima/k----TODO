@@ -1,0 +1,538 @@
+
+#-------------------------------------------------------------------------------
+
+KOY - стековый язык на основе JOY
+
+#-------------------------------------------------------------------------------
+
+РОБОТ-МЕТА-ПРОГРАММИСТ: 
+  программный робот, который может программировать 
+  алгоритм (задачу, формулу) не по конкретному ТЗ, а по общему описанию
+  функционала, в том числе и по указанному набору тестовых примеров. 
+  Программирвоание ведётся на специально разработанном стековом языке с 
+  использованием скриптового языка Tcl/Tk.
+
+#-------------------------------------------------------------------------------
+
+j - простые алгоритмы
+k - отдельный подход с типами
+
+n - тесты, в том числе NEXT_01 - ищем простую сумму с простейшим набором 
+    операторов !!!!!!! (файл n-prog.tl)
+
+наверное главная проблема - нужно сделать через ссылки на словари!!
+смотри ключевую точку роста "item_make" в n-prog.tl
+
+#-------------------------------------------------------------------------------
+
+Имеется 5 (пять) различных вариантов реализации:
+
+  0) начальный си-шный вариант Манфреда;
+
+  1) Tcl-синтаксис и квотирование скобками {};
+
+  2) плоские списки BEG_END ;
+
+  3) списочный вариант с типами и с локальными переменными от Salvatore 
+     Sanfilippo - "Apathy", т.е. квотирование типом LIST; 
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#  TODO (общая схема, концепция:
+# 
+
+- обобщенные JOY-функции  НОВОГО (Salvatore) и СТАРОГО (Manfred)
+
+- j~.tl JOY3 TEST_main 2_tst0.jt
+
+
+-) Новый план: делаем именно EP - эволюционное программирование, где мало случайных
+   механизмов и, наоборот, много строкового поиска, подстановок и раскрытий.
+   Функцию ищем не как точку в многомерном пространстве (с конкретно заданной 
+   размерностью), а как гибкую структуру с ракрывающимеся кусками-определениями 
+
+   Т.е уменьшая пространство поиска.
+   Кроме того - можно всё это представить в виде АЛГОРИТМИЧЕСКОЙ СЕТИ, т.е.
+   в узлах или ребрах - операторы и данные и движущиеся указатели, отдельно указатель 
+   для программы, отдельно для данных? Или на начальном этапе упростить, т.е.
+   дополнительная сущность - стек с данным движется вместе с операторным указателем.
+
+   Граф можно использовать в качестве представления распределенной (несколько 
+   вариантов одновременно) модели вычисления, где повторные проходы по ребрам - 
+   имплиментация библиотеки неименованных функций.
+
+   В дальнейшем, эволюционирующие программы использовать как гены в "плоском" GA.
+
+-) Старый план (неправильный) : 
+
+   Начать с рефакторинга k-prog.tl, чтобы выделить работу с абстрактными
+   строками, раскрывая генотип в фенотип ?
+
+   А затем тоже самое, но с конкретными чисто цифровыми строками, т.е. вообще
+   говоря - это будет частный случай программы без операторов - т.е. "программные
+   константы" напрямую записываются как выходные данные в стек !!!
+
+   Вообще-то похожая задача в тесте OPT/h_stru.tl -  поиск текстовой строки !!!!!!
+
+   Однако же как раз модель JOY может добавить необходимой гибкости в плоскую
+   модель строки! Т.е. в результате поиска функции мы можем получить:
+     1) строку чмсловую;
+     2) формулу;
+     3) промежуточный вариант с частичной модификацие числовой строки;
+
+   Кроме того - это добавит интересных решений при поиске динамически меняющейся
+   во времени функции, т.к. позволит локальным алгоритмам непосредственно
+   менять куски функции, а неподвижнве - не трогать !! 
+
+-) синтаксическая подсветка в  XEMACS:
+
+        * взять из пректа Factor пакет FUEL;
+        * подогнать его из Emacs в XEmacs;
+        * и затем под Joy и JOYTCL;
+
+   или же в собственном редакторе EDITOR:
+ 
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+
+-) j-1111.tl/r - обобщить главную выполнялку для префиксных исключений!
+
+-) лексическое замыкание:
+              x  `[ _ cmd]  =  [ x cmd] (как в Factor)
+
+-) может вообще убрать v0_make_proc? а нужнео вызывать через встроенную ... tcl
+   а нет, мы ж ее так и определили сами через v0_make_proc ))!
+
+-) можно ли скрещивать tcl-списки как строки символов? тесты !!!!
+
+-) сформировать конечные цели-задачи в терминах Joy-программ:
+
+   - формулы для решения квадратных уравнений
+        1 -2 1 qroots . . 
+        1 0 -1 qroots . . 
+
+   - тесты аналогичные NTM (нейронному тьюрингу):  "копирование", сортировка . 
+
+   - формулы Рамануджана (для простых чисел)
+
+   - алгоритмы сортировки (здесь как раз отработать метод
+     избыточно-постепенного улучешния)
+   
+
+-)  сделать сначала с ANTS самые простые тесты (ищем последовательности
+    движений LEFT, RIGHT, MOVE, т.е. без проверок), выделение подпрограмм
+    их модификация и т.д.  - агенты, их скрещивание !!
+  
+-) Тип данных:
+
+   1) перечисление возможных значений +
+      пеерчисление возможных операций +
+      представление в конкретной среде
+
+   2) переопределяется через готовый тип с учетом п.1
+
+   постепенно оьказаться от типов - вместо типов будет статистика по входам и 
+   выходам к функциям/блокам?;
+
+#-------------------------------------------------------------------------------
+
+-) ввести для программ оператор GOTO ?
+
+-) ввести для операторов коэффициент случаности выполнения ? (нечеткий алгоритм)
+
+-) ввести варианты операторв popN и pushN работающие на глубине стека N?
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# FACTOR   FACTOR   FACTOR   FACTOR   FACTOR   FACTOR   FACTOR   FACTOR   
+#-------------------------------------------------------------------------------
+
+# https://andreaferretti.github.io/factor-tutorial/
+
+
+# When the stack is not enough
+
+# Until now I have cheated a bit, and tried to avoid writing examples that would 
+# have been too complex to write in concatenative style. Truth is, you will find 
+# occasions where this is too restrictive. Fortunately, parsing words allow you 
+# to break these restrictions, and Factor comes with a few to handle the most 
+# common annoyances.
+
+# One thing you may want to do is to actually name local variables. The :: word 
+# works like :, but allows you to actually bind the name of stack parameters to 
+# variables, so that you can use them multiple times, in the order you want. For 
+# instance, let us define a word to solve quadratic equations. I will spare you 
+# the purely stack-based version, and present you a version with locals (this 
+# will require the locals vocabulary):
+
+# :: solveq ( a b c -- x )
+#   b neg
+#   b b * 4 a c * * - sqrt
+#   +
+#   2 a * / ;
+
+# In this case we have chosen the + sign, but we can do better and output both 
+# solutions:
+
+# :: solveq ( a b c -- x1 x2 )
+#   b neg
+#   b b * 4 a c * * - sqrt
+#   [ + ] [ - ] 2bi
+#   [ 2 a * / ] bi@ ;
+
+# You can check that this definition works with something like 2 -16 30 solveq, 
+# which should output both 3.0 and 5.0. Apart from being written in RPN style, 
+# our first version of solveq looks exactly the same it would in a language with 
+# local variables. For the second definition, we apply both the + and - operations 
+# to -b and delta, using the combinator 2bi, and then divide both results by 2a 
+# using bi@.
+
+#-------------------------------------------------------------------------------
+# CAT   CAT   CAT   CAT   CAT   CAT   CAT   CAT   CAT   CAT   CAT   CAT   CAT   
+#-------------------------------------------------------------------------------
+
+# http://www.drdobbs.com/architecture-and-design/cat-a-functional-stack-based-little-lang/207200779
+
+
+# The quicksort algorithm in Example 2 is a more sophisticated example of Cat. 
+# The algorithm relies on a binary recursion instruction (bin_rec) that provides 
+# a general implementation of a binary recursive process (also called 
+# "tree recursion"). Example 3 is a possible definition of bin_rec.
+
+
+# define qsort : (list -> list)
+# {{
+#   desc:
+#     This is a simple implementation of a quick-sort algorithm.
+#   test:
+#     in: [5 4 2 1 3 2 4] list qsort
+#     out: [5 4 4 3 2 2 1] list
+# }}
+# {
+#   // Does list have 0 or 1 elements?
+#   [small]
+#   // Base case do nothing
+#   []
+#   // Argument-relation
+#   // Split the list using the head as a pivot
+#   // storing the pivot under for later use
+#   [uncons under [lt] papply split]
+#   // Append the pivot to the first list
+#   // then concatenate the two lists.
+#   [[swap cons] dip cat]
+#   bin_rec
+# }
+
+# Example 2: A simple quick-sort algorithm.
+
+
+# define binrec(input, cond, term, unfold, fold) {
+#   input cond
+#     [term] // termination transformation
+#     [input unfold // split input
+#       [cond term unfold fold binrec] // self call with same arguments
+#       app2  // call function twice:
+#             // once with second value removed
+#             // once with top value removed
+#   ]
+#   if
+# }
+
+# Example 3: Example implementation of the bin_rec function.
+
+
+# The bin_rec function is an example of a hylomorphism (see 
+# citeseer.ist.psu.edu/meijer91functional.html) - the composition of an 
+# anamorphism (an unfolding function) and a catamorphism (a folding function). 
+# Hylomorphisms are interesting because they can be used to eliminate the 
+# construction of intermediate data structures 
+# (citeseer.ist.psu.edu/launchbury95warm.html).
+
+# The quicksort algorithm in Example 2 also demonstrates an extended feature of 
+# Cat called "metadata" - form of structured comment that can associate 
+# additional data with a Cat function that can be used by tools. For example, 
+# metadata can be used to document functions and perform automatic unit tests. 
+# The format is based on YAML (Yet Another Markup Language) and uses significant 
+# whitespace to denote hierarchical structure. 
+
+#-------------------------------------------------------------------------------
+# http://elasticdog.com/2008/12/beginning-factor-shufflers-and-combinators/
+
+# bi ( x p q -- )
+#     applies quotation p to x, then applies quotation q to x 
+
+# (scratchpad) { 1 2 3 } [ sum ] [ length ] bi / .
+# 2
+
+#-------------------------------------------------------------------------------
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#-------------------------------------------------------------------------------
+# 3333 (с типами) : 
+
+#-------------------------------------------------------------------------------
+
+-) в OTHERS для j-3333.tl:  Record -> Dict
+
+-) перенести из OTHERS сюда : "n" -> "j"
+
+-) В Common перенести "n" -> "j" (n-prog.tl --> j-prog.tl)
+                                 (n_ants.tl --> j_ants.tl)
+
+-) В Others перенести "f" -> "b" (освободить букву "f")
+
+-) В Common перенести "j" -> "f" (раньше графов)
+
+-) В "h" добавить "Алгортмические Нейронные Сети" с операторами Joy в узлах и
+   ребрах для обработки и передачи протоколов данных в виде Dict.
+
+#-------------------------------------------------------------------------------
+
+-) взять читалку в формат TCL_DIC (3-й формат) и сделать конвертер в форматы
+     BEG_END и TCL_TCL.
+
+
+-) имя контекст (с глобальным текущим), функция переключения контекста ?
+
+-) перевести внутр. структуру на dict (MODE, TYPE - отдельно!)
+
+-) убрать VGET, перейти на класс TCLoo ??;  (может на DICT уж лучше?)
+
+
+-) седлать вариант joy-run (recurent) - без ip-указателя!
+
+-) добавить как вариант линейную (без типов) запись (введя mode = STR_[])
+
+-) упростить все насколько возможно и приблизить к "22 - 33";
+
+-) перейти к внутреннему (с типами) представлению Jin
+  и для него уже проводить операции преобразований (в т.ч. и ГП).
+ 
+-) сделать перекодировку Joy->Jin во всех фитнесфункциях;
+
+
+-) t~.tl test_sFitness    ->  squareFitness_new (надо сделать squareFitness_jin)
+
+   - чего-то пока не хочет работать функция
+   - proc run_i_jinprg {jin_prg valstack} 
+
+
++) t~.tl TEST_inn_05 - а в таком виде все нормально
+
+
++) t~.tl TEST_inn_03 
+
+   - уже выдает только :
+   - rem - ^ * / +     но надо бы еще доразбираться, наверное правильно бы
+   -                   формировать отдельно процедуры, а builtin - это уже
+   - отдельно встраивание в систему, т.е. просто ссылка в  списке.
+
+
+
+-) l~.tl JOY3 TEST_main 1__00.joy @
+
+-) не получается распечатать список локальных переменных в удобном виде: 
+   print_retstate -> gena_show_joylist
+
+
+   # frontlist - ??
+
+   # binrec - не получилось;
+   # qsort  - поэтому также пришлось реализовать встроенной функцией;
+
+-) надо реализовать команду     '\n putch .
+    * а сначала понять что за апостроф !!
+    * но можно просто вывод puts -nonewline
+
+
+#-------------------------------------------------------------------------------
+
+#   >  s~.tl TEST_main j_02.joy
+#      a) include пока сделано как предпроцессор, но надо бы как встр.команда!
+#      b) Runtime error: Expected ==, got '_msum'
+#         mthlib.joy: что за оператор HIDE ?? 
+#         m_main.c -> HIDE
+
+#   > s~.tl TEST_main j_01.joy
+#     a) тест на бинарную рекурсию не проходит !! binrec  
+   
+#        n-main.tl: Core Lib - разобраться как построены ifte, linrec, binrec !!
+#	 ifte == (T PT PF) stack (S)
+#		    $T i (T) $S unstack
+#		    $T $PT $PF branch;
+#	 binrec == (B T R1 R2)
+#	    $B $T
+#	    $R1 [(a b)] concat
+#	    [$a] $B $T $R1 $R2 [] cons cons cons cons concat [binrec]
+#	    [$b] $B $T $R1 $R2 [] cons cons cons cons concat [binrec]
+#	    $R2 concat concat concat concat concat
+#	    ifte;
+#
+#
+#   >  s~.tl TEST_main j_03.joy
+#
+
+#-------------------------------------------------------------------------------
+#
+# numlib.joy
+#
+#
+    (* find roots of the quadratic equation with coefficients a b c :
+				  a * X^2  +  b * X   +  c  =  0	*)
+    qroots ==					(*  a  b  c		*)
+	[	pop pop null ]			(* a = 0 ?		*)
+						(* degenerate cases:	*)
+	[	[   pop null ]			(* b = 0 ?		*)
+		[   [ null   ]			(* c = 0 ?		*)
+		    [ [_INF] ]			(* =>  [_INF]		*)
+		    [ [] ]			(* =>  []		*)
+		    ifte
+		    [ pop pop pop ] dip ]
+		[   0 swap - swap 1.0 * /	(* float divisor	*)
+		    [] cons popd ]		(* =>  [ -c/b ]		*)
+		ifte ]
+						(* standard cases:	*)
+	[	[   [ dup * swap ] dip
+		      4 * * - ] unary		(* b^2 - 4ac		*)
+		[   0 < ]			(* b^2 - 4ac negative ?	*)
+		[   pop pop pop [_COMPLEX] ]	(* =>  [_COMPLEX]	*)
+		[   [ 0 swap - 1.0 *		(* -b  (floated)	*)
+		      swap 2 * ] dip		(* 2a			*)
+		    [ 0 = ]			(* b^2 - 4ac zero ?	*)
+		    [ pop / [] cons ]		(* =>  [-b / 2a]	*)
+		    [ sqrt swapd dup2 - [+] dip	(*   -b+s      -b-s     *)
+			[] cons cons 		(* [ -b+s      -b-s    ]*)
+		      swap [/] cons map ]   (* =>  [(-b+s)/2a (-b-s)/2a]*)
+		    ifte ]
+		ifte ]
+	ifte;
+
+
+################################################################################
+#
+
+# null : X -> B
+#     Tests for empty aggregate X or zero numeric.
+ 
+
+
+# swons : A X -> B  
+#     Aggregate B is A with a new member X (first member for sequences). 
+#     ????? error
+
+
+# По определению linrec:
+# 
+# linrec == (P T R1 R2)
+#      $P $T
+#      $R1
+#      $P $T $R1 $R2 [] cons cons cons cons
+#      [linrec] $R2 concat concat concat
+#      ifte;
+
+# Будем отслеживать состояние стека, чтобы разобрать суть:
+#
+# linrec == (P T R1 R2)
+#    $P $T                                  : -> $P $T
+#    $R1                                    : -> $P $T    $R1
+#    $P $T $R1 $R2 [] cons cons cons cons   : -> $P $T    $R1  [$P $T $R1 $R2]
+#    [linrec] $R2 concat concat concat      : -> $P $T   [$R1   $P $T $R1 $R2 [linrec]   $R2]
+#    ifte;
+#
+# Т.е. в результате просто формируется нужная структура для команды ifte :
+# 
+#   $P 
+#   $T
+#   [$R1   $P $T $R1 $R2 [linrec]   $R2]
+#   ifte;
+# 
+# и далее выполняется именно то, что надо по описаниию в документации:
+# 
+# linrec : [P] [T] [R1] [R2] -> ...
+#     Executes P. If that yields true, executes T. Else executes R1, recurses, executes R2. 
+
+
+# По определению binrec:
+# 
+# binrec2 == (B T R1 R2)
+#      $B $T
+#      $R1 [(a b)] concat
+#      [$a] $B $T $R1 $R2 [] cons cons cons cons concat [binrec]
+#      [$b] $B $T $R1 $R2 [] cons cons cons cons concat [binrec]
+#      $R2 concat concat concat concat concat
+#      ifte
+
+# Будем отслеживать состояние стека, чтобы разобрать суть:
+#
+#  binrec2 == (B T R1 R2)
+#  $B $T                                                     :-> $B $T
+#  $R1 [(a b)] concat                                        :-> $B $T [$R1 (a b)]
+#  [$a] $B $T $R1 $R2 [] cons cons cons cons concat [binrec] :-> $B $T [$R1 (a b)] [$a $B $T $R1 $R2] [binrec]
+#  [$b] $B $T $R1 $R2 [] cons cons cons cons concat [binrec] :-> $B $T [$R1 (a b)] [$a $B $T $R1 $R2] [binrec]          
+                                                                                   [$b $B $T $R1 $R2] [binrec]
+#  $R2 concat concat concat concat concat                    
+#  ifte
+                                                             :-> $B $T 
+                                                                 [ 
+                                                                 $R1 (a b)
+                                                                 $a $B $T $R1 $R2 binrec
+                                                                 $b $B $T $R1 $R2 binrec
+                                                                 $R2                              
+                                                                 ]
+                                                                 ifte
+
+# Т.е. в результате просто формируется нужная структура для команды ifte 
+ 
+# да вроде все правильно получилось (как и описано в (в Manfred Joy):
+# 
+# binrec : [B] [T] [R1] [R2] -> ...
+#     Executes B. If that yields true, executes T. 
+#     Else uses R1 to produce two intermediates, recurses on both, 
+#     then executes R2 to combines their results. 
+
+# Так что надо: 
+# 1) проверить сам вызов, что там делается
+# 2) подумать, нельзя ли формировать нужную структуру списка одной командо (lisp, lisp4 ..)
+# 
+# 
+# qsort ==
+#         [small] [] [uncons [>] split] [swapd cons concat] binrec
+
+# [3 2 4 1]  [small] [] [uncons [>] split] [swapd cons concat]  binrec2 ^
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Си-шный вариант:
+
+#-------------------------------------------------------------------------------
+
+-)  Все аналогичные тесты сделать:
+
+    i_main -t2     (TEST_simp)
+    r ("99   dup  . . ");       // - нет функции dup ?
+
+    i_main -t3     (TEST_list)    
+    и все другие тесты, а затем и с МУРАШАМИ !!!!!!!!
+
+
+-) рефакторинг 0-подраздела (возможно использование встроенных Си-библиотек TCL 
+   и OOtcl или Glib ?)
+
+-) сначала только скобочки {list} (element), а затем
+
+-) GP в рамках Tcl-синтаксиса (по крайней мере локальные определяемые
+   программки для обработки стека !!)
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------

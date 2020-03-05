@@ -1,0 +1,1529 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;===============================================================================
+
+(defvar a_num)
+(defvar d_num)
+
+
+(defvar a0)
+(defvar a1)
+(defvar a2)
+
+(defvar d0)
+(defvar d1)
+(defvar d2)
+(defvar d3)
+(defvar d4)
+(defvar d5)
+(defvar d6)
+(defvar d7)
+
+
+(defstruct MULTIPLEXER-FCASE
+  a_array
+  d_array 
+
+  target
+)
+
+(defvar *one_target_1*)
+
+;-------------------------------------------------------------------------------
+(defun set_multiplexer_num (a_num)
+
+  (setf d_num (expt 2 a_num))
+  (setf *number-of-fitness-cases*    (expt 2 (+ a_num d_num)))
+
+)
+;-------------------------------------------------------------------------------
+(defun define-fitness-cases-for-MULTIPLEXER ()
+
+(let (
+      fitness-case fitness-cases index target  
+      (OUT (if *is_print* t nil)) 
+      a_array a_IJK a_mf 
+      d_array d_IJK d_mf 
+      numer val  numer_d
+      (bool_list '(nil t))
+      )
+
+  (setf a_array (make-array a_num))
+  (setf a_IJK   (make-array a_num))
+  (ijk_array_set a_IJK     2) ; булевые переменные '(nil t) 
+  (setf a_mf (MFOR_create  a_num a_array a_IJK))
+
+  (setf d_array (make-array d_num))
+  (setf d_IJK   (make-array d_num))
+  (ijk_array_set d_IJK     2) ; булевые переменные '(nil t) 
+  (setf d_mf (MFOR_create  d_num d_array d_IJK))
+
+  (setf fitness-cases (make-array *number-of-fitness-cases*))
+
+  (format OUT "~%")	                           
+  (format *error-output* "Fitness cases: ~%")
+  (format *error-output* "~%")	                         
+
+  (setf index 0) ;; *number-of-fitness-cases*
+  
+  (MFOR_init a_mf)
+  (loop while (MFOR_todo a_mf) do (progn
+
+    (setf numer (MF-index a_mf)) 
+    (setf numer_d (- d_num (+ numer 1))) ; номер в "массиве" D
+    ;(format t " ~4S ~4S ~%" numer numer_d)
+
+    (MFOR_init d_mf)
+    (loop while (MFOR_todo d_mf) do (progn
+
+      ;; создаем структуру, описывающую проблему (переменные и цель)
+      (setf fitness-case (make-MULTIPLEXER-FCASE))
+      (setf (MULTIPLEXER-FCASE-a_array fitness-case) (make-array a_num))
+      (setf (MULTIPLEXER-FCASE-d_array fitness-case) (make-array d_num)) 
+      ;; заполняем ее конкретными вычислениями для каждого набора входов
+      
+      (format *error-output* " ~4D) " index)
+      (dotimes (i a_num)
+        (setf val (aref a_array i))
+        (setf val (nth val bool_list)) 
+ 
+        (format *error-output* "~3S " val)
+        (setf (aref (MULTIPLEXER-FCASE-a_array fitness-case) i) val)
+        ) 
+      (format *error-output* " -->  ")
+
+      ;; ----------------------------------------------------
+      ;; теперь посчитаем таргет, задав его начально истиной
+      (setf target t)
+
+      (dotimes (i d_num)
+        (setf val (nth (aref d_array i) bool_list)) 
+
+        (format *error-output* "~4S " val)
+        (setf (aref (MULTIPLEXER-FCASE-d_array fitness-case) i) val)
+ 
+        ;; истина, если правильно указан номер (место) одной! единички
+        (if (= i numer_d)
+            (setf                    target (and target val))
+            (if *one_target_1* (setf target (and target (not val))))
+          )
+      ) 
+      ;; ----------------------------------------------------
+      
+      (setf (MULTIPLEXER-FCASE-target fitness-case) target)
+      (format *error-output* " -->  ~4S " target)
+
+      ;; запоминаем полученную численную структуру в массив
+      (setf (aref fitness-cases index) fitness-case)
+      (incf index)
+    
+      (format *error-output* "~%")
+    )) 
+
+  )) 
+
+  (format OUT "~%")	                         
+    
+  (values fitness-cases)
+))
+;-------------------------------------------------------------------------------
+(defun MULTIPLEXER-wrapper (result-from-program)
+
+  (values result-from-program)
+
+)
+;-------------------------------------------------------------------------------
+(defmacro a_name (i)
+
+  (case i
+    (0 'a0)
+    (1 'a1)
+    (2 'a2)
+    )
+)
+;-------------------------------------------------------------------------------
+(defun a_name_ (i)
+
+  (case i
+    (0 'a0)
+    (1 'a1)
+    (2 'a2)
+    )
+)
+;-------------------------------------------------------------------------------
+(defun d_name_ (i)
+
+  (case i
+    (0 'd0)
+    (1 'd1)
+    (2 'd2)
+    (3 'd3)
+    (4 'd4)
+    (5 'd5)
+    (6 'd6)
+    (7 'd7)
+    )
+)
+;-------------------------------------------------------------------------------
+(defun evaluate-hits-for-MULTIPLEXER
+  (program fitness-cases)
+
+(let 
+  (
+   value-from-program target-value
+   match-found fitness-case
+   hits 
+   )
+
+  (setf hits 0)
+
+  ;;---------------------
+  (dotimes (index *number-of-fitness-cases*) ; идем циклом по всему набору 
+    (setf fitness-case (aref fitness-cases index))
+
+    (dotimes (i a_num) ; установим глобальные переменные A из кейса
+      (set (a_name_ i) (aref (MULTIPLEXER-FCASE-a_array fitness-case) (- a_num 1 i)))
+      )
+
+    (dotimes (i d_num) ; установим глобальные переменные D из кейса
+      (set (d_name_ i) (aref (MULTIPLEXER-FCASE-d_array fitness-case) (- d_num 1 i)))
+      )
+
+    (setf target-value ; берем истинное значение функции из кейса
+          (MULTIPLEXER-FCASE-target fitness-case))
+
+    (setf value-from-program ; подставляем переменные и вычисляем функцию
+          (MULTIPLEXER-wrapper (funcall *eval_prog* program)))
+
+    ;; сравниваем истинное и вычисленное значения
+    (setf match-found (eq target-value value-from-program))
+
+    (if match-found (incf hits))
+  )
+  ;;---------------------
+
+  (values hits)
+))
+;-------------------------------------------------------------------------------
+(defun evaluate-standardized-fitness-for-MULTIPLEXER
+  (program fitness-cases)
+
+(let 
+  (
+   hits standardized-fitness 
+   )
+
+  (if *debug_print* (format t "evaluate_PROGRAM= ~A ~%" program))
+
+  (setf hits (evaluate-hits-for-MULTIPLEXER program fitness-cases))
+
+  (setf standardized-fitness (- *number-of-fitness-cases* (* 1.0 hits)))
+
+  ;; по новой формуле: ??
+  ;(setf standardized-fitness (+ hits (/ (* 1.0 hits) *number-of-fitness-cases* )))
+
+  ;; так вроде ж правильнее ??
+  ;(setf standardized-fitness (- 1 (/ (* 1.0 hits) *number-of-fitness-cases* )))
+
+  (values standardized-fitness hits)
+))
+;-------------------------------------------------------------------------------
+;
+;===============================================================================
+
+
+
+
+;;;=============================================================================
+; (УПРОЩЕННЫЙ ВАРИАНТ?) :
+;;;=============================================================================
+
+(defvar d0)
+(defvar d1)
+(defvar d2)
+(defvar d3)
+(defvar d4)
+
+(defvar arg0)
+(defvar arg1)
+(defvar arg2)
+
+;-------------------------------------------------------------------------------
+(defun nand (a b)
+
+  (not (and a b))
+)
+;-------------------------------------------------------------------------------
+(defun nor (a b)
+
+  (not (or a b))
+)
+;;;=============================================================================
+; вызов "автоматических" функций осуществляется через глобальные переменные
+;;;
+;-------------------------------------------------------------------------------
+
+;(defvar *adf0*)
+;(defvar *adf1*)
+
+;-------------------------------------------------------------------------------
+(defun ADF0 (arg0 arg1 arg2)
+
+;  ;(eval *adf0*)
+;  ;(eval (nth 0 (ADF-PROGRAM-fun_list *program*)) )
+
+; здесь что-то надо другое.. зачем вообще эти функции?
+; для структуризации выбора .. т.е. для "типизации"
+;
+
+  (eval (nth 0 *program*) )
+;  (eval *program*)
+)
+;-------------------------------------------------------------------------------
+
+(defun ADF1 (arg0 arg1 arg2)
+
+;  ;(eval *adf1*)
+;  ;(eval (nth 1 (ADF-PROGRAM-fun_list *program*)) )
+
+  (eval (nth 1 *program*) )
+;  (eval *program* )
+)
+;-------------------------------------------------------------------------------
+
+(defstruct PARITY-FCASE
+  d_array 
+
+  target
+)
+
+;;;-----------------------------------------------------------------------------
+(defun array_xor (bool_array)
+
+(let (
+  (result nil)
+  )
+
+  (dotimes (i d_num)
+     (when (aref bool_array i)
+       (setf result (not result))) 
+     )
+
+  result ; будeт истина для нeчeтного количeства T в спискe
+))
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun parity_set_num (num)
+
+  (setf d_num num)
+  (setf *number-of-fitness-cases*  (expt 2 d_num))
+
+)
+;-------------------------------------------------------------------------------
+(defun parity_case_print (index fcase)
+
+
+  (format t "~3D)  " index)
+  (dotimes (i d_num)
+    (format t "~10S" (aref (PARITY-FCASE-d_array fcase) i))
+    )
+  (format t " =  ~15S ~%"
+          (PARITY-FCASE-target fcase)
+          )
+
+)
+;;;=============================================================================
+;;;
+;-------------------------------------------------------------------------------
+(defun define-fitness-cases-for-EVEN-PARITY ()
+
+(let (
+  fcase fitness_cases index
+  ;(bool_list '(nil t))
+  (bool_list '(t nil))
+
+  ARRAY IJK MF 
+  )
+
+  (setf ARRAY (make-array d_num))
+  (setf IJK   (make-array d_num))
+  (ijk_array_set IJK     2) ; индeксныe пeрeмeнныe '(0 1) 
+  (setf MF (MFOR_create  d_num ARRAY IJK))
+
+  (setf fitness_cases (make-array *number-of-fitness-cases*))
+
+  (format t "~%")	                         
+  (format t "Fitness cases: ~%")	                             
+  (format t "~%")	                         
+
+  (setf index 0)
+
+  (MFOR_init MF)
+  (loop while (MFOR_todo MF) do (progn
+
+    (setf fcase (make-PARITY-FCASE))
+    (setf (PARITY-FCASE-d_array fcase) (make-array d_num)) 
+
+    ;; запишeм значeния пeрeмeнных в кeйс (в булeвом видe)
+    (dotimes (i d_num)
+      (setf (aref (PARITY-FCASE-d_array fcase) i) 
+                  (nth (aref ARRAY i) bool_list))
+      )
+
+    ;; посчитаeм таргeт
+    (setf (PARITY-FCASE-target fcase)
+          (not (array_xor (PARITY-FCASE-d_array fcase))) ; будeт истина для чeтного
+          )
+
+    ;; запишeм сформированный кeйс (значeния + таргeт) в массив кeйсов
+    (setf (aref fitness_cases index) fcase)
+    (incf index)
+
+    ;; распeчатeм строку тeкущeго кeйса
+    (parity_case_print index fcase)
+  ))
+
+  (format t "~%")	                         
+
+  (values fitness_cases)
+))
+;-------------------------------------------------------------------------------
+(defun PARITY-wrapper (result-from-program)
+
+  (values result-from-program)
+)
+;-------------------------------------------------------------------------------
+(defun evaluate-standardized-fitness-for-PARITY
+           (program fitness_cases)
+
+(let* (
+  standardized-fitness target-value
+  value fcase 
+  raw-fitness
+  (hits 0)
+  ;;(starter  (nth *l-1* (ADF-PROGRAM-fun_list program))) ; надо бы сделать глобальной
+  )
+
+ (dotimes (index *number-of-fitness-cases*)
+
+   (setf fcase (aref fitness_cases index))
+
+   (dotimes (i d_num) ; установим глобальные переменные D из кейса
+     (set (d_name_ i) (aref (PARITY-FCASE-d_array fcase) (- d_num 1 i)))
+     )
+
+   (setf target-value (PARITY-FCASE-target fcase))
+   (setf        value (PARITY-wrapper (eval program))) ;; EVAL !!!!!!!!!!!!!!!!
+
+   (when (eq target-value value)
+     (incf hits)
+     )
+ )
+
+ (setf raw-fitness (* hits 1.0))     
+ (setf standardized-fitness (- *number-of-fitness-cases* raw-fitness))
+
+ (values standardized-fitness hits)
+))
+;;;=============================================================================
+;;;
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-PARITY ()
+
+  (setf *max-depth-for-new-individuals*              5)
+  (setf *max-depth-for-new-subtrees-in-mutants*      4)
+  (setf *max-depth-for-individuals-after-crossover* 17)
+  (setf *reproduction-fraction*                    0.1)
+  (setf *crossover-at-any-point-fraction*          0.2)
+  (setf *crossover-at-function-point-fraction*     0.7)
+
+  (setf *method-of-selection*              :tournament)
+  (setf *tournament-size*                            7) 
+  (setf *method-of-generation*   :ramped-half-and-half)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+(defun EVEN-5-PARITY ()
+
+
+;  (set_sms_list ;(list 
+;        (list '(and or nand nor)           '(  2  2  2  2      ) '(arg0 arg1 arg2))  ; ADF0 
+;        ;(list '(and or nand nor ADF0)      '(  2  2  2  2  3   ) '(arg0 arg1 arg2))  ; ADF1 
+;        ;(list '(and or nand nor ADF0 ADF1) '(  2  2  2  2  3  3) '(d4 d3 d2 d1 d0))  ; RPB0 
+;        );)
+
+  (set_sms_list  
+        ;(list '(and or nand nor ADF0 ADF1) '(  2  2  2  2  3  3) '(d4 d3 d2 d1 d0)) 
+        (list '(and or nand nor) '(  2  2  2  2) '(d4 d3 d2 d1 d0)) 
+        )
+
+  (parity_set_num 5) ;(setf *number-of-fitness-cases* 32)
+
+
+  (values 
+          'define-fitness-cases-for-EVEN-PARITY
+          'evaluate-standardized-fitness-for-PARITY
+          'define-parameters-for-PARITY
+          'define_termination_criterion_HITS
+  )
+)
+;-------------------------------------------------------------------------------
+(defun make_list_vars ()
+
+
+  '(d3 d2 d1 d0) 
+  ;(list d3 d2 d1 d0) 
+)
+;-------------------------------------------------------------------------------
+(defun funcs_nums_vars (funcs nums)
+
+
+  (list funcs nums (make_list_vars)) 
+)
+;-------------------------------------------------------------------------------
+(defun EVEN-4-PARITY ()
+
+
+  (set_sms_list ;(list 
+        (funcs_nums_vars '(and or nand nor) '(  2  2  2  2))
+        );)
+
+  (parity_set_num 4)
+
+
+  (values 
+          'define-fitness-cases-for-EVEN-PARITY
+          'evaluate-standardized-fitness-for-PARITY
+          'define-parameters-for-PARITY
+          'define_termination_criterion_HITS
+  )
+)
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+;
+
+
+
+;;;=============================================================================
+; 7.4 Boolean Multiplexer
+
+; .................
+; Boolean functions provide a useful test bed for machine learning for several reasons.
+ 
+; .................
+; The input to the Boolean N-multiplexer function consists of k address bits 
+; ai and 2k data bits di, where N = k + 2k. That is, the input to the
+; Boolean multiplexer function consists of the k + 2k bits 
+
+; ak-1, ..., a1, a0, d2k-1, ..., d1, d0.
+
+; The value of the Boolean multiplexer function is the Boolean value (0 or 1) of 
+; the particular data bit that is singled out by the k address bits of
+; the multiplexer.
+
+; For example, figure 7.27 shows a Boolean 11-multiplexer (i.e., k = 3) in which 
+; the three address bits a2ala0 are currently 110. The multiplexer
+; singles out data bit 6 (i.e., d6) to be the output of the multiplexer. 
+; Specifically, for an input of 11001000000, the output of the multiplexer is 1.
+
+
+
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-MULTIPLEXER ()
+
+  ;;это первая вызывемая процедура, здесь все и установим
+
+  ;(setf d_num (expt 2 a_num))
+  ;(setf *number-of-fitness-cases*    (expt 2 (+ a_num d_num)))
+
+  (set_multiplexer_num a_num)
+
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.7)
+
+  ;(setf *method-of-selection*      :fitness-proportionate)
+  (if (eq *method-of-selection* :unbound)
+      (setf *method-of-selection*  :fitness-proportionate))
+  ;(setf *method-of-selection* :fitness-proportionate-with-over-selection)
+  ;(setf *method-of-selection* :tournament)
+
+  (if (eq *method-of-generation* :unbound)
+      (setf *method-of-generation*  :ramped-half-and-half))
+  ;(setf *method-of-generation*     :grow)
+  ;(setf *method-of-generation*     :full)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+(defun MULTIPLEXER-VALUES ()
+
+
+  (setf *is_ADF_as_OLD* t)
+
+  (values 
+
+          'define-fitness-cases-for-MULTIPLEXER
+          'evaluate-standardized-fitness-for-MULTIPLEXER
+
+          'define-parameters-for-MULTIPLEXER
+          'define_termination_criterion_HITS
+  )
+
+)
+;;;=============================================================================
+; 7.4.1   11-multiplexer
+
+; For example, figure 7.27 shows a Boolean 11-multiplexer (i.e., k = 3) in which 
+; the three address bits a2ala0 are currently 110. The multiplexer
+; singles out data bit 6 (i.e., d6) to be the output of the multiplexer. 
+; Specifically, for an input of 11001000000, the output of the multiplexer is 1.
+
+;-------------------------------------------------------------------------------
+(defun 11-MULTIPLEXER ()
+
+  (set_sms_list (list ;(list 
+ 
+         '( and  or  not  if) 
+         '( 2    2   1    3 ) 
+
+         '(a0 a1 a2   d0 d1 d2 d3 d4 d5 d6 d7)
+         )
+        );)
+
+  (setf a_num 3)
+  (setf *one_target_1* nil)
+
+  (MULTIPLEXER-VALUES)
+)
+;-------------------------------------------------------------------------------
+(defun 3-MULTIPLEXER ()
+
+  (set_sms_list (list ;(list 
+ 
+         '( and  or  not) 
+         '( 2    2   1  ) 
+         ;'( and  or  not if) 
+         ;'( 2    2   1   3) 
+         ;'( if) 
+         ;'(  3) 
+
+         '( a0   d0  d1)
+         )
+        );)
+
+  (setf *one_target_1* NIL)
+  (setf a_num 1)
+
+  (MULTIPLEXER-VALUES)
+)
+;-------------------------------------------------------------------------------
+(defun 3-MULTIPLEXER-NEW ()
+
+  (set_sms_list (list ;(list 
+ 
+         ;'( and  or  not) 
+         ;'( 2    2   1  ) 
+         '( and  or  not if) 
+         '( 2    2   1   3) 
+         ;'( if) 
+         ;'(  3) 
+
+         '( a0   d0  d1)
+         )
+        );)
+
+  (setf *one_target_1* t)
+  (setf a_num 1)
+
+  (MULTIPLEXER-VALUES)
+)
+;-------------------------------------------------------------------------------
+(defun 6-MULTIPLEXER ()
+
+  (set_sms_list (list ;(list 
+ 
+         '( and  or  not  if ) 
+         '( 2    2   1    3  ) 
+
+;         '( if  nand  nor) 
+;         '( 3   2     2)                  ; 62 hits
+
+
+         '(a0 a1   d0 d1 d2 d3)
+         )
+        );)
+
+
+  (setf a_num 2)
+  (setf *one_target_1* nil)
+
+  (MULTIPLEXER-VALUES)
+)
+;-------------------------------------------------------------------------------
+(defun 6-MULTIPLEXER-digital ()
+
+  (set_sms_list (list ;(list 
+ 
+         '( and  or  not) 
+         '( 3    4   1  ) 
+
+         '(a0 a1   d0 d1 d2 d3)
+         )
+        );)
+
+
+  (setf a_num 2)
+  (setf *one_target_1* nil)
+
+  (MULTIPLEXER-VALUES)
+)
+;-------------------------------------------------------------------------------
+;(defun 11-mux (num)
+(defun s_07_4_1 (num)
+
+  ;(setf *debug_print* t) 
+
+  (case num
+
+  ;; We can test the programs we have written for this problem 
+  ;; using a known 100%-correct individual as follows:
+
+  (0  '(run-genetic-programming-system '11-MULTIPLEXER 1.0 1 1
+;                                  (list
+ 
+  ;; Figure 7.33 graphically depicts this 100%-correct best-of-run individual from 
+  ;; generation 9. This hierarchical structure consists of 37 points (i.e., 12 
+  ;; functions and 25 terminals).
+
+  ;; (IF A0 (IF A2 (IF Al D7 (IF A0 D5 D0))
+  ;; (IF A0 (IF Al (IF A2 D7 D3) D1) D0))
+  ;; (IF A2 (IF Al D6 D4)
+  ;; (IF A2 D4 (IF Al D2 (IF A2 D7 D0)))))
+
+  ;; This 100%-correct individual can be simplified (either manually or via the 
+  ;; editing operation) to
+                                   '(IF A0 (IF A2 (IF A1 D7 D5) (IF A1 D3 D1))
+                                        (IF A2 (IF A1 D6 D4) (IF A1 D2 D0)))
+
+  ;; which makes it easier to see that this individual correctly performs the 
+  ;; 11-multiplexer function by first examining address bits A0, A2, and
+  ;; Al and then choosing the appropriate one of the eight possible data bits.
+;                                  )
+        ))
+
+
+  (10  '(run-genetic-programming-system  '11-MULTIPLEXER  1.0  10  1000)) 
+  ;; The best-of-run individual program for this run was found: 
+  ;; Generation 9, standardized fitness = 704.0 and 1344 hits.  
+  ;; It was: 
+  ;; RPB0: (OR (IF (AND A1 D2) (NOT A0) (IF A0 D1 D2)) (AND D5 A2))  
+            
+  )
+)
+;;;=============================================================================
+
+
+;;;=============================================================================
+; 7.4.2   Hierarchies
+ 
+; .................
+; Thus, the solution produced for the Boolean 11-multiplexer was a
+; hierarchy of 6-multiplexers, each consisting of a hierarchy of 3-multiplexers.
+
+
+;;;=============================================================================
+; 7.4.3   6-multiplexer
+
+; Genetic programming has also been applied to the simpler Boolean 6-multiplexer 
+; using a population size of 500. Because this 6-multiplexer problem requires 
+; so much less computer time to run than the ll-multiplexer, it is used 
+; frequently in this book for statistical experiments requiring large numbers of 
+; runs.
+
+;-------------------------------------------------------------------------------
+(defun 6-mux (num)
+
+(case num
+
+  (0  '(run-genetic-programming-system  '6-MULTIPLEXER  1.0  1 1
+
+       (list
+        '(IF A1 (IF A0 D3 D2) (IF A0 D1 D0))
+        )
+       ))             
+
+  (5  '(run-genetic-programming-system  '6-MULTIPLEXER  1.0  50 500))
+
+  ;; А multiplexer is an important component in digital circuit design...
+  ;; .. a simple 6-multiplexr может быть скончтруирован из:
+  ;; 
+  ;; NOT (1 input) -   2 штука
+  ;; AND (3-input) -   4 штука
+  ;;  OR (4-input) -   1 штука
+  (7  '(run-genetic-programming-system  '6-MULTIPLEXER-digital  1.0  50 500))
+
+))
+;;;=============================================================================
+; 7.4.5 3-multiplexer
+
+; Finally, the 3-multiplexer function, which is equivalent to the simple 
+; IF function (i.e., the if-then-else function) was run with the function set
+; F = {AND, OR, NOT}.
+
+;-------------------------------------------------------------------------------
+;(defun 3-mux (num)
+(defun s_07_4_5 (num)
+
+  (case num
+
+  (0  '(run-genetic-programming-system '3-MULTIPLEXER 1.0 1 1
+
+            (list
+             ;; KOZA:
+             ;; '(OR (AND (AND D0 D0) (NOT A0))
+             ;;      (AND D1 (AND D1 (OR D0 A0))))
+             ;; normal form: 
+             '(or (AND (NOT A0) D0)
+                  (AND A0 D1))
+
+
+             ;; -----------------------------------------
+             ;; GREG-ALEX:
+             ;; ----------------------
+             ;; '((p2 AND p0) OR (p1 AND (p2 OR (NOT p0))))
+             ;; заменяем : p0->A0  , p2->D1  , p1->D0   : 6 hits !!
+;             '(OR (AND D1 A0) (AND D0 (OR D1 (NOT A0))))
+             ;; ----------------------
+
+             ;; ----------------------
+             ;; '( (p2 OR (NOT p0)) AND (((NOT p0) OR (p0 OR p2)) AND (p1 OR p0)) )
+
+             ;; заменяем : p0->A0  , p2->D1  , p1->D0   : 6 hits !! ????????????????????????
+;             '( AND (OR D1 (NOT A0)) (AND (OR (NOT A0) (OR A0 D1)) (OR D0 A0)) )
+             ;; ----------------------
+
+             ;; '( (p2 OR (NOT p0)) AND ((p0 AND ((((NOT p1) AND p0) OR p2) AND p2)) OR p1) )
+             ;; -----------------------------------------
+            )
+            ))
+
+  ;; попробуем только с IF
+  (1  '(run-genetic-programming-system '3-MULTIPLEXER 1.0 1 1
+
+            (list
+             '(IF A0 D1 D0) 
+            )
+
+            ))
+
+  ;;---------------
+  (10  '(run-genetic-programming-system  '3-MULTIPLEXER  1.0  10  200))           
+
+  (11  '(progn 
+          (setf *method-of-generation*     :grow)
+          (run-genetic-programming-system  '3-MULTIPLEXER  1.0  10  200)
+        ))           
+
+  (12  '(progn 
+          (setf *method-of-generation*     :full)
+          (run-genetic-programming-system  '3-MULTIPLEXER  1.0  10  200)
+        ))           
+
+  ;;---------------
+  (13  '(progn 
+          (setf *method-of-selection* :fitness-proportionate-with-over-selection)
+          (run-genetic-programming-system  '3-MULTIPLEXER  1.0  10  1000)
+        ))           
+
+  (14  '(progn 
+          (setf *method-of-selection* :tournament)
+          (setf *tournament-size* 7) 
+          (run-genetic-programming-system  '3-MULTIPLEXER  1.0  10  200)
+        ))           
+
+  ;;---------------
+
+  )
+)
+;-------------------------------------------------------------------------------
+(defun 3-mux-new (num)
+
+  (case num
+
+  (0  '(run-genetic-programming-system '3-MULTIPLEXER-NEW 1.0 1 1
+
+            (list
+             '(IF (IF (OR D0 D1) (NOT D1) (NOT D0)) 
+                  (AND D0 (NOT A0))
+                  (AND (NOT D0) (OR D0 A0))
+                  )  
+            )
+            ))
+
+  (1  '(run-genetic-programming-system  '3-MULTIPLEXER-NEW  1.0  30  200))           
+
+  )
+)
+;;;=============================================================================
+;;;=============================================================================
+
+
+
+;;;=============================================================================
+; 20.2 Symbolic Regression of Even-Parity Functions
+
+; Suppose that we select the same set of four basic diadic Boolean functions we 
+; selected in chapter 9 as the function set for this problem:
+; Fb = {AND, OR, NAND, NOR}.
+; This function set is computationally complete and is therefore sufficient to 
+; solve any problem of symbolic regression involving Boolean functions.
+
+; The Boolean even-3-parity function (rule 105), for example, is so difficult that 
+; blind random search failed to find it after trying 10,000,000 individuals. 
+
+; Moreover, with a population size of 50, it is necessary 
+; to yield a solution with a 99% probability  (table 9.4):
+
+; to process 1,187,225 individuals : even-3-parity problem  (rule 105)
+; to process   999,750 individuals :  odd-3-parity problem  (rule 150)
+
+;;;=============================================================================
+; 21.1 Идея иерархических автоматически определяемых функций
+
+; Специально определяемые функции из предыдущего параграфа никогда не включали
+; вызовы на другие определяемые функции. Однако, в обычном программировании
+; определение функций в терминах других, ранее определенных функций - нормальная 
+; практика.
+
+;;;=============================================================================
+;;; Boolean Even-5-Parity Problem
+;;;=============================================================================
+
+; For the even-5-parity problem (five-argument Boolean rule 1,771,476,585), each 
+; S-expression has four branches with automatic function definition. The first 
+; three branches permit creation of function definitions with two, three, and four 
+; dummy variables. The value-returning (i.e., fourth) branch is an S-expression 
+; incorporating the four diadic Boolean functions from the function set Fb; the 
+; three defined functions
+; ADF0, ADF1, and ADF2; and the five terminals D0, D1, D2, D3, and D4.
+
+
+;
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+(defun s_2021 (num)
+
+  (case num
+
+   ;;-----------------------------------------------
+   (550 (progn 
+       ;(setf *debug_print* t) 
+       (run-genetic-programming-system  'EVEN-5-PARITY 1.0 10 100)
+   ))
+
+   (551 (progn 
+
+         (run-genetic-programming-system 'EVEN-5-PARITY 1.0 1 1 
+
+             (list 
+              '(or (and arg0 arg1)
+                   (and (nand arg0 arg0)
+                        (nand arg1 arg1))) ;;; (EQV arg0 arg1)
+              '(nand (or (and arg0 arg1)
+                         (and (nand arg0 arg0) (nand arg1 arg1)))
+                     (or (and arg0 arg1)
+                         (and (nand arg0 arg0)
+                              (nand arg1 arg1)))) ;;; (XOR arg0 arg1)
+              '(adf1 (adf0 (adf0 d0 d1 d0) (adf0 d2 d3 d0) d0)
+                     d4 d0)
+             )
+        )
+   ))
+   ;;-----------------------------------------------
+
+))
+;;;=============================================================================
+;
+;
+
+
+
+
+;;;=============================================================================
+
+;;; B.2 Boolean Majority-On Function
+
+;;;=============================================================================
+
+; We now illustrate a second problem. This problem involves learning the Boolean 
+; MAJORITY-ON function with three arguments (Boolean rule 232). The input 
+; consists of the three Boolean arguments d0, d1, and d2. 
+; The MAJORITY-ON function returns T (True) if at least two of the input bits are 
+; true, otherwise it returns NIL (False).
+; The terminal set T for this problem consists of
+; T = {d0, dl, d2}.
+
+(defvar d0)
+(defvar d1)
+(defvar d2)
+
+
+;-------------------------------------------------------------------------------
+;(defun define-terminal-set-for-MAJORITY-ON ()
+
+;  (values '(d2 d1 d0))
+;)
+;-------------------------------------------------------------------------------
+; Первое определение define-function-set-for-MAJORITY-ON более часто 
+; используется для Булевых проблем 
+; c единожды определенной каждой функцией в наборе.
+;-------------------------------------------------------------------------------
+;(defun define-function-set-for-MAJORITY-ON ()
+
+;  (values '(and  or  not)
+;          '(  2   2    1))
+;)
+;-------------------------------------------------------------------------------
+; строгие функции "and" и "or" (реализованные в k_eval.lisp)
+;-------------------------------------------------------------------------------
+;(defun define-function-set-for-MAJORITY-ON ()
+
+;  (values '(sand sor not)
+;          '(   2   2   1))
+;)
+;-------------------------------------------------------------------------------
+; In the example involving symbolic regression, all four functions took the same 
+; number of arguments (i.e., two). Here the not function takes a different number 
+; of arguments than the and or or functions. 
+
+; It is sometimes useful to include a function in the function set with varying 
+; numbers of arguments. For example 
+; if we wanted both the triadic and function as well as the usual diadic and 
+; function, we would place and twice in the first list and then place 2 and 3 in 
+; the second list as shown below:
+;-------------------------------------------------------------------------------
+;(defun define-function-set-for-MAJORITY-ON ()
+
+;  (values '(and and or not)
+;          '(  2   3  2   1))
+;)
+;-------------------------------------------------------------------------------
+; The fourth items are the problem-specific functions required by the problem. 
+; For a Boolean problem, there is no concern about closure,
+; overflows, underflows, or other errors and no problem-specific functions for 
+; this problem.
+
+(defstruct MAJORITY-ON-fitness-case
+  d0
+  d1
+  d2
+  target
+)
+
+;-------------------------------------------------------------------------------
+; The sixth item is a function called define-fitness-cases-for-MAJORITY-ON. The 
+; fitness cases for this problem consist of all possible combinations of the 
+; three Boolean arguments. That is, the *number-of-fitness-cases* is 23 = 8. 
+; These fitness cases are created with three nested dolist functions, each 
+; looping over the list (t nil). Maximum raw fitness is 8 matches. Standardized 
+; fitness is 8 minus raw fitness. Note that the target is defined by using an 
+; or function with four clauses reflecting the disjunctive normal form
+; representation of the MAJORITY-ON function.
+;-------------------------------------------------------------------------------
+(defun define-fitness-cases-for-MAJORITY-ON ()
+
+(let (fitness-case fitness-cases index
+      (OUT (if *is_print* t nil))             
+      )
+
+  (setf fitness-cases (make-array *number-of-fitness-cases*))
+  (format OUT "~%")	                         
+  (format OUT "Fitness cases: ~%")
+  (format OUT "~%")	                         
+  
+  (setf index 0)
+  
+  (dolist (d2 '(t nil))
+  (dolist (d1 '(t nil))
+  (dolist (d0 '(t nil))
+    ;; создаем структуру, описывающую проблему (переменные и цель)
+    (setf fitness-case (make-MAJORITY-ON-fitness-case))
+    
+    ;; заполняем ее конкретными вычислениями для каждого набора входов
+    (setf (MAJORITY-ON-fitness-case-d0 fitness-case) d0)
+    (setf (MAJORITY-ON-fitness-case-d1 fitness-case) d1)
+    (setf (MAJORITY-ON-fitness-case-d2 fitness-case) d2)
+
+    (setf (MAJORITY-ON-fitness-case-target fitness-case)
+          (or (and d2 d1 (not d0))
+              (and d2 (not d1) d0)
+              (or (and (not d2) d1 d0)
+                  (and d2 d1 d0))))
+    
+    ;; запоминаем полученную численную структуру в массив
+    (setf (aref fitness-cases index) fitness-case)
+    (incf index)
+    
+    (format OUT
+            " ~D)   ~8T~S  ~15T~S  ~23T~S   ~30T  ->   ~S  ~%"
+            index d2 d1 d0
+            (MAJORITY-ON-fitness-case-target fitness-case)
+            )
+  )))
+  (format OUT "~%")	                         
+    
+  (values fitness-cases)
+))
+;-------------------------------------------------------------------------------
+(defun MAJORITY-ON-wrapper (result-from-program)
+
+  (values result-from-program)
+
+)
+;-------------------------------------------------------------------------------
+; Note that it is necessary to set each of the three independent variables of 
+; this problem (represented by the global variables d0, dl, and d2) prior to the 
+; evaluation (via eval) of the program. Note also that the Boolean flag 
+; match-found is defined as a result of testing value-from-program for equality 
+; (i.e., eq) with target-value.
+;-------------------------------------------------------------------------------
+(defun evaluate-standardized-fitness-for-MAJORITY-ON
+  (program fitness-cases)
+
+(let 
+  (raw-fitness hits standardized-fitness target-value
+   match-found value-from-program fitness-case)
+
+  (setf raw-fitness 0.0)
+  (setf hits 0)
+
+  (dotimes (index *number-of-fitness-cases*)
+    (setf fitness-case (aref fitness-cases index))
+
+    (setf d0 (MAJORITY-ON-fitness-case-d0 fitness-case))
+    (setf d1 (MAJORITY-ON-fitness-case-d1 fitness-case))
+    (setf d2 (MAJORITY-ON-fitness-case-d2 fitness-case))
+
+    (setf target-value
+          (MAJORITY-ON-fitness-case-target fitness-case))
+    (setf value-from-program
+          ;(MAJORITY-ON-wrapper (eval program)))
+          (MAJORITY-ON-wrapper (funcall *eval_prog* program)))
+
+    (setf match-found (eq target-value value-from-program))
+    (incf raw-fitness (if match-found 1.0 0.0))
+    (when match-found (incf hits))
+    )
+
+  (setf standardized-fitness (- 8 raw-fitness))
+
+  (values standardized-fitness hits)
+))
+;-------------------------------------------------------------------------------
+(defun define-parameters-for-MAJORITY-ON ()
+
+  (setf *number-of-fitness-cases*                       8)
+  (setf *max-depth-for-new-individuals*                 6)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+  (setf *max-depth-for-individuals-after-crossover*    17)
+  (setf *reproduction-fraction*                       0.1)
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.7)
+
+  (setf *method-of-selection*      :fitness-proportionate)
+  (setf *method-of-generation*      :ramped-half-and-half)
+
+  (values)
+)
+;-------------------------------------------------------------------------------
+; Note that, for this problem, we might have based the second test in the or 
+; condition on whether standardized-fitness equals zero, as follows:
+; (= 0 best-standardized-fitness).
+;-------------------------------------------------------------------------------
+(defun define-termination-criterion-for-MAJORITY-ON
+  (current-generation
+   maximum-generations
+   best-standardized-fitness
+   best-hits)
+
+
+  (define_termination_criterion_HITS 
+        current-generation                                 
+        maximum-generations	                                     
+        best-standardized-fitness	                             
+        best-hits)
+
+)
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+(defun MAJORITY-ON ()
+
+  (set_sms_list ;(list 
+        (list  '(and and or not) '(  2   3  2   1) '(d2 d1 d0))
+        );)
+
+
+  ;(setf *is_ADF_depth_minus_1* nil) ; чтобы добиться совместимости с 1-й частью
+  ;(setf *ADF_sort_population* 'sort-population-by-fitness_1) ; попробуем как в 1-м варианте
+  (setf *is_ADF_as_OLD* t)
+
+  (values 
+;          'define-function-set-for-MAJORITY-ON
+;          'define-terminal-set-for-MAJORITY-ON
+
+          'define-fitness-cases-for-MAJORITY-ON
+          'evaluate-standardized-fitness-for-MAJORITY-ON
+          'define-parameters-for-MAJORITY-ON
+          'define-termination-criterion-for-MAJORITY-ON
+  )
+)
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun s_30_2 (num)
+
+  (case num
+
+  ;; для сравнительных тестов
+  (10  '(progn
+        (setf *debug_print* t) 
+        (run-genetic-programming-system  'MAJORITY-ON  1.0  1  6) 
+        ;(run_gen  'MAJORITY-ON  1.0  1  6) 
+        
+        ;(population_print (create-population 6 nil))
+        ;;(test_R)
+        ))             
+
+
+  ;; We can test the programs we have written for this MAJORITY-ON problem 
+  ;; using a known 100%-correct individual as follows:
+
+  (20  '(run-genetic-programming-system 'MAJORITY-ON 1.0 1 1
+                                  (list 
+                                  '(sor (sand d2 (sand d1 (not d0)))
+                                   (sor (sand d2 (sand (not d1) d0))
+                                   (sor (sand (not d2) (sand d1 d0))
+                                        (sand d2 (sand d1 d0)))))
+                                  )
+        ))
+
+  ;; а этот тест откуда?
+  (21  '(run-genetic-programming-system  'MAJORITY-ON 1.0 1 1                          
+;                                         (list '(or (and d2 d1 (not d0))
+;                                                    (and d2 (not d1) d0)
+;                                                    (or (and (not d2) d1 d0)
+;                                                        (and d2 d1 d0)))
+;                                               )
+; везде надо поменять !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;
+;
+                                         '(or (and d2 d1 (not d0))
+                                                    (and d2 (not d1) d0)
+                                                    (or (and (not d2) d1 d0)
+                                                        (and d2 d1 d0)))
+                                               
+                                         ))
+
+  ;;---------------------------------------------
+  ;; проверим полученное новым способом решение (cl koza-2.lisp 10): - все верно!
+  ;; т.е. решение нашлось даже быстрее чем в "cl koza-1.lisp 08" (в 1-м же поколении!) 
+  ;; почему так?
+;  (21  '(run-genetic-programming-system  'MAJORITY-ON 1.0 1 1                          
+;                                          '(AND (OR D0 D1) (OR (OR D2 D2) (AND D1 D0)))
+;                                         ))
+;  (21  '(run-genetic-programming-system  'MAJORITY-ON 1.0 1 1                          
+;                                         (list 
+;                                          '(AND (OR D0 D1) (OR (OR D2 D2) (AND D1 D0)))
+;                                          )
+;                                         ))
+;   ((string= mode "48") (progn 
+;       (setf *is_ADF_as_OLD* t) ; хотел повторить уникально-хороший результат
+;       ;; когда решение было найдено в первом же поколении, но чето не получилось
+;       (eval_test_new :MAIN 08)
+;   ))
+  ;;---------------------------------------------
+
+  (30  '(run-genetic-programming-system  'MAJORITY-ON 1.0 21 100) )             
+
+  ;; The user can verify that he has entered the code correctly for this 
+  ;; MAJORITY-ON problem by actually executing the above form with the
+  ;; above randomizer seed of 1.0 with the second function set definition. 
+  ;; The result should be that the 
+
+  ;; Generation 0:
+  ;; Average standardized fitness = 3.44
+  ;; Best    standardized fitness = 1.0 and 7 hits. 
+  ;; It was: 
+  ;; (OR (AND D2 D1 D1) (AND D1 D0))
+
+  ;; Generation 11:
+  ;; Average standardized fitness = 1.98
+  ;; Best    standardized fitness = 0.0 and 8 hits. 
+  ;; It was: 
+  ;; (OR (AND (OR D1 D1) (OR (AND (AND D2 D1 D1) (OR D2 D2)) (OR D2 D0)))
+  ;;     (AND (OR D2 D0) D0 D2))
+
+  ;; Since the MAJORITY-ON problem does not involve floating-point numbers, 
+  ;; the user should be able to duplicate the above results on any
+  ;; machine and with any LISP implementation.
+
+  ;; ЭТО - НЕ ТАК! поскольку числа с плавающей точкой используются
+  ;; в рандомизаторе "park-miller-randomizer" !!!!!!!!!!!!!!!!!!!1
+
+  ;;---------------------------------------------
+
+  ;; Пользователь может далее проверить правильность работы своей программы
+  ;; "набирая статистику", т.е. например запуская тесты определенное число раз
+  ;; с обычными параметрами и  M = 100 , G = 21; 
+  (40 (runs_GPS   5 'MAJORITY-ON  0.0 21 100))
+  ;;(88 (runs_GPS 3 'MAJORITY-ON  -1.0 21 100))
+  ;;(88 (runs_GPS 3 'MAJORITY-ON  0.00000782 21 100))
+  ;;(88 (runs_GPS 3 'MAJORITY-ON  0.001 21 100))
+
+
+  ;; Когда мы выполнили на этой проблеме 330 запусков, совокупная вероятность        
+  ;; успеха P(M, i) составила:
+
+  ;; 5 ]   31% 
+  ;; 10]   63%
+  ;; 15]   79% 
+  ;; 20]   88% (см. страницу 725)
+
+  (725 (runs_GPS 330 'MAJORITY-ON  0.0 21 100))
+
+  ;; ---------------------------------------------------------------------------
+  ;; результаты для CL (330 запусков):
+
+  ;; 0 ]   14  14     4.24 %    R=   106.2    I=   10623.12 [  10600    10700]
+  ;; 1 ]   13  27     8.18 %    R=    54.0    I=   10790.02 [  10600    10800]
+  ;; 2 ]   8   35    10.61 %    R=    41.1    I=   12322.37 [  12300    12600]
+  ;; 3 ]   23  58    17.58 %    R=    23.8    I=    9530.05 [   9200     9600]
+  ;; 4 ]   39  97    29.39 %    R=    13.2    I=    6615.60 [   6500     7000]
+  ;; 5 ]   18  115   34.85 %    R=    10.7    I=    6449.00 [   6000     6600]
+  ;; 6 ]   23  138   41.82 %    R=     8.5    I=    5952.06 [   5600     6300]
+  ;; 7 ]   27  165   50.00 %    R=     6.6    I=    5315.09 [   4800     5600]
+  ;; 8 ]   18  183   55.45 %    R=     5.7    I=    5125.34 [   4500     5400]
+  ;; 9 ]   13  196   59.39 %    R=     5.1    I=    5109.74 [   5000     6000]
+  ;; 10]   13  209   63.33 %    R=     4.6    I=    5049.02 [   4400     5500]
+  ;; 11]   14  223   67.58 %    R=     4.1    I=    4906.67 [   4800     6000]
+  ;; 12]   13  236   71.52 %    R=     3.7    I=    4767.27 [   3900     5200]
+  ;; 13]   8   244   73.94 %    R=     3.4    I=    4794.39 [   4200     5600]
+  ;; 14]   16  260   78.79 %    R=     3.0    I=    4454.90 [   3000     4500]
+  ;; ---------------------------------------------------------------------------
+  ;; 15]   10  270   81.82 %    R=     2.7    I=    4322.21 [   3200     4800] 
+  ;; ---------------------------------------------------------------------------
+  ;; 16]   2   272   82.42 %    R=     2.6    I=    4502.80 [   3400     5100]
+  ;; 17]   5   277   83.94 %    R=     2.5    I=    4532.65 [   3600     5400]
+  ;; 18]   5   282   85.45 %    R=     2.4    I=    4538.55 [   3800     5700]
+  ;; 19]   4   286   86.67 %    R=     2.3    I=    4571.11 [   4000     6000]
+  ;; 20]   4   290   87.88 %    R=     2.2    I=    4582.88 [   4200     6300]
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; результаты для SL (330 запусков) :
+
+  ;; 0 ]   20  20     6.06 %    R=    73.7    I=    7365.87 [   7300     7400]
+  ;; 1 ]   13  33    10.00 %    R=    43.7    I=    8741.74 [   8600     8800]
+  ;; 2 ]   12  45    13.64 %    R=    31.4    I=    9423.73 [   9300     9600]
+  ;; 3 ]   16  61    18.48 %    R=    22.5    I=    9012.90 [   8800     9200]
+  ;; 4 ]   14  75    22.73 %    R=    17.9    I=    8930.67 [   8500     9000]
+  ;; 5 ]   20  95    28.79 %    R=    13.6    I=    8138.57 [   7800     8400]
+  ;; 6 ]   23  118   35.76 %    R=    10.4    I=    7284.91 [   7000     7700]
+  ;; 7 ]   29  147   44.55 %    R=     7.8    I=    6248.47 [   5600     6400]
+  ;; 8 ]   17  164   49.70 %    R=     6.7    I=    6032.05 [   5400     6300]
+  ;; 9 ]   15  179   54.24 %    R=     5.9    I=    5890.38 [   5000     6000]
+  ;; 10]   17  196   59.39 %    R=     5.1    I=    5620.72 [   5500     6600]
+  ;; 11]   21  217   65.76 %    R=     4.3    I=    5156.46 [   4800     6000]
+  ;; 12]   10  227   68.79 %    R=     4.0    I=    5141.63 [   3900     5200]
+  ;; 13]   11  238   72.12 %    R=     3.6    I=    5047.54 [   4200     5600]
+  ;; 14]   16  254   76.97 %    R=     3.1    I=    4704.41 [   4500     6000]
+  ;; ---------------------------------------------------------------------------
+  ;; 15]   7   261   79.09 %    R=     2.9    I=    4708.20 [   3200     4800]
+  ;; ---------------------------------------------------------------------------
+  ;; 16]   14  275   83.33 %    R=     2.6    I=    4369.33 [   3400     5100]
+  ;; 17]   2   277   83.94 %    R=     2.5    I=    4532.65 [   3600     5400]
+  ;; 18]   4   281   85.15 %    R=     2.4    I=    4587.61 [   3800     5700]
+  ;; 19]   5   286   86.67 %    R=     2.3    I=    4571.11 [   4000     6000]
+  ;; 20]   2   288   87.27 %    R=     2.2    I=    4691.35 [   4200     6300]
+
+  ;; ---------------------------------------------------------
+
+  ;; Figure B.2 presents the performance curves showing, by generation, the 
+  ;; cumulative probability of success P(M, i) and the number of
+  ;; individuals that must be processed I(M, i, z) to guarantee, with 99% 
+  ;; probability, that at least one S-expression correctly emulates the target 
+  ;; MAJORITY-ON function for all eight fitness cases. 
+
+  ;; Число в овале показывает, что если проблему запустить до поколения 15,
+  ;; обработав 4,800 (т.е, 100 x 16 x 3 runs) особей - это достаточно гарантирует 
+  ;; решение с 99% вероятностью.
+
+
+))
+;;;=============================================================================
+;
+;-------------------------------------------------------------------------------
+(defun all_bool (argus) (declare (ignore argus))    
+
+  (koza_test_num "s_30_2" "21")
+  (koza_test_num "s_30_2" "30")
+
+)
+;;;=============================================================================
+
+;-------------------------------------------------------------------------------
+(defun test0 (argus)  (declare (ignore argus))
+
+;(let (pop)
+
+  (format t "---------------------------- ~%")
+
+;  (setf population (create-population size-of-population
+;                                       seeded-programs))
+
+  (run-genetic-programming-system  'MAJORITY-ON 1.0 2 20)            
+
+  (format t "~%")
+);)
+;-------------------------------------------------------------------------------
+
+
+
+;;;=============================================================================
+;
+;-------------------------------------------------------------------------------
+(defun 11_name (num)
+
+(declare (ignore num))
+(let (
+     num
+)
+
+  ;(set (a_name_ 0) 000)
+  ;(set (a_name_ 1) 111)
+  ;(setf (a_name 2) 222)
+  ;(set (a_name_ 2) 222)
+
+  (setf d_num  2)
+
+  (dotimes (i d_num)
+    ;(setf num (- a_num (+ i 1)))
+    (setf num (- d_num 1 i))
+
+    (format t "i= ~A  num= ~A  ~%" i num)
+    ;(setf (a_name i) (- (- a_num 1) i))
+    (set (d_name_ i) num)
+    ;(setf (a_name 'i) 333)
+    )
+
+
+  (format t "d0 = ~A ~%" d0)
+  (format t "d1 = ~A ~%" d1)
+  ;(format t "a2 = ~A ~%" a2)
+  (format t "~%" )
+))
+;-------------------------------------------------------------------------------
+(defun xor (v1 v2)
+
+  ;;;;; ????
+
+  (not (eq (null v1) (null v2)))
+
+)
+;-------------------------------------------------------------------------------
+(defun 11_test (num)
+(declare (ignore num))
+
+  (format t "~%" )
+  (format t "(or T NIL) = ~A ~%" (or T NIL))
+  (format t "(or T T)   = ~A ~%" (or T T))
+
+  (format t "(xor T NIL) = ~A ~%" (xor T NIL))
+  (format t "(xor T T)   = ~A ~%" (xor T T))
+
+  (format t "~%" )
+
+  (dolist (a0 '(t nil))
+  (dolist (d1 '(t nil))
+  (dolist (d0 '(t nil))
+
+    (format t "~3S -> ~3S ~3S -> ~3S  ~%" a0 d1 d0
+          (or  (AND (NOT A0) D0)   ; если  d0=1 и d1=1
+               (AND      A0  D1))  ; то при любом a0 либо одна скобка либо другая
+          )                        ; (исключающе) будут истиной -  а это не то!!
+                                   ; тоже и для XOR
+  )))
+
+  (format t "~%" )
+)
+;-------------------------------------------------------------------------------
+(defun bool_0 (argus)
+
+(let (
+  (a_num (parse-integer (nth 0 argus)))
+  )
+
+  (setf *one_target_1* NIL)
+  (set_multiplexer_num a_num)
+
+  (define-fitness-cases-for-MULTIPLEXER)
+))
+;-------------------------------------------------------------------------------
+(defun bool_1 (argus)
+
+(let (
+  (num (parse-integer (nth 0 argus)))
+  )
+
+  (parity_set_num num)
+
+  (define-fitness-cases-for-EVEN-5-PARITY) ;????
+))
+;;;=============================================================================
+
+;;;=============================================================================
+(defun even_5 (argus)
+
+(let (
+  pop_size gen_num 
+  )
+
+  (setf pop_size (read-from-string ( first argus)))
+  (setf  gen_num (   parse-integer (second argus)))
+
+  (run-genetic-programming-system  'EVEN-5-PARITY 1.0 gen_num pop_size)
+ 
+  (format t "~%")
+))
+;;;=============================================================================
+(defun even_4 (argus)
+
+(let (
+  pop_size gen_num 
+  )
+
+  (setf pop_size (read-from-string ( first argus)))
+  (setf  gen_num (   parse-integer (second argus)))
+
+  (run-genetic-programming-system  'EVEN-4-PARITY 1.0 gen_num pop_size)
+ 
+  (format t "~%")
+))
+;;;=============================================================================
+;
+; TODO:
+; 
+; - в EVEN-4-PARITY формировать автоматичeски список SMS (make_list_vars),
+;   обобщить на любоe число входных пeрeмeнных
+; - использовать библиотeку готовых боков ADF (сначала при инициализации)
+
+;===============================================================================
+
+

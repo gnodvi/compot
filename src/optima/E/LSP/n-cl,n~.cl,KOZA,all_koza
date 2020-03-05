@@ -1,0 +1,728 @@
+
+
+Fitness cases: 
+
+ 1)    -5     -5 
+ 2)    -5     5 
+ 3)    5      -5 
+ 4)    5      5 
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            1 
+Size of Population:                       1 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  4 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 28.0 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: (IFX (GOW) (IFY (GOS) (GOS) (GON)) (GOE)) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 0, standardized fitness = 28.0 and 4 hits.  
+It was: 
+RPB0: (IFX (GOW) (IFY (GOS) (GOS) (GON)) (GOE)) 
+
+
+
+Fitness cases: 
+
+ 1)    -5     -5 
+ 2)    -5     5 
+ 3)    5      -5 
+ 4)    5      5 
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            21 
+Size of Population:                       100 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  4 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 179.95 
+Best    standardized fitness = 71.0 and 3 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX
+  (IFX (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOS) (GON)) (IFX (GOW) (GOW) (GON)))
+  (IFY (IFX (GOE) (GOS) (GON)) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (GOW)) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX
+  (IFX (IFX (GON) (GOW) (GOS)) (IFX (GOS) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 175.76 
+Best    standardized fitness = 71.0 and 3 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (IFX (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOS) (GON)) (GOE))
+  (IFY (IFX (GOE) (GOS) (GON)) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (GOW)) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX
+  (IFX (IFX (GON) (GOW) (GOS)) (IFX (GOS) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 2: 
+Average standardized fitness = 173.99 
+Best    standardized fitness = 71.0 and 3 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX
+  (IFX (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOS) (GON)) (IFX (GOW) (GOW) (GON)))
+  (IFY (IFX (GOE) (GOS) (GON)) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (GOW)) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GON) (GON)))
+  (IFY (GON) (GOE) (GOS)))
+ (IFX
+  (IFX (IFX (GON) (GOW) (GOS)) (IFX (GOS) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 3: 
+Average standardized fitness = 162.22 
+Best    standardized fitness = 71.0 and 3 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX
+  (IFX (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOS) (GON)) (IFX (GOW) (GOW) (GON)))
+  (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (GOW)) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX
+  (IFX (IFX (GON) (GOW) (GOS)) (IFX (GOS) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 4: 
+Average standardized fitness = 145.02 
+Best    standardized fitness = 71.0 and 3 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX
+  (IFX (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOS) (GON)) (IFX (GOW) (GOW) (GON)))
+  (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (GOW)) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX
+  (IFX (IFX (GON) (GOW) (GOS)) (IFX (GOS) (GOE) (GOW)) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE))
+   (IFY
+    (IFX (GOS) (GOW)
+     (IFY (IFY (GON) (GOE) (GOS)) (IFX (GOE) (GOW) (GOW))
+      (IFY (GOE) (GON) (GOS))))
+    (GOW) (IFY (GON) (GOW) (GON)))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 5: 
+Average standardized fitness = 130.81 
+Best    standardized fitness = 71.0 and 3 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX
+  (IFX (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOS) (GON)) (IFX (GOW) (GOW) (GON)))
+  (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 6: 
+Average standardized fitness = 112.9 
+Best    standardized fitness = 33.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFY
+  (IFX
+   (IFY (IFX (GOW) (GON) (GOS)) (IFX (GOE) (GON) (GON))
+    (IFY (GOS) (GOW) (GOE)))
+   (IFX (IFY (GOS) (GOE) (GOE)) (IFY (GOS) (GOE) (GOS))
+    (IFY (GON) (GOS) (GOE)))
+   (IFY (IFY (GOS) (GON) (GOE)) (IFY (GOS) (GON) (GOE))
+    (IFY (GOE) (GOS) (GOE))))
+  (IFY
+   (IFX (IFX (GON) (GOW) (GOS)) (IFY (GOE) (GOW) (GON))
+    (IFX (GOE) (GOE) (GON)))
+   (IFX (IFY (GOW) (GOE) (GOS)) (IFX (GOW) (GOS) (GON))
+    (IFX (GOE) (GON) (GOE)))
+   (IFX (IFY (GON) (GOW) (GOS)) (IFX (GOW) (GOS) (GOE))
+    (IFY (GOS) (GOS) (GON))))
+  (IFX
+   (IFX (IFY (GON) (GON) (GOS)) (IFY (GOW) (GOW) (GON))
+    (IFX (GOW) (GOS) (GOS)))
+   (IFY (IFY (GOS) (GOE) (GOE)) (IFX (GOE) (GOE) (GOS))
+    (IFY (GON) (GOE) (GON)))
+   (IFX (IFY (GOS) (GOS) (GOE)) (IFX (GON) (GOE) (GOS))
+    (IFX (GOW) (GOS) (GOE)))))
+ (IFY
+  (IFX
+   (IFX (IFY (GOS) (GON) (GOE)) (IFX (GOE) (GOS) (GON))
+    (IFX (GOW) (GOW) (GOE)))
+   (IFX (IFX (GOE) (GOS) (GOW)) (IFY (GON) (GON) (GOE))
+    (IFX (GOS) (GOW) (GOS)))
+   (IFY (IFY (GON) (GON) (GOE)) (IFX (GOE) (GOW) (GON))
+    (IFX (GON) (GOE) (GOE))))
+  (IFX
+   (IFY (IFX (GOW) (GON) (GON)) (IFY (GOE) (GOS) (GOS))
+    (IFX (GOW) (GON) (GOS)))
+   (IFY (IFY (GOE) (GOS) (GOS)) (IFX (GOS) (GOS) (GON))
+    (IFX (GOW) (GOW) (GOW)))
+   (IFX (IFY (GON) (GOW) (GON)) (IFX (GOW) (GOW) (GON))
+    (IFX (GOW) (GOS) (GOS))))
+  (IFY
+   (IFX (IFY (GON) (GON) (GOE)) (IFY (GOE) (GOW) (GOW))
+    (IFY (GOE) (GOE) (GOW)))
+   (IFY (IFY (GOW) (GOS) (GOW)) (IFX (GOW) (GOS) (GOS))
+    (IFY (GOE) (GOS) (GOW)))
+   (IFY (IFY (GOE) (GON) (GOS)) (IFX (GOE) (GOW) (GON))
+    (IFX (GON) (GOE) (GOE)))))
+ (IFX
+  (IFX (IFX (GOW) (GOE) (IFY (GOW) (GON) (GOS)))
+   (IFY (IFX (GOS) (GOS) (GOW)) (IFY (GOS) (GOE) (GOW))
+    (IFX (GON) (GOW) (GOS)))
+   (IFY (IFX (GON) (GOE) (GOE)) (IFX (GOS) (GOE) (GON))
+    (IFY (GON) (GOE) (GOS))))
+  (IFY
+   (IFX (IFX (GOE) (GOW) (GOW)) (IFY (GOE) (GOE) (GOS))
+    (IFX (GON) (GON) (GON)))
+   (IFX (IFX (GOW) (GOS) (GOE)) (IFX (GOS) (GOS) (GOE))
+    (IFY (GOE) (GOS) (GOE)))
+   (GON))
+  (IFY (IFY (IFY (GOW) (GOW) (GOW)) (GOS) (IFY (GON) (GOW) (GON)))
+   (IFY (IFX (GOS) (GOS) (GOS)) (IFX (GOE) (GOW) (GOW))
+    (IFX (GOE) (GON) (GOS)))
+   (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOE) (GOW) (GON))
+    (IFX (GOS) (GOW) (GOE)))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 7: 
+Average standardized fitness = 107.96 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 8: 
+Average standardized fitness = 86.09 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS) (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOS) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 9: 
+Average standardized fitness = 69.95 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS) (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 10: 
+Average standardized fitness = 55.19 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS) (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOS) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 11: 
+Average standardized fitness = 48.67 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (IFY (GOE) (GON) (GON)) (GOW))
+   (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GOS)) (GON) (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (GOS) (IFX (GOE) (GOE) (GOW)) (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 12: 
+Average standardized fitness = 42.34 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GOE)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (GON) (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOE)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 13: 
+Average standardized fitness = 37.57 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS)
+  (IFY (GOS) (IFX (GOS) (GON) (GOW))
+   (IFY (GOE) (GOS)
+    (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFY (GOW) (GON) (GOS))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX
+  (IFX (IFX (GON) (GOW) (GOS)) (GOW)
+   (IFX
+    (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (GOS)
+     (IFX (GOW) (GON) (GON)))
+    (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (GOE) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 14: 
+Average standardized fitness = 42.7 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (IFX (GOW) (GOS) (GOW)) (IFX (GOW) (GON) (GOE)))
+   (IFX (GON) (GOS) (GOE))
+   (IFY (IFY (GOE) (GOS) (GOS)) (IFX (GOS) (GOE) (GON))
+    (IFX (GOW) (GOW) (GOW))))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS))
+   (IFY (GOE) (IFY (GON) (GOS) (GON)) (GON)))
+  (IFY (GOW) (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 15: 
+Average standardized fitness = 35.36 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY
+   (IFY (GOE) (GOS)
+    (IFX
+     (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOE) (IFX (GON) (GOS) (GOE)) (GOW))
+      (IFY (GON) (GOS) (GON)))
+     (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+      (IFX (GOW) (GON) (GON)))
+     (IFX (IFX (GOS) (GON) (GON)) (GON) (IFY (GOE) (GOE) (GOS)))))
+   (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GON) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (GON) (IFY (GOE) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (GOW) (IFX (GOW) (GOS) (GOE)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 16: 
+Average standardized fitness = 33.11 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS) (IFY (GOS) (IFX (GON) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (IFX (GON) (GOS) (GOE)) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFY (GOS) (GOE) (GON))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOE) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (IFX (GON) (GON) (GON))) (IFX (GOW) (GOS) (GOS)) (GON))
+  (IFY (IFY (GOE) (GON) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 17: 
+Average standardized fitness = 38.02 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS) (IFY (GOS) (GON) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (IFX (GON) (GOW) (GON))
+   (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE)) (GON))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (IFX (GOE) (GOE) (GOE)) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOW) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOW) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 18: 
+Average standardized fitness = 39.21 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY
+   (IFY (GOE) (GOS)
+    (IFX
+     (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (IFX (GON) (GOS) (GOE)) (GOW))
+      (IFY (GON) (GOS) (GON)))
+     (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+      (IFX (GOW) (GON) (IFX (GOE) (GOS) (GOW))))
+     (IFX (IFX (GOS) (GON) (GON)) (GON) (IFY (GOE) (GOE) (GOS)))))
+   (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GON))
+   (IFX (GON) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (GON) (IFY (GOE) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (GOW) (IFX (GOW) (GOS) (GOE)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 19: 
+Average standardized fitness = 40.87 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY (IFY (GOE) (IFY (GON) (GON) (GON)) (GON)) (IFX (GOW) (GOS) (GOW))
+   (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GON) (GOS) (GON)) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (GON)
+   (IFY (GOW) (GOE) (IFY (GOE) (GOW) (GOE)))))
+ (IFX (IFX (GON) (GON) (GOS))
+  (IFY (IFY (GON) (GOE) (GON)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (IFX (GON) (GOW) (GON)) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 20: 
+Average standardized fitness = 37.48 
+Best    standardized fitness = 28.0 and 4 hits. 
+It was: 
+RPB0: 
+(IFY
+ (IFX (GOS) (IFY (GOS) (IFX (GOS) (GON) (GOW)) (IFY (GOE) (GOS) (GOS)))
+  (IFX (IFY (GOE) (GOW) (GOE)) (GOW) (IFY (GOE) (GOE) (GON))))
+ (IFX
+  (IFY (IFY (IFX (GON) (GOW) (GOS)) (GOS) (GON)) (IFX (GOW) (GOS) (GOW))
+   (IFY (GON) (GOS) (GON)))
+  (IFX (GOW) (IFX (GON) (GOS) (GOE)) (IFX (GOW) (GOE) (GON)))
+  (IFX (IFX (GOW) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY
+    (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS))
+     (IFY (GOE) (GOW) (GON)))
+    (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOE) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (GON) (IFX (GOE) (GOE) (GOW)) (IFX (GOE) (GOE) (GOE))))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 7, standardized fitness = 28.0 and 4 hits.  
+It was: 
+RPB0: 
+(IFY (GOS)
+ (IFX
+  (IFY (IFY (GOE) (GOS) (GON)) (IFX (GOW) (GOS) (GOW)) (IFY (GON) (GOS) (GON)))
+  (IFX (IFY (GOW) (GOS) (IFX (GOW) (GON) (GOE))) (IFX (GON) (GOS) (GOE))
+   (IFX (GOW) (GON) (GON)))
+  (IFX (IFX (GOS) (GON) (GON)) (IFY (GOW) (GOE) (GOE))
+   (IFY (GOW) (GOE) (GOS))))
+ (IFX (IFX (IFX (GON) (GOW) (GOS)) (GOW) (IFX (GOE) (GOS) (GOW)))
+  (IFY (IFY (GON) (GOE) (GOE)) (IFX (GOW) (GOS) (GOS)) (IFY (GOE) (GOW) (GON)))
+  (IFY (IFY (GOE) (GOW) (GOE)) (IFX (GOE) (GOE) (GOW))
+   (IFX (GOE) (GOE) (GOE))))) 
+
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            20 
+Size of Population:                       109 
+Reproduction fraction:                    0.1 
+Selection method:                         FITNESS-PROPORTIONATE 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    UNBOUND 
+---------------------------------------------------------------------------
+Max depth of new individuals:             6 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  14 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 7.238532110091743119 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (HUM (OUT 0 1 0) 1) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 6.623853211009174312 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (HUM (OUT 0 1 0) 1) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 2: 
+Average standardized fitness = 6.3027522935779816513 
+Best    standardized fitness = 3 and 11 hits. 
+It was: 
+RPB0: (WIND 1 (OUT (HUM 0 1) 1 1)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 3: 
+Average standardized fitness = 5.816513761467889908 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (OUT 0 (OUT (TEMP 0 1 1) 1 (HUM (OUT 0 1 0) 1)) (WIND (WIND 0 1) (WIND 1 1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 4: 
+Average standardized fitness = 5.8990825688073394496 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (OUT 0 (OUT (TEMP 0 1 1) 1 (HUM (TEMP 0 1 1) 1)) (WIND (WIND 0 1) (WIND 1 1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 5: 
+Average standardized fitness = 5.7522935779816513763 
+Best    standardized fitness = 1 and 13 hits. 
+It was: 
+RPB0: (OUT (HUM 0 (WIND 1 1)) (TEMP 1 1 0) (WIND 0 1)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 6: 
+Average standardized fitness = 5.642201834862385321 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (HUM (OUT 0 1 0) (WIND 1 (HUM (HUM 1 0) (OUT 1 1 1)))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 7: 
+Average standardized fitness = 5.5963302752293577983 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (HUM (OUT 0 1 1) 1) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 8: 
+Average standardized fitness = 5.0917431192660550458 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (HUM (HUM (OUT 0 1 0) (OUT 1 1 1)) (OUT 1 1 1)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 9: 
+Average standardized fitness = 4.926605504587155963 
+Best    standardized fitness = 2 and 12 hits. 
+It was: 
+RPB0: (HUM (OUT 0 1 0) (HUM 1 1)) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 10: 
+Average standardized fitness = 4.6972477064220183487 
+Best    standardized fitness = 0 and 14 hits. 
+It was: 
+RPB0: (OUT (HUM 0 (WIND 1 1)) (OUT 0 1 1) (WIND 0 (OUT 1 0 1))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 10, standardized fitness = 0 and 14 hits.  
+It was: 
+RPB0: (OUT (HUM 0 (WIND 1 1)) (OUT 0 1 1) (WIND 0 (OUT 1 0 1))) 
+
+

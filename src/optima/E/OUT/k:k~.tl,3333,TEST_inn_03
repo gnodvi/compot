@@ -1,0 +1,27 @@
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ALL PRINT : 
+
+
+builtin_glob: setundeferror dup unstack ret list include map truth pop concat intern i * putchars + null cons swap rem - character at float integer ^ body . setautoput branch stack / string
+
+defined_glob: 
+
+       = 
+ifte   = {capture {T PT PF}} {symbol stack} {capture S} {symbol {$T}} {symbol i} {capture T} {symbol {$S}} {symbol unstack} {symbol {$T}} {symbol {$PT}} {symbol {$PF}} {symbol branch}
+swons  = {symbol swap} {symbol cons}
+filter = {capture {a t}} {symbol {$a}} {symbol list} {list {{list {}}}} {list {{string {}}}} {symbol branch} {symbol dup} {capture e} {symbol {$a}} {symbol {$t}} {symbol {$e}} {list {}} {symbol cons} {list {{symbol cons} {symbol concat}}} {symbol concat} {list {{symbol pop}}} {list {}} {symbol cons} {symbol cons} {symbol cons} {list {{symbol ifte}}} {symbol concat} {symbol step}
+
+
+current  : {integer 1} {integer 2} {symbol +} {symbol ^} {integer 2} {integer 3} {symbol +} {symbol ^}
+
+ip       : 8
+
+datastack: 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    = integer 3
+    = integer 5
+
+

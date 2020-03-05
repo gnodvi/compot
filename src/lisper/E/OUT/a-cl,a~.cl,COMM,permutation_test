@@ -1,0 +1,8 @@
+
+
+permutation_test: ordered     = #(1 2 3 4 5) 
+permutation_test: 
+permutation_test: ordered     = #(3 3 3 4 5) 
+permutation_test: permutation = #(2 1 5 4 3) 
+
+

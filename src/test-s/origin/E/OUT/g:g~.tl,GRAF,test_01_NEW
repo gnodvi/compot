@@ -1,0 +1,64 @@
+
+------------------------------- 
+NN    = 4
+NODES = ::G_LIST_2
+NODES = 2.2 NOS NOS NOS
+ii    = 4
+jj    = 4
+array = 
+      NOS 1 NOS 3.1 
+      NOS NOS 1 NOS 
+      NOS NOS NOS 1 
+      NOS NOS NOS NOS 
+------------------------------- 
+EDGES = 
+   |    0    1    2    3 
+------------------------------- 
+ 0 |   o   1.0   o   3.1 
+ 1 |   o    o   1.0   o  
+ 2 |   o    o    o   1.0 
+ 3 |   o    o    o    o  
+------------------------------- 
+
+
+dict_print ::G_DICT_0 = 
+  NN    = 4
+  EDGES = ::G_DICT_1
+  NODES = ::G_LIST_2
+  WK    = ::G_DICT_3
+
+#    EDGES ..............................
+#
+
+dict_print ::G_DICT_1 = 
+  ii    = 4
+  jj    = 4
+  a_0_0 = NOS
+  a_0_1 = 1
+  a_0_2 = NOS
+  ............
+  a_3_3 = NOS
+
+
+list_print ::G_LIST_2 = 2.2 NOS NOS NOS
+
+#       WK ..............................
+#
+
+dict_print ::G_DICT_3 = 
+  PUTI = ::G_LIST_4
+  MET  = ::G_LIST_5
+
+list_print ::G_LIST_4 = @ @ @ ...... @ @ @ 
+
+list_print ::G_LIST_5 = ::G_DICT_6 ::G_DICT_7 ::G_DICT_8 ::G_DICT_9
+
+
+
+--------------------------
+S = 0 
+T = 3 
+L_min = 3 
+0_1_2_3
+------------------------
+

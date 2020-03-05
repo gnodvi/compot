@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+#-------------------------------------------------------------------------
+
+
+# clisp -Efile koi8-r -C $*
+
+
+#clisp -i "~/.MSOFT/_lisp/ASDF/asdf"  --quiet -q  -Efile koi8-r -C $*
+
+#     cl   o~.cl MINF more_test -1  - не принимает последний аргумент ????
+#
+# -1 воспринимается как опция !!!!!! просто заменил флажок на 99
+
+
+
+#clisp  --quiet -q  -i "~/.MSOFT/_lisp/ASDF/asdf"  -Efile koi8-r -C $*
+
+clisp  --quiet -q  -i "~/.MGENA/m-soft/_lisp/ASDF/asdf"  -Efile koi8-r -C $*
+
+
+
+#clisp -i "~/.MSOFT/_lisp/ASDF/asdf"  --quiet -q  -Efile koi8-r -C $*
+
+
+# медленее, коенчно, загружается с этим ASDF
+# 
+
+##-------------------------------------------------------------------------

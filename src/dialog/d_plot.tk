@@ -1,0 +1,1877 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk ;# тогда в Windows CMD виден вывод в STDOUT
+
+#-------------------------------------------------------------------------------
+
+set ::COMPOT "COMPOT"
+ 
+#-------------------------------------------------------------------------------
+
+lappend auto_path \
+  [file join [file dirname [info script]] "COMPOT"] 
+
+package require compot::common 1.0
+
+
+lappend auto_path \
+  [file join [file dirname [info script]] "."] 
+
+# -------------------------------------------------------------------------------
+
+# чтобы можно было вызывать из других директорий
+# переходим в рабочую для скрипта и берем тут все нужные файлы!
+# НО! только, если это отдельная програ, а иначе будет ошиька при
+# загрузке пакета
+
+# if {[info exists argv0] && $argv0 eq [info script]} {
+
+#   cd [file normalize [file dirname [info script]]]
+# }
+
+# ===============================================================================
+# 
+# -------------------------------------------------------------------------------
+
+# (push "EXT/LSP/src/"  asdf:*central-registry*)
+
+# (asdf:load-system :pkgcocom) 
+
+# ;(load "C/a-comm.cl")
+# ;(load "C/a-comp.cl")
+# ;(load "C/b-plot.cl")
+
+
+
+#   source "b-com0.tl"
+  
+#   source "a-comp.tl"
+#   source "b-plot.tl"
+
+#package require d_plot 1.0
+
+# -------------------------------------------------------------------------------
+
+# ;(load "p-draw.lisp")
+# ;(load "p-vizg.lisp") # только такое расишрение подходит для  ASDF ?!
+
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+        
+# ; (load "d-draw.cl")
+
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# (defun create_circle (canvas x0 y0 r color)
+
+# (let (
+#   (o (create-oval canvas
+#                (- x0 r) (- y0 r)
+#                (+ x0 r) (+ y0 r))
+#      )
+#   )
+
+#   ;(itemconfigure canvas o "fill" "blue")
+#   (itemconfigure canvas o "fill" color)
+
+# ))
+# -------------------------------------------------------------------------------
+# (defun create_line (canvas coords color width)
+
+# (let (
+#   (o (create-line canvas coords))
+#   )
+
+#   (itemconfigure canvas o "fill"  color)
+#   (itemconfigure canvas o "width" width)
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;-------------------------------------------------------------------------------
+
+# ; (load "d-vizg.cl")
+
+# ;-------------------------------------------------------------------------------
+
+
+# ;-------------------------------------------------------------------------------
+# ; XY-PLOT
+# ;
+# ;===============================================================================
+# ;
+set ::ti 0
+
+# ;-------------------------------------------------------------------------------
+# ;
+# ;
+# ;
+# ;-------------------------------------------------------------------------------
+# (defun YDrawLine (canvas x1 y1 x2 y2 color)       
+    
+#   (create_line canvas (list x1 y1 x2 y2) color 1)  
+    
+# )
+# ;-------------------------------------------------------------------------------
+# (defun YDrawRectF (canvas x y w h color)       
+   
+# ;  XSetForeground (dpy, gc, color);    
+# ;  XFillRectangle (dpy, drawable, gc, x, y, w, h);    
+# (let (
+#   (o (create-rectangle canvas  x y (+ x w) (+ y h)))
+#   )
+
+#   (itemconfigure canvas o "fill" color)   
+# ))  
+# ;-------------------------------------------------------------------------------
+# (defun YDrawRectB (canvas x y w h color)   
+  
+# ;  //w--;   
+# ;  //h--;   
+# ;  YDrawLine (x,   y,   x+w, y,   color);   
+# ;  YDrawLine (x,   y+h, x+w, y+h, color);   
+# ;  YDrawLine (x,   y+h, x,   y,   color);   
+# ;  YDrawLine (x+w, y,   x+w, y+h, color); 
+
+# (let (
+#   (o (create-rectangle canvas  x y (+ x w) (+ y h)))
+#   )
+
+#   (itemconfigure canvas o "outline" color)     
+# )) 
+# ;-------------------------------------------------------------------------------
+# ;void   
+# ;YDrawRectFB (Int x, Int y, Int width, Int height, YT_COLOR fcolor, YT_COLOR lcolor)   
+# ;{   
+# ;  YDrawRectF (x, y, width, height, fcolor);   
+# ;  YDrawRectB (x, y, width, height, lcolor);   
+# ;  return;   
+# ;}   
+# ;/*-----------------------------YPaintString--------------------------------*/ 
+# ;void 
+# ;YPaintString (char *text, int x, int y, YT_COLOR color) 
+# ;{ 
+# ;  CALCXY (x, y); 
+ 
+# ;#if defined(FLTK)
+# ;  YSetFont(Y_FONT); /*??*/ 
+# ;	FSetColor (color);
+# ;	/* fl_color(color); */  /*??*/
+# ;  y += 4; /*??!!!*/
+# ;	fl_draw(text, x, y); /*??*/
+# ;#elif defined(API_W) 
+# ;  SetTextColor (svw.hdc, color); 
+# ;  TextOut (svw.hdc, x, y - FONTH / 2, text, strlen (text)); 
+# ;#else  
+# ;  y += 4; /*??!!!*/
+# ;  XSetForeground (DPY, SV->gc, color); 
+# ;  XDrawString (DPY, SV->win, SV->gc, x, y, text, strlen (text)); 
+# ;  XFlush (DPY); 
+# ;#endif 
+# ;} 
+# ;/*------------------------------YDrawString--------------------------------*/ 
+# ;void 
+# ;YDrawString (char *text, int x, int y, YT_COLOR color) 
+# ;-------------------------------------------------------------------------------
+proc YDrawString {canv text x y color} {
+
+  # ;  switch (DRAW_MODE) { 
+  # ;  case YMETA: 
+  # ;    YMetaAdd (YSTRING, NULL, x, y, 0, 0, color, 0, 0, text); 
+  # ;    break; 
+
+  # ;  case YREAL: 
+  YPaintString  $canv $text $x $y $color 
+  # ;    break; 
+
+  # ;  case YPOST: 
+  # ;    y += 4; 
+  # ;    YTransf (&x, &y); 
+  # ;    PS_Setcolor (color); 
+  # ;    fprintf (POST_FILE, "%d %d %s \n", x, y, "moveto"); 
+  # ;    fprintf (POST_FILE, "( %s ) show \n", text); 
+  # ;    PS_Stroke (); 
+  # ;    break; 
+  # ;  default: ;; 
+  # ;  } 
+  
+} 
+# ;/*-----------------------------YDrawStringImp------------------------------*/ 
+# ;-------------------------------------------------------------------------------
+
+proc YDrawStringImp {canvas \
+                    text x0 y0 \
+                    color   \
+                    horz    \
+                    vert}  {
+  
+  #puts stderr "YDrawStringImp:  text = |$text|  x0 = $x0 y0 = y0"
+
+  # (declare (ignore color horz vert))
+  
+  # ;  int     x, y, w, h; 
+  
+  set w  [YStringW $canvas $text] 
+  set h  [YStringH $canvas $text] 
+
+  # ;  ANTICALCWH (w, h); 
+  
+  switch -glob $horz {
+
+    "YLEFT"  {set x [- $x0 $w]} 
+    "YNONE"  {set x [expr {$x0 - $w / 2}]} 
+    "YRIGHT" {set x $x0} 
+    
+    default {
+      YError  "YDrawStringImp-1"
+    }
+  }
+  
+  switch -glob $vert {
+
+    "YUP"    {set y  [expr {$y0 - $h / 2}]} 
+    "YNONE"  {set y  $y0} 
+    "YDOWN"  {set y  [expr {$y0 + $h / 2}]} 
+
+    default  {
+      YError  "YDrawStringImp-2: vert = $vert"
+    }
+  }
+
+
+  # TODO: хорошо бы он работал в контексте окна, т.е. не указывать canvas !  
+  #
+  YDrawString  $canvas $text $x $y $color
+ 
+  return
+} 
+# ;-------------------------------------------------------------------------------
+# ;
+# ;
+# ;
+
+# ;typedef struct {
+# ;  YT_BOOL exist;
+# ;  char   *legend;
+# ;  YT_SPACE *xlist, *ylist;
+# ;  int     ii;
+# ;  YT_COLOR color;
+# ;} VT_PLOT;
+
+# ;VT_PLOT *V1PlotCreate (void);
+# ;void     V1PlotInit (VT_PLOT *, char *, int);
+# ;void     V1PlotPut (VT_PLOT *, int, YT_SPACE, YT_SPACE);
+
+# ;#define COL_SIZE_DARKS  9
+# ;typedef struct {
+# ;  char     title[50], axeX[50], axeY[50];
+# ;  int      scrx, scry, scrw, scrh;
+# ;  YT_SPACE x_min, x_max, y_min, y_max;
+# ;  YT_BOOL  is_title, is_axeX, is_axeY;
+# ;  int      legends_style;
+# ;  YT_COLOR backgr, foregr;
+# ;  YT_COLOR darks[COL_SIZE_DARKS];
+# ;} VT_CAM1D;
+
+# ;VT_CAM1D *V1CamCreate (void);
+
+# ;#define MAX_PLOTS 20
+
+# ;typedef struct {
+# ;  VT_CAM1D *cam1d;
+# ;  VT_PLOT plot[MAX_PLOTS];
+# ;  YT_SPACE xmin, xmax, ymin, ymax;
+# ;} VT_W1D;
+
+# ;VT_W1D  *V1Create (void);
+# ;void     V1Init (VT_W1D *, char *, char *, char *);
+
+# ;
+# ;
+# ;
+# ;/*===============================render1======================================*/
+# ;/*                                                                            */
+# ;/*--------------------------------mREND1--------------------------------------*/
+# ;long
+# ;mREND1 (PFUNC_VAR)
+# ;{
+# ;  typedef struct {
+# ;    ABCD;
+# ;  } YT_USR;
+
+# ;  static VT_W1D *w1d = NULL;
+# ;  static int hTitle, hAxeX, hAxeY;
+# ;  static void *meta = NULL;
+
+# ;  VT_CAM1D *cam1d;
+# ;/*   static char *commands[] = */
+# ;/*   { "XX","YY", NULL}; */
+# ;  YT_RECT rect;
+# ;  char   *text[] =
+# ;  {
+# ;    "Accepts data PLOT (simply diagram)",
+# ;    "makes their rendering and result ",
+# ;    "places on the screen:", 
+# ;    NULL
+# ;  };
+
+# ;  switch (message) {
+# ;  case YCREATE:
+# ;    U_MALLOC;
+# ;    WND->name = "Render1";
+# ;    meta = YMetaCreate (1000);
+# ;    break;
+# ;/*   case MM_FORWARD: */
+# ;/*     break; */
+# ;  case MM_LAT1:
+# ;    w1d = VLatToW1D ((VT_LAT *) PDATA);
+# ;    YGoto (YDRAWITEM, 0, 0, 0, 0);
+# ;    break;
+# ;  case MM_W1D:
+# ;    w1d = (VT_W1D *) PDATA;
+# ;    YGoto (YDRAWITEM, 0, 0, 0, 0);
+# ;    break;
+# ;  case MM_APPLY:
+# ;    YGoto (YWND2MOD, 0, 0, 0, 0);
+# ;    YGoto (YDRAWITEM, 0, 0, 0, 0);
+# ;    break;
+# ;  case YDRAWITEM:
+# ;    rect.x = 5;
+# ;    rect.y = 5;
+# ;    rect.w = 300;
+# ;    rect.h = 200;
+# ;    cam1d = w1d->cam1d;
+# ;    cam1d->scrx = rect.x;
+# ;    cam1d->scry = rect.y;
+# ;    cam1d->scrw = rect.w;
+# ;    cam1d->scrh = rect.h;
+# ;    /* meta = YMetaCreate (1000); */	/*?! */
+# ;    YMetaInit (meta, 0, 0, 310, 210);
+
+# ;    YMetaBegin (meta, "");
+# ;    V1DrawMain (w1d);
+# ;    YMetaEnd ();
+
+# ;    /* YMetaDrawTo (meta, mScreen_id, TRUE, id); */
+# ;    YMetaDrawTo (meta, SvisRend(1), TRUE, id);
+# ;    break;
+# ;  case YGETSIZE:
+# ;    MYSIZE_IS (W_MOD, H_MOD);
+# ;    break;
+# ;  case YOPEN:
+# ;  case YDRAW:
+# ;    YDrawRectF (0, 0, WND->w, WND->h, WIN->color);
+# ;    YDrawStrings (text, 20, 30);
+# ;    if (!w1d)
+# ;      break;
+# ;    cam1d = (w1d)->cam1d;
+# ;    YBeginGroup ("Color", 10,120, 100,60, YColor(""));
+# ;    YWnd (Ph(), COLORS, "Back-nd", 10,10, 20,20, LP(cam1d->backgr),0,0,0, CLR_DEF);
+# ;    YWnd (Ph(), COLORS, "Fore-nd", 10,35, 20,20, LP(cam1d->foregr),0,0,0, CLR_DEF);
+# ;    YEndGroup ();
+# ;    YBeginGroup ("Inscript", 120,120, 190,100, YColor(""));
+# ;    YWnd (&hTitle, EDIT, "Title: ", 60,10, 95,20, (long)(cam1d->title),0,0,0, CLR_DEF);
+# ;    YWnd (&hAxeX,  EDIT, "Axe Х: ", 60,35, 95,20, (long)(cam1d->axeX), 0,0,0, CLR_DEF);
+# ;    YWnd (&hAxeY,  EDIT, "Axe Y: ", 60,60, 95,20, (long)(cam1d->axeY), 0,0,0, CLR_DEF);
+# ;    YWnd (Ph(), CHECK, "", 160,10, 20,20, 0,LP(cam1d->is_title),0,0, CLR_DEF);
+# ;    YWnd (Ph(), CHECK, "", 160,35, 20,20, 0,LP(cam1d->is_axeX), 0,0, CLR_DEF);
+# ;    YWnd (Ph(), CHECK, "", 160,60, 20,20, 0,LP(cam1d->is_axeY), 0,0, CLR_DEF);
+# ;    YEndGroup ();
+# ;    break;
+# ;  case YWND2MOD:
+# ;    cam1d = (w1d)->cam1d;
+# ;    strcpy (cam1d->title, (char *) YGetData (hTitle));
+# ;    strcpy (cam1d->axeX,  (char *) YGetData (hAxeX));
+# ;    strcpy (cam1d->axeY,  (char *) YGetData (hAxeY));
+# ;    break;
+# ;  case YLBUTT:
+# ;  case YRBUTT:
+# ;    break;
+# ;  case YCLOSE:
+# ;    YWndClean (id);
+# ;    break;
+# ;  default: ;;;
+# ;  }
+
+# ;  RETURN_TRUE;
+# ;}
+# ;/*-----------------------------V1Init---------------------------------------*/
+# ;void
+# ;V1Init (VT_W1D *w1d, char *title, char *axeX, char *axeY)
+# ;{
+# ;  VT_PLOT *plot;
+# ;  int     i;
+# ;/* VT_CAM1D *cam1d=w1d->cam1d; */
+
+# ;  for (i = 0; i < MAX_PLOTS; i++) {
+# ;    plot = &(w1d->plot[i]);
+# ;    plot->exist = FALSE;
+# ;    plot->legend = "";
+# ;    plot->xlist = NULL;
+# ;    plot->ylist = NULL;
+# ;  }
+
+# ;  title++;
+# ;  axeX++;
+# ;  axeY++;
+# ;}
+# ;/*----------------------------V1CamCreate-----------------------------------*/
+# ;VT_CAM1D *
+# ;V1CamCreate ()
+# ;{
+# ;  VT_CAM1D *cam1d;
+
+# ;  if (!(cam1d = (VT_CAM1D *) malloc (sizeof (VT_CAM1D))))
+# ;            YError ("V1CamCreate");
+
+# ;  cam1d->scrx = 0;
+# ;  cam1d->scry = 0;
+# ;  cam1d->scrw = 10;
+# ;  cam1d->scrh = 10;
+# ;  cam1d->is_title = TRUE;
+# ;  cam1d->is_axeX = TRUE;
+# ;  cam1d->is_axeY = TRUE;
+# ;  strcpy (cam1d->title, "Demo example");
+# ;  strcpy (cam1d->axeX, "Horizontal");
+# ;  strcpy (cam1d->axeY, "Vertical");
+# ;  cam1d->legends_style = YUP;
+
+# ;  cam1d->backgr = YColor("white");
+# ;  cam1d->foregr = YColor("black");
+
+# ;  cam1d->darks[0] = YColor("black");
+# ;  cam1d->darks[1] = YColor("red");
+# ;  cam1d->darks[2] = YColor("green");
+# ;  cam1d->darks[3] = YColor("blue");
+# ;  cam1d->darks[4] = YColor("yellow");
+# ;  cam1d->darks[5] = YColor("green");
+# ;  cam1d->darks[6] = YColor("fuchsia");
+# ;  cam1d->darks[7] = YColor("olive");
+# ;  cam1d->darks[8] = YColor("purple");
+
+# ;  return (cam1d);
+# ;}
+# ;/*----------------------------V1PlotCreate----------------------------------*/
+# ;VT_PLOT *
+# ;V1PlotCreate ()
+# ;{
+# ;  VT_PLOT *plot;
+
+# ;  if (!(plot = (VT_PLOT *) malloc (sizeof (VT_PLOT))))
+# ;            YError ("V1PlotCreate");
+# ;  return (plot);
+# ;}
+# ;/*----------------------------V1PlotInit------------------------------------*/
+# ;void
+# ;V1PlotInit (VT_PLOT *plot, char *legend, int ii)
+# ;{
+
+# ;  plot->exist = TRUE;
+# ;  plot->legend = legend;
+# ;  plot->xlist = VListCreate (ii);
+# ;  plot->ylist = VListCreate (ii);
+# ;  plot->ii = ii;
+
+# ;}
+# ;/*-----------------------------V1PlotPut------------------------------------*/
+# ;void
+# ;V1PlotPut (VT_PLOT *plot, int i, YT_SPACE x, YT_SPACE y)
+# ;{
+# ;  VListPut (plot->xlist, i, x);
+# ;  VListPut (plot->ylist, i, y);
+# ;  return;
+# ;}
+# ;/*-------------------------------V1Create-----------------------------------*/
+# ;VT_W1D *
+# ;V1Create ()
+# ;{
+# ;  VT_W1D *w1d;
+
+# ;  if (!(w1d = (VT_W1D *) malloc (sizeof (VT_W1D))))
+# ;            YError ("V1Create");
+# ;  w1d->cam1d = V1CamCreate ();
+
+# ;  return (w1d);
+# ;}
+# ;/*-----------------------------V1PlotAdd------------------------------------*/
+# ;YT_BOOL
+# ;V1PlotAdd (VT_W1D *w1d, VT_PLOT *pplot)
+# ;{
+# ;  VT_PLOT *plot;
+# ;  int     i;
+
+# ;  for (i = 0; i < MAX_PLOTS; i++) {
+# ;    plot = &(w1d->plot[i]);
+# ;    if (plot->exist) 
+# ;      continue;
+
+# ;    *plot = *pplot;
+# ;    return (TRUE);
+# ;  }
+
+# ;  YMessageBox ("Too many PLOT!", "OK");
+# ;  return (FALSE);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;void 
+# ;V1CalcMinMax (VT_W1D *w1d) 
+# ;{ 
+# ;  VT_CAM1D *cam1d = w1d->cam1d; 
+# ;  VT_PLOT *plot; 
+# ;  YT_SPACE xmin, xmax, x, ymin, ymax, y; 
+# ;  int     i, k; 
+ 
+# ;  xmin = YMAXSPACE; 
+# ;  xmax = YMINSPACE; 
+# ;  ymin = YMAXSPACE; 
+# ;  ymax = YMINSPACE; 
+# ;  for (k = 0; k < MAX_PLOTS; k++) { 
+# ;    plot = &(w1d->plot[k]); 
+# ;    if (!(plot->exist))   
+# ;      continue; 
+ 
+# ;    for (i = 0; i < plot->ii; i++) { 
+# ;      x = plot->xlist[i]; 
+# ;      y = plot->ylist[i]; 
+# ;      xmin = YMIN (x, xmin); 
+# ;      xmax = YMAX (x, xmax); 
+# ;      ymin = YMIN (y, ymin); 
+# ;      ymax = YMAX (y, ymax); 
+# ;    } 
+# ;  } 
+ 
+# ;  cam1d->x_min = w1d->xmin = xmin; 
+# ;  cam1d->x_max = w1d->xmax = xmax; 
+ 
+# ;  cam1d->y_min = w1d->ymin = ymin; 
+# ;  cam1d->y_max = w1d->ymax = ymax; 
+ 
+# ;  return; 
+# ;} 
+# ;-------------------------------------------------------------------------------
+# ;int  
+# ;YVertString (int x0, int y0, char *string, YT_COLOR color, YT_BOOL drawing)  
+# ;{  
+# ;  int   i = 0, x, y;  
+# ;  char  bukva[2] = {'\0', '\0'};  
+  
+# ;  x = x0 - YStringW ("W") / 2;  
+# ;  y = y0 + YStringH ("H");  
+  
+# ;  for (i = 0; i < strlen (string); i++) {  
+# ;    *&(bukva[0]) = *&(string[i]);  
+# ;    if (drawing)  
+# ;      YDrawString (bukva, x, y, color);  
+# ;    y += YStringH (bukva);  
+# ;  }  
+  
+# ;  return (y - y0);  
+# ;}  
+# ;-------------------------------------------------------------------------------
+# ;void  
+proc YDrawVString {string x0 y0 color} {  
+  
+  # ;  YVertString (x0, y0, string, color, TRUE);  
+  
+}  
+# ;-------------------------------------------------------------------------------
+# ;int  
+proc YVertStringH {canv  string} {  
+  
+  # ;  return (YVertString (0, 0, string, YColor("black"), FALSE)); 
+
+  return 8 ;# ???
+}  
+# /*-------------------------------YDrawTriF----------------------------------*/ 
+proc YDrawTriF {canv  x1 y1 x2 y2 x3 y3 fcolor}  {
+ 
+  #   /* static int  ls[6]; */ 
+  #   int  *ls = (int*)malloc (6*sizeof(int)); 
+  
+  #   ls[0] = x1;  ls[1] = y1; 
+  #   ls[2] = x2;  ls[3] = y2; 
+  #   ls[4] = x3;  ls[5] = y3; 
+
+  #   YDrawPolyF (3, ls, fcolor); 
+
+  $canv create line  $x1 $y1  $x2 $y2  $x3 $y3    $x1 $y1
+  
+  #   return; 
+} 
+# /*-----------------------------YDrawSymbol----------------------------------*/ 
+# void 
+# YDrawSymbol (char *name, int x, int y, int w, int h, YT_COLOR color) 
+# ;-------------------------------------------------------------------------------
+proc YDrawSymbol {canv name x y w h  color} {
+ 
+  #   int  x1, y1, x2, y2, x3, y3; 
+  
+  switch -glob $name {
+ 
+    "up>" { 
+
+      set x1  $x 
+      set x2  [+ $x $w] 
+      set x3  [expr {$x + $w / 2}] 
+      set y1  [+ $y $h] 
+      set y2  $y1 
+      set y3  $y 
+
+      YDrawTriF $canv  $x1 $y1 $x2 $y2 $x3 $y3 $color 
+    }
+    
+    #   YCASE ("down>") 
+    #     x1 = x; 
+    #     x2 = x + w; 
+    #     x3 = x + w / 2; 
+    #     y1 = y; 
+    #     y2 = y1; 
+    #     y3 = y + h; 
+    #     YDrawTriF (x1, y1, x2, y2, x3, y3, color); 
+    
+    #   YCASE ("left>") 
+    #     x1 = x + w; 
+    #     x2 = x1; 
+    #     x3 = x; 
+    #     y1 = y; 
+    #     y2 = y + h; 
+    #     y3 = y + h / 2; 
+    #     YDrawTriF (x1, y1, x2, y2, x3, y3, color);
+    
+    "right>" { 
+
+      set x1  $x 
+      set x2  $x1; 
+      set x3  [+ $x $w] 
+      set y1  $y 
+      set y2  [+ $y $h] 
+      set y3  [expr {$y + $h / 2}] 
+
+      YDrawTriF $canv  $x1 $y1 $x2 $y2 $x3 $y3 $color 
+    }
+    
+    #   YDEFAULT 
+  }  
+ 
+   return; 
+} 
+# -------------------------------------------------------------------------------
+proc format_STR {x} {
+
+  if [string is integer $x] {
+    set STR $x ;# это если целые
+
+  } else {
+    # а если float, то возможно нужно форматировани ?
+    # 
+    set STR [format "%.1f" $x] 
+  }
+
+  return $STR
+}
+# -------------------------------------------------------------------------------
+proc draw_X_STR {canv v  x y0  horz color} {
+
+  set  STR  [format_STR  $v] 
+
+  set l   5  
+  set d  10 
+  
+  YDrawLine      $canv  $x $y0  $x [+ $y0 $l]  $color 
+
+  YDrawStringImp $canv  $STR    $x [+ $y0 $d]  $color $horz "YDOWN" 
+
+  return
+}
+# -------------------------------------------------------------------------------
+proc draw_Y_STR {canv v  x0 y  vert color} {
+
+  set  STR  [format_STR  $v] 
+
+  set l   5  
+  set d  10 
+  
+  YDrawLine      $canv  $x0 $y [- $x0 $l] $y  $color 
+  YDrawStringImp $canv  $STR   [- $x0 $l] $y  $color "YLEFT" $vert 
+
+  return
+}
+# -------------------------------------------------------------------------------
+# ;void 
+# ;V1DrawAxeX (int x0, int y0, int w, YT_COLOR color, 
+# ;	    YT_SPACE xmin, YT_SPACE xmax, int pointer) 
+# -------------------------------------------------------------------------------
+# 
+proc V1DrawAxeX_NEW {canv  x0 y0 w color  vmin vmax  pointer} {
+ 
+  #puts "V1DrawAxeX_NEW...................... ^"
+  #puts ""
+  #puts "vmin = $vmin"
+  #puts "vmax = $vmax"
+  #puts ""
+
+  set l 5   ;# x, 
+  set d  10 
+  
+  if {$pointer} {
+ 
+    YDrawLine   $canv  [expr {$x0 + $w}] $y0   [expr {$x0 + $w + $pointer}] $y0  $color 
+    YDrawSymbol $canv  "right>" \
+      [expr {$x0 + $w + $pointer - 10}] \
+      [expr {$y0 - 5}]  10 10  $color 
+  } 
+
+  set  x     $x0 
+  set  v     $vmin
+  set  horz "YRIGHT" ; draw_X_STR  $canv  $v $x $y0  $horz $color
+ 
+
+  #--------------------------------------------------------------------
+  # TODO: рисовать половинку правильно, т.е. в масштабе
+  # 
+
+  set vall [- $vmax $vmin]
+  set vpol [/ $vall 2] ;# выбираем значение на интервале (сейчас "половину")
+
+  set  v  [expr {$vmin + $vpol}] ;# "среднее" значение
+
+  # теперь надо посчитать для этого значения ординату в пикселях
+
+  set  x  [expr {int ($w * (($vpol * 1.0) / $vall))}]
+  set  x  [expr {$x0 + $x}] ;# сдвинем относительно начала фрейма
+
+  set  horz "YNONE"  ; draw_X_STR  $canv  $v $x $y0  $horz $color
+  
+  #--------------------------------------------------------------------
+ 
+  set  x     [expr {$x0 + $w - 1}] 
+  set  v     $vmax
+  set  horz "YLEFT"  ; draw_X_STR  $canv  $v $x $y0  $horz $color
+
+  return
+} 
+# ;-------------------------------------------------------------------------------
+# ;void 
+# ;V1DrawAxeY (int x0, int y0, int h, YT_COLOR color, 
+# ;	    YT_SPACE ymin, YT_SPACE ymax, int pointer) 
+# ;-------------------------------------------------------------------------------
+proc V1DrawAxeY_NEW {canv  x0 y0 h color vmin vmax  pointer} {
+ 
+  set l  5
+  
+  if {$pointer} { 
+    YDrawLine   $canv  $x0 [expr {$y0 - $h}]  $x0 [expr {$y0 - $h - $pointer}]  $color 
+    YDrawSymbol $canv  "up>"  [expr {$x0 - 5}] [expr {$y0 - $h - $pointer}] 10 10  $color 
+  } 
+
+  set  y  $y0; 
+  set  v  $vmin
+  set  vert "YUP" ; draw_Y_STR  $canv  $v $x0 $y  $vert $color
+ 
+  #--------------------------------------------------------------------
+  # TODO: рисовать половинку правильно, т.е. в масштабе
+  # 
+  set vall [- $vmax $vmin]
+  set vpol [/ $vall 2] ;# выбираем значение на интервале (сейчас "половину")
+
+  set  v  [expr {$vmin + $vpol}] ;# "среднее" значение
+
+  # теперь надо посчитать для этого значения ординату в пикселях
+
+  set  y  [expr {int ($h * (($vpol * 1.0) / $vall))}]
+  set  y  [expr {$y0 - $y}] ;# перевернем в фрейе, отсчет сверху в пикселах
+
+  set  vert "YNONE" ; draw_Y_STR  $canv  $v $x0 $y  $vert $color
+  
+  #--------------------------------------------------------------------
+
+  set  y  [expr {$y0 - $h + 1}] 
+  set  v  $vmax
+  set  vert "YDOWN" ; draw_Y_STR  $canv  $v $x0 $y  $vert $color
+  
+  return
+} 
+# -------------------------------------------------------------------------------
+proc plot_get_lines_func_list {plot wi} {
+
+  #set names {}
+  set funcs {}
+
+  set li 0
+  
+  while {1} {
+
+    set fi [arr2d_get_NEW "$plot FR" $wi $li] ;# номер (название) функции для этой линии  
+    if {$fi == -1} {break}
+
+    #set name [dict_get $plot "FUNCS" $fi "L_NAME"]
+
+    #lappend names $name
+    lappend funcs $fi
+
+    incr li ;# рассмотрим следующую линию фрейма
+  }
+
+  #return $names
+  return $funcs
+}
+# -------------------------------------------------------------------------------
+# ;void 
+#  V1DrawLegends (VT_W1D *w1d, int x0, int y0) 
+# -------------------------------------------------------------------------------
+proc V1DrawLegends {canv plot wi  x0 y0}  {
+ 
+  set colors {"green" "blue" "red" "yellow"}
+  
+  # ;  VT_CAM1D *cam1d = w1d->cam1d; 
+  # ;  VT_PLOT *plot; 
+  # ;  int     i, x; 
+
+  set x  $x0 
+  set y  $y0 
+
+  set title    "Legends: " 
+  set title_w  [YStringW $canv $title]
+  
+  YDrawStringImp  $canv $title  $x $y "red" "YRIGHT" "YNONE" 
+
+  set x  [+ $x $title_w] 
+
+
+  #puts "-------------------------------!!!!!!!!!!!!!!!!!"
+  #puts ""
+  #dict_print $plot
+  #puts ""
+
+  set funclist [plot_get_lines_func_list  $plot $wi]
+
+  #puts ""
+  #puts "funclist = $funclist"
+  #puts ""
+
+  # ;  for (i = 0; i < MAX_PLOTS; i++) { 
+
+  # ;    plot = &(w1d->plot[i]); 
+  # ;    if (!(plot->exist))   
+  # ;      continue; 
+  
+  # ;    YDrawStringImp (plot->legend, x, y0, plot->color, YRIGHT, YUP); 
+  # ;    x = x + YStringW (plot->legend) + 10; 
+  # ;  }; 
+ 
+  foreach fi $funclist {
+
+    set color [lindex $colors $fi]
+
+    set name [dict_get $plot "FUNCS" $fi "L_NAME"]
+
+    YDrawStringImp  $canv $name $x $y $color "YRIGHT" "YNONE"
+
+    incr y 17
+  }
+
+  return
+} 
+# ;-------------------------------------------------------------------------------
+# ;void 
+# ;V1DrawOne (VT_W1D *w1d, VT_PLOT *plot, int xscr, int yscr, int wscr, int hscr) 
+# ;-------------------------------------------------------------------------------
+proc v1_draw_one {canvas xlist ylist        \
+                    xxmin xxmax yymin yymax \
+                    xscr yscr wscr hscr     \
+                    color} {
+
+  # (let* (
+  #   ;(xlist (X plot))
+  #   ;(ylist (PP_STEP_F plot 0 0))
+
+  #   (num   (list-length xlist))
+  set num [llength $xlist]
+  #   ;(count 1)
+  
+  #   x1 y1 x2 y2 ;  static int x1, y1, x2, y2; 
+  #   xx yy ;  YT_SPACE yymin, yymax, yystep, yy; 
+  #   ;;  YT_SPACE xxmin, xxmax, xxstep, xx; 
+  #   x y ;  int     d, x, y; 
+  
+  # ;  xxmin = w1d->xmin; 
+  # ;  xxmax = w1d->xmax; 
+  #   ;(xxmin  0)
+  #   ;(xxmax 10)
+
+  #set wscr [tcl::mathfunc::double $wscr]
+  #set hscr [tcl::mathfunc::double $hscr]
+
+  set xw [tcl::mathfunc::double [- $xxmax $xxmin]]
+  set yh [tcl::mathfunc::double [- $yymax $yymin]]
+
+  set xxstep [/ $xw $wscr] ;# физичeский шаг по X на один пиксeл экрана
+  
+  # ;  yymin = w1d->ymin; 
+  # ;  yymax = w1d->ymax; 
+  #   ;(yymin -1)
+  #   ;(yymax +1)
+
+  set yystep [/ $yh $hscr] ;# физичeский шаг по Y на один пиксeл экрана
+  #   ) 
+  
+  #puts stderr "xxmin= $xxmin"
+  #puts stderr "xxmax= $xxmax"
+  #puts stderr "yymin= $yymin"
+  #puts stderr "yymax= $yymax"
+  #puts ""
+  #puts stderr "xxstep= $xxstep"
+  #puts stderr "yystep= $yystep"
+  #puts ""
+  
+  dotimes  d $num { # рисуeм один график-линию циклом по всeм точкам 
+
+    #     (setf xx (nth d xlist))
+    #     (setf yy (nth d ylist))
+    
+    set xx [lindex $xlist $d]
+    set yy [lindex $ylist $d]
+    
+    set x  [floor_int [/ [- $xx $xxmin] $xxstep]] ;# координаты графиков в пиксeлах
+    set y  [floor_int [/ [- $yy $yymin] $yystep]] ;#  ???????
+    
+    set x  [+ $xscr $x] ;# с иксами всe просто
+    
+    #     ;; а вот "y" подразумeваeтся от лeвого-нижнeго угла,
+    #     ;; но в LTK примитивы рисуются от лeвого-вeрхнeго угла, поэтому:
+    #     ;(setf y  (+ yscr y))
+    
+    set y  [+ $yscr [- $hscr $y]] 
+    
+    if {$d == 0} { 
+
+      set x1 $x
+      set y1 $y
+
+    } else {
+
+      set x2 $x
+      set y2 $y
+
+      YDrawLine $canvas $x1 $y1 $x2 $y2 $color ;# plot->color)
+ 
+      set x1 $x2
+      set y1 $y2
+    }
+    
+  }
+}
+# ;-------------------------------------------------------------------------------
+# ;(defun plot_win (ti plot iw ih ih_one)
+
+# ;(let (
+# ;  (yi  1)
+
+# ;  ;; создаем экранную форму и рисуем главную рамочку
+# ;  (win (win_create iw ih))
+# ;  )
+
+# ;  (win_rect  win '= '! 0 0 iw ih) ; почeму нe рисуeт '| ??
+
+# ;  ;; здесь надо идти не по списку функций, а по фреймам!
+# ;  (loop for wi from 0 until (= (aref (FR plot) wi 0) -1) do
+
+# ;    (plot_win_main  plot win  wi ti  1 yi (- iw 2) ih_one)
+
+# ;    (incf yi ih_one)
+
+# ;    (win_horz  win '= yi 2 (- iw 3))
+# ;    (incf yi)
+# ;  )
+
+# ;  ;; выводим экранную форму
+# ;  (win_draw  win 0 0)
+
+# ;))
+# -------------------------------------------------------------------------------
+# proc plot_gui_lines {canvas plot ti wi x y w h} {
+
+#   set colors {"green" "blue" "red" "yellow"}
+  
+#   for {set li 0} {true} {incr li} {
+
+#     set fr [$plot.FR]
+
+#     set fi [arr2d_get $fr $wi $li]   
+
+#     if {$fi == -1} {break}
+
+#     set x_line [get_step_xlist  $plot $ti $fi]
+#     set y_line [get_step_ylist  $plot $ti $fi]
+    
+#     set xxmin  [set [PP_XMIN   $plot $fi]]
+#     set xxmax  [set [PP_XMAX   $plot $fi]]
+#     set yymin  [set [PP_FMIN   $plot $fi]]
+#     set yymax  [set [PP_FMAX   $plot $fi]]
+
+#     v1_draw_one  $canvas \
+#       $x_line  \
+#       $y_line  \
+#       $xxmin  \
+#       $xxmax  \
+#       $yymin  \
+#       $yymax  \
+#       $x $y $w $h  \
+#       [lindex $colors $fi]
+    
+#   }
+
+#   return
+# }
+# -------------------------------------------------------------------------------
+proc plot_gui_lines_NEW {canvas plot ti wi x y w h} {
+
+  set colors {"green" "blue" "red" "yellow"}
+  
+  for {set li 0} {true} {incr li} {
+
+    #set fr [$plot.FR]
+    #set fi [arr2d_get $fr $wi $li]   
+
+    set fi [arr2d_get_NEW "$plot FR" $wi $li]   
+
+    if {$fi == -1} {break}
+
+    set x_line [get_step_xlist_NEW  $plot $ti $fi]
+    set y_line [get_step_ylist_NEW  $plot $ti $fi]
+    
+    set xxmin  [dict_get $plot "FUNCS" $fi "L_XMIN"]
+    set xxmax  [dict_get $plot "FUNCS" $fi "L_XMAX"]
+    set yymin  [dict_get $plot "FUNCS" $fi "L_FMIN"]
+    set yymax  [dict_get $plot "FUNCS" $fi "L_FMAX"]
+
+
+    v1_draw_one  $canvas \
+      $x_line  \
+      $y_line  \
+      $xxmin  \
+      $xxmax  \
+      $yymin  \
+      $yymax  \
+      $x $y $w $h  \
+      [lindex $colors $fi]
+    
+  }
+
+  return
+}
+# ;-------------------------------------------------------------------------------
+# ;void 
+# ;V1DrawAll (VT_W1D *w1d, int xscr, int yscr, int wscr, int hscr) 
+# ;-------------------------------------------------------------------------------
+# proc v1_draw_frame {canvas  plot ti wi    xscr yscr wscr hscr} { 
+  
+#   #   ;(ti 0)
+#   #set colors {"green" "blue" "red" "yellow"}
+
+#   # ;  VT_CAM1D *cam1d = w1d->cam1d; 
+#   # ;  VT_PLOT *plot; 
+  
+#   # ;  int     i, i_plot, x, y, w, h; 
+#   # ;  int     arrowX = 20, arrowY = 20; 
+#   # ;  int     left, right, top, bottom; 
+  
+#   # ;  char   *axeX = cam1d->axeX; 
+#   # ;  char   *axeY = cam1d->axeY; 
+#   # ;  YT_BOOL is_axeX = cam1d->is_axeX, is_axeY = cam1d->is_axeY; 
+  
+#   # ;  YT_COLOR color = cam1d->foregr; 
+#   # ;	char Y_STR[256]; 
+  
+#   # ;  sprintf (Y_STR, "%.1f", w1d->ymin); 
+#   # ;  left = YStringW (Y_STR); 
+#   # ;  sprintf (Y_STR, "%.1f", w1d->ymax); 
+#   # ;  left = YMAX (left, YStringW (Y_STR)); 
+#   # ;  left += 5;			/* for negative values ?! */ 
+#   # ;  if (is_axeY) 
+#   # ;    left = left + YStringW ("W") + 5; 
+#   set left  30
+  
+#   # ;  top = arrowY; 
+#   # ;  right = arrowX; 
+
+#   set top    30
+#   set right  30
+  
+#   set bottom 30
+
+#   # ;  bottom = 5 + YStringH ("H"); 
+#   # ;  if (is_axeX) 
+#   # ;    bottom = bottom + YStringH (axeX) + 5; 
+  
+#   set x  [+ $xscr $left]
+#   set w  [- $wscr $left $right]
+#   set y  [+ $yscr $top]
+#   set h  [- $hscr $top $bottom]
+
+
+#   # ;  if (is_axeY)  
+#   # ;    YDrawVString (axeY, xscr + YStringH ("H") / 2, y + h / 2 - YVertStringH (axeY) / 2, color); 
+#   # ;  if (is_axeX)  
+#   # ;    YDrawStringImp (axeX, x + w / 2, yscr + hscr, color, YNONE, YUP); 
+  
+#   YDrawRectB $canvas $x $y $w $h "black"  
+  
+#   # ;  V1DrawAxeX (x, y + h - 1, w, color, w1d->xmin, w1d->xmax, right); 
+#   # ;  V1DrawAxeY (x, y + h - 1, h, color, w1d->ymin, w1d->ymax, top); 
+  
+#   plot_gui_lines  $canvas $plot  $ti $wi  $x $y $w $h
+  
+#   # ;  if (cam1d->legends_style == YUP) 
+#   # ;    V1DrawLegends (w1d, x + 30, y); 
+  
+# }
+# -------------------------------------------------------------------------------
+proc calc_left {canv w1d_ymin w1d_ymax} {
+
+
+  set Y_STR [format_STR $w1d_ymin] 
+  set left  [YStringW  $canv $Y_STR] 
+
+  set Y_STR [format_STR $w1d_ymax] 
+  set left  [max  $left [YStringW $canv $Y_STR]] 
+
+  incr left 5;	;#		/* for negative values ?! */ 
+
+  # ;  if (is_axeY) 
+  set left [+ $left [YStringW $canv "W"] 5] 
+  
+
+  return $left
+}
+# -------------------------------------------------------------------------------
+proc v1_draw_frame_NEW {canv plot wi  ti xscr yscr wscr hscr} { 
+  
+  # ;  VT_CAM1D *cam1d = w1d->cam1d;   
+  #set colors {"green" "blue" "red" "yellow"}
+
+
+  # посчитаем габариты фрейма по габаритам входящих линий
+  # (только почему тут в цикле по линиям?)
+    
+  foreach  {fr_xmin fr_xmax fr_ymin fr_ymax} \
+            [plot_get_minmax_frame_NEW  $plot $wi] {}
+
+  set w1d_xmin  $fr_xmin ;# 0
+  set w1d_xmax  $fr_xmax ;# 10
+  set w1d_ymin  $fr_ymin ;# 0
+  set w1d_ymax  $fr_ymax ;# 10
+
+  # -------------------------------------------------------
+
+  set arrowX 20 
+  set arrowY 20 
+  
+  set axeX "axeX" ;#  char   *axeX = cam1d->axeX 
+  set axeY "axeY" ;#  char   *axeY = cam1d->axeY
+
+  set is_axeX  true ;# cam1d->is_axeX, 
+  set is_axeY  true ;# cam1d->is_axeY; 
+  
+  set color "red" ;# YT_COLOR color = cam1d->foregr; 
+
+
+  set left [calc_left  $canv $w1d_ymin $w1d_ymax]
+
+  set top   $arrowY 
+  set right $arrowX 
+
+  set bottom  [+ 5 [YStringH $canv "H"]]
+
+  if {$is_axeX} { 
+    set bottom  [+ $bottom [YStringH $canv $axeX] 5] 
+  }
+  
+  set x  [+ $xscr $left]
+  set w  [- $wscr $left $right]
+  set y  [+ $yscr $top]
+  set h  [- $hscr $top $bottom]
+
+
+  # -------------------------------------------------------
+  # названия осей, обрамление, шкалы значений по осям
+
+  if {$is_axeY} { 
+ 
+    #YDrawVString $axeY \
+    \#  [expr {$xscr + [YStringH $canv "H"] / 2}] \
+    \#  [expr {$y + $h / 2 - [YVertStringH $canv $axeY] / 2}]  $color 
+
+    set x_  [+ $x 15] 
+    set y_  [- $y  5]
+    YDrawStringImp $canv  $axeY $x_ $y_ $color "YRIGHT" "YUP" 
+  }
+
+  if {$is_axeX} {  
+    
+    set x_ [expr {$x + 2 * $w / 3}] 
+    set y_ [- [+ $yscr $hscr] 15]
+    YDrawStringImp $canv  $axeX $x_ $y_ $color "YRIGHT" "YNONE" ;# "YUP" 
+  }
+  
+  YDrawRectB $canv $x $y $w $h "black"  
+  
+  # шкалы
+
+  V1DrawAxeX_NEW  $canv $x [expr {$y + $h - 1}] $w $color $w1d_xmin $w1d_xmax  $right 
+
+  V1DrawAxeY_NEW  $canv $x [expr {$y + $h - 1}] $h $color $w1d_ymin $w1d_ymax  $top 
+
+  # -------------------------------------------------------
+  #
+  # непосредственно сами графики для этого окна
+
+  plot_gui_lines_NEW  $canv $plot  $ti $wi  $x $y $w $h
+  
+  # -------------------------------------------------------
+  #
+  # описание-легенда графиков
+
+  # ;  if (cam1d->legends_style == YUP) 
+
+  set y_ [+ $yscr 50]
+  V1DrawLegends  $canv $plot $wi  $x_ $y_  ;# (w1d, x + 30, y); 
+
+
+  return
+}
+# ;-------------------------------------------------------------------------------
+
+# ;  (W  400)
+# ;  (H  300)
+# ;  (defconstant *W*  620)
+# ;  (defconstant *H*  500)
+
+# set ::W  500
+# set ::H  400
+
+# ;/*---------------------------V1DrawMain-------------------------------------*/
+# ;void
+# ;V1DrawMain (VT_W1D *w1d)
+# ;{
+# ;  VT_CAM1D *cam1d = w1d->cam1d;
+# ;  int     xscr = cam1d->scrx, yscr = cam1d->scry, wscr = cam1d->scrw, hscr = cam1d->scrh;
+# ;  int     title_h = 20, y_line;
+# ;  YT_COLOR color = cam1d->foregr;
+
+# ;  YDrawRectF (xscr, yscr, wscr, hscr, cam1d->backgr);
+# ;  YDrawRectB (xscr, yscr, wscr, hscr, color);
+
+# ;  if (cam1d->is_title) {
+# ;    y_line = yscr + title_h;
+# ;    YDrawLine (xscr, y_line, xscr + wscr, y_line, color);
+# ;    YDrawStringImp (cam1d->title, xscr + wscr / 2, yscr + title_h / 2, color, YNONE, YNONE);
+# ;    yscr += title_h;
+# ;    hscr -= title_h;
+# ;  }
+# ;  V1CalcMinMax (w1d);
+# ;  V1DrawAll (w1d, xscr + 10, yscr + 10, wscr - 20, hscr - 20);
+
+# ;  wscr++;
+# ;  hscr++;
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;void 
+# ;V1DrawMain (VT_W1D *w1d) 
+# ;-------------------------------------------------------------------------------
+# proc v1_draw_main {c plot ti} {
+
+#   # (let* (
+#   #   wnum h_step
+#   # ;  VT_CAM1D *cam1d = w1d->cam1d; 
+#   # ;  int     xscr = cam1d->scrx, yscr = cam1d->scry, wscr = cam1d->scrw, hscr = cam1d->scrh; 
+  
+#   set xscr 10 ;# лeвый вeрхний угол
+#   set yscr 10 ;#
+
+#   #   ;(wscr 380) 
+#   #   ;(hscr 280)
+
+#   set wscr [- $::W [* $xscr 2]] 
+#   set hscr [- $::H [* $yscr 2]]
+  
+#   #   ;(wscr (window-width  *tk*)) ; ??
+#   #   ;(hscr (window-height *tk*)) ; ??
+  
+#   #   ;(wscr  (screen-width))  ; это вeсь экран !
+#   #   ;(hscr  (screen-height))
+  
+#   set title_h  20   ;#  y_line ;  int     title_h = 20, y_line; 
+#   set color "black" ;#  YT_COLOR color = cam1d->foregr;
+#   #   ) 
+  
+#   #puts "wscr= $wscr"
+#   #puts "hscr= $hscr"
+  
+  
+#   #   ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+#   #   ;;  YDrawRectF (xscr, yscr, wscr, hscr, cam1d->backgr); 
+#   #   ;;
+#   #   ;; Приперерисовки, зачем это? TODO:
+#   #   ;;
+#   #   ;; 1) каждый фрейм должен быть отдельным окном;
+#   #   ;; 2) при повторной перерисовке по временам - двигать только линию/цифры
+#   #   ;; 3) в случае Tcl/Tk можно даже двигать точки как объекты;
+#   #   ;;
+#   #   ;; 
+
+#   YDrawRectF  $c  $xscr $yscr $wscr $hscr "white" ;# нарисовали всю подложку
+
+#   #   ;; 
+#   #   ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  
+  
+#   #   ;; eсли надо, то нарисуeм заголовок
+#   # ;  if (cam1d->is_title) {  ;-------------------------------
+#   set y_line [+ $yscr $title_h] 
+  
+#   # ;    YDrawLine (xscr, y_line, xscr + wscr, y_line, color); 
+#   YDrawLine $c  $xscr $y_line [+ $xscr $wscr] $y_line $color
+  
+#   # ;    YDrawStringImp (cam1d->title, xscr + wscr / 2, yscr + title_h / 2, color, YNONE, YNONE); 
+
+#   #   (YDrawStringImp c (PP_STEP_NAME plot ti) ;"TITLE" 
+#   #                   (+ xscr (/ wscr 2))
+#   #                   (+ yscr (/ title_h 2)) color 
+#   #                   NIL NIL ;YNONE YNONE
+#   #                   ) 
+  
+#   YDrawStringImp $c [PP_STEP_NAME_get $plot $ti] \
+#     [+ $xscr [/ $wscr 2]] \
+#     [+ $yscr [/ $title_h 2]] \
+#     $color "YNONE" "YNONE"
+  
+#   incr yscr $title_h ;#    yscr += title_h; 
+#   decr hscr $title_h ;#    hscr -= title_h; 
+
+#   #   ж;  }  ;----------------------------------------------------
+
+#   # ;  V1CalcMinMax (w1d); 
+#   #   ;(plotstep_create plot)
+
+#   plot_min_max_wnum $plot
+  
+#   set wnum [$plot.WNUM]  ;# [WNUM $plot]
+#   set h_step [/ $hscr $wnum]
+
+#   #   ;(format t "wnum= ~s ~%" wnum) 
+  
+#   #   ;(loop for wi from 0 until (= (aref (FR plot) wi 0) -1) do
+#   #   ;; идeм циклом по всeм фрeймам и отрисовываeм их цeликом
+#   #   ;; 
+
+#   dotimes wi $wnum {
+  
+#     v1_draw_frame $c $plot $ti $wi $xscr [+ $yscr [* $h_step $wi]] $wscr $h_step
+    
+#   }
+
+# }
+# ;-------------------------------------------------------------------------------
+proc v1_draw_main_NEW {canv  x y w h  plot ti} {
+
+  
+  set xscr 10 ;# лeвый вeрхний угол
+  set yscr 10 ;#
+
+  #set wscr [- $::W [* $xscr 2]] 
+  #set hscr [- $::H [* $yscr 2]]
+  
+  set wscr [- $w [* $xscr 2]] 
+  set hscr [- $h [* $yscr 2]]
+  
+  set title_h  20   ;#  y_line ;  int     title_h = 20, y_line; 
+  set color "black" ;#  YT_COLOR color = cam1d->foregr;
+  
+  puts "wscr= $wscr"
+  puts "hscr= $hscr"
+   
+  #   ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  #   ;;  YDrawRectF (xscr, yscr, wscr, hscr, cam1d->backgr); 
+  #   ;;
+  #   ;; Приперерисовки, зачем это? TODO:
+  #   ;;
+  #   ;; 1) каждый фрейм должен быть отдельным окном;
+  #   ;; 2) при повторной перерисовке по временам - двигать только линию/цифры
+  #   ;; 3) в случае Tcl/Tk можно даже двигать точки как объекты;
+  #   ;;
+  #   ;; 
+
+  YDrawRectF  $canv  $xscr $yscr $wscr $hscr "white" ;# нарисовали всю подложку
+
+  #   ;; 
+  #   ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #   ;; eсли надо, то нарисуeм заголовок
+
+  # ;  if (cam1d->is_title) { 
+
+  set y_line [+ $yscr $title_h] 
+  
+  YDrawLine $canv  $xscr $y_line [+ $xscr $wscr] $y_line $color
+  
+  set name [dict_get $plot "T_$ti" "TITLE"]
+
+  YDrawStringImp $canv $name \
+    [+ $xscr [/ $wscr 2]] \
+    [+ $yscr [/ $title_h 2]] \
+    $color "YNONE" "YNONE"
+  
+  incr yscr $title_h ;#    yscr += title_h; 
+  decr hscr $title_h ;#    hscr -= title_h; 
+
+  #   ж;  } ;---------------------------------------------------------------
+
+
+  # теперь займемся непосредственно самими графиками
+  # 
+
+  # посчитаем "габариты" всех функций на всём временном интервале
+  # и пеерсчитаем фреймы
+  # 
+  plot_min_max_wnum_NEW  $plot
+  
+
+  # и теперь рисуем сами ферймы (окна)
+
+  set wnum [dict_get $plot "WNUM"] 
+
+  set h_step [/ $hscr $wnum]
+
+  dotimes wi $wnum {
+   
+    v1_draw_frame_NEW  $canv $plot $wi  $ti $xscr [+ $yscr [* $h_step $wi]] $wscr $h_step   
+  }
+
+  return
+}
+# ;-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc PLOT {mop from message mes1 mes2 mes3 mes4  args} {
+
+  puts ""
+  puts "PLOT: message = $message"
+  puts ""
+
+  metaswitch -- $message {
+
+  "YCREATE" {
+
+    set args_list $mes4
+
+    set plot [lindex $args_list 0]
+    set ti   [lindex $args_list 1]
+
+    SET $mop "plot"  $plot
+    SET $mop "ti"    $ti
+  }
+    
+  "*" * {
+    # 
+    # TODO: должно здесь выполняться по порядку после YCREATE и идти дальше
+    #       без установки флага todo_next
+    # 
+    set fid [FID $mop]
+    # 
+    #puts "*******************************"
+
+    set plot [GET $mop "plot"]  
+    set ti   [GET $mop "ti"]
+  }
+
+  "YOPEN"   + {
+
+    #puts "main_plot_proc_NEW:  YOPEN... "
+
+    set x $mes1
+    set y $mes2
+    set w $mes3
+    set h $mes4
+    set color [GET $mop "color"] 
+
+  }  
+  "YDRAW"   + {
+
+    YPlaceCanvas $fid  $x $y $w $h  -bg $color -width $w -height $h
+    #
+    # здесь размеры нужны, чтобы в дальенйшем этим объектом мог манипулировать,
+    # например, упаковщик.
+
+    YPaintRectF  $fid  0 0  $w $h  [WND_color $fid]        
+
+  }
+  "YDRAWITEM" {
+  
+    #puts "main_plot_proc_NEW:  YDRAWITEM ... "
+
+    set w [WIN_get $fid "w"] 
+    set h [WIN_get $fid "h"] 
+
+    v1_draw_main_NEW  $fid  0 0 $w $h   $plot $::ti
+  }
+
+  "BUTTON_<"    -
+  "YLMOUSEDOWN" {
+
+    if {$::ti > 0} {
+      decr ::ti    ;# глобальная здесь переменная
+      #metagoto "YDRAWITEM"
+      YGoto "YDRAWITEM" 0 0 0 0
+    }
+  }
+
+  "BUTTON_>"    -
+  "YRMOUSEDOWN" {
+
+    set tnum [- [dict_get $plot "L_TNUM"] 1]
+
+    if {$::ti < $tnum} {
+      incr ::ti
+      YGoto "YDRAWITEM" 0 0 0 0
+    }
+  }
+
+
+  default {
+
+    puts "PLOT (default): message= $message  $mes1 $mes2 $mes3 $mes4"
+    #YSend $fid.test $message $mes1 $mes2 $mes3 $mes4 
+  }
+  #
+  } ;# metaswitch
+  
+
+  return
+}
+# -------------------------------------------------------------------------------
+# proc plot_print_gui_OLD {plot} {
+
+
+#   set x0  430
+#   set y0  280
+
+#   set w0  500 ;# $W  ;# 550
+#   set h0  400 ;# $H  ;# 450
+
+
+# #   set big [YBigWindowNEW . "" "PLOT"  $x0 $y0  $w0 $h0 "SENS DISPLAW" \
+# #              $plot $::ti]
+
+#   set big [YBigWindowNEW . "" "PLOT"  $x0 $y0  $w0 $h0 -title "SENS DISPLAW" \
+#              -args_list [list $plot $::ti]]
+
+#   puts ""
+#   puts "big = $big"
+#   puts ""
+
+#   return
+# }
+# -------------------------------------------------------------------------------
+proc button_< {r} {
+
+  puts "button .bot.1"
+
+  YSend $r "BUTTON_<" 0 0 0 0 
+
+}
+# -------------------------------------------------------------------------------
+proc button_> {r} {
+
+  puts "button .bot.2"
+
+  YSend $r "BUTTON_>" 0 0 0 0 
+
+}
+# -------------------------------------------------------------------------------
+proc change_size_proc {fid  x y w h} {
+
+  puts "change_size_proc: fid= $fid  x= $x y= $y w= $w h= $h"
+
+}
+#-------------------------------------------------------------------------------
+proc draw_and_pack_PLOTER {parent ww hh  plot ti} {
+
+
+  set h_bot 50
+  set hh    [- $hh $h_bot] 
+  set args_list  [list  $plot $ti]
+
+  #
+  # а если parent = . ,то будет ..top - ошибка !
+
+  #-----------------------------------------!!
+  set top [N $parent "top"]
+
+  # почему не пееррисовывается? ну, уже ведь существует!
+  # 
+  YWnd   $top "PLOT"  "" 0 0 $ww $hh  0 0 0 $args_list -color "lightgreen"
+  
+  pack   $top  -fill x  
+  
+  #-----------------------------------------!!
+  set bot [N $parent "bot"]
+  
+  YFrame  $bot  ;# frame  $bot
+  pack    $bot  -fill both -expand true
+  
+  YButton $bot.1 "<" -bg "lightgreen" \
+                          -command [list button_< $top] -width 4
+  YButton $bot.2 ">" -bg "orange"     \
+                          -command [list button_> $top] -width 4
+
+  YScale  $bot.scale -orient horizontal -length 200
+
+  pack    $bot.1     -side   left 
+  pack    $bot.scale -side   left -fill both -expand true
+  pack    $bot.2     -side  right     
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc PLOTER {mop from message mes1 mes2 mes3 mes4  args} {
+
+
+  puts "PLOTER: message = $message"
+
+  metaswitch -- $message {
+
+  "YCREATE" {
+
+    set args_list [dict_get_if_exists $args "-args_list" NULL]
+    #set mes4 $args_list
+
+    SET $mop "plot"  [lindex $args_list 0]
+    SET $mop "ti"    [lindex $args_list 1]
+  }
+    
+  "*" * {     
+    # TODO: выполнять по порядку после YCREATE всегда и идём дальше
+    # 
+    set  fid [FID $mop]
+
+    set plot [GET $mop "plot"]  
+    set ti   [GET $mop "ti"]
+  }
+
+  "YOPEN" + {
+
+    #set main [N $fid "main"] ;# можно сделать общий фрейм.    
+    #frame ${main}  ;# фрейм для укладывания в него остальных
+    #pack  ${main}  ;# нельзя упаковать самые верх "."
+
+    frame $fid
+    pack  $fid
+
+  }
+  "YDRAW"   {
+
+    set ww $mes3
+    set hh $mes4
+
+    #set main $fid  ;# уже есть основной фрейм!
+
+    draw_and_pack_PLOTER  $fid $ww $hh  $plot $::ti
+  }  
+
+  default {
+
+    #puts "PLOTER (default): message = $message"
+  }
+  #
+  } ;# metaswitch
+  
+  #"YREDRAW" {}
+
+  return
+}
+# -------------------------------------------------------------------------------
+proc plot_print_gui_NEW {plot} {
+
+
+  set xx  370
+  set yy  210
+  set ww  500
+  set hh  400
+
+  set h_bot 50
+  set h_all [+ $hh $h_bot]
+
+  set mes4 [list  $plot $::ti]
+
+
+  if {0} {
+
+    # все будем делать вручную:
+  
+    wm geometry .  ${ww}x${h_all}+$xx+$yy
+  
+    if {0} {
+      set main ""
+
+    } else {
+
+      set main ".main"
+      frame $main
+      pack  $main
+    }
+      
+    draw_and_pack_PLOTER  $main $ww $h_all  $plot $::ti
+   
+    # применили упаковщик, всё отработало ?!
+    # за исключением  размера, надо может явно указывать
+    # размер в свойства, чтобы другим менеджером понимать?
+    
+    #YBindConfigureOLD  . change_size_proc 
+
+  } else {
+
+
+    YBigWindowNew "" "" "PLOTER"  $xx $yy $ww $h_all -title     "PLOTER for PLOT" \
+                                                     -args_list [list $plot $::ti]
+  }
+
+  return
+}
+#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# 
+# ------------------------------------------------------------------------------
+proc prepare_sin_cos_NEW {} {
+
+  set tnum  10
+  
+  set xnum 100
+  
+  set plot [make_test3_NEW  $tnum $xnum   0 [* 2 $::G_PI] ]
+
+  return $plot
+}
+# ------------------------------------------------------------------------------
+proc MAIN {} {
+
+  global argc argv
+     
+  
+  # ;-----------------------------------
+  # ; пока временно не можем читать диры, сделаем эмуляцию
+  # ; параметров по умолчанию
+
+  #set argc 1
+  #set argv [list "2"] ;# 2, 2
+  
+  # ;-----------------------------------
+  
+  set name_test  8 ;# 1 ;# 5 ;# номер теста по умолчанию
+
+  # ;-----------------------------------
+
+
+  if {$argc != 0} {
+  
+    set name_test [first $argv]  
+  } 
+
+
+  switch -- $name_test {
+    
+    "1" {
+
+      set work_dir "./PLT"
+
+      set plot [read_plot_from_files_NEW  $work_dir]
+    }
+
+    "2" {
+      set plot [prepare_sin_cos_NEW]
+
+      puts ""
+      plot_print_one_NEW   $plot 0
+      puts ""
+      puts ""
+    }
+
+
+    "5" {
+      set plot [plot_test3_prepare_NEW]
+    }
+    
+    "6" {
+      # чмиаем локально сохраненный файл  t_save.pl
+      # 
+      # TODO: надо сделать указание файла через параметры !!
+
+      source "./t_save.pl"
+
+      dict_print $PLOT 
+      puts ""
+
+      set plot $PLOT
+    }
+
+    "8" {
+      set plot [prepare_sin_cos_NEW]
+
+      plot_print_gui_NEW $plot 
+      return
+    }
+
+    "default" {
+      
+      puts "ERROR: name_test = $name_test"
+      exit
+      }
+  }
+  
+  #     "7" {
+  #       set plot [read_plot_from_plotsave_file "PLT" "plotsave"]
+  
+  #       dict_print $plot 
+  #       puts ""
+  #     }
+
+  # подготовили графики, теперь печатаем
+  # 
+    
+  #plot_print_gui_OLD $plot
+ 
+  plot_print_gui_NEW $plot
+ 
+  return
+}
+# ;=============================================================================
+# ;
+
+# этот файл можно использовать и как ибблиотеку, подключая через source, а можно
+# и как запускаемый скрипт : 
+
+if {[info exists argv0] && $argv0 eq [info script]} {
+
+  set cur_pwd [pwd]
+
+  cd [file normalize [file dirname [info script]]]
+
+  #puts ""
+  #puts "argv0 = $argv0"
+  #puts [info script] 
+  #puts ""
+
+  source "d-ker0.tl"
+  #source "d-kern.tl"
+  source "d_plot.tk"
+
+  cd $cur_pwd ;# вернемся в папку
+
+  MAIN
+}
+
+# ;=============================================================================

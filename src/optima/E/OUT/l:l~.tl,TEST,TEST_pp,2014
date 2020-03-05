@@ -1,0 +1,8 @@
+
+
+
+RANDTRUEPROG = i i i i i i dup dup i i
+SIZETRUEPROG = 10
+
+x= 3  result= 3
+

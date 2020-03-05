@@ -1,0 +1,175 @@
+
+::struct::record::Define ..............................
+
+defn_ = STRUCT_T
+vars_ = 
+
+    param2 
+    param3 
+  
+args  = 
+
+
+defn_ = ::STRUCT_T
+
+V = param2
+D = 
+V = param3
+D = 
+
+_recorddefn(::STRUCT_T) = param2 param3
+_defaults(::STRUCT_T)   = {} {}
+
+::struct::record::Define ..............................
+
+defn_ = TEST_T
+vars_ = 
+
+    param1 
+    {record STRUCT_T str}
+  
+args  = 
+
+
+defn_ = ::TEST_T
+
+V = param1
+D = 
+V = STRUCT_T::str
+D = 
+
+_recorddefn(::TEST_T) = param1 STRUCT_T::str
+_defaults(::TEST_T)   = {} {}
+
+::struct::record::Create ..............................
+
+defn_ = ::TEST_T
+inst_ = #auto
+args  = 
+inst_ = ::#auto
+
+inst_         = ::TEST_T0
+V             = param1
+D             = 
+variable name = ::struct::record::TEST_T::values(::TEST_T0,param1)
+alias :  ::TEST_T0.param1 =  ::struct::record::Access ::TEST_T ::TEST_T0 param1
+
+inst_         = ::TEST_T0
+V             = STRUCT_T::str
+D             = 
+variable name = ::struct::record::TEST_T::values(::TEST_T0,STRUCT_T::str)
+::struct::record::Create ..............................
+
+defn_ = ::STRUCT_T
+inst_ = ::TEST_T0.str
+args  = 
+inst_ = ::TEST_T0.str
+
+inst_         = ::TEST_T0.str
+V             = param2
+D             = 
+variable name = ::struct::record::STRUCT_T::values(::TEST_T0.str,param2)
+alias :  ::TEST_T0.str.param2 =  ::struct::record::Access ::STRUCT_T ::TEST_T0.str param2
+
+inst_         = ::TEST_T0.str
+V             = param3
+D             = 
+variable name = ::struct::record::STRUCT_T::values(::TEST_T0.str,param3)
+alias :  ::TEST_T0.str.param3 =  ::struct::record::Access ::STRUCT_T ::TEST_T0.str param3
+
+
+.......................................................
+
+
+.......................................................
+
+
+t = ::TEST_T0
+::struct::record::Cmd .................................
+
+inst_ = ::TEST_T0
+args  = cget -param1
+cmd   = cget
+
+.......................................................
+
+::struct::record::Access ..............................
+
+defn_ = ::TEST_T
+inst_ = ::TEST_T0
+var_  = param1
+args  = 
+
+.......................................................
+
+param1 = 
+::struct::record::Access ..............................
+
+defn_ = ::TEST_T
+inst_ = ::TEST_T0
+var_  = param1
+args  = = {22 33}
+
+.......................................................
+
+::struct::record::Access ..............................
+
+defn_ = ::TEST_T
+inst_ = ::TEST_T0
+var_  = param1
+args  = 
+
+.......................................................
+
+param1 = 22 33
+::struct::record::Access ..............................
+
+defn_ = ::TEST_T
+inst_ = ::TEST_T0
+var_  = param1
+args  = 
+
+.......................................................
+
+param1 = 22 33 44
+str = -param2 {} -param3 {}
+::struct::record::Access ..............................
+
+defn_ = ::STRUCT_T
+inst_ = ::TEST_T0.str
+var_  = param2
+args  = 55
+
+.......................................................
+
+str = -param2 55 -param3 {}
+str = -param2 {55 66} -param3 {}
+::struct::record::Access ..............................
+
+defn_ = ::TEST_T
+inst_ = ::TEST_T0
+var_  = param1
+args  = 
+
+.......................................................
+
+param1 = 22 33 44 88
+::struct::record::Cmd .................................
+
+inst_ = ::TEST_T0
+args  = vget -param1
+cmd   = vget
+
+.......................................................
+
+::struct::record::Access ..............................
+
+defn_ = ::TEST_T
+inst_ = ::TEST_T0
+var_  = param1
+args  = 
+
+.......................................................
+
+param1 = 22 33 44 88 99
+

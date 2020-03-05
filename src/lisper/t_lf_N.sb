@@ -1,0 +1,438 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+
+(require 'asdf)
+
+;(push "../L/common-lisp/"        asdf:*central-registry*)
+
+;(push "../S/"        asdf:*central-registry*)
+
+;===============================================================================
+
+(asdf:load-system :cl-opengl) 
+
+(asdf:load-system :cl-glu) 
+
+(asdf:load-system :cl-glut) 
+
+;===============================================================================
+;-------------------------------------------------------------------------------
+; 
+(defclass bb (glut:window)
+
+  (
+   (cells :accessor cells-of :initarg :cells)
+   )
+
+  (:default-initargs
+      :title "Brains Brain"
+      :pos-x 400 :pos-y 400 :width 600 :height 400     
+      :mode '(:double :rgb))
+
+)
+
+
+(defvar *rules_proc*      '@)
+(defvar *makebrain_proc*  '@)
+(defvar *rendercell_proc* '@)
+
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+;(load "n_lf_N_GameOfLife.cl")
+
+;
+;;Conway Game of life
+;
+;-------------------------------------------------------------------------------
+(defun alive-cells-p (state)
+
+  (if (equal state :on)
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun 2-or-3-alive-p (state neibhours)
+
+  (if (and (alive-cells-p state)
+           (or (= 2 (count :on neibhours))
+               (= 3 (count :on neibhours))))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun more-than-3-neibhours-p (state neibhours)
+
+  (if (and (alive-cells-p state)
+           (> 3 (count :on neibhours)))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun fewer-than-2-live-cells-p (state neibhours)
+  
+  (if (and (alive-cells-p state)
+           (< 2 (count :on neibhours)))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun  exactly-3-live-cells-p (state neibhours)
+
+  (if (and (not (alive-cells-p state))
+           (= 3 (count :on neibhours)))
+      t
+    nil)
+)
+;-------------------------------------------------------------------------------
+(defun conway_rules (state neibhours)
+
+  (cond 
+
+   ((2-or-3-alive-p            state neibhours) :on)
+   ((more-than-3-neibhours-p   state neibhours) :off)
+   ((fewer-than-2-live-cells-p state neibhours) :off)
+   ((exactly-3-live-cells-p    state neibhours) :on)
+   
+   (t :dying))
+
+)   
+;-------------------------------------------------------------------------------
+(defun neibhours (cells x y)
+
+(let* (
+
+  (mx (1- (array-dimension cells 1)))
+  (my (1- (array-dimension cells 0)))
+
+  (l  (if (zerop x) mx (1- x)))
+  (r  (if (= x mx)   0 (1+ x)))
+
+  (u  (if (zerop y) my (1- y)))
+  (d  (if (= y my)   0 (1+ y)))
+  )
+
+  (mapcar (lambda (x y)
+            (aref cells y x)
+            )
+
+          (list  l x r l r l x r)
+          (list  u u u y y d d d)
+          )
+
+))         
+;-------------------------------------------------------------------------------
+(defun evolve (src)
+
+(let* (
+  (rules_proc      *rules_proc*)
+  (makebrain_proc  *makebrain_proc*)
+
+  (w   (array-dimension src 1))
+  (h   (array-dimension src 0))
+
+  ;(dst (make-brain  w h))
+  (dst (funcall  makebrain_proc w h))
+  )
+  
+  (loop for j below h  do 
+  (loop for i below w  do 
+    (setf (aref dst j i)
+          (funcall rules_proc
+                   (aref src j i) (neibhours src i j)))
+    ))
+
+  dst
+))
+;-------------------------------------------------------------------------------
+(defun conway_render_cell (x y cell)
+
+  (case cell
+
+    (:on   (draw-cell x y  1   1   1  ))
+    (:off  (draw-cell x y  0.5 0.5 0.5))
+    )
+  
+)
+;-------------------------------------------------------------------------------
+(defun conway_make_brain (w h)
+
+  (make-array (list h w) :initial-element :off)
+
+)
+;-------------------------------------------------------------------------------
+(defun make_initialized_conway_brain (w h)
+
+
+(setf *rules_proc*      'conway_rules)
+(setf *makebrain_proc*  'conway_make_brain)
+(setf *rendercell_proc* 'conway_render_cell)
+
+(let (
+  (dst (funcall  *makebrain_proc* w h))
+  )
+
+  (loop for i below h  do 
+  (loop for j below w  do 
+    
+  (let (
+    (cellval (random 2))
+    )
+    (if (= 0 cellval)
+        (setf (aref dst j i) :off)
+        (setf (aref dst j i) :on)))
+  ))
+
+  dst
+))
+;-------------------------------------------------------------------------------
+
+
+
+;-------------------------------------------------------------------------------
+;(load "n_lf_N_BriansBrain.cl")
+
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun brians_rules (state neibhours)
+
+  (case state
+
+    (1 2)
+    (2 0)
+    (t (if (= 2 (count 1 neibhours)) 1 0)))
+
+)
+;-------------------------------------------------------------------------------
+(defun brians_render_cell (x y cell)
+
+  (case cell
+
+    (1   (draw-cell x y  0   1   1  ))
+    (0   (draw-cell x y  0.5 0.5 0.5))
+    (2   (draw-cell x y  1.0 0.0 0.0))
+    )
+
+)
+;-------------------------------------------------------------------------------
+(defun brians_make_brain (w h)
+
+
+  (make-array (list h w) :element-type '(integer 0 2))
+
+)
+;-------------------------------------------------------------------------------
+(defun make_initialized_brians_brain (w h)
+
+
+(setf *rules_proc*      'brians_rules)
+(setf *makebrain_proc*  'brians_make_brain)
+(setf *rendercell_proc* 'brians_render_cell)
+
+(let (
+
+  (cells (funcall  *makebrain_proc* w h))
+  ;(cells (make-brain w h))
+  (mid   (floor w 2))
+  )
+
+  (setf (aref cells  0     mid)  1)
+  (setf (aref cells  0 (1+ mid)) 1)
+
+  cells
+
+))       
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+
+
+;-------------------------------------------------------------------------------
+;;Graphical
+;-------------------------------------------------------------------------------
+(defun draw-cell (x y  r g b)
+
+  (gl:color  r g b)
+
+  (gl:with-pushed-matrix
+
+     (gl:translate x y 0)
+     (gl:with-primitive :polygon
+                        (gl:vertex 0.1 0.1 0)
+                        (gl:vertex 0.9 0.1 0)
+                        (gl:vertex 0.9 0.9 0)
+                        (gl:vertex 0.1 0.9 0)))
+
+)
+;-------------------------------------------------------------------------------
+(defmethod glut:display-window :before ((w bb))
+
+
+  (gl:clear-color 0 0 0 0)
+  (gl:shade-model :flat)
+  
+)
+;-------------------------------------------------------------------------------
+(defmethod glut:reshape ((w bb) width height)
+
+
+  (gl:viewport 0 0 width height)
+
+  (gl:matrix-mode :projection)
+  (gl:load-identity)
+
+  ; ortho: камера это плоскость, т.е. и близкие и далекие объекты выглядят 
+  ; одинакового размера
+  ;
+  ; glOrtho (left, right, bootom, top, near, far)
+  ;
+  ;(gl:ortho -50 250 -50 250 -1 1)  ; ??
+  ;
+  (let (
+        (cells (cells-of w))
+        )
+    (gl:ortho 0 (array-dimension cells 1) 0 (array-dimension cells  0) -1 1)
+    )
+
+
+  (gl:matrix-mode :modelview)
+  (gl:load-identity)
+)
+
+;-------------------------------------------------------------------------------
+;
+(defmethod glut:display ((w bb))
+
+  (gl:clear :color-buffer)
+  
+  (let* (
+    (cells (cells-of w))
+    (w     (array-dimension cells 1))
+    (h     (array-dimension cells 0))
+    )
+
+    (loop for j below h  do 
+    (loop for i below w  do 
+      ;(render-cell  i j (aref cells j i))
+      (funcall *rendercell_proc*  i j (aref cells j i))
+      ))
+
+    )
+
+  (glut:swap-buffers)
+
+)
+;-------------------------------------------------------------------------------
+(defmethod glut:idle ((w bb))
+
+  (setf (cells-of w) 
+        (evolve (cells-of w)))
+
+  (glut:post-redisplay)
+
+)
+;-------------------------------------------------------------------------------
+(defun run-simulation (init_game_proc  x y w h  wcells hcells)
+
+(let (
+  )
+
+  (glut:display-window
+
+    (make-instance 'bb 
+                   :cells (funcall init_game_proc  wcells hcells)
+                   :pos-x x :pos-y y  :width w :height h
+                   )
+    )
+
+))
+;-------------------------------------------------------------------------------
+(defun benchmark_simulate (steps initial)
+
+  (loop 
+
+    with brain = initial
+    repeat steps
+    do 
+    ;(Setf brain (funcall 'evolve brain))
+    (Setf brain (evolve brain))
+
+    finally (return brain)
+    )
+
+)
+;-------------------------------------------------------------------------------
+(defun benchmark (init_game_proc)
+
+  (format t "~%")
+  (format t "---------------------------------------------------------- ~%")
+  (format t "~%")
+
+  (format *trace-output* "Benchmarking on ~A ~A ~%"
+          (lisp-implementation-type)
+          (lisp-implementation-version)
+          )
+  
+  ;(simulate 1000 (make-initialized-brain 16 16))  ; ??
+  
+  (format t "~%")
+
+  (loop
+    for (w h i) in '(
+                     ;;                     ( 32  32 32768)
+                     ;;( 64  64  8192)
+                     ( 64  64  100)
+                     ;;                     (128 128  2048)
+
+                     ;; (256 256 512)
+                     ;; (512 512 128)
+                     ;; (1024 1024 32)
+                     ;; (2048 2048 8)
+                     ;; (4096 4096 2)
+                     )
+    
+    do 
+    (let (
+      (initial (funcall init_game_proc  w h))
+      )
+
+      (format *trace-output* "** ~Dx~D ~D iteration~:P ** ~%" w h i)
+      (format t "~%")
+
+      (time    (benchmark_simulate i initial))
+      (finish-output *trace-output*)
+      )
+    )
+
+  (format t "---------------------------------------------------------- ~%")
+  (format t "~%")
+      
+  (values)
+)
+;===============================================================================
+(defun MAIN ()
+
+(let (
+  (x 100) (y 500)
+  (w      400)
+  (h      400)
+
+  (wcells  50)
+  (hcells  50)
+  )
+ 
+
+  (benchmark       'make_initialized_conway_brain)    
+  (run-simulation  'make_initialized_conway_brain   x y w h wcells hcells)
+
+  (benchmark       'make_initialized_brians_brain)    
+  (run-simulation  'make_initialized_brians_brain   x y w h wcells hcells)  
+
+))
+;===============================================================================
+
+(MAIN)
+
+;===============================================================================

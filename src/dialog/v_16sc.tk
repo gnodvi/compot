@@ -1,0 +1,318 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec wish "$0" ${1+"$@"}
+#-------------------------------------------------------------------------------
+
+# if {! [info exists ::source_run]} {
+
+#   set auto_path [linsert $auto_path 0 "COM"]
+# }
+    
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+#
+#
+package require compot::common 1.0
+
+source "v_0000.tl"
+
+#-------------------------------------------------------------------------------
+# перейти в текущую директорию! ???????
+#cd [file normalize [file dirname [info script]]]
+#
+
+lappend auto_path \
+  [file join [file dirname [info script]] "."] 
+
+package require compot::dialog 
+
+##-------------------------------------------------------------------------------
+# TODO:
+#
+# -) реализация красивая, но будет не хватать еральных труктур (типов, классов),
+#    нужно тут как-то и что-то прикрутить!
+#
+##-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+proc run_asteroids {fid} {
+  
+  set frameid [winfo id $fid]
+
+  catch {set pid [exec ../O/O/asteroids.tcl -use $frameid &]} ret
+
+  #puts "ret = $ret"
+  #
+  # вроде запустилось, но тогда не работает плейер !? !?
+  #
+  #set mvname "./V/BigBuckBunny_320x180.mp4"
+  #catch { set pid [exec mplayer -wid $frameid $mvname 2> /dev/null > /dev/null & ]}
+
+  return
+}
+#-------------------------------------------------------------------------------
+#
+#   PULT-0    PULT-0    PULT-0    PULT-0    PULT-0    PULT-0    PULT-0        
+#
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+proc PAGE_WORK_proc {mop from message mes1 mes2 mes3 mes4  args} {
+
+
+  #set fid [FID $fid]
+
+
+  metaswitch -- $message  {
+
+  "YCREATE" {
+  }
+    
+  "*" * {
+    set fid [FID $mop]
+  }
+
+  "YOPEN" + {
+      
+    set x $mes1
+    set y $mes2
+    set w $mes3
+    set h $mes4
+    set color [GET $mop "color"] 
+
+    YPlaceCanvas $fid $x $y $w $h -bg "red" ;#$color ;# создать и перерисовать
+  }
+  "YDRAW" {
+
+    set xx $mes1
+    set yy $mes2
+    set ww $mes3
+    set hh $mes4
+    
+    
+    #YPlaceFrame  $fid  $xx $yy $ww $hh  "red" 
+    
+    set W 130
+    set H  30
+    #set label_xc [expr $x + $w / 2]
+    #set label_yc [expr $y + $h / 2]
+    
+    get_coor_label  x y $W $H $ww $hh
+
+    
+    YCanvasLabel $fid.label [koi_to_utf "PAGE_MAIN"] \
+                                  $x $y  $W $H
+  }
+
+  
+  }
+  
+  #   RETURN_TRUE;
+}
+#-------------------------------------------------------------------------------
+proc PAGE_MAIN_proc {mop from message mes1 mes2 mes3 mes4  args} {
+
+  #set fid [FID $fid]
+
+
+  metaswitch -- $message  {
+
+  "YCREATE" {
+  }
+    
+  "*" * {
+    set fid [FID $mop]
+  }
+
+  "YOPEN" + {
+
+    set x $mes1
+    set y $mes2
+    set w $mes3
+    set h $mes4
+    set color [GET $mop "color"] 
+
+    YPlaceCanvas $fid $x $y $w $h -bg "blue" ;#$color ;# создать и перерисовать
+  }
+  "YDRAW" {
+
+    set xx $mes1
+    set yy $mes2
+    set ww $mes3
+    set hh $mes4
+    
+    
+    #YPlaceFrame  $fid  $xx $yy $ww $hh  "blue" 
+    
+    set W 130
+    set H  30
+    #set label_xc [expr {$xx + $ww / 2}]
+    #set label_yc [expr {$yy + $hh / 2}]
+    
+    get_coor_label  x y $W $H $ww $hh
+
+#     puts "x = $x"
+#     puts "y = $y"
+#     puts "w = $w"
+#     puts "h = $h"
+#     puts "label_xc = $label_xc"
+#     puts "label_yc = $label_yc"
+
+
+    YCanvasLabel $fid.label [koi_to_utf "PAGE_MAIN"] \
+                                  $x $y  $W $H
+  }
+
+  
+  }
+  
+  #   RETURN_TRUE;
+}
+#-------------------------------------------------------------------------------
+# proc run_v_sxem {fid} {
+
+
+#   # здесь нужна геометрия верхнего биг-окна !!
+#   # 
+#   #tkwait visibility .m
+  
+#   set X_big [winfo rootx  .m]
+#   set Y_big [winfo rooty  .m]
+#   set W_big [winfo width  .m]
+#   set H_big [winfo height .m] ;# ??
+  
+#   puts "$X_big $Y_big $W_big $H_big .........................."
+  
+#   set xx [+ $X_big $W_big 200]
+#   set yy 100
+  
+#   run_command [list v_sxem.tk $xx $yy]
+  
+# }
+#-------------------------------------------------------------------------------
+proc MAIN_proc {mop from message mes1 mes2 mes3 mes4  args} {
+
+  #set fid [FID $fid]
+
+
+  metaswitch -- $message  {
+
+  "YCREATE" {
+  }
+    
+  "*" * {
+    set fid [FID $mop]
+  }
+
+  "YOPEN" + {
+
+    set x $mes1
+    set y $mes2
+    set w $mes3
+    set h $mes4
+    set color [GET $mop "color"] 
+
+    YPlaceCanvas $fid $x $y $w $h -bg "orange" ;#$color ;# создать и перерисовать
+    #YPlaceFrame  $fid  $x $y $w $h  "orange" 
+  }
+  "YDRAW" {
+
+    set x $mes1
+    set y $mes2
+    set w $mes3
+    set h $mes4
+    
+    #YDrawRectB  $fid 0 0 $w $h "black" 
+    #YPaintRectFB  $fid 0 0 $w $h  [WND_color $fid] "black" 
+          
+    #draw_rect_text $fid [WND_name $fid] 0 0 $w $h "black"
+
+    puts "SENS_HOME_proc .... "
+    
+    #YPlaceFrame  $fid  $x $y $w $h  "orange" 
+    
+    #--------------------------------------------------------------------
+
+    set work_x 20
+    set work_y 50
+    set work_w 220
+    set work_h 150 
+    
+    MapButton  $fid.butwork  \
+        "Управление режимами \n верхнего окна" \
+        $work_x $work_y $work_w $work_h  PAGE_WORK_proc "red"
+
+    #--------------------------------------------------------------------
+
+    set main_x $work_x
+    set main_y [expr $work_y + $work_h + 20]
+    set main_w $work_w
+    set main_h $work_h 
+    
+    MapButton  $fid.butmain  \
+        "Управление режимами \n основного окна" \
+        $main_x $main_y $main_w $main_h  PAGE_MAIN_proc "blue"
+
+    #--------------------------------------------------------------------
+
+    # set sxem_x [+ $main_x $main_w 100]
+    # set sxem_y $main_y
+    # set sxem_w $main_w
+    # set sxem_h $main_h 
+    
+
+    # YCanvasButton $fid.butsxem "Schema VKOO" $sxem_x $sxem_y $sxem_w $sxem_h \
+    #   -command [list run_v_sxem $fid]
+
+    #--------------------------------------------------------------------
+
+    #run_asteroids $fid ;# нет, всё забивает
+  }
+
+  
+  "YLMOUSEUP" {
+    #YPost [WND_parent $fid] "MYPUSH_UP" $fid 0 0 0
+    puts "SENS_HOME_proc:   YLMOUSEUP !!!"
+  }
+
+  }
+  
+  #   RETURN_TRUE;
+}
+#-------------------------------------------------------------------------------
+proc MAIN_P1 {fid_parent  x y w h} {
+
+  puts ""
+  puts ""
+  puts "fid_parent = $fid_parent"
+  puts ""
+
+
+  YWndModmap [N $fid_parent "m"]  10 10 [expr $w - 20] [expr $h - 20]  "MAIN_proc"
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc MainP1 {} {
+
+  global argc argv
+ 
+
+  get_123_geom_NEW  x0 y0 w0 h0  x1 y1 w1 h1  x2 y2 w2 h2
+
+
+  YBigWindowOld . "MAIN_P1" $x0 $y0 $w0 $h0 -title "SENS DISPLAW"
+
+  return
+}
+#-------------------------------------------------------------------------------
+
+
+MainP1
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------

@@ -1,0 +1,342 @@
+# -*- mode: tcl -*- ------------------------------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk ;# тогда в Windows CMD виден вывод в STDOUT
+
+#-------------------------------------------------------------------------------
+#
+# http://wiki.tcl.tk/10552
+
+# Lars H Drawing a graph so that it looks good is a very hard problem; it is 
+# pretty much the case any method one can cook up will do a very poor job on almost 
+# all graphs!
+
+# The usual approach is instead to have one data structure for "abstract graph" 
+# (vertices do not have any coordinates) and another data structure for "geometric 
+# graph" (where each vertex has been assigned a coordinate in the plane). Only the 
+# latter kind of graph can be drawn (but one can of course arrange things so that 
+# abstract graphs are automatically converted to geometric if used as such, for 
+# example by using a circular arrangement of the vertices). It is then the 
+# responsibility of the user to choose or device an arrangement method that is 
+# suitable for the type of graph at hand.
+
+# It might also be observed that there are many heuristic methods that seek to 
+# improve the positions of the vertices in a given geometric graph, to make it 
+# more pleasing to the eye. Several of these start with a physical model of the 
+# graph and simulate its development over time. One can for example imagine the 
+# graph as a mechanical object, where the vertices are masses and the edges are 
+# springs; this seeks to find an arrangement where no edge is unnecessarily long 
+# or short. A development of that model is to put an positive electric charge at 
+# each vertex, so that the vertices won't sit on top of each other. Those fond of 
+# Colliding balls and the like might find this just as intrigueing.
+
+#-------------------------------------------------------------------------------
+# drawgraph.tcl --
+#    Script to draw graphs (represented as edgelist) in a canvas
+#
+
+# DrawGraph --
+#    Namespace for the commands
+#
+#-------------------------------------------------------------------------------
+namespace eval ::DrawGraph:: {
+  
+  variable draw_vertex  "DrawVertex"
+  variable draw_edge    "DrawEdge"
+  variable curved       0
+  variable directed     0
+  
+  namespace export drawGraph drawGraphCentral drawGraphTree drawGraphCircular
+}
+
+#-------------------------------------------------------------------------------
+#
+# CountVertices --
+#    Count the number of vertices
+# Arguments:
+#    edgelist        List of edges
+# Result:
+#    Number of unique vertices in the edge list
+#
+#-------------------------------------------------------------------------------
+proc ::DrawGraph::CountVertices { edgelist } {
+  
+  set vertices {}
+  foreach edge $edgelist {
+    foreach {begin end attrib} $edge {break}
+    
+    if { [lsearch $vertices $begin] < 0 } {
+      lappend vertices $begin
+    }
+    if { [lsearch $vertices $end] < 0 } {
+      lappend vertices $end
+    }
+  }
+  
+  return [llength $vertices]
+}
+#-------------------------------------------------------------------------------
+# 
+# DrawGraphGeneral --
+#    General procedure to draw a graph
+# Arguments:
+#    canvas          Canvas to draw in
+#    edgelist        List of edges
+#    arrange         Type of arrangement (-central, -tree, -bycol, -byrow, -circular)
+#    ncols           Number of columns (in case of circular: number of vertices)
+#    nrows           Number of rows
+#    curved          Curved edges or not
+#    directed        Add arrow head or not
+# Result:
+#    Nothing
+# Side effect:
+#    Graph is drawn according to the specifications
+# Note:
+#    Do not use it directly!
+#
+#-------------------------------------------------------------------------------
+proc ::DrawGraph::DrawGraphGeneral { canvas edgelist arrange ncols nrows curved directed } {
+
+  variable draw_vertex
+  variable draw_edge
+  
+  #
+  # Create a list of cell centres
+  # - TODO: ordering according to arrangement
+  #
+  if { $arrange != "-circular" } {
+    set dcellx [expr {[$canvas cget -width]/$ncols}]
+    set dcelly [expr {[$canvas cget -height]/$nrows}]
+  }
+  
+  set coords {}
+  
+  switch -- $arrange {
+    "-bycol" {
+      for { set j 0 } { $j < $nrows } { incr j } {
+        for { set i 0 } { $i < $ncols } { incr i } {
+          set x [expr {($i+0.5)*$dcellx}]
+          set y [expr {($j+0.5)*$dcelly}]
+          lappend coords $x $y
+        }
+      }
+    }
+    "-byrow" {
+      for { set i 0 } { $i < $ncols } { incr i } {
+        for { set j 0 } { $j < $nrows } { incr j } {
+          set x [expr {($i+0.5)*$dcellx}]
+          set y [expr {($j+0.5)*$dcelly}]
+          lappend coords $x $y
+        }
+      }
+    }
+    "-circular" {
+      #
+      # Number of vertices: in ncols
+      #
+      set dphi    [expr {2.0*3.1415926/$ncols}]
+      set xcentre [expr {[$canvas cget -width]/2.0}]
+      set ycentre [expr {[$canvas cget -height]/2.0}]
+      set rad     [expr {0.5*hypot($xcentre,$ycentre)}]
+      for { set i 0 } { $i < $ncols } { incr i } {
+        set x [expr {$xcentre+$rad*sin($i*$dphi)}]
+        set y [expr {$ycentre-$rad*cos($i*$dphi)}]
+        lappend coords $x $y
+      }
+    }
+    
+    default {
+      error "Option unknown or not implemented: $arrange"
+    }
+  }
+  
+  set vertices {}
+  foreach edge $edgelist {
+    foreach {begin end attrib} $edge {break}
+    
+    if { [info exists vertex($begin,x)] } {
+      set xb $vertex($begin,x)
+      set yb $vertex($begin,y)
+    } else {
+      foreach {xb yb} $coords {break}
+      set coords [lreplace $coords 0 1]
+      set vertex($begin,x) $xb
+      set vertex($begin,y) $yb
+      lappend vertices $begin
+    }
+    
+    if { [info exists vertex($end,x)] } {
+      set xe $vertex($end,x)
+      set ye $vertex($end,y)
+    } else {
+      foreach {xe ye} $coords {break}
+      set coords [lreplace $coords 0 1]
+      set vertex($end,x) $xe
+      set vertex($end,y) $ye
+      lappend vertices $end
+    }
+    
+    $draw_edge $canvas $xb $yb $xe $ye $directed $curved $attrib
+  }
+  
+  foreach vtx $vertices {
+    set xv $vertex($vtx,x)
+    set yv $vertex($vtx,y)
+    
+    $draw_vertex $canvas $xv $yv $vtx
+  }
+}
+
+#-------------------------------------------------------------------------------
+#
+# DrawVertex --
+#    Default vertex drawing routine
+# Arguments:
+#    canvas    Canvas to draw on
+#    xv        X coordinate
+#    yv        Y coordinate
+#    name      Name of the vertex
+# Result:
+#    None
+# Side effect:
+#    Filled circle drawn at vertex
+#
+#-------------------------------------------------------------------------------
+proc ::DrawGraph::DrawVertex { canvas xv yv name } {
+  
+  $canvas create oval [expr {$xv-3}] [expr {$yv-3}] \
+    [expr {$xv+3}] [expr {$yv+3}] -fill black
+}
+
+#-------------------------------------------------------------------------------
+# DrawEdge --
+#    Default edge drawing routine
+# Arguments:
+#    canvas    Canvas to draw on
+#    xb        X coordinate begin
+#    yb        Y coordinate begin
+#    xe        X coordinate end
+#    ye        Y coordinate end
+#    curved    Draw a curved edge or not
+#    directed  Draw an arrow head or not
+#    attrib    Attribute of the vertex
+# Result:
+#    None
+# Side effect:
+#    Lien from the beginning to the end
+#
+#-------------------------------------------------------------------------------
+proc ::DrawGraph::DrawEdge { canvas xb yb xe ye curved directed attrib } {
+
+  if { $directed } {
+    set arrowtype last
+  } else {
+    set arrowtype none
+  }
+  
+  set dx [expr {$xe-$xb}]
+  set dy [expr {$ye-$yb}]
+
+  if { ! $curved } {
+    set xc [expr {$xb+0.5*$dx}]
+    set yc [expr {$yb+0.5*$dy}]
+  } else {
+    set xc [expr {$xb+0.5*$dx-0.1*$dy}]
+    set yc [expr {$yb+0.5*$dy+0.1*$dx}]
+  }
+
+  $canvas create line $xb $yb $xc $yc $xe $ye -fill black \
+    -arrow $arrowtype -smooth $curved
+
+}
+#-------------------------------------------------------------------------------
+# drawGraph --
+#    Drawing procedure (driver) for graphs using row or column arrangement
+# Arguments:
+#    canvas    Canvas to draw on
+#    edgelist  List of edges
+#    arrange   Arrangement by row (-byrow) or by column (-bycol)
+#    number    Number of rows or columns
+# Result:
+#    None
+# Side effect:
+#    Graph drawn in canvas
+#
+#-------------------------------------------------------------------------------
+proc ::DrawGraph::drawGraph { canvas edgelist arrange number } {
+
+  variable curved
+  variable directed
+  
+  set number_vertices [CountVertices $edgelist]
+  
+  switch -- $arrange {
+    "-byrow" { set nrows $number
+      set ncols [expr {($number_vertices+$nrows-1)/$nrows}]
+    }
+    default  { set arrange "-bycol"
+               set ncols $number
+      set nrows [expr {($number_vertices+$ncols-1)/$ncols}]
+    }
+  }
+  
+  DrawGraphGeneral $canvas $edgelist $arrange $ncols $nrows $curved $directed
+
+}
+#-------------------------------------------------------------------------------
+# drawGraphCircular --
+#    Drawing procedure (driver) for graphs using circular arrangement
+# Arguments:
+#    canvas    Canvas to draw on
+#    edgelist  List of edges
+# Result:
+#    None
+# Side effect:
+#    Graph drawn in canvas
+#
+#-------------------------------------------------------------------------------
+proc ::DrawGraph::drawGraphCircular { canvas edgelist } {
+
+  variable curved
+  variable directed
+  
+  set number_vertices [CountVertices $edgelist]
+  
+  set arrange "-circular"
+  DrawGraphGeneral $canvas $edgelist $arrange $number_vertices 0 $curved $directed
+}
+
+#-------------------------------------------------------------------------------
+# main --
+#    Testing the routines
+#
+#-------------------------------------------------------------------------------
+
+set test 1
+
+if { [file tail $::argv0] == [info script] || $test == 1 } {
+  
+  namespace import -force ::DrawGraph::*
+  
+  set edgelist { {A B} {A C} {A D} {A E} {B E} {D F} {C D} {C B} }
+  
+  canvas .c1  -bg white -width 200 -height 200
+  canvas .c2  -bg white -width 200 -height 200
+  canvas .c3  -bg white -width 200 -height 200
+  canvas .c4  -bg white -width 200 -height 200
+
+  grid .c1 .c2
+  grid .c3 .c4
+  
+  ::DrawGraph::DrawGraphGeneral  .c1 $edgelist -bycol 2 3 1 1
+  ::DrawGraph::drawGraph         .c2 $edgelist -bycol 3
+  ::DrawGraph::drawGraph         .c3 $edgelist -byrow 3
+  ::DrawGraph::drawGraphCircular .c4 $edgelist
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+

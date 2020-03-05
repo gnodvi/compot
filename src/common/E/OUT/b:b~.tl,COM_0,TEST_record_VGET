@@ -1,0 +1,23 @@
+
+package struct::record VERSION : 1.2.1
+
+ret = ::inst0
+
+NAME of ret.mem2 =  ::struct::record::myrecord::values(::inst0,mem2)
+ret.mem2 = 1 2 3 45
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+inst1.mem1 = 
+inst1.mem1 = 1 2 3
+inst1.mem1 = 4 5
+NAME of inst1.mem =  inst1values(inst1,mem1)
+inst1.mem1 = 4 5
+
+inst1.mem3.nest1 = 
+inst1.mem3.nest1 = 10
+
+inst1 = -mem1 {4 5} -mem2 {} -mem3 {-nest1 10 -nest2 {}}
+inst1.mem3 = -nest1 10 -nest2 {}
+
+

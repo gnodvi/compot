@@ -1,0 +1,173 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;===============================================================================
+;; 19.4 Finding a Global Optimum Point
+
+;===============================================================================
+
+; Ordinarily, when we apply genetic programming to an optimization problem, the 
+; result typically comes in the form of an entire function (as in section 11.3), 
+; not just a single point. 
+; However, we can use genetic programming to find a 
+; single optimum point, rather than an entire function,
+; by simply excluding all independent variables from the terminal set. That is, 
+; we include only random constants of the appropriate type in the
+; terminal set (as we did when we solved mathematical equations for numeric 
+; values in section 10.11).
+
+; For example, consider the problem of finding the global optimum (i.e., minimum) 
+; point for the five-dimensional function:
+
+; F1 (x1, x2, x3, x4, x5) = (x1 - 1)**2 + (x2 - sqrt(2))**2 + (x3 - sqrt(3))**2 +
+;                           (x4 - 2)**2 + (x5 - sqrt(5))**2
+
+; The desired global optimum value is, of course, 0 and it occurs at the point 
+; (1, sqrt(2), sqrt(3), 2, sqrt(5)) in the five-dimensional space. 
+
+;===============================================================================
+;-------------------------------------------------------------------------------
+(defun optimum_make_calc_xi (genotype data)	                                     
+
+(declare (ignore data))
+
+(let* (
+  xi
+  (fun_list genotype)
+  (n        (list-length fun_list))
+  ) 
+
+  (setf xi (make-list n))
+
+  (dotimes (i n)
+    (setf (nth i xi) (funcall *eval_prog*  (nth i fun_list))) 	     
+    )
+
+  xi
+))
+;-------------------------------------------------------------------------------
+(defun calc-sfitness-proc_PRO (genotype tfunc)	                                     
+
+(let (
+  (xi (optimum_make_calc_xi genotype NIL))
+  ) 
+  
+  ;(funcall (TESTFUNC-proc tfunc) xi tfunc)
+  ;(funcall (TESTFUNC-proc tfunc) xi NIL)
+  (funcall (TESTFUNC-proc tfunc) xi)
+
+))	                                                             
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun gplist_create_population ( 
+                           size-of-population
+                           seeded-programs 
+
+                           method-of-generation
+                           max-depth-for-new-individuals
+                           )
+
+  (if *debug_print* (format t "gplist_create_population ~%"))
+
+  (setf  *max-depth-for-new-individuals*  max-depth-for-new-individuals)
+  (setf  *method-of-generation*           method-of-generation)
+
+  ;(setf *minimum-depth-of-trees* 1)
+  ;(setf *full-cycle-p*           nil)
+  
+  (gp_init_0)
+
+  (population_create size-of-population
+                      seeded-programs
+
+                      'create_gp_program
+                      'do_attempts_gp
+                      )
+)
+;-------------------------------------------------------------------------------
+(defun optimum_print_x (genotype make_calc_xi data)
+
+(let ( 
+  (*print-pretty* t) ; здесь глобальная, меняется локально для этой функции
+
+  xi
+  )
+ 
+  (format t "PRINT_BEST_OPTIMUM: ~%")            
+  (format t "~%")
+
+  (setf xi (funcall  make_calc_xi genotype data))	                                     
+  (format t "X= ~A ~%" xi)
+  ;(format_bord75) ;===========================
+
+))
+;-------------------------------------------------------------------------------
+(defun s_19_4 (argus)
+
+(let* (
+  pop selection_method
+  (size      (parse-integer (nth 0 argus)))
+  (maxi      (parse-integer (nth 1 argus)))
+  (tname  (read-from-string (nth 2 argus)))
+
+  (tfunc (get_testfunc *tabl* tname))
+  )
+
+  (if (>= size 1000) 
+      (setf selection_method :fitness-proportionate-with-over-selection)
+      (setf selection_method :fitness-proportionate)
+      ) 
+
+  ;; -------------------------------------------------------------
+
+  ;(setf *get_starter*  #'(lambda (program) program))
+
+  (set_sms_list ;(list 
+        (list  '(+ - * %)  '(2 2 2 2)  '(:floating-point-random-constant))
+        );)
+  (set_sms_l (TESTFUNC-dim tfunc)) ;; задавая АДФ-список?
+
+  ;(seed_set_random)
+  ;(setf *debug_print* t)  
+
+  (seed_set 1.0)
+
+  ;; -------------------------------------------------------------
+  (setf pop (gplist_create_population size 
+                                      nil
+                                      :ramped-half-and-half
+                                      6 ; max-depth-for-new-individuals
+                                      ))
+   
+  ;; -------------------------------------------------------------
+  (setf *max-depth-for-individuals-after-crossover*     17)
+  (setf *max-depth-for-new-subtrees-in-mutants*         4)
+
+  (setf *crossover-at-any-point-fraction*             0.2)
+  (setf *crossover-at-function-point-fraction*        0.2)
+
+  (execute_generations_  pop maxi 
+                         'sort-population-by-fitness_0
+
+                         selection_method
+                         'calc-sfitness-proc_PRO tfunc ;(get_testfunc *tabl* tname)
+                         ;'define_termination_criterion_MAXI
+                         ;'define_termination_criterion_NULL
+                         NIL
+
+                         (+ *crossover-at-function-point-fraction*
+                                *crossover-at-any-point-fraction*)
+                         0.1 
+                         'gp_crossover 'mutate
+                         'ga_print_parameters  *is_print* 
+                         )
+  ;; -------------------------------------------------------------
+
+  (optimum_print_x (ORGANISM-genotype *best-of-run*)
+                   'optimum_make_calc_xi NIL
+                   )
+ 
+  (format t "~%")
+))
+;;;=============================================================================
+

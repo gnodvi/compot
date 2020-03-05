@@ -1,0 +1,109 @@
+
+------------------------------------------------------------------- 
+
+  0 Rotate R-P-S       
+rsb_play_match .. bot1= rotatebot  bot2= rotatebot 
+
+p1 = 0  p2 = 0 
+p1 = 1  p2 = 1 
+p1 = 2  p2 = 2 
+p1 = 0  p2 = 0 
+p1 = 1  p2 = 1 
+p1 = 2  p2 = 2 
+p1 = 0  p2 = 0 
+p1 = 1  p2 = 1 
+p1 = 2  p2 = 2 
+p1 = 0  p2 = 0 
+=
+rsb_play_match .. bot1= rotatebot  bot2= switchbot 
+
+prob_rock= 0.0   prob_paper= 0.5   val == 0.18205222114920616
+p1 = 0  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.3570213969796896
+p1 = 1  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.4129322092048824
+p1 = 2  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.40146857453510165
+p1 = 0  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.050274896901100874
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.2606206531636417
+p1 = 2  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.24125022115185857
+p1 = 0  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.17964082350954413
+p1 = 1  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.34119973005726933
+p1 = 2  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.390771662350744
+p1 = 0  p2 = 0 
++
+  1 Always Switchin'   
+rsb_play_match .. bot1= switchbot  bot2= rotatebot 
+
+prob_rock= 0.0   prob_paper= 0.5   val == 0.012529946863651276
+p1 = 1  p2 = 0 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.11191968154162169
+p1 = 0  p2 = 1 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.22814709693193436
+p1 = 1  p2 = 2 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.21321998862549663
+p1 = 0  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.3247468750923872
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.004778613802045584
+p1 = 0  p2 = 2 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.2204227652400732
+p1 = 1  p2 = 0 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.3098780373111367
+p1 = 0  p2 = 1 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.16433066315948963
+p1 = 1  p2 = 2 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.06836310960352421
+p1 = 0  p2 = 0 
+-
+rsb_play_match .. bot1= switchbot  bot2= switchbot 
+
+prob_rock= 0.0   prob_paper= 0.5   val == 0.19238881999626756
+prob_rock= 0.0   prob_paper= 0.5   val == 0.3925767461769283
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.08258707961067557
+prob_rock= 0.5   prob_paper= 0.0   val == 0.37041023513302207
+p1 = 0  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.05906585045158863
+prob_rock= 0.0   prob_paper= 0.5   val == 0.3955468642525375
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.17560749361291528
+prob_rock= 0.5   prob_paper= 0.0   val == 0.07390383165329695
+p1 = 0  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.18304904643446207
+prob_rock= 0.0   prob_paper= 0.5   val == 0.34685678966343403
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.008409734349697828
+prob_rock= 0.5   prob_paper= 0.0   val == 0.24704135255888104
+p1 = 0  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.18797468021512032
+prob_rock= 0.0   prob_paper= 0.5   val == 0.2442803313024342
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.34961594361811876
+prob_rock= 0.5   prob_paper= 0.0   val == 0.28103657718747854
+p1 = 0  p2 = 0 
+prob_rock= 0.0   prob_paper= 0.5   val == 0.17931534070521593
+prob_rock= 0.0   prob_paper= 0.5   val == 0.45874385349452496
+p1 = 1  p2 = 1 
+prob_rock= 0.5   prob_paper= 0.0   val == 0.15400729980319738
+prob_rock= 0.5   prob_paper= 0.0   val == 0.25525691779330373
+p1 = 0  p2 = 0 
+=
+
+
+FINAL SORTETED RESULTS:  
+
+------------------------------------------------------------------- 
+      Player Name         total    +   =   - 
+
+  1)  Rotate R-P-S           6     2   2   0 
+  2)  Always Switchin'       2     0   2   2 
+
+------------------------------------------------------------------- 
+

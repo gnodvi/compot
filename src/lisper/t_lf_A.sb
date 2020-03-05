@@ -1,0 +1,137 @@
+; -*-   mode: lisp ; coding: utf-8   -*- ---------------------------------------
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+
+;;; 1d cellular automata testbed
+;;; Raimon Grau
+;;; raimonster@gmail.com
+
+
+; это емакс !! по-русски по утф
+; 
+;-------------------------------------------------------------------------------
+;;; rule 184: 101 110 00
+;-------------------------------------------------------------------------------
+(defun fill-rules (hash-table)
+
+  (setf (gethash 000 hash-table) #\0)
+  (setf (gethash 001 hash-table) #\0)
+  (setf (gethash 010 hash-table) #\0)
+  (setf (gethash 011 hash-table) #\1)
+  (setf (gethash 100 hash-table) #\1)
+  (setf (gethash 101 hash-table) #\1)
+  (setf (gethash 110 hash-table) #\0)
+  (setf (gethash 111 hash-table) #\1)
+
+  hash-table
+
+)
+;-------------------------------------------------------------------------------
+;; (defun neighbours (data pos)
+;;   (cond
+;;     ((= pos 0) (cons  (car (last data)) (subseq data 0 2)))
+;;     ((= pos (1- (length data))) (append (subseq data (1- pos) (1+ pos)) (list (first data))))
+;;     (t (subseq data (1- pos) (+ pos 2)))))
+;-------------------------------------------------------------------------------
+(defun apply-rule (rules neighbours)
+
+  (gethash (parse-integer 
+            (concatenate 'string neighbours)) rules)
+
+)
+;-------------------------------------------------------------------------------
+(defun neighbours (data pos)
+
+  ;; 
+  ;; formiruem spisok sosedej po pozicii v bol'[om spiske
+
+  (cond
+    ((= pos 0)                  (cons #\1 (subseq data 0 2))) ; 1 + perva=e dva ??
+    ((= pos (1- (length data))) (append 
+                                 (subseq data (1- pos) (1+ pos)) 
+                                 '(#\0))) ; poslednie dva \lementa + 0  ??
+    (t 
+     (subseq data (1- pos) (+ pos 2)))) ; tri \lementa spiska
+
+)
+;-------------------------------------------------------------------------------
+(defun advance-generation (population rules)
+
+  (loop for elem in (first population)
+    for pos from 0
+    collect (apply-rule rules (neighbours (first population) pos))
+    )
+
+)
+;-------------------------------------------------------------------------------
+;;; (concatenate 'string '(#\a #\b))
+;;; adding to a hash (setf (gethash 'one-entry *my-hash*) "hola")
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun random-elt (sequence)
+
+(let (
+  (seq-length (length sequence))
+  )
+
+  (when (> seq-length 0)
+    (elt sequence (random seq-length)) ;; iz opornogo (obrazuy]ego) spiska
+                                       ;; v=biraem sluhajn=j \lement  
+    )
+
+))
+;-------------------------------------------------------------------------------
+(defun gen-random-string (length)
+
+(let (
+  (opts '(#\0 #\1))
+  )
+
+  (loop  repeat length
+    collect (random-elt opts) ;; 
+                              ;; formiruem sluhajn=j spisok dlin= length
+    )
+
+))
+;-------------------------------------------------------------------------------
+;(defun main_run (&optional (length 11))
+(defun main_run ()
+
+(let* (
+  (size  11)
+  (population (list (gen-random-string size))) ; spisok, nahal'naq konfiguraciq
+  (rules      (fill-rules  (make-hash-table)))
+  (nums  20) 
+  )
+
+  (format t "~%")
+  (format t "rules      = ~s ~%" rules)
+  (format t "size       = ~s ~%" size)
+  (format t "population = ~s ~%" population)
+  (format t "nums       = ~s ~%" nums)
+  (format t "~%")
+  ;(quit)
+
+  (loop for i from 0 to nums 
+
+    while (not (equalp (first population) (second population)))
+    do 
+
+    (setf population (cons 
+                      (advance-generation population rules) population))
+    
+    (format t "~2d .. ~S~%" i (first population))
+    )
+
+  (format t "~%")
+
+  (first population)
+  
+))
+;-------------------------------------------------------------------------------
+
+(main_run)
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------

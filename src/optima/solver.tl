@@ -1,0 +1,3464 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ------------------------------------------
+
+
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# ;void
+# ;minfunc_set_null (YT_MINFUNC *minfunc,
+# ;                  double (*fun_null) (YT_MINFUNC *minfunc, int xi, int num),
+# ;                  int  num)
+# ------------------------------------------------------------------------------
+proc minfunc_set_null {minfunc fun_null num} {
+
+  # (let (
+  # ;  int    xi;
+  #   f ;  double f;
+  #   )
+  
+  # ;  for (xi=0; xi < XNUM; xi++) {}
+  dotimes  xi [XNUM_get] {
+
+    # ;    f = fun_null (minfunc, xi, num);
+    # ;    minfunc_put (/* fi */0, minfunc, xi, /* ti */0, f);
+    
+    set f  [$fun_null  $minfunc $xi $num]
+    minfunc_put  0 $minfunc $xi 0 $f
+  }
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;fun_null_all (YT_MINFUNC *minfunc, int xi, int num)
+# ;-------------------------------------------------------------------------------
+proc fun_null_all {minfunc xi num} {
+
+  #   ;(format t "fun_null_all: num= ~s ~%" num)
+  
+  # ;  double f;
+  
+  set x [XX]
+
+  if       {$num == 0} {set f [expr {cos ($x)} ]} \
+    elseif {$num == 1} {set f 0.0}     \
+    elseif {$num == 5} {set f [expr {sin ($x)} ]} \
+    else {
+
+      ERROR "fun_null_all"
+    }
+
+  # ;  if (num == 2) f = 1.0 * X; 
+  # ;  if (num == 3) f = sin (X-1) /* + 10 */;
+  # ;  if (num == 4) f = X*X;
+  # ;  if (num == 6) f = 2 + 10*cos (4*X);
+  
+  #   (cond 
+  #    ((= num 0) (cos (XX)))
+  #    ((= num 1) 0.0)
+  
+  #    ((= num 2) (* 1.0 (XX)))
+  #    ((= num 3) (sin (- (XX) 1)))
+  #    ((= num 4) (* (XX) (XX)))
+  #    ((= num 5) (sin (XX)))
+  #    ((= num 6) (+ 2 (* 10 (cos (* 4 (XX))))))
+  
+  #    (t (Error "num"))
+  #    )
+  
+  return $f
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;diffur (int num,
+# ;        double x, double y, double y_x /* производная */, double y_xx)
+# ;{
+# ;-------------------------------------------------------------------------------
+proc diffur {num x y y_x y_xx} {
+
+  # (declare (ignore y))
+  
+  # ;  double  r;
+  
+  if {$num == 0} {set r [expr {$y_x - 1.0 }]} 
+  if {$num == 1} {set r $y_xx}
+  if {$num == 3} {set r [expr {$y_x -  cos ($x) }]}
+  if {$num == 4} {set r [expr {$y_x - -sin ($x) }]}
+  
+  #   (cond
+  #    ((= num 0) (- y_x 1.0))
+  #    ((= num 1) y_xx)
+  #    ((= num 3) (- y_x    (cos x)))
+  #    ((= num 4) (- y_x (- (sin x))))
+  
+  #    (t (Error "num"))
+  #    )
+  
+  # ;  //r = y_x - 3 * pow (y, 2.0/3.0); // nan !!??
+  # ;  //printf ("r = %5.3f  \n", r); 
+  # ;  //Error ("---");
+  
+  # ;  //double  var = (1 + 3*x*x) / (1 + x + x*x*x);
+  # ;  //r = y_x + (x+var)*y - (x*x*x + 2*x + x*x*var); // Terechov
+  
+  # ;  //r = x*y_x - (y - x*exp(y/x)); // Fillipov N-108
+  # ;  //r = y*sin(x) + y_x*cos(x) - 1;  // Fillipov N-366
+  
+  # ;  //r = x*y*y_xx - x*y_x*y_x - y*y_x;  // Fillipov N-463
+  
+  return $r
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;fun_rezi_diffur (void *mf, double *xyz)
+# ;{
+# ;-------------------------------------------------------------------------------
+proc fun_rezi_diffur {mf xyz} {
+
+  # (declare (ignore xyz))
+  
+  # (let* (
+  set minfunc $mf
+  set of  [$minfunc.PARAM]
+  
+  set diffur2  "diffur" ;#  YT_DIFFUR_2 diffur2 = diffur;
+  set num  [$of.PARAM]  ;#  int num = of->param;
+  
+  #   r f1 f2 f3 df dx
+  # ;  int     xi, ti, fi;
+  #   ddf ;  static double ddf; // чтобы взять вторую производную в конце промежутка..
+  
+  #   ;(fi  0)
+  set ti  [TI_get]
+  
+  # ;  // подсчитаем невязку, т.е. расстояние до точного решения
+  set rezi  0
+  #   )
+  
+  # ;  for (xi=0; xi < XNUM-1; xi++) {}
+  dotimes xi [expr {[XNUM_get] - 1}] {
+  
+    #puts "xi = $xi"
+
+    set f1  [Fun_    $xi    $ti]
+    set f2  [Fun_ [expr {$xi + 1}] $ti]
+    
+    set df  [expr {$f2 - $f1}]
+    set dx  [XSTEP_get]
+    
+    if  {$xi != [expr {[XNUM_get] - 2}]} { 
+      #       ;(format t "..... ~%")
+
+      set f3  [Fun_ [expr {$xi + 2}] $ti]
+      set ddf [expr {$f3 + (- (2 * $f2)) + $f1}]
+    }
+    
+    #  ;(format t "xi=~s xnum=~s f1=~s f2=~s df=~s dx=~s ddf=~s ~%" xi (XNUM) f1 f2 df dx ddf)
+    
+  # ;   r = diffur2 (num,  X, f1, df/dx, ddf/(dx*dx)); 
+
+    set r [$diffur2  $num [XX] f1 [expr {$df / $dx}] [expr {$ddf / ($dx * $dx)}] ] 
+    
+    #     ;(format t ".... r=~s ~%" r)
+    incf rezi [expr {$r * $r}]
+  }
+  
+  # ;  rezi = sqrt (rezi);
+  return [expr {sqrt ($rezi)}] ;#  return (rezi);
+}
+# ;===============================================================================
+# ;// 
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun botgslspusk_3_data (
+#        bot ; void *self, 
+#        mp  ; void *mp
+#        )
+
+# (let (
+# ;  YT_MINBOT *bot = (YT_MINBOT *) self;
+
+#   (stop_func (D1 bot)) ;  double stop_func =  bot->d1; //!!
+
+#   (conjugate_bfgs_type  (make_fdfminimizer_type 
+#                        "conjugate_bfgs"                        
+#                        'XXX_CONJUGATE_STATE_T ; sizeof (xxx_conjugate_state_t),
+#                        #'vector_bfgs_alloc
+#                        #'vector_bfgs_set 
+#                        #'vector_bfgs_iterate
+#                        ;;  &xxx_conjugate_restart,
+#                        ;;  &vector_bfgs_free
+#                        ))
+#   )
+
+#   (setf (V_PARAM bot) (gslspusk_create))  ;  bot->v_param = gslspusk_create ();
+
+#   (gslspusk_set 
+#                 (V_PARAM bot) ;bot->v_param, 
+#                 ;//bot->minproc,
+#                 0.00000001 ;TRUE, 0.00000001, //FALSE, 0.000001, 
+#                 ;//gsl_multimin_fdfminimizer_conjugate_fr, // - не лучше
+#                 conjugate_bfgs_type  ;gsl_multimin_fdfminimizer_vector_bfgs,
+#                 ;//gsl_multimin_fdfminimizer_steepest_descent, // "проблем" зато нет
+
+#                 0.00000001d0 ;/* размер первого пробного шага  */ 0.00000001, 
+#                 0.000001d0   ;/* точность линейной минимизации */ 0.000001, 
+
+#                 ;//        критерии останова :::::::
+#                 0.001       ;/* по норме градиента     */ 0.001, 
+#                             ;///* по норме градиента     */ 0.000001, 
+#                 5000        ;/* по количеству итераций */ 5000 /* 7000 */,
+#                 stop_func t ;/* по значению функции    */ stop_func, TRUE //???!!!
+#                 )
+
+#   (setf (MINPROC bot) mp)  ;  bot->minproc = (YT_MINPROC *) mp;
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun botgslspusk_3_todo (
+#        bot ; void *self
+#        )
+
+# (let (
+# ;  YT_MINBOT *bot = (YT_MINBOT *) self;
+#    (gslspusk (V_PARAM bot)) ;  YT_GSLSPUSK *gslspusk = (YT_GSLSPUSK *) (bot->v_param);
+#   )
+
+# ;  // задаем случайные начальные точки: (пока не помогло в Бергерсе)
+# ;  //minproc_rand_init (bot->minproc, /* bot->s_power */5); 
+
+#   ;(d_print "40")
+#   (minbot_gslspusk_s  bot)
+#   ;(d_print "49")
+
+# ;  fprintf (STD_ERR, "%s  niters=%4d  ",
+# ;           gslspusk->end_status, gslspusk->end_niters);
+
+#   (format t "~s  niters=~4d  " (END_STATUS gslspusk) (END_NITERS gslspusk))
+
+# ))
+# ;===============================================================================
+# ;double
+# ;fun_1_rezi (void *mf, double *xyz/* , int param */)
+# ;;===============================================================================
+# (defun fun_1_rezi (mf xyz)
+
+# (declare (ignore xyz))
+
+# (let* (
+#   (minfunc  mf)
+#   f r ;  double rezi, r, f;
+#   status_ok ;  int    xi, ti, fi, status_ok;
+
+#   ;(fi    0)
+# ;  ti = TI/* T_WORK_BEG = T_WORK_END */;
+#   (ti  (TI))
+
+# ;  // подсчитаем невязку, т.е. расстояние до точного решения
+#   (rezi  0)
+#   )
+
+# ;  for (xi=0; xi < XNUM; xi++) { 
+#   (dotimes (xi (XNUM))   
+# ;    f =  FUN (1 - X, &status_ok);
+# ;#define FUN(x, p_status) (function_get (minfunc, 0/*fi*/, ti, (x), p_status))
+#     (multiple-value-setq (f status_ok) (function_get minfunc 0 ti (- 1 (XX)) ))
+
+# ;    if (!status_ok) continue;
+#     (when status_ok
+
+# ;    r = X*X*F + f - 2*X + X*X*X*X; 
+#     (setf r  (+ (* (XX) (XX) (FF)) f (- (* 2 (XX))) (* (XX) (XX) (XX) (XX))))
+
+# ;    //fprintf (stderr, "%5.3f  ", r); 
+# ;    rezi += r*r;
+
+#     (incf rezi (* r r))
+#     ))
+
+# ;  //fprintf (stderr, "\n"); 
+
+# ;  rezi = sqrt (rezi);
+# ;  //fprintf (stderr, "rezi = %5.3f  \n", rezi);  Error ("fff");
+
+#   (sqrt rezi) ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;fun_1_init (void *o)
+# ;-------------------------------------------------------------------------------
+# (defun fun_1_init (o)
+
+# ;(declare (ignore o))
+
+# (let (
+#   (of  o) ;  YT_ONEFUN  *of = (YT_ONEFUN *) o;
+# ;  YT_MINFUNC *minfunc ;
+
+#   (minfunc  (onefun_minfunc  41 -4.0 +4.0))
+#   )
+
+#   (minfunc_set_null  minfunc 'fun_null_all 1)  
+
+#   ;(setf (TT of) 0) ; здeсь что-ли установить заглушки-нули?
+#   ;(setf (DT of) 0) 
+
+# ;  // of->param = 
+#   (minfun_add_rezi  minfunc 'fun_1_rezi of)   
+
+#   minfunc ;  return (minfunc);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;fun_2_rezi (void *mf, double *xyz/* , int param */)
+# ;{
+# ;-------------------------------------------------------------------------------
+proc fun_2_rezi {mf xyz} {
+
+  
+  set minfunc  $mf ;#  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+  
+  # ;  // подсчитаем невязку, т.е. расстояние до точного решения
+  set rezi  0
+  set ti   [TI_get] ;#  ti = TI/* T_WORK_BEG = T_WORK_END */;
+  
+  
+  # ;  for (xi=0; xi < XNUM; xi++) 
+  # ;  for (yi=0; yi < XNUM; yi++) {}
+ 
+  dotimes xi [XNUM_get] { 
+  dotimes yi [XNUM_get] { 
+
+    set x [XVAL_get $xi] ;#    x = XVAL(xi);
+    set y [XVAL_get $yi] ;#    y = XVAL(yi);
+    set z [expr {$x + $y}] ;#    z = x + y;
+    
+        
+    # ;    rz = function_get (minfunc, 0/*fi*/, ti, z, &status_ok);
+    foreach {rz status_ok} [function_get $minfunc 0 $ti $z] {}
+    
+    # ;   (format t "x=~4,2f y=~4,2f z=~4,2f   rz=~4,2f status_ok=~s  ~%" x y z  
+    # ;           rz status_ok)
+    # ;   (when (= xi 1) (exit 0))
+    
+    if {! $status_ok} {continue}
+    
+    set rx  [Fun_ $xi $ti]
+    set ry  [Fun_ $yi $ti]
+    
+    # setf r  (- rz rx ry))
+    set r  [expr {$rz - $rx - $ry}]
+
+    #puts "fun_2_rezi:  xi= $xi  yi= $yi  r= $r "
+  
+    incf rezi [expr {$r * $r}]
+  }}
+  
+
+  #puts "------------------- " 
+  #puts "rezi = $rezi  " 
+  #puts ""
+  #exit 
+  
+  # ;  rezi = sqrt (rezi);
+  # ;  //fprintf (stderr, "rezi = %5.3f  \n", rezi); 
+  # ;  //Error ("TEST-DEBUG");
+  
+  return [expr {sqrt ($rezi)}] ;#  return (rezi);
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;fun_2_init (void *o)
+# ;{
+# ;-------------------------------------------------------------------------------
+proc fun_2_init {o} {
+
+  # (let (
+  set of  $o ;#  YT_ONEFUN  *of = (YT_ONEFUN *) o;
+  # ;  YT_MINFUNC *minfunc ;
+  
+  if {$::BOT_DEBUG} {
+    set xnum 6
+  } else {
+    set xnum 18
+  }
+
+  set minfunc  [onefun_minfunc  $xnum 0.0 4.0]
+  #   )
+  
+  minfunc_set_null  $minfunc "fun_null_all" 5 ;#   // f = X*X
+  
+  # ;  // of->param = 
+  minfun_add_rezi   $minfunc "fun_2_rezi"  $of ;#     // ФУ от 2-х значений
+  
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+proc y_x_0_init {o} {
+
+  # (let (
+  set of  $o ;# YT_ONEFUN *of = (YT_ONEFUN *) o;
+  # ;  YT_MINFUNC *minfunc ;
+  
+  if {$::BOT_DEBUG} {
+    set xnum 6
+  } else {
+    set xnum 21
+  }
+
+  set minfunc  [onefun_minfunc  $xnum 0.1 4.0]
+  #   )
+  
+  minfunc_set_null  $minfunc "fun_null_all" 1 ;# // f=0.0;
+  
+  # ;  //YT_DIFFUR_1 fiffur1 = fun_rezi_diffur;
+  
+  $of.PARAM = 3 ;#  of->param = 3;         // r = y_x -  cos(x);
+
+  minfun_add_rezi  $minfunc "fun_rezi_diffur" $of   
+  
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# (defun y_x_1_init (o)
+
+# (let (
+#   (of  o) ;  YT_ONEFUN  *of = (YT_ONEFUN *) o;
+# ;  YT_MINFUNC *minfunc ;
+
+#   (minfunc  (onefun_minfunc  31 -2.0 2.0))
+#  )
+
+#   (minfunc_set_null  minfunc 'fun_null_all 6) ; // f = 2 + 10*cos (4*X);
+
+# ;  // дополнительое условие 
+#   (minfunc_t0_fix  0 minfunc X_BEG 0.0)
+
+#   (setf (PARAM of) 0) ;  of->param = 0;                        // r = y_x - 1.0; 
+#   (minfun_add_rezi  minfunc 'fun_rezi_diffur of)   
+
+#   minfunc
+# ))
+# ;-------------------------------------------------------------------------------
+# ;// 
+# ;// - подключить Tcl для вычислений функций
+# ;// - решение системы диф.уравнений
+# ;// - сделать еще вариант учета доп.условий: именно как доп.условия (уравнения)
+# ;// 
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;onefun_main (int argc, char *argv[]/* , int j */)
+# ;-------------------------------------------------------------------------------
+proc onefun_main {} {
+
+  # (let (
+  # ;  YT_ONEFUN onefun_s[] = {
+
+  #   (onefun_s (list
+  
+  #     '("0" fun_1_init  NIL) ; нe работаeт?
+  #     '("1" fun_2_init  NIL)
+  
+  #     '("2" y_x_0_init NIL)  ;// f=0.0;                   r = y_x - cos(x);
+  #     '("3" y_x_1_init NIL)  ;// f=2+10*cos(4*X); f(0)=0; r = y_x - 1.0;  
+  # ;    // она же - задача Коши или динамическая система, которую можно (нужно) решать послойно!
+  #     ))
+  
+  # ;    {NULL},  
+  # ;  };
+  #   )
+  
+  set onefun_s [list \
+                     \
+                  {"0"  fun_1_init     "NIL"} \
+                  {"1"  fun_2_init     "NIL"     } \
+                  {"2"  y_x_0_init     "NIL"     } \
+                  {"3"  y_x_1_init     "NIL"     } \
+              ]
+
+  # ;  onefun_main_calc (argc, argv, onefun_s);
+
+  #   (onefun_main_calc argus onefun_s) 
+
+  set ::BOT_DEBUG 1.0  ;# уменьшим точность, а то очень медленно !!! ((
+
+  onefun_main_calc $onefun_s 
+  
+}
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+
+# ;-------------------------------------------------------------------------------
+# ;//
+# ;//     УРАВНЕНИЕ ПЕРЕНОСА      
+# ;//
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;tran_rezi_old (void *mf, double *xyz)
+# ;{
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+# ;  int     xi, ti = TI;
+# ;  double  a_2 = 1;
+# ;  double  y[1000], y_t[1000], y_x[1000];
+
+# ;    // на четырехточечном шаблоне - схема с симметризованными производными:
+# ;    // 1/(2*t) * (y22+y21 -y12-y11) + c/(2*h) * (y22+y12 -y21-y11)
+
+# ;  // производная по времени
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {    
+# ;    y_t[xi] = (Fun(xi,ti) - Fun(xi,ti-1)) / TSTEP;
+# ;  }
+
+# ;  // искомая функция при фиксированном времени ti = TI
+# ;  make_func (minfunc, y, TI);
+
+# ;  //make_diff_l (minfunc,  y,  y_x); // правая производная 
+# ;  //make_diff_r (minfunc,  y,  y_x); // правая производная 
+# ;  make_diff_c (minfunc,  y,  y_x);   // центральная производная 
+
+# ;  // подсчитаем невязку
+# ;  double r1, r2, rezi = 0;
+
+# ;  //for (xi=X_BEG+1; xi <= X_END-1; xi++) {
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {
+# ;    r1 = y_t[xi];
+# ;    r2 = a_2 * y_x[xi];
+# ;    rezi += (r1+r2)*(r1+r2);
+# ;  }
+# ;  rezi = sqrt (rezi);
+
+# ;  return (rezi);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;tran_rezi (void *mf, double *xyz)
+# ;-------------------------------------------------------------------------------
+# (defun tran_rezi (minfunc xyz) (declare (ignore xyz))
+
+# (let (
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+
+#   (rezi 0) r ;  double r, rezi = 0;
+
+#   (c     1)  ;  double c = 1;
+#   (ti    (TI)) ;  int    xi, ti = /* ti_new */TI;
+#   y11 y12 y21 y22 ;  double y11, y12, y21, y22;
+#   (tval  (TSTEP))    ;  double t = TSTEP;
+#   (h     (XSTEP))    ;  double h = XSTEP;
+
+#   r1 r2 ; для наглядности вычислeний
+#   )
+
+# ;  for (xi=X_BEG+1; xi <= X_END/* -1 */; xi++) { 
+#   (loop for xi from (1+ X_BEG) to (X_END) do 
+
+#     (setf y11  (Fun_ (- xi 1) (- ti 1)))
+#     (setf y12  (Fun_    xi    (- ti 1)))
+#     (setf y21  (Fun_ (- xi 1)    ti))
+#     (setf y22  (Fun_    xi       ti))
+
+# ;    // на четырехточечном шаблоне - схема с симметризованными производными:
+# ;    r = 1/(2*t) * (y22+y21 -y12-y11) + c/(2*h) * (y22+y12 -y21-y11);
+
+#     (setf r1  (* (/ 1 (* 2 tval)) (- (+ y22 y21) (+ y12 y11))))
+#     (setf r2  (* (/ c (* 2    h)) (- (+ y22 y12) (+ y21 y11))))
+#     (setf r (+ r1 r2))
+
+# ;    rezi += (r*r);
+#     (incf rezi (* r r))
+#     )
+
+# ;  rezi = sqrt (rezi);
+#   (sqrt rezi) ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;tran_null_fix (YT_MINFUNC *minfunc, int ti)
+# ;{
+# ;  int fi = 0;
+
+# ;  int xi = X_BEG;
+# ;  minfunc_t0_fix  (fi, minfunc, xi, /* v0 */ FVAL (ti,fi,xi));
+
+# ;  return;
+# ;}
+# ;-------------------------------------------------------------------------------
+# (defun tran_null_add (minfunc)
+
+# (let (
+#   (fi  0)     ;  int fi = 0;
+#   (xi  X_BEG) ;  int xi = X_BEG;
+# ;  int ti;
+#   )
+
+# ;  for (ti=0; ti < TNUM; ti++) {
+#   (dotimes (ti (TNUM))
+#     ; minfunc_put_fix (fi, minfunc, xi, ti, /* v0 */FVAL (0,fi,xi));
+#     (minfunc_put_fix  fi minfunc xi ti (FVAL 0 fi xi))
+#     )
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;tran_000_null (YT_MINFUNC *minfunc)
+# ;{
+# ;  double v0 = 0.1;
+
+# ;  minfunc_t0_put_all (0, minfunc, v0); 
+
+# ;  //minfunc_t0_fix     (0, minfunc, X_BEG, 0.0);
+# ;  tran_null_add (minfunc);
+
+# ;  return;
+# ;}
+# ;-------------------------------------------------------------------------------
+# (defun tran_pup_set (
+#        minfunc 
+#        ; double *p_xbeg, 
+#        ; double *p_xend
+#        )
+
+# (let (
+#   (w_pup  0.3)
+#   (c_pup  0.5)
+
+#   ww xc w ;  double
+#   xbeg xend
+#   )
+
+#   (setf ww (- (XMAX) (XMIN))) ; // ширина интервала
+
+# ;  double xc = XMIN + ww /* / 2 */*c_pup; // середина интервала
+# ;  double w  = ww /* / 3 */*w_pup;        // ширина пупыря
+#   (setf xc  (+ (XMIN) (* ww c_pup)))
+#   (setf w   (* ww w_pup))
+
+# ;  *p_xbeg = xc - w/2;
+# ;  *p_xend = xc + w/2;
+#   (setf xbeg  (- xc (/ w 2)))
+#   (setf xend  (+ xc (/ w 2)))
+
+#   (values  xbeg xend)
+# ))
+# ;-------------------------------------------------------------------------------
+# (defun tran_010_null (minfunc)
+
+# (let (
+#   xbeg xend ;  double v0, v1, xbeg, xend;
+
+#   (v0  0.1) ;  v0 = 0.1 /* 0.0 */;
+#   (v1  0.8) ;  v1 = 0.8 /* 1.0 */;
+#   )
+
+#   ;(format t "3) xi_beg=~s  xi_end=~s ~%" X_BEG (X_END))
+
+# ;  tran_pup_set (minfunc, &xbeg, &xend);
+#   (multiple-value-setq (xbeg xend) (tran_pup_set minfunc))
+
+#   ;(format t "4) xi_beg=~s  xi_end=~s ~%" X_BEG (X_END))
+#   (minfunc_t0_cos  0 minfunc v0 v1 xbeg xend)
+
+# ;  //minfunc_t0_cos_i (0, minfunc, v0, v1,  10, 31);
+
+# ;  //tran_null_fix (minfunc, 0 /*ti*/); // только дял нулевого слоя
+# ;  // можно и явно по всем временным слоям, но тогда их надо все уже иметь
+
+#   (tran_null_add  minfunc)
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;tran_100_null (YT_MINFUNC *minfunc)
+# ;{
+# ;  double v0, v1, xbeg, xend;
+
+# ;  v0 = 0.1;
+# ;  v1 = 0.8;
+
+# ;  tran_pup_set (minfunc, &xbeg, &xend);
+
+# ;  minfunc_t0_gap (0, minfunc, v0, v1, xbeg, xend);
+
+# ;  tran_null_add (minfunc);
+# ;  return;
+# ;}
+# ;-------------------------------------------------------------------------------
+# (defun set_make_null (
+#            mode ; char *mode, 
+#            ; YT_MAKE_NULL *p_make_null
+#            )
+
+#   ;;  YT_MAKE_NULL make_null;
+ 
+#   (cond
+#    ((string= mode "010")  'tran_010_null)
+#    ((string= mode "000")  'tran_000_null)
+#    ((string= mode "100")  'tran_100_null)
+#    (t                     (Error "mode"))
+#    )
+
+# ;  *p_make_null = make_null;
+# ;  return;
+# )
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;tran_sets (char *mode, YT_MAKE_NULL *p_make_null, YT_CALC_REZI *p_calc_rezi)
+# ;-------------------------------------------------------------------------------
+# (defun tran_sets (mode) 
+
+# ;  set_make_null (mode, p_make_null);
+
+# ;  *p_calc_rezi = tran_rezi;
+
+#   (values  (set_make_null mode) 'tran_rezi)
+# )
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;temp_argv_1 (int argc, char *argv[],
+# ;           char **p_mode, int *p_sxem, double *p_h, double *p_t, int *p_xnum, int *p_tnum)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun temp_argv_1 (argus)
+
+# ;  (format t "temp_argv: argus= ~s  len= ~s ~%" argus (list-length argus))
+
+# ;  (when (/= (list-length argus) 6) 
+# ;    (error "argc-len")
+# ;    ;(format t "~%")
+# ;    ;(quit)
+# ;    )
+# ;  (format t "~%")
+# ;  (quit)
+
+# (let (
+#   (mode                    (nth 0 argus))
+#   (sxem  (parse-integer    (nth 1 argus)))
+#   (h     (read-from-string (nth 2 argus)))
+#   (tval  (read-from-string (nth 3 argus)))
+#   (xnum  (parse-integer    (nth 4 argus)))
+#   (tnum  (parse-integer    (nth 5 argus)))
+#   )
+
+# ;  (quit)
+
+# ;  if (argc == 8) {  
+# ;    *p_mode  = argv[2];
+# ;    *p_sxem  = atoi (argv[3]);
+
+# ;    *p_h = atof (argv[4]);
+# ;    *p_t = atof (argv[5]);
+
+# ;    *p_xnum  = atoi (argv[6]);
+# ;    *p_tnum  = atoi (argv[7]);
+
+# ;  } else
+# ;    Error ("argc");
+
+#   (values  mode sxem h tval xnum tnum)
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;temp_argv_tran (int argc, char *argv[],
+# ;           char **p_mode, int *p_xx, double *p_xmin, double *p_xmax, int *p_tt, double *p_tstep)
+# ;-------------------------------------------------------------------------------
+# (defun temp_argv_tran (argus)
+
+# (let (
+#   mode  ;  char  *mode; 
+#   xx    ;  int    xx; 
+#   xmin xmax ;  double xmin, xmax;
+#   tt    ;  int    tt; 
+#   tstep ;  double tstep;
+
+# ;  //---------------------
+#   ;  //char  *mode;
+#   sxem  ;  int    sxem;
+
+#   h     ;  double h;
+#   tval  ;  double t;
+#   xnum  ;  int    xnum;
+#   tnum  ;  int    tnum;
+#   )
+
+# ;  // solver R  010 4  0.1 0.1  100 30
+
+# ;  temp_argv_1 (argc, argv,
+# ;               &mode, &sxem, &h, &t, &xnum, &tnum);
+
+#   (multiple-value-setq (mode sxem h tval xnum tnum)
+#       (temp_argv_1 argus)
+#       )
+
+#   (setf xx     xnum)
+#   (setf xmin   0.0)
+#   (setf xmax   (* h xnum))
+#   (setf tt     tnum)
+#   (setf tstep  tval)
+
+# ;  //---------------------
+
+# ;  *p_mode  = mode;
+# ;  *p_xx    = xx;
+# ;  *p_xmin  = xmin;
+# ;  *p_xmax  = xmax; 
+# ;  *p_tt    = tt;
+# ;  *p_tstep = tstep;
+
+#   (values  mode xx xmin xmax tt tstep)
+# ))
+# ;===============================================================================
+# ;//
+# ;===============================================================================
+# ;void
+# ;razn_solver (YT_MINFUNC *minfunc, int ti_new, 
+# ;             int sxem)
+# ;-------------------------------------------------------------------------------
+# (defun razn_solver (minfunc ti_new sxem)
+
+# (let* (
+#   (c       1)     ;  double c = 1;
+#   (ti ti_new)     ;  int    xi, ti = ti_new;
+#   y11 y12 y21 y22 ;  double 
+#   (tval (TSTEP))  ;  double t = TSTEP;
+#   (h    (XSTEP))  ;  double h = XSTEP;
+
+#   v1 v2 ; v11 v12 ; для удобства и наглядности вычислeний
+#   )
+
+# ;  for (xi=X_BEG+1; xi <= X_END/* -1 */; xi++) { 
+#   (loop for xi from (1+ X_BEG) to (X_END) do    
+
+#     (setf y11 (Fun_ (- xi 1) (- ti 1)))
+#     (setf y12 (Fun_  xi      (- ti 1)))
+#     (setf y21 (Fun_ (- xi 1)    ti))
+
+# ;    //-----------------------------------------------------------
+# ;    //  Калиткин, стр.337:
+
+# ;    //          22      21-----22      21-----22      21-----22
+# ;    //           |       |                    |        |     |
+# ;    //           |       |                    |        |     |
+# ;    //           |       |                    |        |     |
+# ;    //   11-----12      11                    12      11-----12
+
+# ;    //    рис.56          рис.57        рис.58         рис.59  
+# ;    //-----------------------------------------------------------
+
+# ;    switch (sxem) {
+#     ;; -------------------------------------
+#     (cond 
+#      ((= sxem 1) (setf y22  (- y12 (* (/ (* c tval) h) (- y12 y11)))))
+# ;      y22 = y12 - c*t/h * (y12 - y11);          //  [9] c*t <= h , Курант, явная, монот.
+
+#      ((= sxem 2) (setf y22  (- y21 (* (/ (* c tval) h) (- y21 y11)))))
+# ;      y22 = y21 - h/(c*t) * (y21 - y11);        // [10] c*t >= h
+
+#      ((= sxem 3) 
+# ;      y22 = (c/h*y21 + 1/t*y12) / (1/t + c/h);  
+# ;      // [11] - безусл.устойч., неявная, монот., неточн., рис.58,
+# ;      // однородная схема (сквозного счета) - позволяет расчитывать перенос
+# ;      // разрывных начальных данных без явного выделения этого разрыва. 
+#       (setf y22  
+#             (/ (+ (* (/ c h) y21) (* (/ 1 tval) y12)) (+ (/ 1 tval) (/ c h)))
+#             ))
+
+# ;    // на четырехточечном шаблоне - схема с симметризованными производными:
+# ;    // 1/(2*t) * (y22+y21 -y12-y11) + c/(2*h) * (y22+y12 -y21-y11)
+# ;    // 1/(2*t)*y22 + 1/(2*t)*(y21 -y12-y11) + c/(2*h)*y22 + c/(2*h)*(y12 -y21-y11)
+# ;    // y22 * (1/(2*t) + c/(2*h)) + 1/(2*t)*(y21 -y12-y11) + c/(2*h)*(y12 -y21-y11)
+
+#      ((= sxem 4)
+# ;      y22 = - (1/(2*t)*(y21 -y12-y11) + c/(2*h)*(y12 -y21-y11)) / (1/(2*t) + c/(2*h));
+
+#       (setf v1  (* (/ 1 (* 2 tval)) (- y21 y12 y11)))
+#       (setf v2  (* (/ c (* 2    h)) (- y12 y21 y11)))
+      
+#       (setf y22 (- 
+#                  (/ (+ v1 v2) 
+#                     (+ (/ 1 (* 2 tval)) 
+#                       (/ c (* 2    h)))
+#                     )))
+#       )
+     
+#      (t   (Error "sxem"))
+#      )
+#     ;; -------------------------------------
+
+#     (setf (Fun_ xi ti)  y22)
+
+#   ) ; loop
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;razn_init (char *mode, double h, int xnum)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun razn_init (mode h xnum)
+
+# (let* (
+#   make_null ;  YT_MAKE_NULL make_null;
+
+#   (xmin  0.0)        ;  double xmin = 0.0;
+#   (xmax  (* h xnum)) ;  double xmax = /* 1.0 */ h * xnum;
+  
+#   (minfunc  (onefun_minfunc xnum xmin xmax))
+#   )
+
+#   ;(format t "1) xi_beg=~s  xi_end=~s ~%" X_BEG (X_END))
+
+# ;  //printf ("h= %f \n\n", h);
+# ;  //printf ("m= %f \n\n", xmax);
+
+# ;  set_make_null (mode, &make_null);
+#   (setf make_null (set_make_null mode))
+
+#   ;(format t "2) xi_beg=~s  xi_end=~s ~%" X_BEG (X_END))
+
+# ;  make_null (minfunc);
+#   (funcall make_null minfunc)
+
+#   minfunc ;  return (minfunc);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;razn_main (int argc, char *argv[])
+# ;-------------------------------------------------------------------------------
+# (defun razn_main (argus)
+
+# (let (
+#   mode ;  char  *mode;
+#   sxem ;  int    sxem;
+#   h    ;  double h;
+#   tval ;  double t;
+#   xnum ;  int    xnum;
+#   tnum ;  int    tnum;
+
+#   minfunc
+#   )
+
+# ;  // solver P  010 4  0.1 0.1  100 30  : sxem= 1..4 - обычныe разностныe схeмы
+# ;  // solver P  010 0  0.1 0.2  300 20  : sxem= 0    - обобщeнноe рeшeниe (с бОльщим шагом!)
+# ;  temp_argv_1 (argc, argv,
+# ;               &mode, &sxem, &h, &t, &xnum, &tnum);
+
+#   ;(quit)
+
+#   (multiple-value-setq (mode sxem h tval xnum tnum)
+#       (temp_argv_1 argus)
+#       )
+
+# ;    (quit)
+
+# ;  //-------------------
+#   (if (= sxem 0) (progn
+#      ;(quit)
+
+
+# ;    temp_main (argc, argv, "tranTest", "P", temp_argv_tran, tran_sets, 
+# ;               NULL);
+#     (temp_main  argus "tranTest" "P" 'temp_argv_tran 'tran_sets 
+#                NIL)
+
+# ;  // solver P 010  61 0.0 1.0  100 0.001
+
+#    ) ;  } else {
+# ;  //-------------------
+#    (progn 
+#    ;  (quit)
+
+# ;    YT_MINFUNC *minfunc = razn_init (mode, h, xnum);
+#      (setf minfunc (razn_init  mode h xnum))
+
+#   ;(format t "1) tstep=~s ~%" (TSTEP))
+
+# ;    ERR_PRINT = TRUE ;
+#      (minfunc_add_tt  minfunc tnum tval)
+#      (minfunc_add_fix_points_all  minfunc)
+#   ;(format t "3) tstep=~s ~%" (TSTEP))
+
+
+# ;    if (sxem == 5) { // объединенная явно-неявная схема
+# ;      if (t <= h) sxem = 1;
+# ;      else        sxem = 2;
+# ;    }
+
+#     (when (= sxem 5) ;{ // объединенная явно-неявная схема
+#       (if (<= tval h) (setf sxem 1)
+#                       (setf sxem 2)
+#                       )
+#     )
+
+#     (sxem_solver  minfunc 'razn_solver sxem)
+
+# ;    printf ("\n"); 
+# ;    //minfunc_print_one (1/*win*/, 0/*gnu*/, minfunc, -1000/*последний шаг*/);
+
+# ;    minfunc_print_one (minfunc, -1000/*последний шаг*/);
+#     (minfunc_print_one *minfunc_read_save* -1000) ; послeднюю запись
+#    ))
+# ;  //-------------------
+# ;  (quit)
+
+
+# ))
+# ;===============================================================================
+# ;
+# ; здeсь был Бeргeр
+# ;
+# ;===============================================================================
+# (defun temp_010_null (minfunc)
+
+# (let (
+# ;  // выравнивание горки (неограниченный стержень ?!)
+
+#   (xmin  (P_XMIN minfunc))
+#   (xmax  (P_XMAX minfunc))
+
+#   (r0  0.0)
+#   (r1  1.0)
+#   hand xi_c xi_1 xi_2 ; int 
+#   )
+
+#   ;(format t "1 ... ~%")
+#   (minfunc_t0_put_all  0 minfunc r0)
+#   ;(format t "2 ... ~%")
+
+#   (setf hand (* (/ 0.5 (- xmax xmin)) (XNUM)))
+#   ;(format t "3 ... ~%")
+
+#   (setf xi_c  (YInt (/ (XNUM) 2))       )
+#   (setf xi_1  (YInt (- xi_c hand))      )
+#   (setf xi_2  (YInt (+ xi_c (- hand 1))))
+#   ;(format t "4 ... ~%")
+
+#   (minfunc_t0_put_int  0 minfunc r1 xi_1 xi_2)
+#   ;(format t "5 ... ~%")
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun temp_020_null (minfunc)
+
+# (let (
+#   (r0  0.0)
+#   (r1  1.0)
+#   )
+
+#   (minfunc_t0_put_all  0 minfunc r0) 
+
+#   (minfunc_cos_tstart  0 minfunc r0 r1)
+
+# ;  //minfunc_pik_tstart (0, minfunc, 0.3, r1);
+                      
+# ))
+# ;-------------------------------------------------------------------------------
+# ;//
+# ;//     H E A T   T R A N S F E R       
+# ;//
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun make_diff_xx (
+#                      minfunc 
+#                      y u y_xx  ; double *
+#                      )
+
+# (let (
+#   (y_x (make-list (XNUM))) ;  double  y_x[1000]; 
+# ;  int     xi;
+#   )
+
+#   ;(format *error-output* "y=~s ~%" y)
+#   ;(format *error-output* "u=~s ~%" u)
+
+# ;  //make_diff_l (minfunc,  y,  y_x);
+#   (make_diff_r  minfunc  y  y_x)
+
+# ;  for (xi=X_BEG; xi <= X_END; xi++) { 
+#   (loop for xi from X_BEG to (X_END) do 
+# ;    y_x[xi] = u[xi] * y_x[xi];
+#     (setf (nth xi y_x)  (* (nth xi u) (nth xi y_x)))
+#     )
+
+#   ;(format *error-output* "y_x=~s ~%" y_x)
+
+#   (make_diff_l  minfunc y_x y_xx)
+# ;  //make_diff_r (minfunc, y_x, y_xx);
+
+#   ;(format *error-output* "y_xx=~s ~%" y_xx)
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;double
+# (defun heat_calc_rezi_main (
+#                             mf   ; void *
+#                             xyz  ; double *
+#                             u    ; double *
+#                             )
+# (declare (ignore xyz))
+
+# (let* (
+#   (minfunc mf) ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+#   (ti (TI))    ;  int     xi, ti = TI;
+#   (a_2  1) ;  double  a_2 = 1;
+# ;  double  y[1000], y_t[1000], y_xx[1000];
+#   (y    (make-list (XNUM)))
+#   ;(y    (make-list 1000))
+# ;  (y_t  (make-list 1000))
+# ;  (y_xx (make-list 1000))
+#   (y_t  (make-list (XNUM)))
+#   (y_xx (make-list (XNUM)))
+
+#   (rezi 0) r1 r2 r
+#   (n  1)
+#   )
+
+#   ;(d_print "332-3")
+#   ;(format *error-output* "u=~s ~%" u)
+
+# ;  // производная по времени
+# ;  for (xi=X_BEG; xi <= X_END; xi++) { 
+#   (loop for xi from  X_BEG to (X_END) do 
+# ;    y_t[xi] = (Fun(xi,ti) - Fun(xi,ti-1)) / TSTEP;
+#     (setf (nth xi y_t) (/ (- (Fun_ xi ti) (Fun_ xi (- ti 1))) (TSTEP)))
+#     )
+
+# ;  // искомая функция при фиксированном времени ti = TI
+#   (make_func  minfunc y (TI))
+
+# ;  // квазилинейная вторая производная
+#   (make_diff_xx  minfunc y u y_xx)
+#   ;(format *error-output* "xnum=~s ~%" (XNUM))
+#   ;(format *error-output* "y_xx=~s ~%" y_xx)
+
+# ;  // подсчитаем невязку, т.е. расстояние до точного решения
+# ;  double r1, r2, rezi = 0;
+# ;  int n = 1;
+
+# ;  for (xi=X_BEG+n; xi <= X_END-n; xi++) {
+#   (loop for xi from (+ X_BEG n) to (- (X_END) n) do
+#     (setf r1  (nth xi y_t))
+#     (setf r2  (* a_2 (nth xi y_xx)))
+
+#     (setf r (* (- r1 r2) (- r1 r2)))
+#     ;(format *error-output* "r1=~s  r2=~s  r=~s  ~%" r1 r2 r)
+
+#     (incf rezi r)
+#     )
+
+#   (setf rezi  (sqrt rezi))
+#   ;(d_print "332-5")
+
+#   rezi ; (sqrt rezi) ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;heat_all_rezi (void *mf, double *xyz)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun heat_all_rezi (mf xyz)
+
+# (let* (
+#   (minfunc  mf) ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+# ;  int     xi;
+# ;  double  u[1000];
+#   (u (make-list (XNUM)))
+#   )
+
+#   (format *error-output* "u=~s ~%" u)
+
+# ;  // переменный коэффициент теплопроводности
+# ;  for (xi=X_BEG; xi <= X_END; xi++) { 
+#   (loop for xi from X_BEG to (X_END) do   
+# ;    u[xi] = 1.0;
+#     (setf (nth xi u) 1.0)
+#     )
+
+# ;  return (heat_calc_rezi_main (mf, xyz, u));
+#   (heat_calc_rezi_main  mf xyz u)
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;heat_100_null (YT_MINFUNC *minfunc)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun heat_100_null (minfunc)
+
+# ; // стержень, ограниченный с одного конца (при нулевой температуре)
+    
+# (let (
+#   (u0  0.1)
+#   )
+
+#   (minfunc_t0_put_all  0 minfunc        u0) 
+#   (minfunc_t0_fix      0 minfunc X_BEG 0.0)
+
+# ))
+# ;-------------------------------------------------------------------------------
+
+# ;  double  sigm = 2;
+# ;  double  ksi0 = 0.5;
+# ;  double  c    = 5;
+
+# ;(defvar sigm  2.0) ; зачeм сдeлал нe цeлым? из-за этого идут комплeксныe числа
+# (defvar sigm  2)
+
+# (defvar ksi0  0.5)
+# (defvar cval  5.0)
+
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun heat_200_null (minfunc)
+
+#   (minfunc_t0_put_all  0 minfunc  0.0) 
+
+# ;  // задаем переменные граничные условия
+# (let* (
+#   tval val ;  double t, val;
+# ;  int    ti;
+# ;  double u0 = pow ((sigm*c*c/ksi0) , (1.0/sigm));
+
+#   (base-number  (* sigm cval (/ cval ksi0)))
+#   (power-number (/ 1.0 sigm))
+#   (u0 (expt base-number power-number))
+#   )
+
+# ;  for (ti=0; ti < TNUM; ti++) {
+#   (dotimes (ti (TNUM))
+#     (setf tval (* (TSTEP) (+ ti 1))) ;    t = TSTEP * (ti+1);  //??
+
+#     ;; val = u0 * pow (t , (1.0/sigm));
+#     (setf val (* u0 (expt tval power-number)))
+
+#     ;;    printf ("val = %f \n", val);
+#     (format t "xbeg= ~2d  ti= ~2d  val= ~6,4f ~%"  X_BEG ti val)
+
+#     ;;----------------------------------------------------------------------
+# ;    minfunc_put_fix (/* fi */0, minfunc, /* xi */X_BEG, ti, val);
+#     (minfunc_put_fix  0 minfunc X_BEG ti val)
+
+#     ;; а надо ли тут фиксировать ? в си-шном вариантe лeвая граница жe движeтся ввeрх!
+#     ;; да нeт, мы жe и задаeм тут лeвую границу
+#     ;; (minfunc_put  0 minfunc X_BEG ti val)
+#     ;;----------------------------------------------------------------------
+#     )
+
+# ;; нeправильно отрабатываeт лeвый край, граничноe пeрeмeнноe условиe
+
+# ;  // но где-то потом они пропадают и остается только самое первое
+# ;  // а потому что неправильно сократил схему статусов (до нижнего уровня)
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ; expt base-number power-number
+# ; 
+# ; Returns base-number raised to the power power-number
+# ;-------------------------------------------------------------------------------
+# ;double
+# (defun heat_200_rezi (mf xyz)
+
+# (let* (
+#   (minfunc mf)
+
+# ;  // переменный коэффициент теплопроводности
+# ;  int  xi;
+# ;  double  u[1000];
+#   (u (make-list (XNUM)))
+#   f e 
+#   )
+
+#   ;(d_print "332-1")
+#   ;(format *error-output* "u=~s ~%" u)
+
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {  
+#   (loop for xi from X_BEG to (X_END) do
+# ;    u[xi] = ksi0 * pow (Fun(xi,/* ti */TI), sigm); //??
+
+#     (setf f (Fun_ xi (TI))) ; eсли f - отрицатeльноe, то
+#     (setf e (expt f sigm))  ; e получаeтся комплeксным ?!!
+
+#     ;(format *error-output* "xi=~2d  f=~s  e=~s ~%" xi f e)
+
+#     (setf (nth xi u) (* ksi0 e))
+#     ;(setf (nth xi u) (* ksi0 (expt (Fun_ xi (TI)) sigm)))
+#     )
+
+#   ;(format *error-output* "u=~s ~%" u)
+#   ;(d_print "332-2")
+
+# ;  return (heat_calc_rezi_main (mf, xyz, u));
+#   (heat_calc_rezi_main  mf xyz u)
+# ))
+# ;===============================================================================
+# ;void
+# ;heat_sets (char *mode, YT_MAKE_NULL *p_make_null, YT_CALC_REZI *p_calc_rezi)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun heat_sets (mode) 
+
+# ;  YT_CALC_REZI calc_rezi = heat_all_rezi;
+# ;  YT_MAKE_NULL make_null;
+  
+# ;  if      (strcmp (mode, "010") == 0) make_null = temp_010_null;
+# ;  else if (strcmp (mode, "020") == 0) make_null = temp_020_null;
+# ;  else if (strcmp (mode, "100") == 0) make_null = heat_100_null;
+# ;  else if (strcmp (mode, "200") == 0) {
+# ;    make_null = heat_200_null;
+# ;    calc_rezi = heat_200_rezi;
+# ;  }
+
+# ;  *p_make_null = make_null;
+# ;  *p_calc_rezi = calc_rezi;
+
+#   (cond 
+#    ((string= mode "010") (values 'temp_010_null 'heat_all_rezi))
+#    ((string= mode "020") (values 'temp_020_null 'heat_all_rezi))
+#    ((string= mode "100") (values 'heat_100_null 'heat_all_rezi))
+#    ((string= mode "200") (values 'heat_200_null 'heat_200_rezi))
+#    (t (Error "heat_sets"))
+#    )
+
+#   ;; врeмeнно так простeнько
+#   ;(values  'temp_010_null 'heat_all_rezi)
+# )
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;void
+# ;heat_main (int argc, char *argv[])
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun heat_main (argus) 
+
+#   (temp_main  argus "ThermoTest" "T" 'temp_argv 'heat_sets 
+#               NIL)
+
+# ;  // solver T 010   41  -2.0  2.0  40 0.01   // solver plot -p
+# ;  // solver T 010  201 -10.0 10.0  40 0.01   // solver plot -p -2.0  2.0  - посмотреть 
+# ;  // solver T 100   41   0.0  4.0  40 0.01   // solver plot -p
+# ;  // solver T 200   30   0.0 1.0   40 0.001  до x=0.2 (заметна ошибка справа)
+# ;  // solver T 200   30   0.0 1.0  200 0.001  до x=1.0 (сгладилось несколько)
+
+# )
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;//
+# ;//   УРАВНЕНИЯ КОРТЕВЕГА де ФРИЗА      
+# ;//
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;kdv_rezi (void *mf, double *xyz)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun kdv_rezi (minfunc xyz) (declare (ignore xyz))
+
+# (let (
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+#   (ti (TI)) ;  int     xi, ti = TI;
+
+# ;  double  y[1000], y_t[1000],  y_x[1000], y_xx[1000], y_xxx[1000];
+#   (y      (make-list (XNUM)))
+#   (y_t    (make-list (XNUM)))
+#   (y_x    (make-list (XNUM)))
+#   (y_xx   (make-list (XNUM)))
+#   (y_xxx  (make-list (XNUM)))
+
+#   (rezi  0) r
+#   )
+
+# ;  // производная по времени
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {    
+# ;    y_t[xi] = (Fun(xi,ti) - Fun(xi,ti-1)) / TSTEP;
+# ;  }
+#   (loop for xi from X_BEG to (X_END) do
+#     (setf (nth xi y_t) (/ (- (Fun_ xi ti) (Fun_ xi (- ti 1))) (TSTEP)))
+#     )
+
+# ;  // искомая функция при фиксированном времени ti = TI
+#   (make_func  minfunc y (TI)) 
+
+#   (make_diff_r  minfunc  y     y_x)
+#   (make_diff_l  minfunc  y_x   y_xx)
+#   (make_diff_r  minfunc  y_xx  y_xxx)
+
+# ;  // подсчитаем невязку, т.е. расстояние до точного решения
+# ;  double r, rezi = 0;
+# ;  for (xi=X_BEG+1; xi <= X_END-1; xi++) {
+
+# ;    r = y_t[xi] + y_xxx[xi] - 6 * y[xi] * y_x[xi];
+# ;    rezi += (r * r);
+# ;  }
+# ;  rezi = sqrt (rezi);
+# ;  return (rezi);
+
+#   (loop for xi from (1+ X_BEG) to (- (X_END) 1) do 
+#     (setf r  (+ (nth xi y_t) (nth xi y_xxx) (- (* 6 (nth xi y) (nth xi y_x)))))
+#     (incf rezi (* r r))
+#     )
+
+#   (setf rezi (sqrt rezi))
+#   (format t "rezi= ~12,6,2e ~%" rezi)
+#   ;(quit)
+
+#   rezi
+# ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;kdv_sets (char *mode, YT_MAKE_NULL *p_make_null, YT_CALC_REZI *p_calc_rezi)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun kdv_sets (mode) (declare (ignore mode))
+
+# ;  YT_CALC_REZI calc_rezi = kdv_rezi;
+# ;  YT_MAKE_NULL make_null;
+  
+# ;  if      (strcmp (mode, "010") == 0) make_null = temp_010_null;
+# ;  else if (strcmp (mode, "020") == 0) make_null = temp_020_null;
+
+# ;  *p_make_null = make_null;
+# ;  *p_calc_rezi = calc_rezi;
+
+  
+#   (values  'temp_020_null 'kdv_rezi) ; врeмeнно так
+# )
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;kdv_main (int argc, char *argv[])
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun kdv_main (argus)
+
+#   (temp_main argus  "KDV-Test" "K" 'temp_argv 'kdv_sets 
+#              NIL)
+
+# ;  // solver K 020  41 -2.0 2.0  20 0.01
+# ;;    solver K 020  21 -2.0 2.0  10 0.01 - пошустрee
+
+# ;------------------------------------------------
+# ;[lisper]$ sl s~.cl SOLV kdv_main 020  21 -2.0 2.0  10 0.01
+
+# ;xx=  21  dx= 0.190476  
+# ;t0=   0  dt= 0.010000  
+
+# ;  true ti=  0  r= 0.0  
+# ;  calc "gsl_stopfun"  niters=1216  ti=  1  r= 0.000000001  t= 12345  
+# ;  calc "gsl_stopfun"  niters=1270  ti=  2  r= 0.000000001  t= 12345  
+# ;  calc "gsl_stopfun"  niters=1037  ti=  3  r= 0.000000001  t= 12345  
+# ;  calc "gsl_stopfun"  niters= 936  ti=  4  r= 0.000000001  t= 12345  
+# ;Error: Error during processing of initialization file /home/...../.sbclrc:
+
+# ;  Argument X is not a NUMBER: NIL
+# ;------------------------------------------------
+
+# ; можно для сравнeния так запускать........
+# ;sl s~.cl SOLV kdv_main 020  7 -2.0 2.0  1 0.0001
+
+# )
+# ;===============================================================================
+# ;//
+# ;//   УРАВНЕНИЯ ВОЛНОВЫЕ  (обыкновенные)      
+# ;//
+# ;-------------------------------------------------------------------------------
+# ;double
+# (defun wave_rezi (
+#        minfunc ; void   *mf, 
+#        xyz     ; double *xyz
+#        )
+# (declare (ignore xyz))
+
+# (let (
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+# ;  double  y[1000], y_tt[1000],  y_x[1000], y_xx[1000]/* , y_xxx[1000] */;
+#   (y     (make-list 1000))
+#   (y_x   (make-list 1000))
+#   (y_xx  (make-list 1000))
+#   ;(y_xxx (make-list 1000))
+#   (y_tt  (make-list 1000))
+
+#   (ti (TI)) ;  int  xi, ti = TI /* TI-1 */;
+#   r 
+#   (rezi 0.0)
+#   f0 f1 f2
+#   )
+
+# ;  // производная по времени
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {  
+#   (loop for xi from X_BEG to (X_END) do   
+# ;    y_tt[xi] = (Fun(xi,ti) - 2 * Fun(xi,ti-1) + Fun(xi,ti-2)) / TSTEP;
+
+#     (setf f0 (Fun_ xi ti))
+#     (setf f1 (Fun_ xi (- ti 1)))
+#     (setf f2 (Fun_ xi (- ti 2)))
+
+#     (setf (nth xi y_tt) (/ (+ f0 (- (* 2 f1)) f2) (TSTEP)))
+
+# ;    //y_tt[xi] = (Fun(xi,ti+1) - 2 * Fun(xi,ti) + Fun(xi,ti-1)) / TSTEP;
+#     )
+  
+# ;  // искомая функция при фиксированном времени ti = TI
+
+#   (make_func    minfunc y ti)     ;  make_func (minfunc, y, /* TI */ti);
+#   (make_diff_r  minfunc y    y_x) ;  make_diff_r (minfunc,  y,  y_x);
+#   (make_diff_l  minfunc y_x y_xx) ;  make_diff_l (minfunc, y_x, y_xx);
+
+# ;  // подсчитаем невязку, т.е. расстояние до точного решения
+# ;  double r, rezi = 0;
+
+# ;  for (xi=X_BEG+1; xi <= X_END-1; xi++) {
+#   (loop for xi from (+ X_BEG 1) to (- (X_END) 1) do
+
+#     (setf r (- (nth xi y_tt) (nth xi y_xx)))  ; r = y_tt[xi] - y_xx[xi];
+#     (incf rezi (* r r))                       ; rezi += (r * r);
+#     )
+
+# ;  rezi = sqrt (rezi);
+
+#   (sqrt rezi) ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun wave_020_null (minfunc)
+
+# (let (
+#   (r0  0.0)
+#   (r1  1.0)
+#   )
+
+#   (minfunc_cos_tstart 0 minfunc r0 r1)
+
+# ;  //minfunc_put_fix (/* fi */0, minfunc, /* xi */X_BEG, /* ti */0, r0);
+# ;  //minfunc_put_fix (/* fi */0, minfunc, /* xi */X_END, /* ti */0, r0);
+
+# ;  // зададим производную = 0, через копирование 1-го слоя во 2-й
+# ;  int xi;
+
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {
+#   (loop for xi from X_BEG to (X_END) do
+
+# ;    //FVAL(0,xi,1) = FVAL(0,xi,0);
+# ;    FVAL(1,0,xi) = FVAL(0,0,xi);
+#     (setf (FVAL 1 0 xi)  (FVAL 0 0 xi))
+#     )
+
+# ;  TOLD++;
+#   (incf (TOLD))
+                      
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;wave_sets (char *mode, YT_MAKE_NULL *p_make_null, YT_CALC_REZI *p_calc_rezi)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun wave_sets (mode) (declare (ignore mode))
+
+# ;  YT_CALC_REZI calc_rezi = wave_rezi;
+# ;  YT_MAKE_NULL make_null;
+  
+# ;  /* if      (strcmp (mode, "010") == 0) make_null = temp_010_null; */
+# ;/*   else */ if (strcmp (mode, "020") == 0) make_null = wave_020_null;
+# ; else Error ("Error");
+
+# ;  *p_make_null = make_null;
+# ;  *p_calc_rezi = calc_rezi;
+
+#   (values  'wave_020_null 'wave_rezi)
+# )
+# ;===============================================================================
+# ;void
+# ;wave_main (int argc, char *argv[])
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun wave_main (argus) 
+
+# ;  // solver W 020 41 -2.0 2.0  50 0.001 
+# ;  // надо задавать шаг поменьше, тогда нормально идет волна
+
+# ;  temp_main (argc, argv, "Wave-Test", "W", temp_argv, wave_sets, 
+# ;             NULL);
+
+#   (temp_main  argus "Wave-Test" "W" 'temp_argv 'wave_sets
+#               NIL)
+
+# )
+# ;===============================================================================
+# ;//
+# ;//   УРАВНЕНИЯ ВОЛНОВЫЕ  (искривленное)      
+# ;//
+# ;-------------------------------------------------------------------------------
+# ;double
+# (defun mwave_rezi (
+#        minfunc ; void *mf, 
+#        xyz     ; double *xyz
+#        )
+# (declare (ignore xyz))
+
+# (let (
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+# ;  double  y[1000], y_tt[1000], y_t[1000], y_x[1000], y_xx[1000]/* , y_xxx[1000] */;
+
+#   (y     (make-list 1000))
+#   (y_tt  (make-list 1000))
+#   (y_t   (make-list 1000))
+#   (y_x   (make-list 1000))
+#   (y_xx  (make-list 1000))
+
+#   (ti (TI)) ;  int  xi, ti = TI /* TI-1 */;
+#   r 
+#   (rezi 0.0)
+#   f0 f1 f2
+#   )
+
+# ;  // производная по времени
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {   
+ 
+# ;    y_t[xi]  = (Fun(xi,ti) - Fun(xi,ti-1)) / TSTEP;
+# ;    y_tt[xi] = (Fun(xi,ti) - 2 * Fun(xi,ti-1) + Fun(xi,ti-2)) / TSTEP;
+
+# ;    //y_tt[xi] = (Fun(xi,ti+1) - 2 * Fun(xi,ti) + Fun(xi,ti-1)) / TSTEP;
+# ;  }
+
+#   (loop for xi from X_BEG to (X_END) do   
+#     (setf f0 (Fun_ xi ti))
+#     (setf f1 (Fun_ xi (- ti 1)))
+#     (setf f2 (Fun_ xi (- ti 2)))
+
+#     (setf (nth xi y_t)  (/ (- f0 f1) (TSTEP)))
+#     (setf (nth xi y_tt) (/ (+ f0 (- (* 2 f1)) f2) (TSTEP)))
+#     )
+
+# ;  // искомая функция при фиксированном времени ti = TI
+# ;  make_func (minfunc, y, /* TI */ti);
+# ;  make_diff_r (minfunc,  y,  y_x);
+# ;  make_diff_l (minfunc, y_x, y_xx);
+
+#   (make_func    minfunc y ti)     ;  make_func (minfunc, y, /* TI */ti);
+#   (make_diff_r  minfunc y    y_x) ;  make_diff_r (minfunc,  y,  y_x);
+#   (make_diff_l  minfunc y_x y_xx) ;  make_diff_l (minfunc, y_x, y_xx);
+
+# ;  // подсчитаем невязку, т.е. расстояние до точного решения
+# ;  double r, rezi = 0;
+
+# ;  for (xi=X_BEG+1; xi <= X_END-1; xi++) {
+
+# ;    r = (y_xx[xi] - y_tt[xi]) - ((y_x[xi])*(y_x[xi]) - (y_t[xi])*(y_t[xi]));
+# ;    rezi += (r * r);
+# ;  }
+
+#   (loop for xi from (+ X_BEG 1) to (- (X_END) 1) do
+
+#     (setf r (- (- (nth xi y_xx) (nth xi y_tt))
+#                (- (* (nth xi y_x) (nth xi y_x)) 
+#                   (* (nth xi y_t) (nth xi y_t))
+#                   )
+#                )
+#           )  
+#     (incf rezi (* r r))                       ; rezi += (r * r);
+#     )
+
+# ;  rezi = sqrt (rezi);
+#   (sqrt rezi) ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun mwave_020_null (minfunc)
+
+# (let (
+#   (r0  0.0)
+#   (r1  1.0)
+#   )
+
+#   (minfunc_cos_tstart  0 minfunc r0 r1)
+
+# ;  minfunc_put_fix (/* fi */0, minfunc, /* xi */X_BEG, /* ti */0, r0);
+# ;  minfunc_put_fix (/* fi */0, minfunc, /* xi */X_END, /* ti */0, r0); 
+
+#   (minfunc_t0_fix  0 minfunc  X_BEG  r0)
+#   (minfunc_t0_fix  0 minfunc (X_END) r0)
+
+# ;  // зададим производную = 0, через копирование 1-го слоя во 2-й
+#   (loop for xi from X_BEG to (X_END) do
+#     (setf (FVAL 1 0 xi)  (FVAL 0 0 xi))
+#     )
+
+#   (incf (TOLD))
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;mwave_sets (char *mode, YT_MAKE_NULL *p_make_null, YT_CALC_REZI *p_calc_rezi)
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun mwave_sets (mode) (declare (ignore mode))
+  
+# ;  *p_make_null = mwave_020_null;
+# ;  *p_calc_rezi = mwave_rezi;
+
+#   (values  'mwave_020_null 'mwave_rezi)
+# )
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;void
+# ;mwave_main (int argc, char *argv[])
+# ;{
+# ;-------------------------------------------------------------------------------
+# (defun mwave_main (argus) 
+
+# ;  // не получантся пока никакой волны (плавно опадает как "бабушкин пирог"):
+# ;  // solver M 020 41 -2.0 2.0  500 0.001 
+
+#   (temp_main argus  "MWave-Test" "M" 'temp_argv 'mwave_sets 
+#              NIL)
+
+# )
+# ;===============================================================================
+# ;// 
+# ;//
+# ;//
+# ;//
+# ;===============================================================================
+# ;
+# ;===============================================================================
+
+# ;#define INT_EILLER 1 // интегральные эйлеровы уравнения
+# ;#define INT_LAGR_M 2 // интегральные лагранжево-массовые уравнения
+
+# ;#define RO    (Fn(0))
+# ;#define U     (Fn(1))
+# ;#define P     (Fn(2))
+# ;#define E     (Fn(3))
+
+# ~~~~~ пример ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (defmacro FF () `(Fn 0)) ;#define F (Fn(0))
+#proc FF {} {upvar minfunc minfunc; upvar ti ti; upvar xi xi; return [Fn 0]}
+# ~~~~~ пример ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# (defmacro RO () (list 'Fn 0))
+# (defmacro  U () (list 'Fn 1))
+# (defmacro  P () (list 'Fn 2))
+# (defmacro  E () (list 'Fn 3))
+
+proc RO {} {upvar minfunc minfunc; upvar ti ti; upvar xi xi; return [Fn 0]}
+proc  U {} {upvar minfunc minfunc; upvar ti ti; upvar xi xi; return [Fn 1]}
+proc  P {} {upvar minfunc minfunc; upvar ti ti; upvar xi xi; return [Fn 2]}
+proc  E {} {upvar minfunc minfunc; upvar ti ti; upvar xi xi; return [Fn 3]}
+
+
+
+# (defclass YT_GAZODIN () (
+#   (sum_mode :accessor SUM_MODE)
+#   (metric   :accessor METRIC)
+# ;  int     metric /* = 0 */;
+# ;  YT_FUNC func /* = gazodin_func */;
+
+# ;  double   *r1[20], *r2; //???
+#   (r1_all  :accessor R1_ALL)
+#   (r1  :accessor R1)
+#   (r2  :accessor R2)
+#   (q   :accessor Q)
+# ))
+
+
+record define YT_GAZODIN {
+
+  SUM_MODE
+  METRIC
+  
+  #R1_ALL
+  R1_ALL_
+
+  R1
+  R2
+   Q
+}
+
+#-------------------------------------------------------------------------------
+# ;-------------------------------------------------------------------------------
+# ;YT_GAZODIN*
+# ;gazodin_create (int sum_mode, int metric, YT_FUNC func)
+# ;-------------------------------------------------------------------------------
+proc gazodin_create {sum_mode metric func} { 
+
+  #(declare (ignore func))
+
+  # (let (
+  # ;  YT_GAZODIN *gazodin;
+  # ;  YMALLOC (gazodin, YT_GAZODIN, 1);
+
+  set gazodin [make-instance "YT_GAZODIN"]
+  #   )
+  
+  $gazodin.SUM_MODE = $sum_mode
+  $gazodin.METRIC   = $metric
+
+  #   ;(setf (FUNC     gazodin)      func)
+  
+  #   ;(setf (R1 gazodin) (make-list 20))
+  #$gazodin.R1_ALL   = [make-list 20]
+
+  $gazodin.R1_ALL_   = [list_create_num_val 20]
+  
+  return $gazodin
+}
+# ;-------------------------------------------------------------------------------
+proc gazodin_func_calc {xi minfunc fi ti} {
+
+  # (let (
+  #   p
+  set gamma 1.4 ;# //это для тестов ТОРО !!!!!
+  
+  set ro [RO]
+  set e  [E]
+  #   )
+  
+  if {0} {
+  puts "------------------------------"
+  minfunc_print_info  $minfunc
+
+  puts "ro = $ro"
+  puts " e = $e"
+  puts "------------------------------"
+  }
+
+  set fnum [FNUM_get]
+
+  if {$fnum == 3} {set p [RO]}
+
+  #   ;(if (= (FNUM) 4) (setf p (* (RO) (E) (- gamma 1))))
+
+  if {$fnum == 4} {set p [expr {$ro * $e * ($gamma - 1) }]}
+  
+  # ;  (format t "FNUM=~S ti=~S fi=~S xi=~S  ro=~S e=~S p=~S ~%" (FNUM) ti fi xi 
+  # ;          ro e p)
+  
+  if    {$fi < 0} {return $p} \
+  else            {return [expr {[P] - $p}]}
+  
+}
+# ;-------------------------------------------------------------------------------
+proc gazodin_func_RINT {xi minfunc fi ti} { ;# // dx
+
+  # (let (
+  set ro [RO]
+  set u  [U]
+  set e  [E]
+  #   )
+  
+  #   (cond 
+  #   ((= fi 0)    ro)                     ; dx сохранение массы
+  #   ((= fi 1) (* ro u))                   ; dx сохранение импульса
+  #   ((= fi 2) (* ro (+ e (/ (* u u) 2))))
+  #   )
+  
+  switch $fi {
+
+    0 {set ret $ro} 
+    1 {set ret [expr {$ro * $u}]} 
+    2 {set ret [expr {$ro * ($e + (($u * $u) / 2))}]} 
+  }
+
+  return $ret
+}
+# ;-------------------------------------------------------------------------------
+proc gazodin_func_QINT {xi minfunc fi ti}  { ;# // dt
+
+  # (let (
+  set ro [RO]
+  set u  [U]
+  set p  [P]
+  set e  [E]
+  #   )
+  
+  if                             {$fi == 0}   {set ret [expr {$ro * $u}]
+  } elseif {([FNUM_get] == 2) && ($fi == 1)}  {set ret [expr {$ro + ($ro * $u * $u)}]
+  } elseif {([FNUM_get]  > 2) && ($fi == 1)}  {set ret [expr {$p + ($ro * $u * $u)}]
+  } elseif                       {$fi == 2}  {
+    set ret [expr {$ro * $u *  ($e + ($u * ($u / 2)) + ($p / $ro))}]
+  }
+ 
+  return $ret
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;gazodin_func (int message, long long1, long long2, long long3, long long4)
+# ;{
+
+# ;  FUNC_VARS;
+# ;  double p;
+# ;  //double gamma = 5.0/3;
+# ;  double gamma = 1.4 ; //это для тестов ТОРО !!!!!
+
+# ;  switch (message) {
+# ;  case YTRUE:
+# ;    break;
+# ;  case YCALC: // для уравнения состояния (последнее fi)
+# ;    FUNC_GETS;
+
+# ;    if (FNUM==3) p = RO;
+# ;    if (FNUM==4) p = RO*E*(gamma-1);
+
+# ;    if (fi < 0) return (p);
+# ;    else        return (P - p);
+# ;    break;
+# ;  case YRINT:// dx
+# ;    FUNC_GETS;
+# ;    if (fi == 0) return (RO);     // dx сохранение массы
+# ;    if (fi == 1) return (RO*U);   // dx сохранение импульса
+# ;    if (fi == 2) return (RO*(E+U*U/2));
+# ;  case YQINT:// dt
+# ;    FUNC_GETS;
+# ;    if (fi == 0) return (RO*U);
+# ;    if (FNUM==2 && fi==1) return (RO + RO*U*U);
+# ;    if (FNUM >2 && fi==1) return (P  + RO*U*U);
+# ;    if (fi == 2) return (RO*U*(E+U*U/2+P/RO));
+
+# ;  default: ;;;;;;;;;;
+# ;  }
+
+# ;  return (TRUE);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;fulle (YT_MINFUNC *minfunc, int fi, int xi, int ti, 
+# ;       long long1, long long2, long long3)
+# ;{
+
+# ;  return (E + U*U/2);
+
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;pu (YT_MINFUNC *minfunc, int fi, int xi, int ti, long long1, long long2, long long3)
+# ;{
+
+# ;  return (P*U);
+
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;gazodin_R_calc (YT_MINFUNC *minfunc, int fi, int xi_left, int xi_right, int ti)
+# ;{
+# ;  YT_FUNC  func = gazodin_func;
+
+# ;  int xi/* , xi_steps = (xi_right - xi_left) */; // количество интервалов
+# ;  double v_left, v_mid, v_right;
+# ;  double R;
+
+# ;  v_left = /* minfunc-> */func (YRINT, xi_left,  (long)minfunc, (long)fi, ti);
+# ;  v_right= /* minfunc-> */func (YRINT, xi_right, (long)minfunc, (long)fi, ti);
+
+# ;  v_mid = 0;
+# ;  for (xi=xi_left+1; xi<xi_right; xi++)
+# ;    v_mid += /* minfunc-> */func (YRINT, xi, (long)minfunc, (long)fi, ti);
+
+# ;  R  = 0.5*XSTEP*(v_left + 2*v_mid + v_right);
+
+# ;  return (R);
+# ;}
+# ;-------------------------------------------------------------------------------
+proc gazodin_Q_calc {minfunc fi xi ti_0} {
+
+  # (let (
+  # ;  YT_FUNC  func = gazodin_func;
+  # ;  double v1, v2;
+  
+  set v1 [gazodin_func_QINT  $xi $minfunc $fi [expr {$ti_0 - 1}]]  ;# YQINT
+  set v2 [gazodin_func_QINT  $xi $minfunc $fi $ti_0]
+  #   )
+  
+  return [expr 0.5 * [TSTEP_get] * [expr $v1 + $v2]]
+}
+# ;-------------------------------------------------------------------------------
+# ;double*
+# ;gazodin_q_make (YT_MINFUNC *minfunc, int fi, int xi_beg, int xi_end, int ti)
+# ;-------------------------------------------------------------------------------
+proc gazodin_q_make {minfunc fi xi_beg xi_end ti} {
+
+  # (let (
+  # ;  double *q;
+  # ;  int     xi;
+
+  set q [list_make [expr {($xi_end - $xi_beg) + 1}]]
+  #   )
+  
+  # ;  YMALLOC (q, double, xi_end-xi_beg+1);
+  
+  # ;  for (xi=xi_beg; xi <= xi_end; xi++)
+  #   (loop for xi from xi_beg to xi_end do
+
+  for {set xi $xi_beg} {$xi <= $xi_end} {incr xi} {
+    setf_nth $xi q   [gazodin_Q_calc  $minfunc $fi $xi $ti]
+  }
+  
+  return  $q
+}
+# ;-------------------------------------------------------------------------------
+# ;double*
+# ;gazodin_r_make_old (YT_MINFUNC *minfunc, int fi, int xi_beg, int xi_end, int ti)
+# ;{
+# ;  double *r;
+# ;  int     xi;
+
+# ;  YMALLOC (r, double, xi_end-xi_beg+1);
+		
+# ;  r[xi_beg] = 0;
+# ;  for (xi=xi_beg+1; xi <= xi_end; xi++)
+# ;    r[xi] = gazodin_R_calc (minfunc, fi, xi_beg, xi, ti);
+
+# ;  return (r);
+# ;}
+# ;-------------------------------------------------------------------------------
+proc gazodin_r_make {minfunc fi xi_beg xi_end ti} {
+
+  # (let (
+  # ;  YT_FUNC  func = gazodin_func;
+  
+  # ;  double *r;
+  set r [list_make [expr {($xi_end - $xi_beg) + 1}]]
+
+  # ;  int     xi;
+  # ;  double  v1, v2/* , R */;
+  #   v1 v2
+  
+  # ;  YMALLOC (r, double, xi_end-xi_beg+1);
+  #  )
+  
+  #   (setf (nth xi_beg r) 0)
+  lset r $xi_beg 0
+
+  # ;  v1 = /* minfunc-> */func (YRINT, xi_beg,  (long)minfunc, (long)fi, ti);
+  set v1 [gazodin_func_RINT  $xi_beg $minfunc $fi $ti]
+  
+  # ;  for (xi=xi_beg+1; xi <= xi_end; xi++) {}
+  for {set xi [expr {$xi_beg + 1}]} {$xi <= $xi_end} {incr xi} {
+
+    set v2 [gazodin_func_RINT  $xi $minfunc $fi $ti]
+    
+    # ;    (format t "........4 ~%")
+    # ;    (format t "r = ~S  ~%" r)
+    # ;    (format t "xi= ~S  ~%" xi)
+    # ;    (format t "v1= ~S  ~%" v1)
+    # ;    (format t "v2= ~S  ~%" v2)
+    
+    #     (setf (nth xi r) (+ (nth (- xi 1) r) (* 0.5 (XSTEP) (+ v1 v2))))
+    set xi_1 [expr {$xi - 1}]
+    lset r $xi [expr  {[lindex $r $xi_1]  +   (0.5 * [XSTEP_get] * ($v1 + $v2)) }]
+    
+    # ;    (format t "........5 ~%")
+    
+    set v1 $v2
+  }
+  
+  return $r
+}
+# ;-------------------------------------------------------------------------------
+proc gazodin_hintegral_0 {minfunc fi xi_1 xi_2 ti_work} {
+
+  # (let (
+  set gdin [$minfunc.PARAM]
+  #   )
+  
+  $gdin.Q  = [gazodin_q_make  $minfunc $fi $xi_1 $xi_2 $ti_work]
+  #$gdin.R1 = [nth $fi [$gdin.R1_ALL]]
+  $gdin.R1 = [nth $fi [set [$gdin.R1_ALL_]]] ;# здесь "ссылка" на список !!
+  $gdin.R2 = [gazodin_r_make  $minfunc $fi $xi_1 $xi_2 $ti_work]
+  
+}
+# ;-------------------------------------------------------------------------------
+proc gazodin_hintegral_1 {minfunc xi_1 xi_2} {
+
+
+  # (let* (
+  set gdin [$minfunc.PARAM]
+  
+  set r1 [$gdin.R1]  
+  set r2 [$gdin.R2]
+  set  q [$gdin.Q]
+  
+  # ;  double R1, R2, Q1, Q2;
+  #   R_1 R_2 Q_1 Q_2
+  #   )
+  
+  # ;  (format t "r1= ~S ~%" r1)
+  # ;  (format t "r2= ~S ~%" r2)
+  # ;  (format t " q= ~S ~%" q)
+  
+  set R_1  [expr {[nth $xi_2 $r1] - [nth $xi_1 $r1] }]
+  set R_2  [expr {[nth $xi_2 $r2] - [nth $xi_1 $r2] }]
+  
+  set Q_1  [nth $xi_2 $q]
+  set Q_2  [nth $xi_1 $q]
+  
+  # ;  (format t "R_1= ~S ~%" R_1)
+  # ;  (format t "R_2= ~S ~%" R_2)
+  # ;  (format t "Q_1= ~S ~%" Q_1)
+  # ;  (format t "Q_2= ~S ~%" Q_2)
+  
+  return  [expr {$R_1 + (- $R_2) + (- $Q_1) + $Q_2 }]
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;gazodin_hintegral (int mode, YT_MINFUNC *minfunc, int fi, int xi_1, int xi_2, int ti_work)
+# ;{
+# ;  YT_GAZODIN *gdin = (YT_GAZODIN *) minfunc->param;
+
+# ;  double R1, R2, Q1, Q2;
+
+# ;  static double *q, *r1, *r2;
+
+# ;  //  Вычисление интеграла (одного из цикла) по шаблону:
+# ;  //       o-*-*-*-o                                  <-R2<-  
+# ;  //       |       |  Обход с левого нижнего угла   Q2      Q1
+# ;  //       *-*-*-*-*  против часовой стрелки:         ->R1->  
+
+
+# ;  if (mode == 0) { // инициализация и вычисление чего можно
+# ;    // xi_1 = X_BEG; 
+# ;    // xi_2 = X_END; 
+# ;    q  = gazodin_q_make (minfunc, fi, xi_1, xi_2, ti_work);
+# ;    //r1 = minfunc->r1[fi];
+# ;    r1 = gdin->r1[fi];
+# ;    r2 = gazodin_r_make (minfunc, fi, xi_1, xi_2, ti_work);
+
+# ;    return(0);
+# ;  } //-----------------------------------------------------
+
+# ;  if (mode == 2) { // завершение и очистка памяти
+# ;    free (q);
+# ;    free (r2);
+
+# ;    return(0);
+# ;  } //---------------------------------------s--------------
+ 
+# ;  // основной счетный режим
+
+# ;  R1 = r1[xi_2] - r1[xi_1];
+# ;  R2 = r2[xi_2] - r2[xi_1];
+
+# ;  Q1 = q[xi_2];
+# ;  Q2 = q[xi_1];
+
+# ;  return (R1 - R2 - Q1 + Q2);
+# ;}
+# ;-------------------------------------------------------------------------------
+proc sum_gazodin_hintegrals_MIN {minfunc rezi metric} {
+
+  # (let (
+  # ;  int    fi, ti_work, xi_left, xi_right;
+  # ;  double eqv;
+  #   eqv xi_right 
+  #   ;;--------------------------
+  #   ;(fi      0) ; !!!
+  #   ;(ti_work 0) ; !!!
+  #   ;; в си-вeрсии они нe были вообщe опрeдeлeны ??
+  #   ;;--------------------------
+  #   )
+  
+  #   (loop for xi_left from X_BEG to (- (X_END) 1) do
+
+  for {set xi_left [X_BEG]} {$xi_left <= [expr {[X_END] - 1}]} {incr xi_left} {
+
+    set xi_right [expr {$xi_left + 1}]
+    
+    set eqv [gazodin_hintegral_1  $minfunc $xi_left $xi_right]
+    
+    if {$metric == 0} {incf rezi [expr {$eqv * $eqv}]
+    } else            {incf rezi [expr {abs ($eqv)}]}
+
+  }
+  
+  return $rezi
+}
+# ;-------------------------------------------------------------------------------
+# ;double 
+# ;sum_gazodin_hintegrals_BIG (YT_MINFUNC *minfunc, double rezi, int metric)
+# ;-------------------------------------------------------------------------------
+# (defun sum_gazodin_hintegrals_BIG (minfunc rezi metric)
+
+# (let (
+# ;  int    fi, ti_work, xi_left, xi_right;
+# ;  double eqv;
+#   eqv
+#   )
+
+# ;  for (xi_left =X_BEG; xi_left  <  X_END; xi_left++)  
+# ;  for (xi_right=xi_left+1;  xi_right <= X_END; xi_right++) 
+
+#   (loop for xi_left  from         X_BEG to (- (X_END) 1) do
+#   (loop for xi_right from (+ xi_left 1) to    (X_END)    do
+
+# ;    eqv = gazodin_hintegral (1, minfunc, fi, xi_left, xi_right, ti_work);
+#     (setf eqv (gazodin_hintegral_1  minfunc xi_left xi_right))
+
+#     (if (= metric 0) (incf rezi (* eqv eqv))
+#                      (incf rezi (abs eqv))
+#                     )
+# ;    if (metric == 0) rezi += (eqv*eqv);
+# ;    else             rezi += fabs(eqv);
+#     ))
+
+#   rezi
+# ))
+# ;-------------------------------------------------------------------------------
+# ; процедура для минимизации GazoDin  
+# ;-------------------------------------------------------------------------------
+proc gazodin_calc_rezi_beg {minfunc} {
+
+  # (let (
+  set gdin [$minfunc.PARAM]
+  #   )
+  
+  #   ;; предварительный расчет r1:
+  
+  dotimes fi 3 { ;# fnum_integral
+
+    # ;    gdin->r1[fi] = gazodin_r_make (minfunc, fi, X_BEG, X_END, /* T_WORK_BEG */TI-1);    
+    #     (setf (nth fi (R1_ALL gdin)) (gazodin_r_make  minfunc fi X_BEG (X_END) (- (TI) 1)))
+
+    set r [gazodin_r_make  $minfunc $fi [X_BEG] [X_END] [expr {[TI_get] - 1}]]
+
+    #setf (nth fi (R1_ALL gdin)) $r
+    lset [$gdin.R1_ALL_] $fi  $r 
+
+    #     ; это отдeльный список для каждой функции ?
+  }
+  
+  #   ;;  //minfunc->r1[fi] = gazodin_r_make (minfunc, fi, X_BEG, X_END, T_WORK_BEG-1);
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;(defun gazodin_calc_rezi_end (minfunc)
+
+# ;  YT_GAZODIN *gdin = (YT_GAZODIN *) minfunc->param;
+# ;  int    fi;
+
+# ;  for (fi=0; fi</* fnum_integral */3; fi++) 
+# ;    free (gdin->r1[fi]);
+# ;  //free (minfunc->r1[fi]);
+
+# ;)
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;gazodin_calc_rezi (/* YT_MINFUNC *minfunc */void *mf, double *xyz/* , int param */)
+# ;-------------------------------------------------------------------------------
+proc gazodin_calc_rezi {minfunc xyz} {
+
+  # (declare (ignore xyz))
+  
+  # (let* (
+  # ;  YT_GAZODIN *gdin = (YT_GAZODIN *) minfunc->param;
+  set gdin [$minfunc.PARAM]
+  
+  # ;  YT_BOOL  is_sum_big = gdin->sum_mode;
+  # ;  int      metric     = gdin->metric/* 0 */;
+  # ;  YT_FUNC  func       = /* gazodin_ */gdin->func;
+  #   ;(is_sum_big (SUM_MODE gdin))
+  set metric   [$gdin.METRIC]
+  # ;  //-------------------------------------------
+  
+  #   ;rezi rezi1 rezi2 
+  #   r
+  #   fi 
+  #   eqv
+  # ;  int fnum_integral = /* FNUM-1 */3;
+  set fnum_integral  3
+  # ;  //-------------------------------------------
+  # ;  //minproc_to_minfunc (minproc, minfunc, xyz);
+  
+  #   ;; подсчитаем невязку, т.е. расстояние до точного решения
+  set rezi    0
+  set rezi1   0
+  set rezi2   0
+  set ti_work [TI_get] ;# /* T_WORK_BEG = T_WORK_END */;
+  #   )
+  #   ;;----------------------------------------------------------
+  
+  #   ;;----------------------------------------------------------
+  #   ;; для интегральных уравнений - перебор всех контуров
+  
+  dotimes fi $fnum_integral {
+
+    gazodin_hintegral_0  $minfunc $fi [X_BEG] [X_END] $ti_work
+    
+    #     (setf rezi1 
+    #     (if (= (SUM_MODE gdin) 1) 
+    #         (sum_gazodin_hintegrals_BIG  minfunc rezi1 metric)
+    #         (sum_gazodin_hintegrals_MIN  minfunc rezi1 metric)
+    #         )
+    #     )
+    
+    if {[$gdin.SUM_MODE] == 1} { 
+      set rezi1 [sum_gazodin_hintegrals_BIG  $minfunc $rezi1 $metric]
+    } else {
+      set rezi1 [sum_gazodin_hintegrals_MIN  $minfunc $rezi1 $metric]
+    }
+
+    #     ;; gazodin_hintegral (2, minfunc, 0, 0, 0, 0); очистка ??
+  }
+  
+  #   ;;----------------------------------------------------------
+  #   ;; для уравнения состояния - поточечный перебор
+  #   (setf fi fnum_integral)
+  #   ;; //double ko = 100000000;
+  
+  # ;  (format t "~%")
+  # ;  (format t "fi=~S  ti_work=~S  ~%" fi ti_work) 
+  
+  #   (loop for xi from X_BEG to (X_END) do
+  for {set xi [X_BEG]} {$xi <= [X_END]} {incr xi} {
+
+    # ;    eqv = /* minfunc-> */func (YCALC, (long)xi, (long)minfunc, (long)fi, (long)ti_work);
+    set eqv [gazodin_func_calc  $xi $minfunc $fi $ti_work]
+    
+    # ;    (format t "eqv= ~S ~%" eqv) 
+    
+    if {$metric == 0} {
+      set r [expr {$eqv * $eqv}] ;# этот случай
+    } else {
+      set r [expr {abs ($eqv)}]
+    }
+
+    #     ;; //r = ko * r;
+    incf rezi2 $r
+  }
+  #   ;;----------------------------------------------------------
+  
+  # ;  (format t "~%")
+  # ;  (format t "PROVERKA : ~%")
+  # ;  (minfunc_print_lines_ti  minfunc 1) ; подбортился ужe гдeто!!
+  
+  # ;  (format t "~%")
+  # ;  (format t "rezi1= ~S ~%" rezi1) 
+  # ;  (format t "rezi2= ~S ~%" rezi2) 
+  # ;  (format t "~%")
+  #   ;(exit)
+  
+  set rezi [expr {$rezi1 + $rezi2}]
+
+  if {$metric == 0} {
+    set rezi [expr {sqrt ($rezi)}]
+  }
+  
+  return $rezi
+}
+# ;-------------------------------------------------------------------------------
+proc gazo_minfunc_create {xx} {
+
+  # (let* (
+  set xmin  -0.5
+  set xmax  +0.5
+  set xnum  [expr {$xx + 1}] ;# узлов на один больше интервалов
+  
+  #set minfunc [minfunc_create  4 "GazoDin" ;/* fnum */
+
+  set minfunc [minfunc_create  4 "GazoDin" $xmin $xmax $xnum]
+  
+  minfunc_named  0 $minfunc "RO"
+  minfunc_named  1 $minfunc "U" 
+  minfunc_named  2 $minfunc "P" 
+  minfunc_named  3 $minfunc "E" 
+  
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;p_from_urs (YT_MINFUNC *minfunc)
+# ;-------------------------------------------------------------------------------
+proc p_from_urs {minfunc} {
+
+  # (let (
+  # ;  YT_FUNC  func = gazodin_func;
+  # ;  int    xi;
+  # ;  double p;
+  #   p
+  #   )
+  
+  #minfunc_print_info  $minfunc
+
+  # ;  for (xi=0; xi<XNUM;xi++) {}
+  # (dotimes (xi (XNUM))
+
+  #foreach xi [XNUM_get] {}  -- это неверно !!
+  for {set xi 0} {$xi < [XNUM_get]} {incr xi} {
+
+    #puts "xi = $xi ..............!"
+
+    # ;    p = /* minfunc-> */func (YCALC, xi, (long)minfunc, -1, 0);
+    # ;    minfunc_put (2, minfunc, xi, 0, p/* , TRUE */);
+    
+    set p [gazodin_func_calc  $xi $minfunc -1 0]
+
+    minfunc_put  2 $minfunc $xi 0 $p
+    
+    # ;    //printf ("p_from_urs= %f \n", p);
+  }
+  
+  return $p
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;gazodin_set_null_cos (int xx, double r0, double r1)
+# ;-------------------------------------------------------------------------------
+proc gazodin_set_null_cos {xx r0 r1} {
+
+  # (let* (
+  set minfunc [gazo_minfunc_create $xx]
+  
+  # ;  int     xcenter;
+  #   ;(xcenter (floor (/ (XNUM) 2))) ; а вообщe лучшe бы "round"
+  #   )
+  
+  #   ;(format t "gazodin_set_null_cos:  ~%")
+  
+  #   ;;  распределение плотности
+  minfunc_t0_put_all  0 $minfunc $r0 
+  minfunc_cos_tstart  0 $minfunc $r0 $r1
+  
+  #   ;;  U=0 - неподвижный газ
+  minfunc_t0_put_all  1 $minfunc 0.0
+  
+  #   ;;  E=0  - холодный газ ??
+  minfunc_t0_put_all  3 $minfunc 1.0
+  
+  #   ;;  начальное давление - из уравнения состояния!!
+  p_from_urs  $minfunc
+  
+  #   ;;  граничные условия (сплошные неподвижные стенки)
+  minfunc_t0_fix  1 $minfunc  [X_BEG]  0.0
+  minfunc_t0_fix  1 $minfunc  [X_END]  0.0
+  
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# ;-------------------------------------------------------------------------------
+
+# ;  typedef struct {
+# ;    double  rL, uL, pL,  rR, uR, pR,  x0, TT /* T ??? */;
+# ;  } YT_TESTS;
+
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;gazodin_toro_tests (YT_TESTS *pt, 
+# ;                        double rL, double uL, double pL,  
+# ;                        double rR, double uR, double pR,  
+# ;                        double x0, double TT)
+# ;{    
+# ;  pt->rL = rL; 
+# ;  pt->uL = uL; 
+# ;  pt->pL = pL; 
+ 
+# ;  pt->rR = rR; 
+# ;  pt->uR = uR; 
+# ;  pt->pR = pR;  
+ 
+# ;  pt->x0 = x0; 
+# ;  pt->TT = TT;
+
+# ;  return;
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;gazodin_set_toro_test (int xx,
+# ;                       double rL, double uL, double pL,  
+# ;                       double rR, double uR, double pR)
+# ;{    
+# ;  YT_MINFUNC *minfunc;
+# ;  int     xcenter;
+
+# ;  minfunc = gazo_minfunc_create (xx);
+# ;  xcenter = XNUM/2; //??
+
+# ;  // распределение плотности
+# ;  minfunc_t0_put_int (0, minfunc, rL,  0, xcenter);
+# ;  minfunc_t0_put_int (0, minfunc, rR,  xcenter+1, XNUM-1);
+
+# ;  // U=0 - неподвижный газ
+# ;  minfunc_t0_put_int (1, minfunc, uL,  0, xcenter);
+# ;  minfunc_t0_put_int (1, minfunc, uR,  xcenter+1, XNUM-1);
+
+# ;  // E=0  - холодный газ ??
+# ;  minfunc_t0_put_all (3, minfunc, 1.0 /*0 ?*/); 
+
+# ;  // начальное давление - из уравнения состояния!!
+# ;  if (pL == -1) p_from_urs (minfunc);
+# ;  else {
+# ;    minfunc_t0_put_int (2, minfunc, pL,  0, xcenter);
+# ;    minfunc_t0_put_int (2, minfunc, pR,  xcenter+1, XNUM-1);
+# ;  }
+# ;  //}
+
+# ;  // граничные условия (сплошные неподвижные стенки)
+# ;  minfunc_t0_fix (1, minfunc, X_BEG, 0.0);
+# ;  minfunc_t0_fix (1, minfunc, X_END, 0.0);
+
+# ;  return (minfunc);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;gazodin_set_null_tests (int xx)
+# ;{
+# ;  YT_TESTS    test, *t=&test;
+# ;  YT_MINFUNC *minfunc;
+# ;  //int         xcenter;
+ 
+# ;  // ---------------------------------------------------------------------------------------------------
+# ;  // Test |    rL          uL          pL      |     rR         uR         pR       |     x0    T    
+# ;  // ---------------------------------------------------------------------------------------------------
+# ;  YT_TESTS  sliska_tests[] = {
+# ;  /* 1   */ { 1        ,  0.75     ,  1        ,    0.125    ,  0        , 0.1      ,    0.3, 0.2   },
+# ;  /* 2   */ { 1        , -2        ,  0.4      ,     1       ,  2        , 0.4      ,    0.5, 0.15  },
+# ;  /* Noh */ { 1        ,  1        ,  0.000001 ,     1       , -1        , 0.000001 ,    0.5, 1     },
+# ;  /* 3a  */ { 1        ,-19.59745  ,1000       ,     1       ,-19.59745  , 0.01     ,    0.8, 0.012 },
+# ;  /* 4   */ { 5.99924  , 19.5975   , 460.894   ,     5.99924 , -6.19633  ,46.095    ,    0.4, 0.035 },
+# ;  /* 5   */ { 1.4      ,  0        ,   1       ,     1       ,  0        , 1        ,    0.5, 2     },
+# ;  /* 6   */ { 1.4      ,  0.1      ,   1       ,     1       ,  0.1      , 1        ,    0.5, 2     },
+# ;  /* peak*/ { 0.1261192,  8.9047029, 782.92899 ,     6.591493,  2.2654207, 3.1544874,    0.5, 0.0039},
+# ;  };
+
+# ;  // ---------------------------------------------------------------------------------------------------
+# ;  //      |                                    |                                    |
+# ;  // ---------------------------------------------------------------------------------------------------
+
+# ;  YT_TESTS  simple_tests[] = {
+# ;  /* 1   */ { 0.11     ,  0        , -1        ,    0.1      ,  0        , -1       ,    0.3, 0.2   },
+# ;  /* 2   */ { 0.1      , -0.01     , -1        ,    0.1      ,  0.01     , -1       ,    0.5, 0.15  },
+# ;  /* Noh */ { 0.1      , +0.01     , -1        ,    0.1      , -0.01     , -1       ,    0.5, 0.15  },
+# ;  /* 3a  */ { 0.1      , -0.01     , 0.045     ,    0.1      , -0.01     , 0.040    ,    0.8, 0.012 },
+# ;  };
+# ;  // --------------------------------------------------------------
+# ;  // Для небольших разностей плотностей считает распад разрыва нормально,
+# ;  // но если чуть больше, то ....
+# ;  // ОДНАКО можно ведь уменьшить шаг по времени !?
+
+# ;  //solver -m xx=50 mode=test -c tt=20 dt=0.005 er=0.00001
+# ;  t = &(simple_tests[1 -1]);  
+
+# ;  minfunc = gazodin_set_toro_test (xx,
+# ;                         t->rL, t->uL, t->pL,  
+# ;                         t->rR, t->uR, t->pR);
+
+# ;  // Using: cells : gas constant
+# ;  // ---------------------------
+# ;  // 1    :  100  : 1.4
+# ;  // 2    :  100  : 1.4
+# ;  // Noh  :  100  : 5/3
+# ;  // 3a   :  200  : 1.4
+# ;  // 4    :  200  : 1.4
+# ;  // 5    :  100  : 1.4
+# ;  // 6    :  100  : 1.4
+# ;  // peak :  800  : 1.4
+
+# ;//  Richard Liska ,  Burton Wendroff:
+# ;//  "Comparison of several difference schemes on 1d and 2d test problems for 
+# ;//  the Euler equations";
+# ;//  
+# ;//  http://www-troja.fjfi.cvut.cz/~liska/CompareEuler/compare8/
+# ;//  Key words: Euler equations, Riemann problems, finite difference schemes, splitting
+
+# ;//-----------------------------------------------------------------------
+# ;//    Test  |   1     2   noh   3a    4    5    6  peak  |   
+# ;//-----------------------------------------------------------------------
+# ;//    CFLFh | 1.5  10.2   1.9  10.3  2.7  0.7  0.8  1.9  |  
+# ;//    JT    | 1.3   6.4   1.7   8.1  2.3  0.6  0.6  1.1  |   
+# ;//    LL    | 1.3  31.3   1.5   5.2  2.4  0.5  0.7  0.8  |
+# ;//    CLAW  | 0.8  fail   1.3   3.1  1.7  0    0.4  fail |
+# ;//    WAFT  | 0.7  21.9   2.8   2.6  1.4  0    0.3  1.0  |
+# ;//    WENO  | 1.3  23.7   2.0   9.2  2.2  0    0.4  2.4  |
+# ;//    PPM   | 0.5   6.3   4.6   9.4  1.1  0    0.1  1.3  |
+# ;//    VH1   | 0.9   9.6   1.5   3.7  1.3  0    0.3  0.8  |
+# ;//-----------------------------------------------------------------------
+# ;//  Точные решения надо смотреть в книге:
+# ;//  E.Toro "Riemann Solvers and Numerical Methods for Fluid Dinamics, 
+# ;//         Berlin, 1997
+# ;//  
+
+# ;  sliska_tests[0].rL = 0; //unused 
+# ;  return (minfunc);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;gazodin_set_null (int xx, char *mode)
+# ;-------------------------------------------------------------------------------
+proc gazodin_set_null {xx mode} {
+
+  # (declare (ignore mode))
+  
+  # (let (
+  #   minfunc
+  set r0   0.1
+  set r1   0.11 ;# /* 0.2 */ /* 0.9 */;
+  #   )
+  
+  #   ;(format t 
+  
+  # ;  if (YStrCmp (mode, "cos")) {
+  set minfunc [gazodin_set_null_cos  $xx $r0 $r1]
+  # ;  }
+
+  # ;  else if (YStrCmp (mode, "test")) {
+  # ;    minfunc = gazodin_set_null_tests (xx);
+  # ;  }
+  # ;  else 
+  # ;    YERROR ("gazodin_set_null");
+  
+  # ;  minfunc_read_save (LAST_SOL, YWRITE, minfunc);
+  #   ;(setf *minfunc_read_save* minfunc) ; эмуляция записи разрeза
+
+  minfunc_read_save  "LAST_SOL" YWRITE $minfunc
+  
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# ;void
+proc botgslspusk_2_data {bot mp} {
+
+  # (let (
+  # ;  YT_MINBOT *bot = (YT_MINBOT *) self;
+
+  set stop_func $bot.D1 ;#  double stop_func =  bot->d1; //!!
+  
+  #   (conjugate_bfgs_type  (make_fdfminimizer_type 
+  #                        "conjugate_bfgs"                        
+  #                        'XXX_CONJUGATE_STATE_T ; sizeof (xxx_conjugate_state_t),
+  #                        #'vector_bfgs_alloc
+  #                        #'vector_bfgs_set 
+  #                        #'vector_bfgs_iterate
+  #                        ;;  &xxx_conjugate_restart,
+  #                        ;;  &vector_bfgs_free
+  #                        ))
+  #   )
+  
+  set ::conjugate_bfgs_type  [make_fdfminimizer_type \
+                                "conjugate_bfgs"          \
+                                XXX_CONJUGATE_STATE_T     \
+                                "vector_bfgs_alloc"   \
+                                "vector_bfgs_set"     \
+                                "vector_bfgs_iterate"]
+
+  #   (setf (V_PARAM bot) (gslspusk_create)) ;  bot->v_param = gslspusk_create ();
+
+  $bot.V_PARAM = [gslspusk_create]   ;#  bot->v_param = gslspusk_create ();
+  
+  #   (gslspusk_set
+  #                 (V_PARAM bot) ;  bot->v_param, 
+  #                 ; //bot->minproc,
+  #                 ; TRUE,     //FALSE
+  #                 0.00000001 ; //0.000001, 
+  
+  #                 conjugate_bfgs_type ; gsl_multimin_fdfminimizer_vector_bfgs,
+  #                 0.000001d0 ; /* размер первого пробного шага  */ 0.000001, 
+  #                 0.000001d0 ; /* точность линейной минимизации */ 0.000001, 
+  
+  #                 ; //        критерии останова :::::::
+  #                 0.001 ; /* по норме градиента     */ 0.001, 
+  #                 5000  ; /* по количеству итераций */ 5000,
+  
+  #                 ; /* по значению функции    */ 
+  #                 stop_func t ;TRUE //???!!!
+  #                 )
+  
+
+  gslspusk_set  \
+                    [$bot.V_PARAM]  \
+                    0.00000001      \
+                    \
+                    "conjugate_bfgs_type" \
+                    \
+                    0.000001    \
+                    0.000001    \
+                    \
+                    0.001    \
+                    5000     \
+                    \
+                    $stop_func  1   
+
+  # ;  //---------------------------------
+  #   (setf (MINPROC bot) mp) ;  bot->minproc = (YT_MINPROC *) mp;
+
+  $bot.MINPROC = $mp
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;void
+proc botgslspusk_2_todo {bot} {
+
+  # (let (
+  # ;  YT_MINBOT *bot = (YT_MINBOT *) self;
+  set gslspusk [$bot.V_PARAM]  ;#  YT_GSLSPUSK *gslspusk = (YT_GSLSPUSK *) (bot->v_param);
+  #   )
+  
+  minbot_gslspusk_s  $bot
+  
+  # ;  fprintf (STD_ERR, "%s  niters=%4d  ",
+  # ;           gslspusk->end_status, gslspusk->end_niters);
+  
+  puts -nonewline [format "%s  niters=%4d  " [$gslspusk.END_STATUS] [$gslspusk.END_NITERS]]
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;gazo_minfunc_solver (char *cmd_1, 
+# ;                     int tnul, int tt, double tstep, double stop_func, int sum_mode/* , */
+# ;                     /* int argc, char *argv[] */)
+# ;-------------------------------------------------------------------------------
+proc gazo_minfunc_solver {cmd_1 tnul tt tstep stop_func sum_mode} {
+
+  # (declare (ignore tnul))
+  
+  # (let (
+  # ;  //char *cmd_1 = get_argcargv (argc, argv, 1);
+  
+  #   minfunc mbot gdin 
+  #   )
+  
+  # ;;-------------------------------------------------------------
+  #   (setf mbot (minbot_make  "" 
+  #                            NIL ; NULL
+  #                            'botgslspusk_2_data 
+  #                            'botgslspusk_2_todo 
+  #                            0 0 0 stop_func))
+  
+  set mbot [minbot_make "" "NIL"  \
+              "botgslspusk_2_data"  \
+              "botgslspusk_2_todo"  \
+                0 0 0   \
+                $stop_func] 
+
+  # ;/*   YT_MINBOT *mbot = minbot_make ("",                 */
+  # ;/*                                  botspusk_fun_init,  */
+  # ;/*                                  botspusk_fun_data,  */
+  # ;/*                                  botspusk_fun_todo,  */
+  # ;/*                                  10,0,0, 0.0001);    */
+  
+  # ;  (setf mbot (minbot_make "BeesFind"  
+  # ;                          'botbees_init
+  # ;                          'botbees_data 
+  # ;                          'botbees_todo_new  ;'botbees_todo 
+  # ;                          0 0 0 0))
+  # ;;-------------------------------------------------------------
+  
+  
+  set minfunc [minfunc_read_save "LAST_SOL" YREAD "NIL"]
+
+  #   ;; сформированныe начальныe данныe
+  
+  # ;  if (!minfunc) Error ("parse_c: minfunc");
+  
+  minfunc_add_tt  $minfunc $tt $tstep ;# расшрить задачу дальше на tt шагов !!!
+  #   ;; здeсь нужна инициализация???????
+  minfunc_add_fix_points_all $minfunc
+  
+  
+  # ;  YT_GAZODIN *gdin = gazodin_create (sum_mode, 0/*metric*/, gazodin_func);
+  set gdin [gazodin_create  $sum_mode 0 "NIL"]
+  
+  minfunc_add_params  $minfunc \
+                      "gazodin_calc_rezi_beg" \
+                      NIL \
+                      "gazodin_calc_rezi"  $gdin
+  
+  # ;  dinamic_t_solver_main (cmd_1, /* argc, argv, */ minfunc, mbot);
+  dinamic_t_solver_main  $cmd_1 $minfunc $mbot
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;int
+# ;parse_m (BOOL real_work, int argc, char *argv[], int j)
+# ;-------------------------------------------------------------------------------
+# (defun parse_m (real_work argus j)
+# ;-------------------------------------------------------------------------------
+proc parse_m {real_work argus j} {
+
+  # (declare (ignore real_work))
+  
+  # ;  int    xx;
+  # ;  char  *ptr, *mode;
+
+  # (let (
+  if {0} {
+    set xx   10  ;# 20
+  } else {
+    set xx   6  ;# 20
+  }
+
+
+  set mode   "cos"
+  #   ptr
+  #   )
+  
+  set ptr [parse_read "xx" $argus $j]
+
+  if {$ptr != $::NIL} {
+    set xx [parse-integer $ptr]  ;# xx = atoi (ptr);
+  }
+  
+  # ;  mode = "cos";
+  # ;  if ((ptr = parse_read ("mode", argc, argv, j)) != NULL) 
+  # ;    mode = ptr;
+
+  set ptr [parse_read "cos" $argus $j]
+
+  if {$ptr != $::NIL} {
+    set mode $ptr
+  }
+  
+  # ;  //-------------------
+  # ;  if (!real_work) {
+  # ;    fprintf (STD_ERR, "> %s -m xx=%d \n", argv[j], xx);
+  # ;    return 0;
+  # ;  }
+  # ;  //-------------------
+  
+
+  gazodin_set_null  $xx $mode
+  
+}
+# ;-------------------------------------------------------------------------------
+# ;int
+# ;parse_c (BOOL real_work, int argc, char *argv[], int j)
+# ;-------------------------------------------------------------------------------
+proc parse_c {real_work argus j} { 
+
+  
+  if {0} {
+    set tt        10      ;# 10)     ; количество шагов
+    set tstep      0.005  ;# счетный интервал 
+    set stop_func  0.0001 ;# значение для останова 
+    set sum_mode   0      ;# алгоритм счета интегралов
+
+  } else {
+
+    set tt         1      ;# 10)     ; количество шагов
+    set tstep      0.005  ;# счетный интервал 
+    set stop_func  9999999.99   ;# значение для останова  ????
+    set sum_mode   0      ;# алгоритм счета интегралов
+  }
+
+  
+  # ;  tt = 10; // количество шагов
+  # ;  if ((ptr = parse_read ("tt", argc, argv, j)) != NULL) 
+  # ;    tt = atoi (ptr);
+  
+  # ;  tstep = 0.005; // счетный интервал 
+  # ;  if ((ptr = parse_read ("dt", argc, argv, j)) != NULL)
+  # ;    tstep = atof (ptr);
+  
+  # ;  stop_func = 0.0001; // значение для останова 
+  # ;  if ((ptr = parse_read ("er", argc, argv, j)) != NULL)
+  # ;    stop_func = atof (ptr);
+  
+  # ;  sum_mode = 0/* FALSE */ /*1*/; // алгоритм счета интегралов
+  # ;  if ((ptr = parse_read ("sm", argc, argv, j)) != NULL) 
+  # ;    sum_mode = atoi (ptr);
+  
+  # ;  if ((ptr = parse_read ("@", argc, argv, j)) != NULL) 
+  # ;    ERR_PRINT = TRUE ;
+  
+  # ;  //-------------------
+  # ;  if (!real_work) {
+  # ;    //goto print;
+  # ;    fprintf (STD_ERR, 
+  # ;             "> %s -c t0=%d tt=%d dt=%g er=%g \n", argv[j], tnul, tt, tstep, stop_func);
+  # ;    return 0;
+  # ;  }
+  # ;  //-------------------	
+  # ;  char *cmd_1 = get_argcargv (argc, argv, 1);
+  
+  # ;  gazo_minfunc_solver (cmd_1, /* tnul */0, tt, tstep, stop_func, sum_mode/* , argc, argv */);
+
+  gazo_minfunc_solver  "cmd_1"  0 $tt $tstep $stop_func $sum_mode
+  
+}
+# ;===============================================================================
+# ;void
+# ;gazodin_main_main (BOOL real_work, int argc, char *argv[])
+# ;{
+# ;===============================================================================
+proc gazodin_main_main {real_work} {
+
+  # (let (
+  #   j
+  #   )
+
+  global argv argc 
+  set  argus $argv
+  
+  #   ;; solver -m  xx=20           -c  tt=10 sm=1
+  #   ;; solver -m  xx=20 mode=test -c  tt=10 dt=0.005 er=0.00001
+  
+  if {$real_work} {set j 1} \
+  else            {set j 0}
+  
+  #   ;; здесь пока упростим - зададим жесткую последовательность,
+  #   ;; сначала (обязательно!) создание разреза, а потом счет:
+  
+  #   (parse_m  real_work argus j)
+  parse_m  $real_work $argus $j
+  
+  parse_c  $real_work $argus $j
+  
+}
+# ;===============================================================================
+# ;// 
+# ;/******************************************************************************/
+# ;//
+# ;//
+# ;//
+# ;//
+# ;/******************************************************************************/
+# ;// 
+# ;===============================================================================
+
+# ;typedef struct {
+# ;  int    argc;
+# ;  char **argv;
+# ;} ARGC_ARGV;
+
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# (defun init_0 (
+#               argc_argv ; ARGC_ARGV *argc_argv
+#               )
+# ;-------------------------------------------------------------------------------
+proc init_0 {argc_argv} {
+
+  # (declare (ignore argc_argv))
+  
+  # (let (
+  #   minfunc ;  YT_MINFUNC *minfunc;
+  set dim   1
+  set mode  "134" ;#  char *mode = "134";
+  
+
+  if {$::BOT_DEBUG} {
+    set xnum 6
+  } else {
+    set xnum   21
+  }
+
+  set xmin  0.0
+  set xmax  1.0
+
+
+  #   f fix
+  #   )
+  
+  # ;  if (argc_argv) {
+  # ;    //int    argc;
+  # ;    char **argv = argc_argv->argv;
+  
+  # ;    dim = atoi(argv[2]);
+  # ;    mode = argv[3];
+  # ;  }
+  
+  # ;  int    xnum =  21;
+  # ;  double xmin = 0.0;
+  # ;  double xmax = 1.0;
+  
+  
+  if       {$dim == 1} {
+    set minfunc [minfunc_create    1 "init_0" $xmin $xmax $xnum]
+
+  } elseif {$dim == 2} {
+    set minfunc [minfunc_create_2d 1 "init_0"    \
+                    $xmin $xmax $xnum  \
+                    $xmin $xmax $xnum] ;# пока сделаем квадрат..
+  } else {
+    ERROR "dim"
+  }
+  
+
+  minfunc_named  0 $minfunc "U"
+  
+
+  # ;  // общее начальное приближение
+  # ;  int    xi, yi;
+  # ;  double f;
+  
+  # ;  for (yi=0; yi < yNUM; yi++) 
+  # ;  for (xi=0; xi < XNUM; xi++) {}
+
+  dotimes yi [YNUM_get] {
+  dotimes xi [XNUM_get] {
+
+    set f  0.0
+    # ;    //minfunc_put (/* fi */0, minfunc, xi, /* ti */0, f);
+    # ;    minfunc_put_2d (/* fi */0, minfunc, xi, yi, /* ti */0, f);
+    
+    minfunc_put  0 $minfunc $xi 0 $f ;# сдeлал эту функцию?? ???????????????????????????
+  }}
+  
+
+  # ;  // граничные условия 
+  
+  # ;  minfunc_t0_fix (0, minfunc, X_BEG, 1.0); 
+  # ;  minfunc_t0_fix (0, minfunc, X_END, 4.0);
+
+  minfunc_t0_fix  0 $minfunc  [X_BEG]  1.0
+  minfunc_t0_fix  0 $minfunc  [X_END]  4.0
+  
+  if {$mode == "134"} { ;#// внутренняя фикс. точка    
+
+    set fix [floor_int [expr {$xnum / 5.0}]] ;#    int fix = YInt (xnum / 5.0);
+
+    minfunc_t0_fix  0 $minfunc  $fix 3.0 
+  }
+  
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;laplas_rezi (void *mf, double *xyz)
+# ;{
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+# ;  double  f1, f2, f3;
+# ;  int     xi, ti = TI;
+
+# ;  // подсчитаем невязку, т.е. расстояние до точного решения
+# ;  double  r, rezi  = 0;
+# ;  for (xi=X_BEG+1; xi <= X_END-1; xi++) {    
+# ;    f1 = Fun(xi-1, ti);
+# ;    f2 = Fun(xi ,  ti);
+# ;    f3 = Fun(xi+1, ti);
+# ;    r = (f3 - 2*f2 + f1) / (XSTEP*XSTEP);
+# ;    rezi += r*r;
+# ;  }
+# ;  rezi = sqrt (rezi);
+
+# ;  return (rezi);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;double
+proc laplas_rezi_new {minfunc  xyz} {
+
+  # (declare (ignore xyz))
+  
+  # (let (
+  # ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+  # ;  int     xi;
+  # ;  double  y[1000], y_x[1000], y_xx[1000]; // ?? !!
+  
+  set y    [list_make 1000]
+  set y_x  [list_make 1000]
+  set y_xx [list_make 1000]
+  
+  #   r 
+  set rezi 0.0
+  #   )
+  
+  # ;  // формируем массив исходной функции
+  make_func  $minfunc y [TI_get]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#   if { $::BOT_DEBUG } {
+#     #minfunc_print_info  $minfunc
+#     #puts "y = $y"
+
+#     exit
+#   }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  # ;  // 1-я производная
+  # ;  make_diff_r (minfunc,  y,  y_x);
+  make_diff_r  $minfunc $y    y_x
+  
+  # ;  // 2-я производная
+  # ;  make_diff_r (minfunc, y_x, y_xx);
+  make_diff_r  $minfunc $y_x  y_xx
+  
+  # ;  //  а теперь считаем всю невязку:
+  # ;  double  r, rezi  = 0;
+  
+  # ;  for (xi=X_BEG; xi <= X_END; xi++) {    
+  # ;    r = y_xx[xi];
+  # ;    rezi += (r*r);
+  # ;  }
+  
+  #puts "y_x  = $y_x"
+  #puts "y_xx = $y_xx"
+  #exit
+
+  #   (loop for xi from X_BEG to (X_END) do
+  for {set xi [X_BEG]} {$xi <= [X_END]} {incr xi} {
+
+    set r [lindex $y_xx $xi]
+    incf rezi [expr {$r * $r}]
+  }
+  
+  # ;  rezi = sqrt (rezi);
+  set rezi [expr {sqrt ($rezi)}]
+
+  #puts "rezi = $rezi"
+  
+  return $rezi
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINBOT *
+proc laplas_mbot {o} {
+
+  set of $o
+  set stop_func  0.1
+  
+  set mbot [minbot_make "" "NIL"  \
+              "botgslspusk_4_data"  \
+              "botgslspusk_4_todo"  \
+                0 0 0   \
+                $stop_func] ;# stopfun = 0.0001
+
+  #   (setf (TT of) 0) ; здeсь что-ли установить заглушки-нули?
+  #   (setf (DT of) 0) 
+  
+  $of.TT = 0 ;# здeсь что-ли установить заглушки-нули?
+  $of.DT = 0 ;# 
+
+  return $mbot
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+proc laplas_init_0 {o} {
+
+  # (let (
+  set of  $o ;#  YT_ONEFUN  *of = (YT_ONEFUN *) o;
+  # ;  YT_MINFUNC *minfunc ;
+  
+  # ;  minfunc = init_0 (/* o */NULL);
+  set minfunc  [init_0  NIL]
+  #   )
+  
+  
+  minfun_add_rezi  $minfunc "laplas_rezi_new"  $of  
+  
+  return $minfunc ;#  return (minfunc);
+}
+# ;-------------------------------------------------------------------------------
+proc laplas_main {} { 
+
+  # (let (
+  #   (onefun_s (list
+  
+  #     '("0" laplas_init_0 laplas_mbot)
+  
+  #     ))
+  #   )
+  
+  set onefun_s [list \
+                  {"0"  laplas_init_0  laplas_mbot} \
+              ]
+
+  set ::BOT_DEBUG 800.0  ;# уменьшим точность, а то очень медленно !!! ((
+
+  # ;  onefun_main_calc (argc, argv, onefun_s);
+  onefun_main_calc $onefun_s 
+
+}
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;void
+# (defun harmon_solver_1d (
+#        minfunc ; YT_MINFUNC *minfunc, 
+#        ti      ; int ti, 
+#        sxem    ; int sxem
+#        )
+
+# (declare (ignore sxem))
+
+# (let (
+#   (fi  0)
+#   ;  int fi = 0, ti_old = ti-1;
+#   (ti_old  (- ti 1))
+#   ;  int xi;
+#   l r ;  double l, r;
+#   )
+
+# ;  for (xi=X_BEG+1; xi <= X_END-1; xi++) {
+#   (loop for xi from (+ X_BEG 1) to (- (X_END) 1) do
+    
+# ;    if (FMOD(fi, xi) == TRUE) 
+# ;      continue; // нельзя забивать константные значения!!
+#     (unless (eq (FMOD fi xi) t)
+
+# ;    l = Fun(xi-1, ti_old);
+# ;    r = Fun(xi+1, ti_old);
+#     (setf l  (Fun_ (- xi 1) ti_old))
+#     (setf r  (Fun_ (+ xi 1) ti_old))
+
+# ;    Fun(xi, ti) = (l + r) / 2;
+#     (setf (Fun_ xi ti) (/ (+ l r) 2))
+#     ))
+# ;  }
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# ;harmon_solver_2d (YT_MINFUNC *minfunc, int ti, int sxem)
+# ;{
+# ;  double  l, r, t, b;
+# ;  int xi, yi, fi = 0, ti_old = ti-1;
+
+# ;  for (yi=Y_BEG+1; yi <= Y_END-1; yi++)    
+# ;  for (xi=X_BEG+1; xi <= X_END-1; xi++) {    
+    
+# ;    if (FMOD_2D(fi, xi, yi) == TRUE) 
+# ;      continue; // нельзя забивать константные значения!!
+
+# ;    l = Fun_2D(xi-1, yi, ti_old);
+# ;    r = Fun_2D(xi+1, yi, ti_old);
+# ;    t = Fun_2D(xi, yi+1, ti_old);
+# ;    b = Fun_2D(xi, yi-1, ti_old);
+
+# ;    //printf ("xi=%2d  yi=%2d  ti=%2d  \n", xi, yi, ti);
+# ;    Fun_2D(xi, yi, ti) = (l + r + t + b) / 4;
+
+# ;  }
+
+# ;  // timer_end (YT_TIMER *t, char *hms_time)
+# ;  // free (t); //???
+# ;  // ломается после записи 2-ных массивов (невыявленная ошибка);
+# ;  return;
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun harmon_solver (
+#               minfunc ; YT_MINFUNC *minfunc, 
+#               ti      ; int ti, 
+#               sxem    ; int sxem
+#               )
+
+#   (cond 
+#    ((= (mDIM) 1)  (harmon_solver_1d  minfunc ti sxem))
+#    ((= (mDIM) 2)  (harmon_solver_2d  minfunc ti sxem))
+#    )
+
+# )
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;void
+# ;harmon_main (int argc, char *argv[])
+# ;-------------------------------------------------------------------------------
+# (defun harmon_main (argus) (declare (ignore argus))
+
+# (let (
+# ;  //int    dim = 1; // размерность
+# ;  //char *mode = "";
+
+#   ;(tt  15) ;  int     tt = /* 300 */ 150;
+#   (tt  15) ;  int     tt = /* 300 */ 150;
+#   (aa  NIL) ;;  ARGC_ARGV argc_argv, *aa = NULL;
+#   minfunc
+#   )
+
+# ;  if (argc == 5) {
+# ;    //dim  = atoi(argv[2]);
+# ;    //mode = argv[3];
+# ;    tt   = atoi(argv[4]);
+
+# ;    aa = &argc_argv;
+# ;    aa->argc = argc;
+# ;    aa->argv = argv;
+# ;  }
+
+# ;  YT_MINFUNC *minfunc = init_0 (aa);
+#   (setf minfunc (init_0 aa))
+
+# ;  ERR_PRINT = TRUE ;
+
+# ;  minfunc_add_tt (minfunc, tt, /* dt */0);
+#   (minfunc_add_tt  minfunc tt 0)
+ 
+#   (minfunc_add_fix_points_all  minfunc)
+
+# ;  //------------------------
+#   (sxem_solver minfunc 'harmon_solver 0)
+# ;  //------------------------
+
+#   (format t "~%") 
+# ;  //minfunc_print_one (1/*win*/, 0/*gnu*/, minfunc, -1000/*последний шаг*/);
+# ;  minfunc_print_one (minfunc, -1000/*последний шаг*/);
+#   (minfunc_print_one *minfunc_read_save* -1000) ; послeднюю запись
+
+# ))
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;// 
+# ;// * FindStat - 123-ная электростатика, поиск оптимальных начальных данных
+# ;//              с использованием генетических алгоритмов;
+# ;// * CentPack - тестовые расчеты 1,2-D (МГД), визуализация (GTK+), РНД (Tcl/Tk);
+# ;// 
+# ;//------------------------------------------------------------------------------
+# ;// 
+# ;// - 2,3-D массивы, тесты на гармонических функциях, визуализация средствами VIZI;
+# ;// - ГА (минимумы тестовых ф-ий), поиск в пространистве 
+# ;//   начальных данных, FindStat (тесты, реальные задачи, переходники, сравнения)
+# ;// 
+# ;// - ГД (рефакторинг, тесты), объединение Бюргерса и Переноса, гибкий критерий 
+# ;//   останова (0.1% от начальной невязки), периодичные гр.условия, предварительное 
+# ;//   решение на грубой сетке (1/2);
+# ;// - визуализация 1-D/GTK+ (внутр.формат и CentPack), сравнительные тесты;
+# ;// - визуализация 2,3-D (GTK+, встроенные алгоритмы Tcl);
+# ;// - пул решений, пул дискретных схем, зачатки памяти, интегральное дожатие,  
+# ;//   солитоны, квантовая химия;
+# ;// 
+# ;//------------------------------------------------------------------------------
+# ;// 
+# ;// * I-Solver - полуавтаматический поиск правильных дискретных схем, интегральное 
+# ;//              дожатие частных решений, адаптивная память, стратегии;
+# ;// 
+# ;// - ГА с непрямым декодированием (гибкая адаптивная память, мураши),
+# ;//   применение для задач матфизики;
+# ;// - моделирование оппонента, игровые стратегии, подбор параметров,
+# ;//   турниры, полуавтоматы (го, холдем);
+# ;// 
+# ;===============================================================================
+# ; врeмeнный стартeр:
+# ; 
+# ;-------------------------------------------------------------------------------
+# (defun minfunc_print_lines_ti (minfunc ti)
+
+
+#   (dotimes (fi (FNUM))
+#     ;;(setf (PP_STEP_F plot ti fi) (coerce (FVAL_ARR ti fi) 'list))  ;??   
+#     (format t "~A= ~S ~%" (FIMQ fi) (coerce (FVAL_ARR ti fi) 'list))
+#     ;;(format (STD_ERR) "~% ")
+#     )
+
+# )
+# ;-------------------------------------------------------------------------------
+# (defun minfunc_print_lines (minfunc)
+
+# (let* (
+#   (tnum  (1+ (TOLD))) ;/* последний значимый слой */ + 1
+
+#   ;(plot  (plot_create (FNUM) (XNUM) tnum))
+#   )
+
+#   (format t "MINFUNC_PRINT_LINES: ~%")
+#   (format t "~%")
+
+#   ;(setf (XMIN_SET plot) xmin) ; // навязанные границы графиков
+#   ;(setf (XMAX_SET plot) xmax)
+	
+#   ;; значeния иксов
+# ;  (dotimes (xi (L_XNUM plot))
+# ;    (setf (nth xi (X plot))  (XVAL xi))
+# ;    )
+
+#   ;; имeна всeх функций
+# ;  (dotimes (fi (L_FNUM plot))
+# ;    (setf (PP_NAME plot fi) (FIMQ fi))
+# ;    )
+
+#   ;; цикл по врeмeнным шагам
+#   (dotimes (ti tnum)
+# ;    (setf (PP_STEP_NAME plot ti) 
+# ;          (format nil "MINFUNC_PRINT:  ~S (t = ~D/~D  rezi = ~S)" 
+# ;                  (P_NAME minfunc) ti (TOLD) (REZI ti)
+# ;                  ))    
+#     ;; 
+#     (minfunc_print_lines_ti  minfunc ti)
+# ;    (dotimes (fi (FNUM))
+# ;      ;(setf (PP_STEP_F plot ti fi) (coerce (FVAL_ARR ti fi) 'list))  ;??   
+# ;      (format t "~A= ~S ~%" (FIMQ fi) (coerce (FVAL_ARR ti fi) 'list))
+# ;      ;(format (STD_ERR) "~% ")
+# ;      )
+#     (format t "~% ")
+#     )
+
+# ;  plot
+# ))
+# ;-------------------------------------------------------------------------------
+# ;===============================================================================
+proc gazdin_main {} { 
+
+
+  #   (gazodin_main_main t argus)
+  gazodin_main_main  1
+  
+  #   ;(minfunc_print_lines *minfunc_read_save*)
+  #   ;(minfunc_print_all   *minfunc_read_save*)
+  
+  #   (minfunc_print_one *minfunc_read_save* -1000) ; послeднюю запись
+  minfunc_print_one  $::minfunc_read_save  -1000 ;# послeднюю запись
+  
+  #   ;(minfunc_print_gui *minfunc_read_save*)    ; нe сдeлано
+
+}
+# ;===============================================================================
+# ;===============================================================================
+# ;// 
+# ;===============================================================================
+# ;int
+# ;main (int argc, char *argv[])
+# ;{
+
+# ;  fprintf (STD_ERR, "\n");
+	
+# ;  if (argc == 1) {
+# ;    gazodin_main_main  (FALSE, argc, argv);
+# ;    fprintf (STD_ERR, "> %s -p \n", argv[0]);
+# ;    fprintf (STD_ERR, "> %s -i \n", argv[0]);
+# ;    fprintf (STD_ERR, "\n");
+# ;    return 1;
+# ;  }
+
+# ;  if (parse_read ("B", argc, argv, 0) != NULL) {  
+# ;    berger_main (argc-2, argv+2);
+# ;  } else 
+
+# ;  if (parse_read ("G", argc, argv, 0) != NULL) {  
+# ;    berger_main_gaul (argc-2, argv+2);
+# ;  } else 
+
+# ;  if (parse_read ("T", argc, argv, 0) != NULL) {
+# ;    heat_main (argc, argv);
+# ;  } else 
+# ;  if (parse_read ("O", argc, argv, 0) != NULL) {
+# ;    onefun_main (argc, argv/* , 0 */);
+
+# ;  } else 
+# ;  if (parse_read ("K", argc, argv, 0) != NULL) {
+# ;    kdv_main (argc, argv);
+# ;  } else 
+# ;  if (parse_read ("W", argc, argv, 0) != NULL) {
+# ;    wave_main (argc, argv);
+# ;  } else 
+# ;  if (parse_read ("M", argc, argv, 0) != NULL) {
+# ;    mwave_main (argc, argv);
+# ;  } else 
+# ;  if (parse_read ("P", argc, argv, 0) != NULL) {
+# ;    razn_main (argc, argv);
+# ;    // tran_main (argc, argv); // уравнение переноса
+# ;  } else 
+
+# ;  if (parse_read ("H", argc, argv, 0) != NULL) {
+# ;    harmon_main (argc, argv);
+# ;  } else 
+
+# ;  if (parse_read ("L", argc, argv, 0) != NULL) {
+# ;    laplas_main (argc, argv/* , 0 */);
+# ;  } else 
+
+# ;  // ----------------------------------------------
+# ;  if (parse_read ("plot", argc, argv, 0) != NULL) {
+# ;    minfunc_info_print_ (argc-2, argv+2);
+# ;  } else 
+# ;  // ----------------------------------------------
+# ;  {
+# ;    gazodin_main_main (TRUE, argc, argv);
+# ;  }
+# ;  // ----------------------------------------------
+
+# ;  fprintf (STD_ERR, "\n");
+# ;  return 1;
+# ;}
+# ;===============================================================================
+# ;// 
+# ;
+# ; - sl s~.cl SOLV gazdin_main  .. всe работаeт, кромe визи.
+
+# ;===============================================================================

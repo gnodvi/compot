@@ -1,0 +1,7 @@
+
+    = list {{integer 1} {integer 2}}
+    = [1 2]
+
+joy-rel-showstack: 
+2 1 
+

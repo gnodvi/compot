@@ -1,0 +1,26 @@
+
+ret = ::r
+
+::r.mem2 = 999
+
+::r.mem1 = 000
+
+::r.mem1 = HELLO
+
+::r.mem3 = 
+::r.mem3         = ::G_LIST_0
+NAME of ::r.mem3 = ::struct::record::myrecord::values(::r,mem3)
+NAME of ::r.mem3 = ::struct::record::myrecord::values(::r,mem3)
+
+mem3 = NIL NIL NIL NIL
+
+r.mem2   = 999
+r.mem3   = ::G_LIST_0 45555
+
+r.mem1 = HELLO
+r.mem2 = 999
+r.mem3 = 1 2 3
+
+NAME of ret.mem3 =  ::struct::record::myrecord::values(::r,mem3)
+r.mem3 = 1 2 3 45
+

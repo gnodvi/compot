@@ -1,0 +1,54 @@
+
+
+INIT POPULATION = 
+
+{RIGHT i i IF_FOOD_AHEAD nop i nop nop nop MOVE} MOVE {MOVE nop i} IF_FOOD_AHEAD {i i {i MOVE MOVE} i i} {MOVE IF_FOOD_AHEAD MOVE} {{RIGHT i}} {i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i} {{i i} MOVE RIGHT RIGHT nop RIGHT MOVE} {{MOVE IF_FOOD_AHEAD IF_FOOD_AHEAD RIGHT} i} 
+
+
+   1)  RIGHT i i IF_FOOD_AHEAD nop i nop nop nop MOVE
+   2)  MOVE
+   3)  MOVE nop i
+   4)  IF_FOOD_AHEAD
+   5)  i i {i MOVE MOVE} i i
+   6)  MOVE IF_FOOD_AHEAD MOVE
+   7)  {RIGHT i}
+   8)  i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i
+   9)  {i i} MOVE RIGHT RIGHT nop RIGHT MOVE
+  10)  {MOVE IF_FOOD_AHEAD IF_FOOD_AHEAD RIGHT} i
+
+
+
+
+   1)  fitn =  89 :   RIGHT i i IF_FOOD_AHEAD nop i nop nop nop MOVE
+   2)  fitn =  79 :   MOVE
+   3)  fitn =  79 :   MOVE nop i
+   4)  fitn =  89 :   IF_FOOD_AHEAD
+   5)  fitn =  79 :   i i {i MOVE MOVE} i i
+   6)  fitn =  79 :   MOVE IF_FOOD_AHEAD MOVE
+   7)  fitn =  89 :   {RIGHT i}
+   8)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i
+   9)  fitn =  88 :   {i i} MOVE RIGHT RIGHT nop RIGHT MOVE
+  10)  fitn =  88 :   {MOVE IF_FOOD_AHEAD IF_FOOD_AHEAD RIGHT} i
+
+================================================
+
+PRINT BEST: 'i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i' with fitness 57
+
+
+   1)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i
+   2)  fitn =  79 :   MOVE
+   3)  fitn =  79 :   MOVE nop i
+   4)  fitn =  79 :   MOVE
+   5)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i
+   6)  fitn =  79 :   i MOVE
+   7)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop IF_FOOD_AHEAD
+   8)  fitn =  79 :   MOVE
+   9)  fitn =  79 :   MOVE nop i
+  10)  fitn =  79 :   i i i {i MOVE MOVE} MOVE i i
+
+================================================
+
+PRINT BEST: 'i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i' with fitness 57
+
+
+

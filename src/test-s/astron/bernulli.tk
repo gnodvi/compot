@@ -1,0 +1,157 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk 
+
+#-------------------------------------------------------------------------------
+#http://blog.tcl.tk/22639
+
+#-------------------------------------------------------------------------------
+
+# GeoffM My derivation from Bernoulli.
+
+# I modified the basic plotf to handle multiple graphs, add a title, set colours
+# and other options. Then added a call to RungeKutta4 to solve the damped
+# harmonic oscillator equation (as an example).
+
+#-------------------------------------------------------------------------------
+
+package require Tk
+package require Plotchart
+  #console show
+
+  # plotf --
+  #     Convenience procedure to plot a function of one variable or
+  # call a user defined proc with arguments: 
+  #
+  # Arguments:
+  #     range       Range over which to plot the function (x-axis)
+  #     expression  Expression by which the function is defined
+  #                 (independent variable: t)
+  #
+  proc plotf {range expression args} {
+    # intial is the initial conditions
+    # nosteps - number of time steps to progress.
+    # args are arguments to be interpreted; currently
+    #  -title "XXX"
+    # -nosteps Number of steps to use
+
+    # Very simple for now: no parameters
+    set nosteps 100
+    foreach {name value} $args {
+        switch -- $name {
+            "-nosteps" {set nosteps $value}
+            "-initial" {set x $value}
+            default {}
+        }
+    }
+    
+    foreach {tmin tmax} $range {break}
+    set tstep [expr {($tmax-$tmin)/double($nosteps)}]
+
+    if { ![winfo exists .c] } {
+        pack [canvas .c]
+    } else {
+        .c delete all
+    }
+
+    set tvalues {}
+    set xvalues {}
+    set xmin    {}
+    set xmax    {}
+
+    for {set i 0} {$i < $nosteps+1} {incr i} {
+        set t [expr {$tmin + $i*$tstep}]
+        if {[info command $expression]!={}} {
+    # Note that RungeKutta expects start of time step as time
+            set x [$expression [expr {$t-$tstep}] $x $tstep]
+        } else {
+            set x [expr $expression]
+        }
+        lappend tvalues $t
+        lappend xvalues $x
+        if {$xmin=={}} {set nvalues [llength $x]}
+        foreach xvalu $x { ;# handle vector of results
+            if { $xmin == {} || $xvalu < $xmin } {
+                set xmin $xvalu
+            }
+            if { $xmax == {} || $xvalu > $xmax } {
+                set xmax $xvalu
+            }
+        }
+    }
+
+    set tscale [::Plotchart::determineScale $tmin $tmax]
+    set xscale [::Plotchart::determineScale $xmin $xmax]
+
+    set p [::Plotchart::createXYPlot .c $tscale $xscale]
+    set i 0
+    foreach {name value} $args {
+        switch -- $name {
+            "-title" { .c create text 200 50 -text $value }
+            "-colours" -
+            "-colors" {
+                set i 0
+                foreach col $value {
+                    $p dataconfig function$i -colour $col
+                    incr i
+                }
+            }
+            default {}
+        }
+    }
+    foreach t $tvalues x $xvalues {
+        set i 0
+        while {$i<$nvalues} { ;# handle vector of results
+            $p plot function$i $t [lindex $x $i]
+            incr i
+        }
+    }
+  }
+
+  # now define a runge-kutta- solver
+  package require math::calculus  ;# supplies RK4 algorithm
+  
+  proc dampened_oscillator {t xvec} { 
+    # called by RungeKuttaStep. Returns list of derivatives of xvec.
+        global damp
+        global k
+           set x  [lindex $xvec 0] ;# pos
+           set speed [lindex $xvec 1] ;# speed
+        # Solves the damped oscillator equation: x'' = -k*x-damp*speed
+        # where x is position, and x'' the second time derivative.
+        #  This equation is broken into 2 first order equations:
+        # dx/dt=v
+        # dv/dt= k.x-damp*speed
+        #   k is the 'spring constant' of the oscillator;
+        # more negative gives higher oscillation frequency.
+        # ::math::calculus::rungeKuttaStep expects to receive
+        # a list of derivatives at time t.
+           return [list $speed [expr {$k*$x-$damp*$speed}]]
+  }
+
+  proc osc {t x tstep} { ;# return the value at the time t+dt for step tstep
+    # x is a list of values (position, speed for the moving part)
+     return [::math::calculus::rungeKuttaStep $t $tstep $x dampened_oscillator]
+  }
+    set damp -0.2
+    set k -9
+    set ready 1
+    while {$damp<1.0} {
+        plotf {0 10} osc -initial {0 1} -nosteps 100 -title "Damping $damp" -colours {red blue}
+            set damp [expr {$damp+0.1}];
+        after 1000 {incr ready} ;# delays next solution
+        vwait ready
+  }
+
+#-------------------------------------------------------------------------------
+
+# AM Interesting - I have separated the GUI component from the computational
+# component to make sure that can be used separately. It would be possible to
+# merge this version with mine - but note that Tclode has much more sophisticated
+# methods than math::calculus does.
+
+#-------------------------------------------------------------------------------

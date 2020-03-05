@@ -1,0 +1,53 @@
+
+xbeg=  0  ti=  0  val= 0.3162 
+xbeg=  0  ti=  1  val= 0.4472 
+xbeg=  0  ti=  2  val= 0.5477 
+xbeg=  0  ti=  3  val= 0.6325 
+xbeg=  0  ti=  4  val= 0.7071 
+xbeg=  0  ti=  5  val= 0.7746 
+xbeg=  0  ti=  6  val= 0.8367 
+xbeg=  0  ti=  7  val= 0.8944 
+xbeg=  0  ti=  8  val= 0.9487 
+xbeg=  0  ti=  9  val= 1.0000 
+xbeg=  0  ti= 10  val= 1.0488 
+---------------------------------------------- 
+> <ProgName> "cmd_1" 
+
+xx=  10  dx= 0.100000  
+t0=   0  dt= 0.001000  
+
+  true ti=  0  r= 0.0  
+  calc "gsl_stopfun"  niters=  30  ti=  1  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  33  ti=  2  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  26  ti=  3  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  27  ti=  4  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  23  ti=  5  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  24  ti=  6  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  31  ti=  7  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  28  ti=  8  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  27  ti=  9  r= 0.00000000  t= 12345  
+  calc "gsl_stopfun"  niters=  31  ti= 10  r= 0.00000000  t= 12345  
+
+---------------------------------------------- 
+MINFUNC_PRINT:  "ThermoTest" (t = 10/10  rezi = 0.00000000) 
+!====================================================================!
+!+                                     ! T                           !
+!                                      !                             !
+!                                      !    0.00     0.316228        !
+!                                      !    0.10     0.015385        !
+!                                      !    0.20     0.000001        !
+!                                      !    0.30     0.000000        !
+!                                      !    0.40     0.000000        !
+!                                      !    0.50     0.000000        !
+!                                      !    0.60     0.000000        !
+!                                      !    0.70     0.000000        !
+!                                      !    0.80     0.000000        !
+!                                      !    0.90     0.000000        !
+!                                      !    1.00     0.000000        !
+!                                      !                             !
+!                                      !                             !
+!                                      !                             !
+!    +                                 !                             !
+!       +   +   +  +   +   +   +  +   +!                             !
+!====================================================================!
+Command: 

@@ -1,0 +1,282 @@
+#!/bin/sh
+# \
+exec wish "$0" "$@"
+#-------------------------------------------------------------------------------
+
+# #! /usr/bin/wish
+# #
+# # This script generates the Mandelbrot set in a
+# # Tk photo image, and displays it.
+
+set MandelColorMap {white white lightgray gray pink orange lightyellow
+	lightgreen lightblue blue violet red black}
+
+proc FormatColor {r g b} {
+    return [format "#%02x%02x%02x" $r $g $b]
+}
+
+proc MakeMandelColor {rMin gMin bMin b0 Lg1 Lr Lg2 L} {
+    if {$L < $Lg1} {
+	set r [expr {int(0.5 + $rMin + $L*(255.0 - $rMin)/$Lr)}]
+	set b [expr {int(0.5 + $b0 + $L*($bMin - $b0)/$Lr)}]
+	return [FormatColor $r $gMin $b]
+    }
+
+    if {$L < $Lr} {
+	set r [expr {int(0.5 + $rMin + $L*(255.0 - $rMin)/$Lr)}]
+	set g [expr {int(0.5 + $gMin + ($L - $Lg1)*(255.0 - $gMin)/($Lg2 - $Lg1))}]
+	set b [expr {int(0.5 + $b0 + $L*($bMin - $b0)/$Lr)}]
+	return [FormatColor $r $g $b]
+    }
+
+    if {$L < $Lg2} {
+	set g [expr {int(0.5 + $gMin + ($L - $Lg1)*(255.0 - $gMin)/($Lg2 - $Lg1))}]
+	set b [expr {int(0.5 + $bMin + ($L - $Lr)*(255.0 - $bMin)/(1 - $Lr))}]
+	return [FormatColor 255 $g $b]
+    }
+
+    if {$L <= 1.0} {
+	set b [expr {int(0.5 + $bMin + ($L - $Lr)*(255.0 - $bMin)/(1 - $Lr))}]
+	return [FormatColor 255 255 $b]
+    }
+
+    return "#ffffff"
+}
+
+proc MakeMandel {image xMin yMin xMax yMax {update 0}} {
+    global MandelColorMap
+
+    set tcl_precision 17
+
+    set maxIters 50
+
+    # Find the image size.
+
+    set imWidth [image width $image]
+    set imHeight [image height $image]
+
+    # Figure out scale factors that convert from pixel
+    # locations to (x,y) coordinates.
+
+    set xScale [expr {($xMax - $xMin)/($imWidth - 1.0)}]
+    set yScale [expr {($yMin - $yMax)/($imHeight - 1.0)}]
+
+    # Make the color map.
+
+    set MandelColorMap {}
+    for {set i 0} {$i < $maxIters} {incr i} {
+	set l [expr {1.0*$i/$maxIters}]
+	lappend MandelColorMap [MakeMandelColor 30 30 30 100 0.2 0.8 0.9 $l]
+    }
+    lappend MandelColorMap "#000000"
+
+    # Generate each pixel.
+
+    for {set row 0; set row1 1} {$row < $imHeight} {incr row; incr row1} {
+	set y [expr {$yMax + $row*$yScale}]
+	for {set col 0; set col1 1} {$col < $imWidth} {incr col; incr col1} {
+	    set x [expr {$xMin + $col*$xScale}]
+	    set nIters [MandelIter $x $y $maxIters]
+	    if {$nIters >= $maxIters} {
+		set color [lindex $MandelColorMap end]
+	    } else {
+		set color [lindex $MandelColorMap $nIters]
+	    }
+	    $image put $color -to $col $row $col1 $row1
+	}
+	if {$update} {
+	    update
+	}
+    }
+}
+
+# MandelIter performs the iteration z(n+1) = z(n)^2 + c,
+# where z(0) = 0 and is the complex number x+iy. It stops
+# when either 1) the number of iterations exceeds "maxIters",
+# or 2) when the magnitude of z(n) exceeds 2.
+
+proc MandelIter {x y {maxIters 50}} {
+    set tcl_precision 17
+
+    set nIters 0
+    set zx $x
+    set zy $y
+    while {$zx*$zx + $zy*$zy <= 4 && $nIters <= $maxIters} {
+	set prevX $zx
+	set prevY $zy
+	set zx [expr {$prevX*$prevX - $prevY*$prevY + $x}]
+	set zy [expr {2.0*$prevX*$prevY + $y}]
+	incr nIters
+    }
+    return $nIters
+}
+
+proc MandelDisp {parent xMin yMin xMax yMax w h} {
+    global imgCount
+    global XMin YMin XMax YMax
+
+    # Fix for root window.
+
+    if {[string compare $parent "."] == 0} {
+	set parent ""
+    }
+
+    # Make the display canvas.
+
+    set canv $parent.canv
+    canvas $canv -width $w -height $h
+    grid $canv -row 0 -column 0
+
+    # Make the display image, and put it on the canvas.
+
+    incr imgCount
+    set mandelImg mandel$imgCount
+    image create photo $mandelImg -width $w -height $h
+    $canv create image 0 0 -image $mandelImg -anchor nw
+
+    # Make the Mandelbrot set.
+
+    $canv configure -cursor watch
+    MakeMandel $mandelImg $xMin $yMin $xMax $yMax 1
+    $canv configure -cursor {}
+
+    # Bind things so that we can sweep out a new view.
+
+    set XMin($canv) $xMin
+    set YMin($canv) $yMin
+    set XMax($canv) $xMax
+    set YMax($canv) $yMax
+
+    bind $canv <ButtonPress-1> [list StartSweep $canv %x %y]
+    bind $canv <Button1-Motion> [list Sweep $canv %x %y]
+    bind $canv <ButtonRelease-1> [list EndSweep $canv %x %y]
+}
+
+proc StartSweep {canv c r} {
+    global C1 C2 R1 R2
+
+    set C1($canv) $c
+    set R1($canv) $r
+    set C2($canv) $c
+    set R2($canv) $r
+
+    $canv create rectangle $c $r $c $r -tags sweep -outline white
+}
+
+proc Sweep {canv c r} {
+    global C1 C2 R1 R2
+
+    set C2($canv) $c
+    set R2($canv) $r
+
+    $canv coords sweep $C1($canv) $R1($canv) $C2($canv) $R2($canv)
+}
+
+proc EndSweep {canv c r} {
+    global C1 C2 R1 R2
+    global XMin XMax YMin YMax
+    global ws
+
+    set tcl_precision 17
+
+    set C2($canv) $c
+    set R2($canv) $r
+
+    # Don't need the sweep rectangle anymore.
+
+    $canv delete sweep
+
+    # Compute coords for new view.
+
+    set w [winfo width $canv]
+    set h [winfo height $canv]
+
+    set newXMin [expr {$XMin($canv) + \
+		($C1($canv)/($w - 1.0))*($XMax($canv) - $XMin($canv))}]
+    set newYMin [expr {$YMax($canv) + \
+		($R1($canv)/($h - 1.0))*($XMin($canv) - $XMax($canv))}]
+    set newXMax [expr {$XMin($canv) + \
+		($C2($canv)/($w - 1.0))*($XMax($canv) - $XMin($canv))}]
+    set newYMax [expr {$YMax($canv) + \
+		($R2($canv)/($h - 1.0))*($XMin($canv) - $XMax($canv))}]
+
+    if {$newXMin > $newXMax} {
+	set tmp $newXMin
+	set newXMin $newXMax
+	set newXMax $tmp
+    }
+
+    if {$newYMin > $newYMax} {
+	set tmp $newYMin
+	set newYMin $newYMax
+	set newYMax $tmp
+    }
+
+    # Get the window size.
+
+    set n 1
+    set basename ".ws"
+    set tlname "$basename$n"
+    while {[winfo exists $tlname]} {
+	incr n
+	set tlname "$basename$n"
+    }
+    toplevel $tlname
+
+    set ws($canv) 240
+    set maxSize 600
+    scale $tlname.scale -from 20 -to $maxSize -orient horizontal \
+		-label "Window Size" -showvalue 1 -variable "ws($canv)"
+    grid  $tlname.scale -row 0 -column 0 -columnspan 2
+
+    button $tlname.accept -text "Accept" \
+		-command [list AcceptWinSize $canv $tlname \
+				$newXMin $newYMin $newXMax $newYMax]
+    button $tlname.cancel -text "Cancel" -command [list destroy $tlname]
+
+    grid $tlname.accept -row 1 -column 0
+    grid $tlname.cancel -row 1 -column 1
+
+}
+
+proc AcceptWinSize {canv tlname xMin yMin xMax yMax} {
+    global ws
+    global imgCount
+
+    destroy $tlname
+
+    # Get the window size.
+
+    set winSize $ws($canv)
+    unset ws($canv)
+
+    set xDiff [expr {$xMax - $xMin}]
+    set yDiff [expr {$yMax - $yMin}]
+
+    if {$xDiff > $yDiff} {
+	set w $winSize
+	set h [expr {int(0.5 + $winSize*$yDiff/$xDiff)}]
+    } else {
+	set h $winSize
+	set w [expr {int(0.5 + $winSize*$xDiff/$yDiff)}]
+    }
+
+    # Make the new window.
+
+    set tlname .md$imgCount
+    toplevel $tlname
+    MandelDisp $tlname $xMin $yMin $xMax $yMax $w $h
+}
+
+
+#################################
+#				#
+#	MAIN PROGRAM		#
+#				#
+#################################
+
+# imgCount counts the number of (possibly zoomed) images created.
+
+set imgCount 0
+MandelDisp . -2 -2 2 2 120 120
+

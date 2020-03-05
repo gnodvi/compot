@@ -1,0 +1,218 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun pole_create_doit_tabl (pol flag_is_no)
+
+(let (
+  (doit_tabl_NO (list
+                 (list '(0 0) '(NO)   )
+                 (list '(0 1) '(LEFT) )
+                 (list '(1 0) '(RIGHT))
+                 (list '(1 1) '(MOVE) )
+                 ))
+  (doit_tabl (list
+                 (list '(0 1) '(LEFT) )
+                 (list '(1 0) '(RIGHT))
+                 (list '(1 1) '(MOVE) )
+                 ))
+  )
+
+  (setf (GAME-ifs pol) (list '(NOT (IF-FOOD)) '(IF-FOOD) ))
+
+  (if flag_is_NO
+      (progn (setf *doit_tabl* doit_tabl_NO))
+      (progn (setf *doit_tabl* doit_tabl))
+      )
+
+  (setf *num_bits_for_doit* 2)
+  (setf (GAME-mvs pol) (get_mvs_from_doittabl  *doit_tabl*))
+
+  pol
+))
+;-------------------------------------------------------------------------------
+(defun pole_create (array_make &optional flag_is_no)
+
+(let (
+  (pol  (pole_create_ array_make))
+  )
+
+  (pole_create_doit_tabl  pol flag_is_no) ; для AMAT только ?
+
+  pol
+))
+;-------------------------------------------------------------------------------
+(defun pole_create_init (array_make)
+
+(let (
+  (pol  (pole_create  array_make))
+  )
+  
+  (pole_init  pol)
+
+  pol
+))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun IF-FOOD ()
+
+  (pole_is_dir_food *gameptr*)
+
+)
+;-------------------------------------------------------------------------------
+(defun make_amat_shalito ()
+
+(let (
+  (am  (anet_create))
+  (l_  (list
+        
+  '(0 4  (     IF-FOOD)  (MOVE))
+  '(0 2  (NOT (IF-FOOD)) (RIGHT))
+
+  '(1 3  (     IF-FOOD)  (MOVE))
+  '(1 0  (NOT (IF-FOOD)) (MOVE))
+
+  '(2 6  (     IF-FOOD)  (MOVE))
+  '(2 4  (NOT (IF-FOOD)) (RIGHT))
+
+  '(3 4  (     IF-FOOD)  (MOVE))
+  '(3 1  (NOT (IF-FOOD)) (MOVE))
+
+  '(4 1  (     IF-FOOD)  (MOVE))
+  '(4 5  (NOT (IF-FOOD)) (RIGHT))
+
+  '(5 6  (     IF-FOOD)  (MOVE))
+  '(5 1  (NOT (IF-FOOD)) (LEFT))
+
+  '(6 1  (     IF-FOOD)  (MOVE))
+  '(6 3  (NOT (IF-FOOD)) (MOVE))
+  ))
+  )
+
+  (make_am_from_l_init am l_)
+
+  am
+))
+;-------------------------------------------------------------------------------
+(defun ant_test_new (argus) (declare (ignore argus))
+
+(let* (
+  (am  (make_amat_shalito))
+  )
+
+  (pole_create_init  'arr_make_2)
+
+  (anet_print am)
+  (format t "~%")
+  (fint_do_step_s  am 200)
+
+  (game_print)
+
+))
+;-------------------------------------------------------------------------------
+; cl r~.cl ANTD ant_test_new
+
+;-------------------------------------------------------------------------------
+(defun testant_create_init ()
+
+  (pole_create_init 'arr_make_2)
+
+)
+;-------------------------------------------------------------------------------
+(defun testant_calc (gameptr am) (declare (ignore gameptr))
+
+(let* (
+  (fit  (fint_do_step_s  am 200))
+  (fitness (/ 1.0 (+ 1 fit))) ;  здесь ищем обратное , т.е. минимальное значение
+  )
+
+  (values  fitness fit)
+))
+;-------------------------------------------------------------------------------
+;
+; 0 - LEFT
+; 1 - RIGHT
+; 2 - MOVE
+;-------------------------------------------------------------------------------
+(defun ant_t1 (argus)
+
+(let* (
+  (arr_make  'arr_make_2)
+  (num_steps 15)
+  genomo
+
+; (genomo  '(0 0) ; нет еды - идет налево
+;           (1 2) ; нет еды - идет прямо
+; вообще-то соответствие может быть разным !
+
+  (gameptr  (pole_create_init  arr_make))
+  )
+
+  (if (=  (list-length argus) 0)
+    ;;----------------------------
+    (setf genomo '((0 0) (1 2)) )
+    ;;----------------------------
+    
+    (progn 
+      (format t "argus= ~a ~%" argus)
+      (format t "type-of argus= ~a ~%" (type-of argus))
+      (setf genomo (nth 0 argus))
+      )
+    )
+
+  (game_for_genomo gameptr genomo num_steps)
+
+))
+;-------------------------------------------------------------------------------
+(defun ant_perebor (argus)
+
+(let* (
+  (arr_make   (read-from-string  (nth 0 argus)))
+  (num_states (parse-integer     (nth 1 argus)))
+  
+  (pol  (pole_create  arr_make))
+  )
+
+  (genomo_perebor_and_calc_best  pol num_states
+                                 'pole_init
+                                 'testant_calc)
+
+))
+;-------------------------------------------------------------------------------
+(defun ant_test_old (argus)
+
+(let* (
+  (steps   (parse-integer (nth 0 argus)))
+  ; (ant ant_shalito)
+  (ant  ant_tsarev_83g)
+  ; (ant ant_tsarev_85g)
+  )
+
+  (game_do_eval_steps  ant steps)
+
+))
+;-------------------------------------------------------------------------------
+;  GENA   GENA   GENA   GENA   GENA   
+;
+; - кодировать автоматы 3-мя хромосомами (+ нач. сост.) ant_ga.pdf
+; - при эволюции использ. инфу об активности отдельных генов (переходов)
+;-------------------------------------------------------------------------------
+(defun ant_test_ga (argus)
+
+(let* (
+  (pol  (pole_create  'arr_make_2 t))
+  )
+
+  (main_amat_test_ga  pol argus
+                      'pole_init
+                      'testant_calc
+                      )
+
+))
+;-------------------------------------------------------------------------------
+;
+; cl u~.cl ANTS ant_test_new
+; cl u~.cl ANTS ant_t1
+;
+;
+;;;=============================================================================

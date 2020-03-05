@@ -1,0 +1,19 @@
+
+TEST_lnew ...
+
+
+run_v2_src: PRG =  BEG 1 BEG 2 3 END END  dup 
+
+stack= |                           |  instr= BEG  
+stack= |                       BEG |  instr= 1  
+stack= |                     BEG 1 |  instr= BEG  
+stack= |                 BEG 1 BEG |  instr= 2  
+stack= |               BEG 1 BEG 2 |  instr= 3  
+stack= |             BEG 1 BEG 2 3 |  instr= END  
+stack= |         BEG 1 BEG 2 3 END |  instr= END  
+stack= |     BEG 1 BEG 2 3 END END |  instr= dup  
+stack= | BEG 1 BEG 2 3 END END BEG 1 BEG 2 3 END END |  instr=   
+
+::joy_ST = BEG 1 BEG 2 3 END END BEG 1 BEG 2 3 END END
+
+

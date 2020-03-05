@@ -1,0 +1,52 @@
+
+testproc_metaswitch_regex  value = a : MATCHED #a,#b,#c
+testproc_metaswitch_regex  value = b : MATCHED #a,#b,#c
+testproc_metaswitch_regex  value = c : MATCHED #a,#b,#c
+testproc_metaswitch_regex  value = d : MATCHED  default
+
+
+------------------------------------------------
+metaswitch_exact  value = a : 
+------------------------------------------------
+
+MATCHED #a
+
+------------------------------------------------
+metaswitch_exact  value = b : 
+------------------------------------------------
+
+MATCHED #b,#c,#d
+
+------------------------------------------------
+metaswitch_exact  value = c : 
+------------------------------------------------
+
+MATCHED #b,#c,#d
+
+------------------------------------------------
+metaswitch_exact  value = d : 
+------------------------------------------------
+
+MATCHED #b,#c,#d
+
+------------------------------------------------
+metaswitch_exact  value = e : 
+------------------------------------------------
+
+MATCHED #e ................. 
+
+ 
+MATCHED #e,#f
+
+------------------------------------------------
+metaswitch_exact  value = f : 
+------------------------------------------------
+
+MATCHED #e,#f
+
+------------------------------------------------
+metaswitch_exact  value = z : 
+------------------------------------------------
+
+MATCHED  default
+

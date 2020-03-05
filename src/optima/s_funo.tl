@@ -1,0 +1,756 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ------------------------------------------
+
+
+#===============================================================================
+# *                                                                            *
+# *  Имя этого файла: s_funo.c                                                 *
+# *                                                                            *
+# ------------------------------------------------------------------------------
+                                                                             
+# ;#include "a_comm.h"
+# ;#include "a_plot.h"
+
+# ;#include "m_corp.h"  
+# ;#include "m_fgsl.h" 
+
+# ;#include "gaul.h" 
+# ;#include "m_gaul.h" 
+
+# ;#include "s_func.h"
+
+# ;===============================================================================
+
+# ;typedef struct {
+# ;  char *fname;
+# ;  double   f0;
+# ;} YT_ODESET;
+
+# ;/*----------------------------------*/ 
+
+# ;double t, y[5], y_t[5], FF[5], rezi;
+
+set  ::y   [list_make 5]
+set  ::y_t [list_make 5]
+set  ::FF  [list_make 5]
+# (defvar rezi)
+
+proc y_1 {} {return [lindex $::y 0]} ;# define y1  y[0]
+proc y_2 {} {return [lindex $::y 1]} ;# define y2  y[1]
+proc y_3 {} {return [lindex $::y 2]} ;# (defmacro y_3 () `(nth 2 y)) ;#define y3  y[2]
+
+# ;#define y1_t  y_t[0]
+# ;#define y2_t  y_t[1]
+# ;#define y3_t  y_t[2]
+
+# (defmacro F1 () `(nth 0 FF)) ;#define F1  FF[0]
+# (defmacro F2 () `(nth 1 FF)) ;#define F2  FF[1]
+# (defmacro F3 () `(nth 2 FF)) ;#define F3  FF[2]
+
+proc F1_get {} {return [lindex $::FF 0]} ;#define F1  FF[0]
+proc F2_get {} {return [lindex $::FF 1]} ;#define F1  FF[0]
+proc F3_get {} {return [lindex $::FF 2]} ;#define F1  FF[0]
+ 
+proc F1_set {val} {lset ::FF 0  $val} 
+proc F2_set {val} {lset ::FF 1  $val} 
+proc F3_set {val} {lset ::FF 2  $val} 
+ 
+
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# (defun ode_sets (
+#        pname     ; char *pname, 
+#        o         ; void *o, 
+#        sets      ; YT_ODESET *sets, 
+#        tt        ; int tt, 
+#        dt        ; double dt, 
+#        calc_rezi ; FUN_REZI calc_rezi
+#        )
+
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+proc ode_sets {pname \
+       o         \
+       sets      \
+       tt        \
+       dt        \
+       calc_rezi \
+               } {
+
+  # (let (
+  set of  $o ;#  YT_ONEFUN *of = (YT_ONEFUN *) o;
+  # ;  YT_ODESET  p;
+  #   fnum i ;  int i, fnum;
+  
+  #   minfunc
+  #   )
+  
+  #   ;(format t "ode_sets .. ~%")
+  
+  # ;  for (i=0; TRUE; i++) {
+  # ;    p= sets[i];
+  # ;    if (p.fname == NULL) break;
+  # ;  }
+  # ;  fnum = i;
+  
+  #   ;(setf fnum 1) ; пока так по-простому
+  set fnum [list-length $sets] 
+  
+  # ;  YT_MINFUNC *minfunc = minfunc_create (fnum, /* "3subs-Test" */pname, 
+  # ;                            /* xmin */0, /* xmax */0, /* xnum */1);
+  
+  set minfunc [minfunc_create  $fnum $pname  \
+                 0      \
+                 0      \
+                 1      \
+                ]
+
+  #  pname ; /* "3subs-Test" */
+  #  0     ; /* xmin */ 
+  #  0     ; /* xmax */ 
+  #  1     ; /* xnum */
+  #        ))
+  
+  set i 0
+
+  # идeм по списку списков
+  # 
+  foreach  p $sets { 
+
+    puts "p= $p"
+
+    minfunc_named  $i $minfunc [first $p]
+    minfunc_put    $i $minfunc 0 0 [second $p]  ;# fi minfunc xi ti  p.f0
+
+    incf i
+  }
+  
+  $of.TT = $tt ;#  of->tt = tt;
+  $of.DT = $dt ;#  of->dt = dt;
+  
+  minfun_add_rezi  $minfunc $calc_rezi $of   
+  
+
+  return $minfunc ;#  return (minfunc);
+}
+# ;-------------------------------------------------------------------------------
+# ;void
+proc ode_rezi_beg {fnum mf xyz   &y &y_t} {
+
+  #USE_REFS
+  upvar ${&y}   y
+  upvar ${&y_t} y_t
+
+  #            y    ; double  y[], 
+  #            y_t  ; double  y_t[]
+    
+  set minfunc $mf  ;#  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+  set xi       0   ;#  int     xi=0, ti = TI;
+  set ti    [TI_get]
+  
+  dotimes  fi $fnum {
+
+    set t_1 [expr {$ti - 1}]
+
+    lset y   $fi  [FVAL_get $ti $fi $xi]
+
+    lset y_t $fi  [expr {([FVAL_get $ti $fi $xi] - [FVAL_get $t_1 $fi $xi]) /  [TSTEP_get] }]
+  }
+  
+  # ;*t = TVAL(TI);
+  
+  return [TVAL_get [TI_get]]
+}
+# ;-------------------------------------------------------------------------------
+# ;double
+# (defun ode_rezi_end (
+#            fnum ; int fnum, 
+#            ; double y[], 
+#            ; double y_t[], 
+#            ; double FF[]
+#            )
+
+# ;-------------------------------------------------------------------------------
+# ;double
+proc  ode_rezi_end {fnum} {
+
+  # (let (
+  # ;  int fi;
+  #   r ;  double r[5], sum = 0;
+  set sum 0
+  #   )
+  
+  # ;  for (fi=0; fi<fnum; fi++) {}
+  dotimes  fi $fnum {
+
+    # ;    r[fi] = y_t[fi] - FF[fi];
+    # ;    sum += (r[fi] * r[fi]);
+
+    set r [expr {[lindex $::y_t $fi]  - [lindex $::FF $fi] }]
+    incf sum [expr {$r * $r}]
+  }
+  
+  #   (sqrt sum)
+  return [expr {sqrt ($sum)}]
+}
+# ;-------------------------------------------------------------------------------
+# 
+# Уравнение Ван-дер-Поля : 
+#  
+# характеризуется тем, что в зависимости от значения 
+# параметра "мю" оно имеет разную степень жесткости и в связи с этим часто 
+# используется для тестирования численных решений;
+#  
+# Коткин, Черкасский 
+# "Комп. мод. физ. процессов с использованием MATLAB", стр.84
+
+# ОДУ:
+#
+# y" - mu * (1 - y^2) * y' + y = 0 , mu > 0
+#
+# ;-------------------------------------------------------------------------------
+# ;// 
+# ;-------------------------------------------------------------------------------
+
+# (defmacro  y_i    ()  `(nth xi y   ))
+# (defmacro  y_x_i  ()  `(nth xi y_x ))
+# (defmacro  y_xx_i ()  `(nth xi y_xx))
+
+# ;-------------------------------------------------------------------------------
+# ;double
+# (defun static_calc_VDP (
+#        minfunc ; void   *mf, 
+#        xyz     ; double *xyz
+#        )
+
+# (declare (ignore xyz))
+
+# (let (
+# ;  YT_MINFUNC *minfunc = (YT_MINFUNC *) mf;
+#   (ti (TI)) ;  int     xi, ti = TI;
+# ;  double  y[1000], y_x[1000], y_xx[1000]; // ?? !!
+#   (y    (make-list 1000))
+#   (y_x  (make-list 1000))
+#   (y_xx (make-list 1000))
+
+#   r 
+#   (rezi 0.0)
+#   )
+
+#   ;(format *error-output* "static_calc_VDP ... 1 ~%")
+
+# ;  // формируем массив исходной функции
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {    
+#   (loop for xi from X_BEG to (X_END) do
+# ;    y[xi] = Fun(xi, ti);
+#     (setf (nth xi y)  (Fun_ xi ti))
+#     )
+# ;  }
+
+# ;  // 1-я производная
+#   (make_diff_r  minfunc y    y_x)
+  
+# ;  // 2-я производная
+#   (make_diff_r  minfunc y_x y_xx)
+
+# ;  //  а теперь считаем всю невязку:
+# ;  double  r, rezi  = 0;
+
+#   ;(format *error-output* "static_calc_VDP ... 2 ~%")
+
+# ;  for (xi=X_BEG; xi <= X_END; xi++) {   
+#   (loop for xi from X_BEG to (X_END) do
+ 
+# ;    r = y_xx[xi] - 1 * (1 - (y[xi] * y[xi])) * y_x[xi] + y[xi];
+#     (setf r (+ (y_xx_i) (- (* (- 1 (* (y_i) (y_i))) (y_x_i))) (y_i)))
+
+#     (incf rezi (* r r))
+#     )
+
+#   ;(format *error-output* "static_calc_VDP ... 3 ~%")
+
+#   (setf rezi (sqrt rezi))
+
+#   rezi ;  return (rezi);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;void
+# (defun botgslspusk_VDP_data (
+#        bot  ; void *self, 
+#        mp   ; void *mp
+#        )
+
+# (let (
+# ;  YT_MINBOT *bot = (YT_MINBOT *) self;
+#   (stop_func (D1 bot)) ;  double     stop_func =  bot->d1; //!!
+
+#   (conjugate_bfgs_type  (make_fdfminimizer_type 
+#                        "conjugate_bfgs"                        
+#                        'XXX_CONJUGATE_STATE_T ; sizeof (xxx_conjugate_state_t),
+#                        #'vector_bfgs_alloc
+#                        #'vector_bfgs_set 
+#                        #'vector_bfgs_iterate
+#                        ;;  &xxx_conjugate_restart,
+#                        ;;  &vector_bfgs_free
+#                        ))
+#   )
+
+#   (setf (V_PARAM bot) (gslspusk_create))  ;  bot->v_param = gslspusk_create ();
+
+#   (gslspusk_set 
+#                  (V_PARAM bot) ;bot->v_param, 
+#                  0.00000001 ;TRUE, 0.00000001, //FALSE, 0.000001, 
+
+#                  conjugate_bfgs_type  ;gsl_multimin_fdfminimizer_vector_bfgs,
+#                  0.01d0 ;/* размер первого пробного шага  */ 0.01, 
+#                  0.01d0 ;/* точность линейной минимизации */ 0.01, 
+
+#                  ;//        критерии останова :::::::
+#                  0.000001    ;/* по норме градиента     */ /* 0.01 */ 0.000001,  // уменьшил сильно!!
+#                  100000      ;/* по количеству итераций */ /* 5000 */ 100000 ,
+#                  stop_func t ;/* по значению функции    */ stop_func, TRUE //???!!!
+#                  )
+
+# ;  //---------------------------------
+#   (setf (MINPROC bot) mp) ;  bot->minproc = (YT_MINPROC *) mp;
+
+# ))
+# ;-------------------------------------------------------------------------------
+# ;YT_MINBOT *
+# (defun y_VDP_mbot (o) 
+
+# (let* (
+# ;  //YT_ONEFUN  *of = (YT_ONEFUN *) o;
+#   (of o)
+#   (stop_func 0.001) ;  double  stop_func =  /* 0.0001 */ 0.001;
+
+# ;  YT_MINBOT *mbot = minbot_make ("", NULL,
+#   (mbot  (minbot_make "" NIL
+#                       'botgslspusk_VDP_data  'botgslspusk_4_todo  0 0 0 
+#                       stop_func))
+#   )
+
+#   ;(format t "y_VDP_mbot ..... SOLV_INIT .. ~%")
+#   ;; *** - SLOT-VALUE: The slot TT of #<YT_ONEFUN #x000333C3CBB8> has no value
+#   (setf (TT of) 0) ; здeсь что-ли установить заглушки-нули?
+#   (setf (DT of) 0) 
+
+#   mbot ;  return (mbot);
+# ))
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# (defun y_VDP_init (o)
+
+# (let* (
+#   (of  o) ;  YT_ONEFUN  *of = (YT_ONEFUN *) o;
+#   ;  YT_MINFUNC *minfunc ;
+
+#   (num  31) ;  int   num = /*  21 */  31;
+#   (f0  100) ;  double f0 = /* 0.1 */ 100;
+
+#   (minfunc  (onefun_minfunc  num 0.0 20.0))
+#   )
+
+# ;  int  xi;
+# ;  for (xi=0; xi < XNUM; xi++) {
+#   (dotimes (xi (XNUM))
+# ;    double f = f0;
+# ;    minfunc_put (/* fi */0, minfunc, xi, /* ti */0, f);
+#     (minfunc_put 0 minfunc xi 0 f0)
+#     )
+# ;  }
+
+# ;  // дополнительое условие 
+# ;  minfunc_t0_fix (0, minfunc, X_BEG,   f0); 
+# ;  minfunc_t0_fix (0, minfunc, X_BEG+1, f0); // моделируем задание производной !!
+#   (minfunc_t0_fix  0 minfunc     X_BEG  f0)
+#   (minfunc_t0_fix  0 minfunc (1+ X_BEG) f0)
+
+# ;  minfun_add_rezi (minfunc, static_calc_VDP, of);   
+#   (minfun_add_rezi  minfunc 'static_calc_VDP of)   
+
+#   ;(format t "y_VDP_init ..... 9 ~%")
+
+#   minfunc ;  return (minfunc);
+# ))
+# ;===============================================================================
+# ;-------------------------------------------------------------------------------
+# ;double
+proc keldysh_test_calc {mf xyz} {
+
+  set mu  200 ;#  double mu = /* 10 */ /* 30 */ /* 50 */ 200;  
+  set fnum  1
+  
+  # ;  ode_rezi_beg (fnum,  mf, xyz,  &t, y, y_t);
+  set tval [ode_rezi_beg   $fnum  $mf $xyz    ::y ::y_t] ;# ?? 
+  
+  # ;  F1 =  - mu * (y1 - cos(t));
+  F1_set [expr {- ($mu * ([y_1] - cos ($tval))) }]
+  
+  # ;  rezi = ode_rezi_end (fnum, y, y_t, FF); ; а зачeм пeрeдавать глобальныe ?
+
+  set rezi [ode_rezi_end  $fnum]
+  
+  return $rezi ;#  return (rezi);
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+proc keldysh_test_init {o} {
+
+
+  #   (sets (list '("y1" 1.0))) ; попробуeм список из списков
+
+  set sets [list {"y1" 1.0}] ;# попробуeм список из списков ???????
+  
+  set minfunc [ode_sets "keldysh_test" $o $sets  \
+                 10  0.1  \
+                 "keldysh_test_calc"]
+  
+  return $minfunc 
+}
+# ;===============================================================================
+# ;-------------------------------------------------------------------------------
+# ;double
+proc line_test_calc {mf xyz} {
+
+  # (let (
+  set fnum  1 ;#  int     fnum = 1;
+  #   ;tval 
+  #   )
+  
+  #   ;;  ode_rezi_beg (fnum,  mf, xyz,  &t, y, y_t);
+  
+  #   ;(setf tval ; &t - возвращаeм tval (а надо ли здeсь?)
+
+  ode_rezi_beg  $fnum  $mf $xyz  ::y ::y_t
+  #    ;     ) 
+  
+  #   (setf (F1) 1)
+  F1_set 1
+  
+  #   ;(setf rezi (ode_rezi_end  fnum y y_t FF)) ; а зачeм пeрeдавать глобальныe ?
+
+  set rezi [ode_rezi_end  $fnum]
+  
+  return $rezi
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+proc line_test_init {o} {
+
+  
+  #   (sets (list '("y1" 0.0)) ; попробуeм список из списков
+  #         )
+  
+  set sets [list {"y1" 1.0}]
+  
+  # ;  minfunc = ode_sets ("line_test", o, sets, 
+  # ;                      10,  0.1, 
+  # ;                      line_test_calc);
+  
+  #   (setf minfunc (ode_sets "line_test" 
+  #                           o ;nil ; o ; пока так врeмeнно
+  #                           sets 
+  #                           10  0.1 
+  #                           'line_test_calc))
+  
+  set minfunc [ode_sets "line_test" $o $sets  \
+                 10  0.1  \
+                 "line_test_calc"]
+
+  return $minfunc
+}
+# ;===============================================================================
+# ;// Cистема Ван дер Поля (matlab->help->ode)
+# ;-------------------------------------------------------------------------------
+# ;double
+proc vdp_calc {mf xyz} {
+
+  # (let (
+  set mu  1.0 ;#  double  mu = 1.0;
+  set fnum  2 ;#  int     fnum = 2;
+  #   )
+  
+  # ;  ode_rezi_beg (fnum,  mf, xyz,  &t, y, y_t);
+  ode_rezi_beg  $fnum   $mf  $xyz     ::y  ::y_t
+  
+  set y1 [y_1]
+  set y2 [y_2]
+
+  F1_set $y2                            ;#  F1 = y2;
+  F2_set [expr {($mu * (1 - ($y1 * $y1)) * $y2) - $y1 }]
+
+  #   ;;  F2 = (mu * (1- y1*y1) * y2 - y1);  
+  # ;  rezi = ode_rezi_end (fnum, y, y_t, FF);
+
+  set rezi [ode_rezi_end  $fnum]
+  
+  return $rezi
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+proc vdp_init {o} {
+
+  # (let (
+  #   minfunc ;  YT_MINFUNC *minfunc;
+  
+  # ;  YT_ODESET sets[] = {
+  
+  #   (sets (list 
+  #          '("y1" 0.0)
+  #          '("y2" 1.0)
+  #          ))
+  
+  set sets [list {"y1" 0.0} {"y2" 1.0}]
+  
+  set ::simp_random 1   ;# для точного сравнения с LISP 
+  #
+  # все точно, но раза в 3 медленее чем в Лиспе. Надо будет порешать этот вопрс !!
+
+  # ;    {"y1", 0}, 
+  # ;    {"y2", 1}, 
+  # ;    {NULL} 
+  # ;  };
+  #   )
+  
+  #   ;(format t "vdp_init .. ~%")
+  
+  #   (setf minfunc (ode_sets "vdp-Test" o sets 
+  #                       100 ; /* 300 */ 
+  #                       0.1 
+  #                       'vdp_calc))
+  
+  set minfunc [ode_sets "vdp-Test" $o $sets  \
+                 100  0.1  \
+                 "vdp_calc"]
+
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;vdp_init_20 (void *o)
+# ;{
+# ;  YT_MINFUNC *minfunc;
+# ;  YT_ODESET sets[] = {
+# ;    {"y1", /* 0 */ 2}, 
+# ;    {"y2", /* 1 */ 0}, 
+# ;    {NULL} 
+# ;  };
+# ;  minfunc = ode_sets ("vdp-Test", o, sets, 
+# ;                      200,  0.1, 
+# ;                      vdp_calc);
+# ;  return (minfunc);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;// Модель жесткого тела  (matlab->help->ode)
+# ;//
+# ;// Example 1. An example of a nonstiff system is the system of equations 
+# ;// describing the motion of a rigid body without
+# ;// external forces.
+# ;-------------------------------------------------------------------------------
+# ;double
+proc rigidbody_calc {mf xyz} {
+
+  # (let (
+  set fnum  3
+  #   )
+  
+  # ;  ode_rezi_beg (fnum,  mf, xyz,  &t, y, y_t);
+  ode_rezi_beg  $fnum   $mf  $xyz       ::y  ::y_t
+  
+  set y1 [y_1]
+  set y2 [y_2]
+  set y3 [y_3]
+
+  F1_set [expr {   $y2 * $y3}]         ;#  F1 = + y2*y3;
+  F2_set [expr {- ($y1 * $y3)}]        ;#  F2 = - y1*y3;
+  F3_set [expr {- ($y1 * $y2 * 0.51)}] ;#  F3 = - y1*y2 * 0.51;
+  
+  # ;  rezi = ode_rezi_end (fnum, y, y_t, FF);
+  set rezi [ode_rezi_end  $fnum]
+  
+  return $rezi
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+proc rigidbody_init {o} {
+
+  # (let* (
+  # ;  YT_MINFUNC *minfunc;
+  
+  # ;  YT_ODESET sets[] = {
+
+  #   (sets (list 
+  #     '("y1"  0) 
+  #     '("y2"  1) 
+  #     '("y3"  1)
+  #     ))
+
+  set sets [list {"y1" 0} {"y2" 1}  {"y3" 1}]
+  
+  set ::simp_random 1   ;# для точного сравнения с LISP 
+
+  # ;    {NULL} 
+  # ;  };
+
+  #   (minfunc  (ode_sets "Rigidbody-Test"  o sets 
+  #                       100 0.1 ; /* 300 */100/* 10 */,  0.1, 
+  #                       'rigidbody_calc
+  #                       ))
+  #   )
+  
+  set minfunc [ode_sets "Rigidbody-Test" $o $sets  \
+                 100  0.1  \
+                 "rigidbody_calc"]
+
+  return $minfunc
+}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;rigidbody_init_12 (void *o)
+# ;{
+# ;  YT_MINFUNC *minfunc;
+# ;  YT_ODESET sets[] = {
+# ;    {"y1", 0}, 
+# ;    {"y2", 1}, 
+# ;    {"y3", 1},
+# ;    {NULL} 
+# ;  };
+# ;  minfunc = ode_sets ("Rigidbody-Test", o, sets, 
+# ;                      1200,  0.01, 
+# ;                      rigidbody_calc);
+# ;  return (minfunc);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;// Модель взаимодействия трех веществ (Робертсон, 1966)
+# ;// www.keldysh.ru
+# ;-------------------------------------------------------------------------------
+# ;double
+# ;subs3_calc (void *mf, double *xyz)
+# ;{
+# ;  int    fnum = 3;
+# ;  double y[5], y_t[5], FF[5], rezi;
+
+# ;  ode_rezi_beg (fnum,  mf, xyz,  &t, y, y_t);
+
+# ;  double  A, B, C;
+# ;  A =    0.1;
+# ;  B = 1000;
+# ;  C =  100;
+# ;/*   A =        0.05; */
+# ;/*   B =    10000; */
+# ;/*   C = 10000000; */
+
+# ;  F1 = -A*y1 + C*y2*y3;
+# ;  F2 =  A*y1 - C*y2*y3 - B*y2;
+# ;  F3 =  B*y2;
+
+# ;  rezi = ode_rezi_end (fnum, y, y_t, FF);
+
+# ;  return (rezi);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;subs3_init (void *o)
+# ;{
+
+# ;  YT_ODESET sets[] = {
+# ;    {"y1", 1}, 
+# ;    {"y2", 0.0001}, 
+# ;    {"y3", 0},
+# ;    {NULL} 
+# ;  };
+# ;  YT_MINFUNC *minfunc = ode_sets ("3subs-Test", o, sets, 
+# ;                                  /* 300 *//* 200 */ 20, 0.1, 
+# ;                                  subs3_calc);
+# ;  return (minfunc);
+# ;}
+# ;-------------------------------------------------------------------------------
+# ;YT_MINFUNC *
+# ;subs3_init_50 (void *o)
+# ;{
+
+# ;  YT_ODESET sets[] = {
+# ;    {"y1", 1}, 
+# ;    {"y2", 0.0001}, 
+# ;    {"y3", 0},
+# ;    {NULL} 
+# ;  };
+# ;  YT_MINFUNC *minfunc = ode_sets ("3subs-Test", o, sets, 
+# ;                                  500, 0.1, 
+# ;                                  subs3_calc);
+# ;  return (minfunc);
+# ;}
+# ;===============================================================================
+# ;
+# ;===============================================================================
+# ;void
+# ;u0_dynamic_main (int argc, char *argv[])
+# ;{
+# ;-------------------------------------------------------------------------------
+proc u0_dynamic_main {} {
+
+
+  #   (onefun_s (list
+  
+  #     '("0"  y_VDP_init   y_VDP_mbot)
+  
+  #     '("1"  line_test_init     NIL) ; // r = y_x - 1.0;  
+  #     '("2"  keldysh_test_init  NIL) ; // первый простой тест Келдышей
+  
+  #     '("3"  vdp_init           NIL) ; // система Ван-дер-Поля
+  #     '("4"  rigidbody_init     NIL)
+  # ;    { "5", subs3_init,         NULL},    // "химический" тест Келдышей
+  
+  # ;    // ---------------- тесты с почти хорошей точночтью
+  # ;    { "6", subs3_init_50,      NULL},    // 
+  # ;    { "7", rigidbody_init_12,  NULL},    //  
+  # ;    { "8", vdp_init_20,        NULL},    // 
+  
+  # ;    //---------------------------------------------------
+  # ;    // попробуем сделать GA-бот (теперь надо просто указывать '@')
+  # ;    //
+  # ;    //{"-1", line_test_init,  gaul_mbot},  // r = y_x - 1.0;  
+  # ;    //{"-3", vdp_init,        gaul_mbot},  // система Ван-дер-Поля
+  # ;    //
+  # ;    // вполне отличный результат !!
+  
+  #   )
+  
+  set onefun_s [list \
+                     \
+                  {"0"  y_VDP_init         y_VDP_mbot} \
+                  {"1"  line_test_init     "NIL"     } \
+                  {"2"  keldysh_test_init  "NIL"     } \
+                  {"3"  vdp_init           "NIL"     } \
+                  {"4"  rigidbody_init     "NIL"     } \
+              ]
+
+  onefun_main_calc $onefun_s
+  
+}
+# ;===============================================================================
+# ;// 
+# ;-------------------------------------------------------------------------------
+# ;int
+# ;main (int argc, char *argv[])
+# ;{
+
+# ;  fprintf (STDERR, "\n");
+	
+# ;  if (parse_read ("D", argc, argv, 0) != NULL) {
+# ;    u0_dynamic_main (argc, argv);
+# ;  } 
+
+# ;  fprintf (STDERR, "\n");
+# ;  return 1;
+# ;}
+# ;===============================================================================
+# ;// 
+# ;-------------------------------------------------------------------------------
+
+# ;// s_funo D 3 @
+# ;// solver plot -t
+
+# ;===============================================================================
+
+

@@ -1,0 +1,34 @@
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
+;===============================================================================
+
+(defconstant  FIND_SO  "T/x_find.so")
+
+
+#+SBCL (load-shared-object FIND_SO)
+
+#-SBCL
+(FFI:default-foreign-language :stdc)
+
+#-SBCL
+(FFI:DEF-CALL-OUT   c_all_tests
+                    (:library FIND_SO)
+                    (:name "all_tests")                     
+                    (:return-type NIL)
+                    )
+
+;-------------------------------------------------------------------------------
+(defun l_all_tests ()
+
+#+SBCL (alien-funcall (extern-alien "all_tests" (function void)))
+#-SBCL (c_all_tests)
+
+)
+;-------------------------------------------------------------------------------
+(defun find_main (argus) (declare (ignore argus))
+
+  (l_all_tests)
+
+)
+;===============================================================================

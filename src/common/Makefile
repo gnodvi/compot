@@ -1,0 +1,101 @@
+# -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
+#-------------------------------------------------------------------------------
+#  
+#-------------------------------------------------------------------------------
+
+MAIN_SRC_DIR = ../h
+
+include $(MAIN_SRC_DIR)/Make.mak
+
+#-------------------------------------------------------------------------------
+
+OPTIM = -O2 -fno-exceptions -Wall 
+
+GCC_ = LANG=C  gcc -x c 
+
+SOFT_DIR = $(HOME)/.MSOFT
+
+SYS_LIBS = -lm #-lsocket
+
+#----------------------------------------------
+
+CC = LANG=C gcc -g
+
+
+OPTIM = -fno-exceptions -Wall
+GCC   = LANG=C gcc -O2
+CPP   = c++ -O2
+FLAGS = $(OPTIM) -D_UNIX -D_ENG
+
+#-------------------------------------------------------------------------------
+
+GCC  = LANG=C  gcc -g
+
+#GNUPLOTI_DIR = P
+#GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
+#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
+
+#-------------------------------------------------------------------------------
+
+PROGS =  c_test T/c_capt.so  #t-graf 
+
+#all:   PLOTER__ $(PROGS)   
+
+all:   $(PROGS)   
+
+
+#-------------------------------------------------------------------------------
+
+c_test: c_test.cc
+	$(GCC_)  -o $@ $^  $(TCL_INCS) $(TCL_LIBS)
+
+#-------------------------------------------------------------------------------
+
+T/c_capt.so: T/c_capt.o
+	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
+
+T/c_capt.o: c_capt.cc
+	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
+
+#-------------------------------------------------------------------------------
+
+#PLOTER__:
+#	(cd P; make)
+
+#-------------------------------------------------------------------------------
+
+# t-graf : T/t-graf.o  T/t_meta.o                                  
+# 	$(GCC) -o $@ $< $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
+
+# T/t-graf.o : t-graf.c                                   
+# 	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+
+# T/t_meta.o : t_meta.c                                   
+# 	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+
+#-------------------------------------------------------------------------------
+
+clean : 
+	rm -f T/*.o $(PROGS)
+#	(cd P; make clean)
+
+#---------------------------------------------------------------
+
+# The problem is that in the link step you tell the compiler to treat 
+# hello.o as a C file. That fails.
+
+# I have already given NeedHelp a solution/workaround in the thread
+# "Configure "-x c" options with "--with-cflags" does not work for me."
+
+# РЕШЕНИЕ: компилировать надо с флагом, а собирать уже обычным способом!
+#
+ 
+#============================================================================*/
+ 
+# TODO:
+ 
+# + MultiFor для множественного использования (структура);
+
+#-------------------------------------------------------------------------------
+# 
+#-------------------------------------------------------------------------------
