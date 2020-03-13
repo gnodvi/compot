@@ -7,7 +7,7 @@
 #TCLTK_CONF_DIR?=/usr/lib/tcl8.6
 #TCLTK_CONF_DIR?=/usr/lib/i386-linux-gnu/tcl8.6
 
-ARCHPATH := $(shell dpkg-architecture -q DEB_BUILD_MULTIARCH)
+ARCHPATH := $(shell dpkg-architecture -qDEB_BUILD_MULTIARCH)
 
 TCLTK_CONF_DIR?=/usr/lib/$(ARCHPATH)/tcl8.6
 
