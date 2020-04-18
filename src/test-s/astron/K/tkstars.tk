@@ -2,7 +2,7 @@
 
 #!/bin/sh
 # \
-exec tclsh "$0" ${1+"$@"}
+exec wish "$0" ${1+"$@"}
 
 package require Tk ;# ÔÏÇÄÁ × Windows CMD ×ÉÄÅÎ ×Ù×ÏÄ × STDOUT
 

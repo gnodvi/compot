@@ -1,14 +1,13 @@
 # -*-   mode: tcl  coding: koi8   -*- ------------------------------------------
-
-#******************************************************************************
 #
 #  Tcl index file for the COMPOT package.
 #
-#******************************************************************************
+#-------------------------------------------------------------------------------
 
 
 set auto_path [linsert $auto_path 0 "$dir/src"] 
 set auto_path [linsert $auto_path 0 "$dir/src/optima"] 
+set auto_path [linsert $auto_path 0 "$dir/src/test-s"] 
 
 
 package ifneeded compot 1.0 "
