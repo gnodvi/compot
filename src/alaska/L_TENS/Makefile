@@ -12,6 +12,9 @@ INCLUDES	= $(subst ', , $(TCL_INCLUDE_SPEC))
 SHLIB_LD_LIBS	= $(subst ', , $(TCL_STUB_LIB_SPEC))
 
 #-------------------------------------------------------------------------------
+
+CC		= LANG=C gcc
+
 #-------------------------------------------------------------------------------
 
 #LIBS		=  
@@ -66,7 +69,6 @@ top_builddir	= .
 
 PACKAGE_NAME	= tensor
 PACKAGE_VERSION	= 4.0
-CC		= LANG=C gcc
 
 CFLAGS_DEFAULT	= -O2 -fomit-frame-pointer
 CFLAGS_WARNING	= -Wall -Wno-implicit-int
@@ -106,6 +108,7 @@ CLEANFILES	=
 
 CPPFLAGS	= 
 AR		= ar
+
 CFLAGS		=  -pipe ${CFLAGS_DEFAULT} ${CFLAGS_WARNING} ${SHLIB_CFLAGS} 
 COMPILE		= $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 

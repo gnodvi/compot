@@ -1,0 +1,31 @@
+# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+#
+#-------------------------------------------------------------------------
+# http://stackoverflow.com/questions/630372/
+# determine-the-path-of-the-executing-bash-script
+#
+
+SCRIPT_PATH=$(dirname $(readlink -f $0))     
+
+SCRIPT_PATH="`( cd \"$SCRIPT_PATH\" && pwd )`"  # absolutized and normalized
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+# clisp -Efile koi8-r -C $*
+
+#     cl   o~.cl MINF more_test -1  - не принимает последний аргумент ????
+#
+# -1 воспринимается как опция !!!!!! просто заменил флажок на 99
+
+
+clisp  --quiet -q  -i "$SCRIPT_PATH/../asdf-l/asdf"  -Efile koi8-r -C $*
+
+
+# медленее, коенчно, загружается с этим ASDF
+# 
+
+#-------------------------------------------------------------------------
