@@ -30,13 +30,13 @@ FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
 GCC  = LANG=C  gcc -g
 
-#GNUPLOTI_DIR = P
-#GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
-#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
+GNUPLOTI_DIR = P
+GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
+GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
 
 #-------------------------------------------------------------------------------
 
-PROGS =  c_test T/c_capt.so  #t-graf 
+PROGS =  c_test T/c_capt.so  t-graf 
 
 #all:   PLOTER__ $(PROGS)   
 
@@ -63,14 +63,14 @@ T/c_capt.o: c_capt.cc
 
 #-------------------------------------------------------------------------------
 
-# t-graf : T/t-graf.o  T/t_meta.o                                  
-# 	$(GCC) -o $@ $< $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
+t-graf : T/t-graf.o  T/t_meta.o                                  
+	$(GCC) -o $@ $< $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
-# T/t-graf.o : t-graf.c                                   
-# 	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+T/t-graf.o : t-graf.c                                   
+	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
 
-# T/t_meta.o : t_meta.c                                   
-# 	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+T/t_meta.o : t_meta.c                                   
+	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
 
 #-------------------------------------------------------------------------------
 
