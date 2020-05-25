@@ -7,14 +7,15 @@ exec wish "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 # 
 
-set COMPOT "./COMPOT"
+#set COMPOT "./COMPOT"
+#
+#set auto_path [linsert $auto_path 0 $COMPOT]
 
-set auto_path [linsert $auto_path 0 $COMPOT]
 
 #lappend auto_path \
   [file join [file dirname [info script]] "."] 
 
-package require compot::common 1.0
+#package require compot::common 1.0
 
 #-------------------------------------------------------------------------------
 
@@ -597,14 +598,16 @@ proc main_e {fname coding} {
 
   wm title    . "TclText" 
 
-  if {$::OS == "Windows" } {
-    set ::is_blockcursor 0
-    wm geometry . 800x600+300+100
-  } else {
+
+#   if {$::OS == "Windows" } {
+#     set ::is_blockcursor 0
+#     wm geometry . 800x600+300+100
+#   } else {
     set ::is_blockcursor 1 ;# в Windows есть ошибка на некоторых  пустых строках
 
     wm geometry . 800x840+280+205
-  }
+#   }
+
 
   # определим расцветку по  типу файла
   #

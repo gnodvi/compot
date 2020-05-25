@@ -9,15 +9,15 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 
 
-set COMPOT ".."  ;# "../compot"
+# set COMPOT ".."  ;# "../compot"
 
-set auto_path [linsert $auto_path 0 $COMPOT]
+# set auto_path [linsert $auto_path 0 $COMPOT]
 
-#lappend auto_path \
-  [file join [file dirname [info script]] "COM"] ;# "../common"
+# #lappend auto_path \
+#   [file join [file dirname [info script]] "COM"] ;# "../common"
 
 
-package require compot::common 1.0
+# package require compot::common 1.0
 
 #-------------------------------------------------------------------------------
 #
@@ -300,16 +300,17 @@ proc SES2 {} {
 # 
 #-------------------------------------------------------------------------------
 
-set CUR_DIR "e"
+# set CUR_DIR "e"
   
-READ_AND_CALL_ARGUS  $CUR_DIR
+# READ_AND_CALL_ARGUS  $CUR_DIR
 
-puts "" 
+# puts "" 
 
 #-------------------------------------------------------------------------------
 #
-#SES2
-#SES1
+
+SES2
+SES1
 
 #./e~.tl SES1
 #./e~.tl SES2
