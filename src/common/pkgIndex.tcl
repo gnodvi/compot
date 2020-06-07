@@ -15,6 +15,7 @@ package ifneeded compot::common 1.0 "
 
   source [file join $dir "b-com0.tl"]
   source [file join $dir "b-com1.tl"]
+  source [file join $dir "b_cloo.tl"]
 
   source [file join $dir "f-func.tl"]
   source [file join $dir "f-tabs.tl"]

@@ -3953,53 +3953,6 @@ proc make-instance {t} {
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# http://wiki.tcl.tk/17667
-# Automatic get/set methods for an itcl class
-
-#-------------------------------------------------------------------------------
-# for TclOO 
-#-------------------------------------------------------------------------------
-proc SETGET {args} {
-
-
-  set setfix "__SET"
-  set getfix "__GET"
-
-  #set setfix "_S"
-  #set getfix "_G"
-
-  foreach {vn val} $args {
-
-    uplevel 1 variable $vn $val  ;# сначала создаем переменную
-
-    # а затем к ней методы доступа:
-    #
-    set setproc ${vn}$setfix 
-    set getproc ${vn}$getfix
-
-    #puts "setproc = $setproc"
-    #puts "getproc = $getproc"
-
-    uplevel 1 method $setproc \{v\} \{[subst -nocommand {set $vn \$v}] \}
-    uplevel 1 method $getproc \{\}  \{[subst -nocommand {return $$vn}] \}
-
-    #The  method  will  be
-    #          exported  if  name  starts  with  a  lower-case letter, and non-
-    #          exported otherwise; this behavior can be overridden  via  export
-    #          and unexport.
-
-    uplevel 1 export $setproc $getproc ;# теперь можно слюбых букв начинать!
-
-  }
-
-}
-#-------------------------------------------------------------------------------
-proc SET_GET {args} {
-
-  uplevel 1 eval SETGET $args
-
-}
-#-------------------------------------------------------------------------------
 #
 # The simplest way to use the operators is often by using namespace path to make 
 # the commands available. This has the advantage of not affecting the set of 

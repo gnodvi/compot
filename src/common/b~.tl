@@ -12,6 +12,7 @@ set COMPOT "./COMPOT"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
+
 package require compot::common 1.0
 
 # ------------------------------------------------------------------------------
@@ -63,10 +64,10 @@ proc TIME_all {} {
   TEST_cloo_time
 
 
-  puts ""
-  puts "TEST_itcl_time: "
-  #
-  TEST_itcl_time
+#   puts ""
+#   puts "TEST_itcl_time: "
+#   #
+#   TEST_itcl_time
 
 
   source "b-com0.tl"
@@ -91,15 +92,14 @@ proc TIME_all {} {
 
 }
 # ;-------------------------------------------------------------------------------
-# proc TEST {} {
+proc TEST {} {
 
-#   source "b_cloo.tl"
-#   source "b_itcl.tl"
+  #source "b_cloo.tl"
 
-#   global argc argv
-#   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
-# }
+}
 # ;-------------------------------------------------------------------------------
 proc MISC {} {
 
@@ -115,10 +115,6 @@ proc MISC {} {
 #-------------------------------------------------------------------------------
 proc COM0 {} {
 
-  #package require "dicttool"
-  #source "dicttool.tcl"
-
-  #source "../common/a-dict.tl"
   source "b-com0.tl"
 
   global argc argv

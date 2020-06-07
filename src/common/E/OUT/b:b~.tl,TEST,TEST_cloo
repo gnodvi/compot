@@ -1,0 +1,21 @@
+
+TT =  222
+NN =  333
+
+Start with 5
+Start with 10
+
+Add 1 to get 11
+Add 2 to get 13
+Add 3 to get 16
+Add 4 to get 20
+Add 5 to get 25
+Add 6 to get 31
+Add 7 to get 38
+Add 8 to get 46
+Add 9 to get 55
+Add 10 to get 65
+
+VALUE = 65
+Ended with value 65
+
