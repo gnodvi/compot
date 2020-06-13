@@ -565,6 +565,15 @@ proc bot33_create {population_size len_chromosomes task args} {
 
   SET $bot "pop" $pop
 
+
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot "obj" $obj  
+
+  #-------------------------------------
+
   return $bot
 }
 # ------------------------------------------------------------------------------

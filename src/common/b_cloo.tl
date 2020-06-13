@@ -19,14 +19,11 @@ package require TclOO;     #if loading for the first time
 #-------------------------------------------------------------------------------
 # for TclOO 
 #-------------------------------------------------------------------------------
-proc SETGET {args} {
+proc VAR {args} {
 
+  set setfix "SET_"
+  set getfix "GET_"
 
-  set setfix "__SET"
-  set getfix "__GET"
-
-  #set setfix "_S"
-  #set getfix "_G"
 
   foreach {vn val} $args {
 
@@ -34,8 +31,11 @@ proc SETGET {args} {
 
     # а затем к ней методы доступа:
     #
-    set setproc ${vn}$setfix 
-    set getproc ${vn}$getfix
+    #     set setproc ${vn}$setfix 
+    #     set getproc ${vn}$getfix
+
+    set setproc ${setfix}${vn} 
+    set getproc ${getfix}${vn}
 
     #puts "setproc = $setproc"
     #puts "getproc = $getproc"
@@ -49,14 +49,13 @@ proc SETGET {args} {
     #          and unexport.
 
     uplevel 1 export $setproc $getproc ;# теперь можно слюбых букв начинать!
-
   }
 
 }
 #-------------------------------------------------------------------------------
 proc SET_GET {args} {
 
-  uplevel 1 eval SETGET $args
+  uplevel 1 eval VAR $args
 
 }
 #-------------------------------------------------------------------------------
@@ -74,25 +73,77 @@ proc SET_GET {args} {
 # 
 #
 #-------------------------------------------------------------------------------
+proc Set {obj var val} {
+
+  set [info object namespace $obj]::${var} $val
+
+}
+#-------------------------------------------------------------------------------
+proc Get {obj var} {
+  
+  return  [set [info object namespace $obj]::${var}]
+
+}
+#-------------------------------------------------------------------------------
+proc TEST_cloo_time {} {
+
+  #package require Itcl
+  #namespace import itcl::*
+  
+  #set nums 10000
+  set nums 100
+
+  #class A {}
+  
+  oo::class create A {
+
+    eval VAR  {NN 555} 
+  }
+
+  puts ""
+
+  set i 0
+  puts "Create:   [time {A create $i;   incr i} $nums]"
+  
+  set i 0
+  puts "SetGet:   [time {$i SET_NN $i;  $i GET_NN;  incr i} $nums]"
+
+  set i 0
+  #puts "Delete:   [time {delete object $i; incr i} $nums]"
+  puts "Delete:   [time {$i destroy; incr i} $nums]"
+
+  A destroy
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc testcall {s} {
+
+
+  puts "VALUE = [$s getvalue]"
+
+}
+#-------------------------------------------------------------------------------
 
 oo::class create summation {
 
   variable MM 0 ;# так тоже можно ?? нет. похоже не создается переменная
  
-  method getMM {} {
-    variable MM
-    return $MM
-  }
 
   constructor {} {
     variable v 5
+    variable MM 111
   }
   
-  eval SETGET  {TT 111} 
-  eval SETGET  {NN 555} 
+  method getMM {} {
+    variable MM
+    return  $MM
+  }
 
-  #eval SETGET     {NN 555}
-  
+  eval VAR  {TT 111}  ;# eval when {name value}
+  eval VAR  {NN 555} 
+
+
   method setvalue {val} {
     variable v
     set v $val 
@@ -114,13 +165,6 @@ oo::class create summation {
 }
 
 #-------------------------------------------------------------------------------
-proc testcall {s} {
-
-
-  puts "VALUE = [$s getvalue]"
-
-}
-#-------------------------------------------------------------------------------
 proc TEST_cloo {} {
 
 
@@ -128,11 +172,11 @@ proc TEST_cloo {} {
 
   puts ""
 
-  $sum TT__SET 222
-  puts "TT =  [$sum TT__GET]"
+  $sum SET_TT 222
+  puts "TT =  [$sum GET_TT]"
 
-  $sum NN__SET 333
-  puts "NN =  [$sum NN__GET]"
+  $sum SET_NN 333
+  puts "NN =  [$sum GET_NN]"
 
   
   puts ""
@@ -154,41 +198,25 @@ proc TEST_cloo {} {
 
   testcall $sum
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  puts "MM = [$sum getMM]"
+
+  Set $sum MM 5000
+  
+  puts "MM = [Get $sum MM]"
+
+
+  Set $sum XX 6000
+  
+  puts "XX = [Get $sum XX]"
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   $sum destroy
 
 }
 #-------------------------------------------------------------------------------
-proc TEST_cloo_time {} {
-
-  #package require Itcl
-  #namespace import itcl::*
-  
-  #set nums 10000
-  set nums 100
-
-  #class A {}
-  
-  oo::class create A {
-
-    eval SETGET  {NN 555} 
-  }
-
-  puts ""
-
-  set i 0
-  puts "Create:   [time {A create $i;   incr i} $nums]"
-  
-  set i 0
-  #puts "SetGet:   [time {$i set_NN $i;  $i get_NN;  incr i} $nums]"
-  puts "SetGet:   [time {$i NN__SET $i;  $i NN__GET;  incr i} $nums]"
-
-  set i 0
-  #puts "Delete:   [time {delete object $i; incr i} $nums]"
-  puts "Delete:   [time {$i destroy; incr i} $nums]"
-
-  A destroy
-
-}
 #-------------------------------------------------------------------------------
 
 oo::class create TESTT {
@@ -202,23 +230,22 @@ proc TEST_cloo_NEW {} {
 
   set tst [TESTT new]
 
-  oo::define TESTT variable AAAA
+  Set $tst AAAA 5000 ;# норм, но тогда ее не будет в списке переменных класса!
 
-  oo::objdefine $tst variable BBBB
-
-  set [info object namespace $tst]::AAAA 5000
+  oo::define    TESTT variable AAAA 1234
 
   puts ""
-  puts "AAAA = [set [info object namespace $tst]::AAAA]" 
+  puts "AAAA = [Get $tst AAAA]" 
   puts ""
 
+
+  oo::objdefine  $tst variable BBBB
 
   puts "info class  variables  = [info class  variables TESTT]"
   puts "info object variables  = [info object variables $tst]"
-  puts "info object vars       = [info object vars $tst]"
+  puts "info object vars       = [info object vars      $tst]"
 
 }
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 

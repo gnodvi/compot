@@ -17,5 +17,8 @@ Add 9 to get 55
 Add 10 to get 65
 
 VALUE = 65
+MM = 111
+MM = 5000
+XX = 6000
 Ended with value 65
 

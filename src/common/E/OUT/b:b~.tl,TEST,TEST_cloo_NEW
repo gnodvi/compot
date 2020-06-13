@@ -1,7 +1,7 @@
 
 AAAA = 5000
 
-info class  variables  = AAAA
+info class  variables  = AAAA 1234
 info object variables  = BBBB
 info object vars       = 
 

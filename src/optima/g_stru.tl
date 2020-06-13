@@ -448,7 +448,14 @@ proc pop1_create {population_size len_chromosomes args} {
 
 oo::class create BOT01 {
 
+  VAR task
+  VAR  pop
 
+  constructor {task pop} {
+
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
  
 }
 
@@ -465,7 +472,6 @@ proc bot01_create {population_size len_chromosomes task args} {
 
   set pop [pop1_create  $population_size $len_chromosomes]
 
-
   SET $bot "pop"  $pop
   SET $bot "TASK" $task
  
@@ -473,7 +479,11 @@ proc bot01_create {population_size len_chromosomes task args} {
   SET $pop  select_two   "ga_select_two_sus"
 
   #--------------------------------------------------
-   
+
+  set obj [BOT01 new  $task $pop]
+
+  SET $bot "obj"  $obj
+  
   #--------------------------------------------------
     
   return $bot
@@ -482,13 +492,18 @@ proc bot01_create {population_size len_chromosomes task args} {
 proc bot01_calc {task bot max_generations} {
 
 
-  set pop [GET $bot "pop"]
+  set obj [GET $bot "obj"]
 
-  #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]
-  
+  #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
   #   ga_evolution_main           $task $pop $max_generations ;# 0.01
 
-  set task [GET $bot "TASK"]
+  #--------------------------------------------------
+
+  set task [$obj GET_task]
+
+  set  pop [$obj GET_pop]
+
+  #--------------------------------------------------
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
@@ -496,7 +511,10 @@ proc bot01_calc {task bot max_generations} {
 # ------------------------------------------------------------------------------
 proc bot01_final {bot} {
 
-  set pop [GET $bot "pop"]
+  #set pop [GET $bot "pop"]
+
+  set obj [GET $bot "obj"]
+  set pop [$obj GET_pop]
 
   set num_generations [GET $pop "generation"] ;# сколько было генераций
   set best_entity     [ga_get_entity_from_rank $pop 0]
@@ -567,6 +585,14 @@ proc _01_test {} {
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
+
+oo::class create BOT02 {
+
+  superclass BOT01
+
+}
+
+# ------------------------------------------------------------------------------
 proc bot02_create {population_size len_chromosomes task args} {
 
   # если нет в args, то берем значение здесь
@@ -579,17 +605,28 @@ proc bot02_create {population_size len_chromosomes task args} {
 
   SET $bot02 "TASK" $task
 
+  # очень странно тут реализовал ! )
+
   set bot01 [bot01_create $population_size $len_chromosomes $task] ;# somes
 
+  # немного поменяем 
+  #
   set pop1 [GET $bot01 "pop"]
 
   SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
-
   SET $pop1  select_one  "ga_select_one_bestof2"
   SET $pop1  select_two  "ga_select_two_bestof2"  
 
 
   SET $bot02 "pop" $pop1
+
+  #-------------------------------------
+
+  set obj [BOT02 new   $task $pop1]
+
+  SET $bot02 "obj" $obj  
+
+  #-------------------------------------
 
   return $bot02
 }
@@ -732,6 +769,13 @@ proc bot03_create {population_size len_chromo task args} {
 
   SET $bot03 "pop" $pop
 
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot03 "obj" $obj  
+
+  #-------------------------------------
 
   return $bot03
 }
@@ -925,6 +969,14 @@ proc bot04_create {population_size len_chromo task args} {
 
   SET $bot04 "pop" $pop
 
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot04 "obj" $obj  
+
+  #-------------------------------------
+
   return $bot04
 }
 # ------------------------------------------------------------------------------
@@ -1053,6 +1105,14 @@ proc bot05_create {population_size len_chromo task args} {
   #----------------------------------------------------
 
   SET $bot05 "pops" $pops
+
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot05 "obj" $obj  
+
+  #-------------------------------------
 
   return $bot05
 }
@@ -1204,6 +1264,14 @@ proc bot06_create {population_size len_chromo task args} {
   
 
   SET $bot06 "pop" $pop
+
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot06 "obj" $obj  
+
+  #-------------------------------------
 
   return $bot06
 }
@@ -1365,6 +1433,14 @@ proc bot7_create {population_size len_chromo args} {
 
   SET $bot7 "pop" $popd
 
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $popd]
+
+  SET $bot7 "obj" $obj  
+
+  #-------------------------------------
+
   return $bot7
 }
 # ------------------------------------------------------------------------------
@@ -1383,6 +1459,15 @@ proc bot8_create {population_size len_chromo args} {
 
   ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"
 
+
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot "obj" $obj  
+
+  #-------------------------------------
+
   return $bot
 }
 # ------------------------------------------------------------------------------
@@ -1400,6 +1485,16 @@ proc bot9_create {population_size len_chromo args} {
   set pop [GET $bot "pop"]
 
   ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
+
+
+  #-------------------------------------
+
+  set obj [BOT01 new   $task $pop]
+
+  SET $bot "obj" $obj  
+
+  #-------------------------------------
+
 
   return $bot
 }
