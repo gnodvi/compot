@@ -445,21 +445,6 @@ proc pop1_create {population_size len_chromosomes args} {
   return $pop
 }
 # ------------------------------------------------------------------------------
-
-oo::class create BOT01 {
-
-  VAR task
-  VAR  pop
-
-  constructor {task pop} {
-
-    [self] SET_task $task
-    [self] SET_pop  $pop
-  }
- 
-}
-
-# ------------------------------------------------------------------------------
 proc bot01_create {population_size len_chromosomes task args} {
 
   # если нет в args, то берем значение здесь
@@ -468,23 +453,20 @@ proc bot01_create {population_size len_chromosomes task args} {
               [task_create  "FS_fitness" -fit_target 53.1]] 
 
 
-  set bot [dict_create]
-
   set pop [pop1_create  $population_size $len_chromosomes]
-
-  SET $bot "pop"  $pop
-  SET $bot "TASK" $task
  
   SET $pop  select_one   "ga_select_one_sus"
   SET $pop  select_two   "ga_select_two_sus"
 
-  #--------------------------------------------------
 
   set obj [BOT01 new  $task $pop]
 
+  #--------------------------------------------------
+
+  set bot [dict_create]
+
   SET $bot "obj"  $obj
   
-  #--------------------------------------------------
     
   return $bot
 }
@@ -492,18 +474,14 @@ proc bot01_create {population_size len_chromosomes task args} {
 proc bot01_calc {task bot max_generations} {
 
 
-  set obj [GET $bot "obj"]
+  set  obj [GET $bot "obj"]
+
+  set task [$obj GET_task]
+  set  pop [$obj GET_pop]
 
   #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
   #   ga_evolution_main           $task $pop $max_generations ;# 0.01
 
-  #--------------------------------------------------
-
-  set task [$obj GET_task]
-
-  set  pop [$obj GET_pop]
-
-  #--------------------------------------------------
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
@@ -511,9 +489,9 @@ proc bot01_calc {task bot max_generations} {
 # ------------------------------------------------------------------------------
 proc bot01_final {bot} {
 
-  #set pop [GET $bot "pop"]
 
   set obj [GET $bot "obj"]
+
   set pop [$obj GET_pop]
 
   set num_generations [GET $pop "generation"] ;# сколько было генераций
@@ -566,15 +544,12 @@ proc _01_test {} {
   set task [task_create $fitness_func]    
   
   
-  set bot [bot01_create $population_size $len_chromo $task] ;# somes
+  set bot [bot01_create  $population_size $len_chromo $task] ;# somes
 
-  set pop [GET $bot "pop"]
+  set obj [GET $bot "obj"]
+  set pop [$obj GET_pop]
   
   SET $pop        seed   $seed_proc   
-  
-#   SET $pop  select_one   "ga_select_one_sus"
-#   SET $pop  select_two   "ga_select_two_sus"
-    
   
   ga_evolution  $task $pop $max_generations   
   
@@ -601,32 +576,20 @@ proc bot02_create {population_size len_chromosomes task args} {
               [task_create  "FS_fitness" -fit_target 53.1]]
 
 
-  set bot02 [dict_create]
-
-  SET $bot02 "TASK" $task
-
-  # очень странно тут реализовал ! )
-
-  set bot01 [bot01_create $population_size $len_chromosomes $task] ;# somes
-
-  # немного поменяем 
-  #
-  set pop1 [GET $bot01 "pop"]
+  set pop1 [pop1_create  $population_size $len_chromosomes]
 
   SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
   SET $pop1  select_one  "ga_select_one_bestof2"
   SET $pop1  select_two  "ga_select_two_bestof2"  
 
-
-  SET $bot02 "pop" $pop1
-
   #-------------------------------------
+
+  set bot02 [dict_create]
 
   set obj [BOT02 new   $task $pop1]
 
   SET $bot02 "obj" $obj  
 
-  #-------------------------------------
 
   return $bot02
 }
@@ -645,7 +608,6 @@ proc bot02_final {bot} {
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
 
 # //------------------------------------------------------------------------------
 # //  struggle_generation_hook()
@@ -724,14 +686,11 @@ proc parse_opts_2 {&par1    &par2 \
 # ------------------------------------------------------------------------------
 proc bot03_create {population_size len_chromo task args} {
 
-  set bot03 [dict_create]
 
   # если нет в args, то берем значение здесь
   # 
   set task [dict_get_if_exists $args "-task" \
               [task_create  "FS_fitness" -fit_target 53.1]]
-
-  SET $bot03 "TASK" $task
 
 
   set seed_proc  "maintest_seed_proc"
@@ -767,25 +726,25 @@ proc bot03_create {population_size len_chromo task args} {
     0.0      	          
 
 
-  SET $bot03 "pop" $pop
-
   #-------------------------------------
 
   set obj [BOT01 new   $task $pop]
 
+  set  bot03 [dict_create]
+
   SET $bot03 "obj" $obj  
 
-  #-------------------------------------
 
   return $bot03
 }
 # ------------------------------------------------------------------------------
 proc bot03_calc {task bot max_generations} {
 
+  set  obj [GET $bot "obj"]
 
-  set pop [GET $bot "pop"]
+  set task [$obj GET_task]
+  set  pop [$obj GET_pop]
 
-  set task [GET $bot "TASK"]
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
@@ -819,19 +778,25 @@ proc _03_test {} \
   #----------------------------------------------------------------------
 
   set bot [bot03_create  $population_size $len_chromo $task]
-  set pop [GET $bot "pop"]
+
+  set obj [GET $bot "obj"]
+
+  #set pop [GET $bot "pop"]
+
+  set pop [$obj GET_pop]
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
 
   if {$ret < $max_generations} {
+
     puts "The evolution was stopped because the termination criteria were met. "
   } else {
     puts "The evolution was stopped because the maximum number of generations were performed."
   }
+
   puts ""
   
-
   do_print_best $pop ""
 
   puts [format "Total number of fitness evaluations: %ld" $::eval_count]
@@ -889,14 +854,11 @@ proc _4_struggle_crossover {pop father mother son daughter} \
 # ------------------------------------------------------------------------------
 proc bot04_create {population_size len_chromo task args} {
 
-  set bot04 [dict_create]
 
   # если нет в args, то берем значение здесь
   # 
   set task [dict_get_if_exists $args "-task" \
               [task_create  "FS_fitness" -fit_target 53.1]]
-
-  SET $bot04 "TASK" $task
 
 
   set pop [ga_population_new $population_size $len_chromo]
@@ -966,24 +928,27 @@ proc bot04_create {population_size len_chromo task args} {
     0.0      	          
 
 
+  #-------------------------------------
 
+  set bot04 [dict_create]
+
+  SET $bot04 "TASK" $task
   SET $bot04 "pop" $pop
 
-  #-------------------------------------
 
   set obj [BOT01 new   $task $pop]
 
   SET $bot04 "obj" $obj  
 
-  #-------------------------------------
 
   return $bot04
 }
 # ------------------------------------------------------------------------------
 proc bot04_calc {task bot max_generations} {
 
-  set pop [GET $bot "pop"]
+  set obj [GET $bot "obj"]
 
+  set pop  [GET $bot  "pop"]
   set task [GET $bot "TASK"]
 
   set ret [ga_evolution  $task $pop $max_generations]  
@@ -1021,16 +986,15 @@ proc _04_test {} \
 
   #-----------------------------------------------------------------
 
-
   set task [task_create "FS_fitness"]
   
   #-----------------------------------------------------------------
 
   set bot [bot04_create  $population_size $len_chromo $task] 
 
-  set pop [GET $bot "pop"]
+  set obj [GET $bot "obj"]
+  set pop [$obj GET_pop]
 
-  #ga_evolution  $task $pop $max_generations
   
   bot04_calc  $task $bot $max_generations
 
@@ -1044,7 +1008,6 @@ proc _04_test {} \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 proc bot05_create {population_size len_chromo task args} {
 
   # если нет в args, то берем значение здесь
@@ -1052,14 +1015,9 @@ proc bot05_create {population_size len_chromo task args} {
   set task [dict_get_if_exists $args "-task"  $task]
 
 
-  set  bot05 [dict_create]
-
-  SET $bot05 "TASK" $task
-
+  #----------------------------------------------------
 
   set seed_proc  "maintest_seed_proc"
-
-  #----------------------------------------------------
 
   set num_pops [dict_get_if_exists $args "-num_pops" 1]
 
@@ -1104,6 +1062,9 @@ proc bot05_create {population_size len_chromo task args} {
   
   #----------------------------------------------------
 
+  set  bot05 [dict_create]
+
+  SET $bot05 "TASK" $task
   SET $bot05 "pops" $pops
 
   #-------------------------------------
@@ -1120,10 +1081,11 @@ proc bot05_create {population_size len_chromo task args} {
 proc bot05_calc {task bot max_generations} {
 
   set pops [GET $bot "pops"]
+  set task [GET $bot "TASK"]
+
+  set  obj [GET $bot "obj"] 
 
   set num_pops [llength $pops]
-
-  set task [GET $bot "TASK"]
 
   set ret [ga_evolution_archipelago  $num_pops $pops  $max_generations $task]
   

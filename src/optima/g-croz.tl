@@ -532,6 +532,21 @@ proc gp_evolution_main {task  pop max_generations \
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
+
+oo::class create BOT01 {
+
+  VAR task
+  VAR  pop
+
+  constructor {task pop} {
+
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+ 
+}
+
+# ------------------------------------------------------------------------------
 proc bot33_create {population_size len_chromosomes task args} {
 
   # если нет в args, то берем значение здесь
