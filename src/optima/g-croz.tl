@@ -533,12 +533,12 @@ proc gp_evolution_main {task  pop max_generations \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-oo::class create BOT01 {
+oo::class create BOT {
 
   VAR task
   VAR  pop
 
-  constructor {task pop} {
+  constructor {task pop args} {
 
     [self] SET_task $task
     [self] SET_pop  $pop
@@ -546,17 +546,30 @@ oo::class create BOT01 {
  
 }
 
+oo::class create BOT33 {
+
+  superclass BOT
+ 
+}
+
 # ------------------------------------------------------------------------------
-proc bot33_create {population_size len_chromosomes task args} {
+proc bot33_create {args} {
 
   # если нет в args, то берем значение здесь
   # 
   set task [dict_get_if_exists $args "-task" \
               [task_create  "FS_fitness_list"]] 
 
-  set bot [dict_create]
+  if {! [info exists len_chromosomes]} {
+  set len_chromosomes [dict_get_if_exists $args "-gensize" ] 
+  }
 
-  SET $bot "TASK" $task
+  if {! [info exists population_size]} {
+  set population_size [dict_get_if_exists $args "-popsize" ] 
+  }
+
+
+  set bot [dict_create]
 
   #--------------------------------------------------------
 
@@ -578,12 +591,11 @@ proc bot33_create {population_size len_chromosomes task args} {
 
   #--------------------------------------------------------
 
-  SET $bot "pop" $pop
+  SET $bot "pop"  $pop
+  SET $bot "TASK" $task
 
 
-  #-------------------------------------
-
-  set obj [BOT01 new   $task $pop]
+  set obj [BOT33 new  $task $pop]
 
   SET $bot "obj" $obj  
 
@@ -594,7 +606,12 @@ proc bot33_create {population_size len_chromosomes task args} {
 # ------------------------------------------------------------------------------
 proc bot33_calc {task bot max_generations  args} {
 
-  set pop [GET $bot "pop"]
+  set  obj [GET $bot "obj"]
+
+  set task [$obj GET_task]
+  set  pop [$obj GET_pop]
+
+  #set pop [GET $bot "pop"]
 
   set is_print         [dict_get_if_exists $args "-is_print"        1]
   set game_print_proc  [dict_get_if_exists $args "-game_print_proc" 0]
@@ -619,7 +636,7 @@ proc bot33_calc {task bot max_generations  args} {
 
   #---------------------------------------------------------
 
-  set task [GET $bot "TASK"]
+  #set task [GET $bot "TASK"]
 
 
   gp_evolution_main  $task $pop  $max_generations \
@@ -632,7 +649,10 @@ proc bot33_calc {task bot max_generations  args} {
 # ------------------------------------------------------------------------------
 proc bot33_final {bot} {
 
-  set pop [GET $bot "pop"]
+  set  obj [GET $bot "obj"]
+  set  pop [$obj GET_pop]
+
+  #set pop [GET $bot "pop"]
 
   set num_generations [GET $pop "generation"] ;# сколько было генераций
 
@@ -656,7 +676,7 @@ proc run_gp_evolution {randpop_proc
 
   #-------------------------------------
 
-  set bot [bot33_create  $population_size $len_chromosomes $task \
+  set bot [bot33_create  -popsize $population_size -gensize $len_chromosomes \
              -sort_driver $sort_driver  -task $task]
 
     
