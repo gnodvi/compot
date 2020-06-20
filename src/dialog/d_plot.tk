@@ -1647,7 +1647,7 @@ proc PLOTER {mop from message mes1 mes2 mes3 mes4  args} {
 
   "YCREATE" {
 
-    set args_list [dict_get_if_exists $args "-args_list" NULL]
+    set args_list [dict_parse $args "-args_list" NULL]
     #set mes4 $args_list
 
     SET $mop "plot"  [lindex $args_list 0]

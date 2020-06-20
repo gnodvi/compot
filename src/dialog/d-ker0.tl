@@ -563,7 +563,7 @@ proc YWndOpenOrDraw {message fid \
 
   set ::WINO($fid) $mop
 
-  dict set $mop "color" [dict_get_if_exists $args "-color"  "lightgreen"]
+  dict set $mop "color" [dict_parse $args "-color"  "lightgreen"]
 
   dict set $mop "w" $w
   dict set $mop "h" $h
@@ -604,7 +604,7 @@ proc YWndOpenOrDraw {message fid \
 proc check_is_message {fid args} {
 
 
-  set message [dict_get_if_exists $args "-message"  ""]
+  set message [dict_parse $args "-message"  ""]
 
   if {$message == ""} {
 
@@ -943,7 +943,7 @@ proc TopLevelSet {top_fid  xx yy ww hh  title} {
 proc BigWindowMain {main_fid user_level proc_name xx yy ww hh  args} {
 
 
-  set title [dict_get_if_exists $args "-title" ""]
+  set title [dict_parse $args "-title" ""]
 
 
   set main_fid [TopLevelSet $main_fid  $xx $yy $ww $hh  $title]

@@ -2707,8 +2707,8 @@ proc task_create {fitness_proc  args} {
 
   SET $t "fitness_proc" $fitness_proc
 
-  SET $t "fit_target"   [dict_get_if_exists $args "-fit_target" 0] 
-  SET $t "fit_error"    [dict_get_if_exists $args "-fit_error"  0.01] 
+  SET $t "fit_target"   [dict_parse $args "-fit_target" 0] 
+  SET $t "fit_error"    [dict_parse $args "-fit_error"  0.01] 
 
   return $t
 }

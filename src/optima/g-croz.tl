@@ -538,7 +538,17 @@ oo::class create BOT {
   VAR task
   VAR  pop
 
-  constructor {task pop args} {
+  #constructor {task pop args} {}
+  constructor {args} {
+
+    if {! [info exists task]} {
+      set task [dict_parse $args "-task" ] 
+    }
+
+    if {! [info exists pop]} {
+      set pop [dict_parse $args "-pop" ] 
+    }
+
 
     [self] SET_task $task
     [self] SET_pop  $pop
@@ -557,16 +567,11 @@ proc bot33_create {args} {
 
   # если нет в args, то берем значение здесь
   # 
-  set task [dict_get_if_exists $args "-task" \
+  set task [dict_parse $args "-task" \
               [task_create  "FS_fitness_list"]] 
 
-  if {! [info exists len_chromosomes]} {
-  set len_chromosomes [dict_get_if_exists $args "-gensize" ] 
-  }
-
-  if {! [info exists population_size]} {
-  set population_size [dict_get_if_exists $args "-popsize" ] 
-  }
+  set len_chromosomes [dict_parse $args "-gensize" ] 
+  set population_size [dict_parse $args "-popsize" ] 
 
 
   set bot [dict_create]
@@ -581,7 +586,7 @@ proc bot33_create {args} {
   SET $pop  "generation_hook" NULL ;# $generation_hook
 
 
-  set sort_driver [dict_get_if_exists $args "-sort_driver" "LT_lsort"] 
+  set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
   # 
   # "LT_lsort" ;# с меньшим фитнесом - влево. т.е. в лучшие!
 
@@ -594,33 +599,40 @@ proc bot33_create {args} {
   SET $bot "pop"  $pop
   SET $bot "TASK" $task
 
-
-  set obj [BOT33 new  $task $pop]
+  set obj [BOT33 new  -task $task -pop $pop]
 
   SET $bot "obj" $obj  
 
   #-------------------------------------
 
-  return $bot
+ # return $bot
+  return [list $bot $obj]
 }
 # ------------------------------------------------------------------------------
-proc bot33_calc {task bot max_generations  args} {
+proc bot33_calc {bot args} {
 
   set  obj [GET $bot "obj"]
 
-  set task [$obj GET_task]
+  set task [dict_parse $args "-task" [$obj GET_task]] 
+
+  if {! [info exists max_generations]} {
+  set max_generations [dict_parse $args "-steps" ] 
+  }
+
+
+  #set task [$obj GET_task]
   set  pop [$obj GET_pop]
 
   #set pop [GET $bot "pop"]
 
-  set is_print         [dict_get_if_exists $args "-is_print"        1]
-  set game_print_proc  [dict_get_if_exists $args "-game_print_proc" 0]
-  set mutprob          [dict_get_if_exists $args "-mutprob"         0.1]
+  set is_print         [dict_parse $args "-is_print"        1]
+  set game_print_proc  [dict_parse $args "-game_print_proc" 0]
+  set mutprob          [dict_parse $args "-mutprob"         0.1]
 
 
   #---------------------------------------------------------
 
-  set randpop_proc [dict_get_if_exists $args "-randpop_proc"  "make_rand_prgpop"]
+  set randpop_proc [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
 
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   #
@@ -676,14 +688,17 @@ proc run_gp_evolution {randpop_proc
 
   #-------------------------------------
 
-  set bot [bot33_create  -popsize $population_size -gensize $len_chromosomes \
-             -sort_driver $sort_driver  -task $task]
+  #set bot 
+  foreach {bot obj} \
+    [bot33_create  -popsize $population_size -gensize $len_chromosomes \
+       -sort_driver $sort_driver  -task $task] break
 
     
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
-  bot33_calc      $task $bot  $max_generations \
+  bot33_calc   $bot  -steps $max_generations \
+    -task            $task \
     -is_print        $is_print        \
     -game_print_proc $game_print_proc \
     -mutprob         $mutprob \

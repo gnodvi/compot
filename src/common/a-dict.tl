@@ -1997,12 +1997,12 @@ proc DICT_save {} {
   return
 }
 #-------------------------------------------------------------------------------
-proc dict_get_if_exists {d key {defaultval NULL}} {
+proc dict_parse {d key {defaultval NULL}} {
 
   if {0} {
     puts stderr ""
-    puts stderr "dict_get_if_exists :   d = $d  "
-    puts stderr "                   : key = $key. defaultval = $defaultval"
+    puts stderr "dict_parse :   d = $d  "
+    puts stderr "           : key = $key. defaultval = $defaultval"
     puts stderr ""
   }
 
@@ -2016,7 +2016,7 @@ proc dict_get_if_exists {d key {defaultval NULL}} {
       
       puts stderr "d = $d"
       puts stderr ""
-      ERROR "dict_get_if_exists, key = $key"
+      ERROR "dict_parse, key = $key"
       
     } else {
       return $defaultval
