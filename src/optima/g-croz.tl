@@ -596,22 +596,13 @@ proc bot33_create {args} {
 
   #--------------------------------------------------------
 
-  SET $bot "pop"  $pop
-  SET $bot "TASK" $task
-
   set obj [BOT33 new  -task $task -pop $pop]
 
-  SET $bot "obj" $obj  
-
-  #-------------------------------------
-
- # return $bot
-  return [list $bot $obj]
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot33_calc {bot args} {
+proc bot33_calc {obj args} {
 
-  set  obj [GET $bot "obj"]
 
   set task [dict_parse $args "-task" [$obj GET_task]] 
 
@@ -619,11 +610,7 @@ proc bot33_calc {bot args} {
   set max_generations [dict_parse $args "-steps" ] 
   }
 
-
-  #set task [$obj GET_task]
   set  pop [$obj GET_pop]
-
-  #set pop [GET $bot "pop"]
 
   set is_print         [dict_parse $args "-is_print"        1]
   set game_print_proc  [dict_parse $args "-game_print_proc" 0]
@@ -648,9 +635,6 @@ proc bot33_calc {bot args} {
 
   #---------------------------------------------------------
 
-  #set task [GET $bot "TASK"]
-
-
   gp_evolution_main  $task $pop  $max_generations \
     $is_print        \
     $game_print_proc \
@@ -659,12 +643,9 @@ proc bot33_calc {bot args} {
   return
 }
 # ------------------------------------------------------------------------------
-proc bot33_final {bot} {
+proc bot33_final {obj} {
 
-  set  obj [GET $bot "obj"]
   set  pop [$obj GET_pop]
-
-  #set pop [GET $bot "pop"]
 
   set num_generations [GET $pop "generation"] ;# сколько было генераций
 
@@ -688,16 +669,16 @@ proc run_gp_evolution {randpop_proc
 
   #-------------------------------------
 
-  #set bot 
-  foreach {bot obj} \
+  set obj \
     [bot33_create  -popsize $population_size -gensize $len_chromosomes \
-       -sort_driver $sort_driver  -task $task] break
+       -sort_driver $sort_driver  -task $task]
 
     
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
-  bot33_calc   $bot  -steps $max_generations \
+  bot33_calc  $obj  \
+    -steps           $max_generations \
     -task            $task \
     -is_print        $is_print        \
     -game_print_proc $game_print_proc \

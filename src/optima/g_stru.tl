@@ -478,23 +478,15 @@ proc bot01_create {args} {
 
   set obj [BOT01 new  -task $task -pop $pop]
 
-  set bot [dict_create]
-
-  SET $bot "obj"  $obj
-  
-    
-  return $bot
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot01_calc {bot args} {
-
-  set  obj [GET $bot "obj"]
+proc bot01_calc {obj args} {
 
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
 
 
-  #set task [$obj GET_task]
   set  pop [$obj GET_pop]
 
   #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
@@ -504,10 +496,7 @@ proc bot01_calc {bot args} {
 
 }
 # ------------------------------------------------------------------------------
-proc bot01_final {bot} {
-
-
-  set obj [GET $bot "obj"]
+proc bot01_final {obj} {
 
   set pop [$obj GET_pop]
 
@@ -561,9 +550,9 @@ proc _01_test {} {
   set task [task_create $fitness_func]    
   
   
-  set bot [bot01_create  -popsize $population_size -gensize $len_chromo -task $task] 
+  set obj \
+    [bot01_create  -popsize $population_size -gensize $len_chromo -task $task] 
 
-  set obj [GET $bot "obj"]
   set pop [$obj GET_pop]
   
   SET $pop        seed   $seed_proc   
@@ -571,7 +560,6 @@ proc _01_test {} {
   ga_evolution  $task $pop $max_generations   
   
   do_print_best $pop ""
-  
   
   return
 }
@@ -600,27 +588,22 @@ proc bot02_create {args} {
 
   #-------------------------------------
 
-  set bot02 [dict_create]
-
   set obj [BOT02 new  -task $task -pop $pop1]
 
-  SET $bot02 "obj" $obj  
-
-
-  return $bot02
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot02_calc {bot args} {
+proc bot02_calc {obj args} {
 
 
-  bot01_calc $bot {*}$args
+  bot01_calc $obj {*}$args
 
 }
 # ------------------------------------------------------------------------------
-proc bot02_final {bot} {
+proc bot02_final {obj} {
 
   
-  return [bot01_final $bot]
+  return [bot01_final $obj]
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -749,34 +732,25 @@ proc bot03_create {args} {
 
   set obj [BOT01 new  -task $task -pop $pop]
 
-  set  bot03 [dict_create]
-
-  SET $bot03 "obj" $obj  
-
-
-  return $bot03
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot03_calc {bot args} {
-
-  set  obj [GET $bot "obj"]
+proc bot03_calc {obj args} {
 
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
 
-  #set task [$obj GET_task]
   set  pop [$obj GET_pop]
-
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
   return $ret
 }
 # ------------------------------------------------------------------------------
-proc bot03_final {bot} {
+proc bot03_final {obj} {
 
   
-  return [bot01_final $bot]
+  return [bot01_final $obj]
 }
 # ------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
@@ -799,9 +773,8 @@ proc _03_test {} \
 
   #----------------------------------------------------------------------
 
-  set bot [bot03_create  -popsize $population_size -gensize $len_chromo -task $task]
-
-  set obj [GET $bot "obj"]
+  set obj \
+    [bot03_create  -popsize $population_size -gensize $len_chromo -task $task] 
 
   set pop [$obj GET_pop]
 
@@ -953,36 +926,28 @@ proc bot04_create {args} {
 
   #-------------------------------------
 
-  set bot04 [dict_create]
-
   set obj [BOT01 new  -task $task -pop $pop]
 
-  SET $bot04 "obj" $obj  
-
-
-  return $bot04
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot04_calc {bot args} {
+proc bot04_calc {obj args} {
 
-  set obj [GET $bot "obj"]
 
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
 
-  #set task [$obj GET_task]
   set  pop [$obj GET_pop]
-
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
   return $ret
 }
 # ------------------------------------------------------------------------------
-proc bot04_final {bot} {
+proc bot04_final {obj} {
 
   
-  return [bot01_final $bot]
+  return [bot01_final $obj]
 }
 # //------------------------------------------------------------------------------
 # //
@@ -1011,15 +976,12 @@ proc _04_test {} \
 
   set task [task_create "FS_fitness"]
   
-  #-----------------------------------------------------------------
+  set obj \
+    [bot04_create  -popsize $population_size -gensize $len_chromo -task $task] 
 
-  set bot [bot04_create  -popsize $population_size -gensize $len_chromo -task $task] 
-
-  set obj [GET $bot "obj"]
   set pop [$obj GET_pop]
 
-  
-  bot04_calc  $bot -steps $max_generations -task $task 
+  bot04_calc  $obj -steps $max_generations -task $task 
 
   #-----------------------------------------------------------------
 
@@ -1112,30 +1074,16 @@ proc bot05_create {args} {
   
   #----------------------------------------------------
 
-  set  bot05 [dict_create]
-
-#   SET $bot05 "TASK" $task
-#   SET $bot05 "pops" $pops
-
-  #-------------------------------------
-
   set obj [BOT05 new  -task $task -pops $pops] ;# ???
 
-  SET $bot05 "obj" $obj  
-
-  #-------------------------------------
-
-  return $bot05
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot05_calc {bot args} {
-
-  set  obj [GET $bot "obj"] 
+proc bot05_calc {obj args} {
 
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
 
-  #set task [$obj GET_task]
   set pops [$obj GET_pops]
 
 
@@ -1146,9 +1094,8 @@ proc bot05_calc {bot args} {
   return $ret
 }
 # ------------------------------------------------------------------------------
-proc bot05_final {bot} {
+proc bot05_final {obj} {
  
-  set  obj [GET $bot "obj"] 
   set pops [$obj GET_pops]
 
 
@@ -1212,15 +1159,13 @@ proc _05_test {} \
   
   #----------------------------------------------------------------------
   #
-  set bot [bot05_create  -popsize $population_size -gensize $len_chromo \
-             -task $task -num_pops $num_pops ]
+  set obj \
+    [bot05_create  -popsize $population_size -gensize $len_chromo \
+             -task $task -num_pops $num_pops ] 
 
-  set  obj [GET $bot "obj"] 
   set pops [$obj GET_pops]
 
-  #set pops [GET $bot "pops"]
-  
-  bot05_calc  $bot -steps $max_generations -task $task 
+  bot05_calc  $obj -steps $max_generations -task $task 
 
   #----------------------------------------------------------------------
 
@@ -1248,7 +1193,7 @@ proc bot06_create {args} {
   set population_size [dict_parse $args "-popsize" ] 
 
 
-  set bot06 [dict_create]
+#   set bot06 [dict_create]
 
   set seed_proc  "maintest_seed_proc"
 
@@ -1292,32 +1237,25 @@ proc bot06_create {args} {
 
   set obj [BOT01 new  -task $task -pop $pop]
 
-  SET $bot06 "obj" $obj  
-
-  #-------------------------------------
-
-  return $bot06
+  return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot06_calc {bot args} {
+proc bot06_calc {obj args} {
 
-  set obj [GET $bot "obj"]
-  
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
 
 
   set pop  [$obj GET_pop]
-  #set task [$obj GET_task]
 
   ga_deterministiccrowding  $task $pop $max_generations
 
 }
 # ------------------------------------------------------------------------------
-proc bot06_final {bot} {
+proc bot06_final {obj} {
 
   
-  return [bot01_final $bot]
+  return [bot01_final $obj]
 }
 # //------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
@@ -1348,13 +1286,12 @@ proc _dc_test {} \
  
     #----------------------------------------------------------
 
-    set bot [bot06_create  -popsize $population_size -gensize $len_chromo -task $task]
+    set obj \
+      [bot06_create  -popsize $population_size -gensize $len_chromo -task $task] 
 
-
-    set obj [GET $bot "obj"]    
     set pop [$obj GET_pop]
 
-    bot06_calc  $bot -steps $max_generations -task $task 
+    bot06_calc  $obj -steps $max_generations -task $task 
 
     #----------------------------------------------------------
 
@@ -1713,27 +1650,17 @@ proc maintest_run {botnames max_generations
 
       test_random_seed $r      
 
-      #--------------------------------
-
-      #set task [task_create  "FS_fitness" -fit_target 53.1]
-
-
-      # по сути это еще не популяция, а шаблон для бота
-      #
-      set bot  [${botname}_create  \
-                  -popsize $population_size \
-                  -gensize $len_chromosomes -task $task]    
+      set obj \
+        [${botname}_create  -popsize $population_size \
+           -gensize $len_chromosomes -task $task] 
 
       
-      # а здесь уже инициируем и вычисляем
-      #
-      #${botname}_calc  $task $bot $max_generations 
-           
-      ${botname}_calc $bot  -steps $max_generations ;# #-task NULL 
+      ${botname}_calc $obj  -steps $max_generations  
            
 
       foreach {num_generations  best_entity  ch_form} \
-        [${botname}_final $bot] {break;}
+        [${botname}_final $obj] \
+        break
 
       #--------------------------------
 
