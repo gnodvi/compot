@@ -449,34 +449,58 @@ proc pop1_create {args} {
 }
 # ------------------------------------------------------------------------------
 
+set ::_NEW_ 1
+set ::_OLD_ [expr (! $::_NEW_)]
+
+# ------------------------------------------------------------------------------
+
 oo::class create BOT01 {
 
   superclass BOT
  
-#   constructor {task pop args} {
+  if {$::_NEW_} {
+  constructor {args} {
 
-#     [self] SET_task $task
-#     [self] SET_pop  $pop
-#   } 
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]] 
+    
+    
+    set pop [pop1_create  {*}$args]
+    
+    SET $pop  select_one   "ga_select_one_sus"
+    SET $pop  select_two   "ga_select_two_sus"
+    
+    
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+  }
+ 
 }
 
 # ------------------------------------------------------------------------------
 proc bot01_create {args} {
 
-  set pop [pop1_create  {*}$args]
- 
-  SET $pop  select_one   "ga_select_one_sus"
-  SET $pop  select_two   "ga_select_two_sus"
 
+  if {$::_OLD_} { 
 
-  #--------------------------------------------------
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]] 
+    
+    
+    set pop [pop1_create  {*}$args]
+    
+    SET $pop  select_one   "ga_select_one_sus"
+    SET $pop  select_two   "ga_select_two_sus"
+    
+    
+    set obj [BOT01 new  -task $task -pop $pop]
+    
+  } else {
 
-  # если нет в args, то берем значение здесь
-  # 
-  set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target 53.1]] 
+    set obj [BOT01 new  {*}$args]
+  }
 
-  set obj [BOT01 new  -task $task -pop $pop]
 
   return $obj
 }
@@ -553,6 +577,7 @@ proc _01_test {} {
   set obj \
     [bot01_create  -popsize $population_size -gensize $len_chromo -task $task] 
 
+
   set pop [$obj GET_pop]
   
   SET $pop        seed   $seed_proc   
@@ -568,27 +593,51 @@ proc _01_test {} {
 
 oo::class create BOT02 {
 
-  superclass BOT01
+  superclass BOT
 
+  if {$::_NEW_} {
+  constructor {args} {
+
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]]
+    
+    set pop1 [pop1_create  {*}$args]
+    
+    SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
+    SET $pop1  select_one  "ga_select_one_bestof2"
+    SET $pop1  select_two  "ga_select_two_bestof2"  
+    
+    [self] SET_task $task
+    [self] SET_pop  $pop1
+  }
+  }
+ 
 }
 
 # ------------------------------------------------------------------------------
 proc bot02_create {args} {
 
-  # если нет в args, то берем значение здесь
-  # 
-  set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target 53.1]]
+  if {$::_OLD_} {
 
-  set pop1 [pop1_create  {*}$args]
+    # если нет в args, то берем значение здесь
+    # 
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]]
+    
+    set pop1 [pop1_create  {*}$args]
+    
+    SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
+    SET $pop1  select_one  "ga_select_one_bestof2"
+    SET $pop1  select_two  "ga_select_two_bestof2"  
+    
 
-  SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
-  SET $pop1  select_one  "ga_select_one_bestof2"
-  SET $pop1  select_two  "ga_select_two_bestof2"  
+    set obj [BOT02 new  -task $task -pop $pop1]
+    
+  } else {
+    
+    set obj [BOT02 new  {*}$args]
+  }
 
-  #-------------------------------------
-
-  set obj [BOT02 new  -task $task -pop $pop1]
 
   return $obj
 }
@@ -683,9 +732,68 @@ proc parse_opts_2 {&par1    &par2 \
   return
 }
 # ------------------------------------------------------------------------------
+
+oo::class create BOT03 {
+
+  superclass BOT
+
+  if {$::_NEW_} {
+  constructor {args} {
+
+
+  set task [dict_parse $args "-task" \
+              [task_create  "FS_fitness" -fit_target 53.1]]
+
+  set len_chromo      [dict_parse $args "-gensize" ] 
+  set population_size [dict_parse $args "-popsize" ] 
+
+
+  set seed_proc  "maintest_seed_proc"
+
+
+  set pop  [ga_genesis_main                          \
+	      $task \
+              $population_size			     \
+              1			                     \
+              $len_chromo                            \
+              _3_struggle_generation_hook	     \
+              NULL			             \
+              NULL			             \
+              NULL                                   \
+              $seed_proc                             \
+              _3_struggle_adaptation	             \
+              ga_select_one_sus	                     \
+              ga_select_two_sus	                     \
+              ga_mutate_printable_singlepoint_drift  \
+              ga_crossover_char_allele_mixing        \
+              NULL			             \
+              NULL			             \
+             ]
+
+  SET $pop ch_form "%c" ;# 
+
+  ga_population_set_parameters \
+    $pop	               \
+    GA_SCHEME_LAMARCK_CHILDREN \
+    GA_ELITISM_PARENTS_DIE     \
+    0.8			       \
+    0.05		       \
+    0.0      	          
+
+
+    
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+  }
+ 
+}
+
+# ------------------------------------------------------------------------------
 proc bot03_create {args} {
 
 
+  if {$::_OLD_} {
   # если нет в args, то берем значение здесь
   # 
   set task [dict_parse $args "-task" \
@@ -728,9 +836,14 @@ proc bot03_create {args} {
     0.0      	          
 
 
-  #-------------------------------------
 
-  set obj [BOT01 new  -task $task -pop $pop]
+  set obj [BOT03 new  -task $task -pop $pop]
+
+  } else {
+
+    set obj [BOT03 new  {*}$args]
+
+  }
 
   return $obj
 }
@@ -845,88 +958,101 @@ proc _4_struggle_crossover {pop father mother son daughter} \
 }
 # //------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
+
+oo::class create BOT04 {
+
+  superclass BOT
+
+  constructor {args} {
+
+    # если нет в args, то берем значение здесь
+    # 
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]]
+    
+    set len_chromo      [dict_parse $args "-gensize" ] 
+    set population_size [dict_parse $args "-popsize" ] 
+    
+    
+    set pop [ga_population_new $population_size $len_chromo]
+    
+    SET $pop ch_form "%c" ;# 
+    
+    #   /*
+    #     * Define chromosome handling functions.
+    #     * Normally these functions would only be set manually when
+    #     * creating a custom chromosome type.
+    #     */
+    
+    #   pop->chromosome_constructor = ga_chromosome_char_allocate;
+    #   pop->chromosome_destructor  = ga_chromosome_char_deallocate;
+    #   pop->chromosome_replicate   = ga_chromosome_char_replicate;
+    #   pop->chromosome_to_bytes    = ga_chromosome_char_to_bytes;
+    #   pop->chromosome_from_bytes  = ga_chromosome_char_from_bytes;
+    #   pop->chromosome_to_string   = ga_chromosome_char_to_string;
+    
+    #   /* Define all the needed callback functions. */
+    SET $pop generation_hook NULL
+    #$pop configure -iteration_hook  NULL
+    #   pop->data_destructor = NULL;
+    #   pop->data_ref_incrementor = NULL;
+    
+    
+    set seed_proc  "maintest_seed_proc"
+    
+    
+    SET $pop seed       $seed_proc      ;# /* Individual initialisation    */
+    
+    SET $pop adapt      _3_struggle_adaptation ;# /* Environmental adaptation operator */
+    SET $pop select_one  ga_select_one_sus     ;# /* Mutation selection operator  */
+    SET $pop select_two  ga_select_two_sus     ;# /* Crossover selection operator */
+    SET $pop mutate     _4_struggle_mutate     ;# /* Mutation operator            */
+    SET $pop crossover  _4_struggle_crossover  ;# /* Crossover operator           */
+    
+    #   /* Replacement operator. (Only used in steady-state evolution) */
+    SET $pop replace NULL
+    
+    #   /*
+    #     * Seed the initial population. (Could do this manually - it
+    #     * just calls pop->seed() 100 times in this case.)
+    #     */
+    ga_population_seed $pop
+    
+    #   /*
+    #     * Set the GA parameters.
+    #     * Lamarkian evolution.
+    #     * Parents may survive into next generation.
+    #     * Crossover ratio = 0.9.
+    #     * Mutation ratio = 0.1.
+    #     * Migration ration = 0.0.
+    #     *
+    #     * Note that custom operator functions may choose to ignore these values.
+    #     *
+    #     * There are functions for setting these individually too.
+    #     */
+    #   ga_population_set_parameters (pop, GA_SCHEME_LAMARCK_CHILDREN, GA_ELITISM_PARENTS_DIE, 0.9, 0.1, 0.0);
+    
+    ga_population_set_parameters \
+      $pop	               \
+      GA_SCHEME_LAMARCK_CHILDREN \
+      GA_ELITISM_PARENTS_DIE     \
+      0.9			       \
+      0.1		               \
+      0.0      	          
+    
+    
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+}
+ 
+}
+
+# ------------------------------------------------------------------------------
 proc bot04_create {args} {
 
 
-  # если нет в args, то берем значение здесь
-  # 
-  set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target 53.1]]
-
-  set len_chromo      [dict_parse $args "-gensize" ] 
-  set population_size [dict_parse $args "-popsize" ] 
-
-
-  set pop [ga_population_new $population_size $len_chromo]
-  
-  SET $pop ch_form "%c" ;# 
-
-  #   /*
-  #     * Define chromosome handling functions.
-  #     * Normally these functions would only be set manually when
-  #     * creating a custom chromosome type.
-  #     */
-
-  #   pop->chromosome_constructor = ga_chromosome_char_allocate;
-  #   pop->chromosome_destructor  = ga_chromosome_char_deallocate;
-  #   pop->chromosome_replicate   = ga_chromosome_char_replicate;
-  #   pop->chromosome_to_bytes    = ga_chromosome_char_to_bytes;
-  #   pop->chromosome_from_bytes  = ga_chromosome_char_from_bytes;
-  #   pop->chromosome_to_string   = ga_chromosome_char_to_string;
-  
-  #   /* Define all the needed callback functions. */
-  SET $pop generation_hook NULL
-  #$pop configure -iteration_hook  NULL
-  #   pop->data_destructor = NULL;
-  #   pop->data_ref_incrementor = NULL;
-  
-  
-  set seed_proc  "maintest_seed_proc"
-
-
-  SET $pop seed       $seed_proc      ;# /* Individual initialisation    */
-
-  SET $pop adapt      _3_struggle_adaptation   ;# /* Environmental adaptation operator */
-  SET $pop select_one  ga_select_one_sus     ;# /* Mutation selection operator  */
-  SET $pop select_two  ga_select_two_sus     ;# /* Crossover selection operator */
-  SET $pop mutate     _4_struggle_mutate    ;# /* Mutation operator            */
-  SET $pop crossover  _4_struggle_crossover ;# /* Crossover operator           */
-  
-  #   /* Replacement operator. (Only used in steady-state evolution) */
-  SET $pop replace NULL
-  
-  #   /*
-  #     * Seed the initial population. (Could do this manually - it
-  #     * just calls pop->seed() 100 times in this case.)
-  #     */
-  ga_population_seed $pop
-  
-  #   /*
-  #     * Set the GA parameters.
-  #     * Lamarkian evolution.
-  #     * Parents may survive into next generation.
-  #     * Crossover ratio = 0.9.
-  #     * Mutation ratio = 0.1.
-  #     * Migration ration = 0.0.
-  #     *
-  #     * Note that custom operator functions may choose to ignore these values.
-  #     *
-  #     * There are functions for setting these individually too.
-  #     */
-  #   ga_population_set_parameters (pop, GA_SCHEME_LAMARCK_CHILDREN, GA_ELITISM_PARENTS_DIE, 0.9, 0.1, 0.0);
-  
-  ga_population_set_parameters \
-    $pop	               \
-    GA_SCHEME_LAMARCK_CHILDREN \
-    GA_ELITISM_PARENTS_DIE     \
-    0.9			       \
-    0.1		               \
-    0.0      	          
-
-
-  #-------------------------------------
-
-  set obj [BOT01 new  -task $task -pop $pop]
+  set obj [BOT04 new {*}$args]
 
   return $obj
 }
@@ -994,7 +1120,7 @@ proc _04_test {} \
 
 oo::class create BOT05 {
 
-  superclass BOT01
+  superclass BOT
  
   VAR  pops
 
@@ -1182,6 +1308,14 @@ proc _05_test {} \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
+
+oo::class create BOT06 {
+
+  superclass BOT
+
+}
+
+# ------------------------------------------------------------------------------
 proc bot06_create {args} {
 
   # если нет в args, то берем значение здесь
@@ -1235,7 +1369,7 @@ proc bot06_create {args} {
 
   #-------------------------------------
 
-  set obj [BOT01 new  -task $task -pop $pop]
+  set obj [BOT06 new  -task $task -pop $pop]
 
   return $obj
 }
@@ -1386,20 +1520,34 @@ proc make_pop_DARWIN {task population_size len_chromo} {
   return $popd
 }
 # ------------------------------------------------------------------------------
+
+oo::class create BOT07 {
+
+  superclass BOT
+
+}
+
+# ------------------------------------------------------------------------------
 proc bot7_create {args} {
 
   set task            [dict_parse $args "-task"   ]
   set len_chromo      [dict_parse $args "-gensize"] 
   set population_size [dict_parse $args "-popsize"] 
 
-  #set  bot7 [dict_create]
-
   set popd [make_pop_DARWIN  $task $population_size $len_chromo]
 
-  set obj [BOT01 new   -task $task -pop $popd]
+  set obj [BOT07 new   -task $task -pop $popd]
 
   return $obj
 }
+# ------------------------------------------------------------------------------
+
+oo::class create BOT08 {
+
+  superclass BOT
+
+}
+
 # ------------------------------------------------------------------------------
 proc bot8_create {args} {
 
@@ -1408,16 +1556,24 @@ proc bot8_create {args} {
   set population_size [dict_parse $args "-popsize"] 
 
 
-  set obj \
-    [bot7_create  -popsize $population_size -gensize $len_chromo -task $task] 
-
-  set pop [$obj GET_pop]
+  set pop [make_pop_DARWIN  $task $population_size $len_chromo]
 
   ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"
 
 
+  set obj [BOT08 new   -task $task -pop $pop]
+
+
   return $obj
 }
+# ------------------------------------------------------------------------------
+
+oo::class create BOT09 {
+
+  superclass BOT
+
+}
+
 # ------------------------------------------------------------------------------
 proc bot9_create {args} {
 
@@ -1426,13 +1582,12 @@ proc bot9_create {args} {
   set population_size [dict_parse $args "-popsize" ] 
 
 
-  set obj \
-    [bot7_create  -popsize $population_size -gensize $len_chromo -task $task]
-
-  set pop [$obj GET_pop]
+  set pop [make_pop_DARWIN  $task $population_size $len_chromo]
 
   ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
 
+
+  set obj [BOT07 new   -task $task -pop $pop]
 
   return $obj
 }
