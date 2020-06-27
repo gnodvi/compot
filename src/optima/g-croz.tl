@@ -537,6 +537,7 @@ oo::class create BOT {
   VAR task
   VAR  pop
 
+  #---------------------------------------------------------
   constructor {args} {
 
     if {! [info exists task]} {
@@ -551,6 +552,24 @@ oo::class create BOT {
     [self] SET_task $task
     [self] SET_pop  $pop
   }
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+
+  set  pop [$obj GET_pop]
+
+  #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+  #   ga_evolution_main           $task $pop $max_generations ;# 0.01
+
+  set ret [ga_evolution  $task $pop $max_generations]  
+
+  }
+  #---------------------------------------------------------
+
  
 }
 

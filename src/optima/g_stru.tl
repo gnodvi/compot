@@ -449,16 +449,13 @@ proc pop1_create {args} {
 }
 # ------------------------------------------------------------------------------
 
-set ::_NEW_ 1
-set ::_OLD_ [expr (! $::_NEW_)]
-
 # ------------------------------------------------------------------------------
 
 oo::class create BOT01 {
 
   superclass BOT
  
-  if {$::_NEW_} {
+  #---------------------------------------------------------
   constructor {args} {
 
     set task [dict_parse $args "-task" \
@@ -474,50 +471,29 @@ oo::class create BOT01 {
     [self] SET_task $task
     [self] SET_pop  $pop
   }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
   }
+  #---------------------------------------------------------
  
 }
 
 # ------------------------------------------------------------------------------
 proc bot01_create {args} {
 
-
-  if {$::_OLD_} { 
-
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]] 
-    
-    
-    set pop [pop1_create  {*}$args]
-    
-    SET $pop  select_one   "ga_select_one_sus"
-    SET $pop  select_two   "ga_select_two_sus"
-    
-    
-    set obj [BOT01 new  -task $task -pop $pop]
-    
-  } else {
-
-    set obj [BOT01 new  {*}$args]
-  }
-
+  set obj [BOT01 new  {*}$args]
 
   return $obj
 }
 # ------------------------------------------------------------------------------
 proc bot01_calc {obj args} {
 
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
+  $obj calc {*}$args
 
-
-  set  pop [$obj GET_pop]
-
-  #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-  #   ga_evolution_main           $task $pop $max_generations ;# 0.01
-
-  set ret [ga_evolution  $task $pop $max_generations]  
-
+  return
 }
 # ------------------------------------------------------------------------------
 proc bot01_final {obj} {
@@ -595,7 +571,6 @@ oo::class create BOT02 {
 
   superclass BOT
 
-  if {$::_NEW_} {
   constructor {args} {
 
     set task [dict_parse $args "-task" \
@@ -610,34 +585,20 @@ oo::class create BOT02 {
     [self] SET_task $task
     [self] SET_pop  $pop1
   }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
   }
+  #---------------------------------------------------------
  
 }
 
 # ------------------------------------------------------------------------------
 proc bot02_create {args} {
 
-  if {$::_OLD_} {
-
-    # если нет в args, то берем значение здесь
-    # 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]]
-    
-    set pop1 [pop1_create  {*}$args]
-    
-    SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
-    SET $pop1  select_one  "ga_select_one_bestof2"
-    SET $pop1  select_two  "ga_select_two_bestof2"  
-    
-
-    set obj [BOT02 new  -task $task -pop $pop1]
-    
-  } else {
-    
-    set obj [BOT02 new  {*}$args]
-  }
-
+  set obj [BOT02 new  {*}$args]
 
   return $obj
 }
@@ -645,7 +606,7 @@ proc bot02_create {args} {
 proc bot02_calc {obj args} {
 
 
-  bot01_calc $obj {*}$args
+  $obj calc {*}$args
 
 }
 # ------------------------------------------------------------------------------
@@ -737,7 +698,7 @@ oo::class create BOT03 {
 
   superclass BOT
 
-  if {$::_NEW_} {
+  #---------------------------------------------------------
   constructor {args} {
 
 
@@ -780,84 +741,48 @@ oo::class create BOT03 {
     0.05		       \
     0.0      	          
 
-
     
     [self] SET_task $task
     [self] SET_pop  $pop
   }
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+    set task            [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations [dict_parse $args "-steps"] 
+    
+    set  pop [$obj GET_pop]
+    
+    set ret [ga_evolution  $task $pop $max_generations]  
+    
+    return $ret
+
   }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+ 
  
 }
 
 # ------------------------------------------------------------------------------
 proc bot03_create {args} {
 
-
-  if {$::_OLD_} {
-  # если нет в args, то берем значение здесь
-  # 
-  set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target 53.1]]
-
-  set len_chromo      [dict_parse $args "-gensize" ] 
-  set population_size [dict_parse $args "-popsize" ] 
-
-
-  set seed_proc  "maintest_seed_proc"
-
-
-  set pop  [ga_genesis_main                          \
-	      $task \
-              $population_size			     \
-              1			                     \
-              $len_chromo                            \
-              _3_struggle_generation_hook	     \
-              NULL			             \
-              NULL			             \
-              NULL                                   \
-              $seed_proc                             \
-              _3_struggle_adaptation	             \
-              ga_select_one_sus	                     \
-              ga_select_two_sus	                     \
-              ga_mutate_printable_singlepoint_drift  \
-              ga_crossover_char_allele_mixing        \
-              NULL			             \
-              NULL			             \
-             ]
-
-  SET $pop ch_form "%c" ;# 
-
-  ga_population_set_parameters \
-    $pop	               \
-    GA_SCHEME_LAMARCK_CHILDREN \
-    GA_ELITISM_PARENTS_DIE     \
-    0.8			       \
-    0.05		       \
-    0.0      	          
-
-
-
-  set obj [BOT03 new  -task $task -pop $pop]
-
-  } else {
-
-    set obj [BOT03 new  {*}$args]
-
-  }
+  set obj [BOT03 new  {*}$args]
 
   return $obj
 }
 # ------------------------------------------------------------------------------
 proc bot03_calc {obj args} {
 
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
 
-  set  pop [$obj GET_pop]
-
-  set ret [ga_evolution  $task $pop $max_generations]  
-
-  return $ret
+  return [$obj calc {*}$args]]
 }
 # ------------------------------------------------------------------------------
 proc bot03_final {obj} {
@@ -963,6 +888,7 @@ oo::class create BOT04 {
 
   superclass BOT
 
+  #---------------------------------------------------------
   constructor {args} {
 
     # если нет в args, то берем значение здесь
@@ -1044,7 +970,29 @@ oo::class create BOT04 {
     [self] SET_task $task
     [self] SET_pop  $pop
   }
-}
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+
+  set  pop [$obj GET_pop]
+
+  set ret [ga_evolution  $task $pop $max_generations]  
+
+  return $ret
+
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+  #---------------------------------------------------------
  
 }
 
@@ -1059,13 +1007,7 @@ proc bot04_create {args} {
 # ------------------------------------------------------------------------------
 proc bot04_calc {obj args} {
 
-
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
-
-  set  pop [$obj GET_pop]
-
-  set ret [ga_evolution  $task $pop $max_generations]  
+  set ret [$obj calc {*}$args]
 
   return $ret
 }
@@ -1116,6 +1058,12 @@ proc _04_test {} \
   return 1
 }
 # ------------------------------------------------------------------------------
+
+set ::_NEW_ 1
+set ::_OLD_ [expr (! $::_NEW_)]
+
+#if {$::_OLD_} {}
+
 # ------------------------------------------------------------------------------
 
 oo::class create BOT05 {
@@ -1124,83 +1072,81 @@ oo::class create BOT05 {
  
   VAR  pops
 
+  #---------------------------------------------------------
   constructor {args} {
 
-    if {! [info exists task]} {
-      set task [dict_parse $args "-task" ] 
+    # если нет в args, то берем значение здесь
+    # 
+    set task            [dict_parse $args "-task"]
+    set len_chromo      [dict_parse $args "-gensize" ] 
+    set population_size [dict_parse $args "-popsize" ] 
+    set num_pops        [dict_parse $args "-num_pops" 1]
+    
+    
+    set seed_proc  "maintest_seed_proc"
+    
+    # все попы одинаковы?
+    set pops ""
+    
+    for {set i 0} {$i < $num_pops} {incr i} {
+      
+      set pop  [ga_genesis_main                         \
+                  $task \
+                  $population_size	              \
+                  1			              \
+                  $len_chromo                           \
+                  NULL	                              \
+                  NULL			              \
+                  NULL			              \
+                  NULL                                  \
+                  $seed_proc                            \
+                  NULL	                              \
+                  ga_select_one_sus	              \
+                  ga_select_two_sus	              \
+                  ga_mutate_printable_singlepoint_drift \
+                  ga_crossover_char_allele_mixing       \
+                  NULL			              \
+                  NULL			              \
+                 ]
+      
+      SET $pop ch_form "%c" ;# 
+      
+      ga_population_set_parameters \
+        $pop	                 \
+        GA_SCHEME_DARWIN           \
+        GA_ELITISM_PARENTS_DIE     \
+        0.75			 \
+        0.25		         \
+        0.0001      
+      
+      
+      lappend pops $pop
     }
-
-    if {! [info exists pops]} {
-      set pops [dict_parse $args "-pops" ] 
-    }
-
-
+    
+    
     [self] SET_task  $task
     [self] SET_pops  $pops
   }
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+
 }
 
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 proc bot05_create {args} {
 
-  # если нет в args, то берем значение здесь
-  # 
-  #set task [dict_parse $args "-task"  $task]
-  set task [dict_parse $args "-task"]
-
-  set len_chromo      [dict_parse $args "-gensize" ] 
-  set population_size [dict_parse $args "-popsize" ] 
-
-
-  #----------------------------------------------------
-
-  set seed_proc  "maintest_seed_proc"
-
-  set num_pops [dict_parse $args "-num_pops" 1]
-
-  # все попы одинаковы?
-
-  set pops ""
-
-  for {set i 0} {$i < $num_pops} {incr i} {
-      
-    set pop  [ga_genesis_main                         \
-		$task \
-                $population_size	              \
-                1			              \
-                $len_chromo                           \
-                NULL	                              \
-                NULL			              \
-                NULL			              \
-                NULL                                  \
-                $seed_proc                            \
-                NULL	                              \
-                ga_select_one_sus	              \
-                ga_select_two_sus	              \
-                ga_mutate_printable_singlepoint_drift \
-                ga_crossover_char_allele_mixing       \
-                NULL			              \
-                NULL			              \
-               ]
-
-    SET $pop ch_form "%c" ;# 
-
-    ga_population_set_parameters \
-      $pop	                 \
-      GA_SCHEME_DARWIN           \
-      GA_ELITISM_PARENTS_DIE     \
-      0.75			 \
-      0.25		         \
-      0.0001      
-
-
-    lappend pops $pop
-  }
-  
-  #----------------------------------------------------
-
-  set obj [BOT05 new  -task $task -pops $pops] ;# ???
+  set obj [BOT05 new {*}$args]
 
   return $obj
 }
@@ -1313,10 +1259,8 @@ oo::class create BOT06 {
 
   superclass BOT
 
-}
-
-# ------------------------------------------------------------------------------
-proc bot06_create {args} {
+  #---------------------------------------------------------
+  constructor {args} {
 
   # если нет в args, то берем значение здесь
   # 
@@ -1367,9 +1311,29 @@ proc bot06_create {args} {
     "ga_compare_char_hamming"
   
 
-  #-------------------------------------
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+  #---------------------------------------------------------
+  method calc {args} {
 
-  set obj [BOT06 new  -task $task -pop $pop]
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+}
+
+# ------------------------------------------------------------------------------
+proc bot06_create {args} {
+
+
+  set obj [BOT06 new {*}$args]
 
   return $obj
 }
@@ -1525,6 +1489,44 @@ oo::class create BOT07 {
 
   superclass BOT
 
+  #---------------------------------------------------------
+  constructor {args} {
+
+    if {! [info exists task]} {
+      set task [dict_parse $args "-task" ] 
+    }
+
+    if {! [info exists pop]} {
+      set popd [dict_parse  $args  "-pop" ] 
+    }
+
+
+#   set task            [dict_parse $args "-task"   ]
+#   set len_chromo      [dict_parse $args "-gensize"] 
+#   set population_size [dict_parse $args "-popsize"] 
+
+#   set popd [make_pop_DARWIN  $task $population_size $len_chromo]
+
+
+
+    [self] SET_task  $task
+    [self] SET_pop   $popd
+  }
+  #---------------------------------------------------------
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+
 }
 
 # ------------------------------------------------------------------------------
@@ -1538,6 +1540,9 @@ proc bot7_create {args} {
 
   set obj [BOT07 new   -task $task -pop $popd]
 
+
+#   set obj [BOT07 new  {*}$args]
+
   return $obj
 }
 # ------------------------------------------------------------------------------
@@ -1545,6 +1550,20 @@ proc bot7_create {args} {
 oo::class create BOT08 {
 
   superclass BOT
+
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
 
 }
 
@@ -1571,6 +1590,20 @@ proc bot8_create {args} {
 oo::class create BOT09 {
 
   superclass BOT
+
+  #---------------------------------------------------------
+  method calc {args} {
+
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
+
+  }
+  #---------------------------------------------------------
 
 }
 
