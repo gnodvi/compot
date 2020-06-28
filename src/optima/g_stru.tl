@@ -472,40 +472,9 @@ oo::class create BOT01 {
     [self] SET_pop  $pop
   }
   #---------------------------------------------------------
-  method final {} {
-    
-    set obj [self]
-
-  }
-  #---------------------------------------------------------
  
 }
 
-# ------------------------------------------------------------------------------
-proc bot01_create {args} {
-
-  set obj [BOT01 new  {*}$args]
-
-  return $obj
-}
-# ------------------------------------------------------------------------------
-proc bot01_calc {obj args} {
-
-  $obj calc {*}$args
-
-  return
-}
-# ------------------------------------------------------------------------------
-proc bot01_final {obj} {
-
-  set pop [$obj GET_pop]
-
-  set num_generations [GET $pop "generation"] ;# сколько было генераций
-  set best_entity     [ga_get_entity_from_rank $pop 0]
-  set ch_form         [GET $pop "ch_form"]
-  
-  return [list  $num_generations $best_entity $ch_form]
-}
 # ------------------------------------------------------------------------------
 proc _01_test {} {
 
@@ -549,9 +518,8 @@ proc _01_test {} {
   
   set task [task_create $fitness_func]    
   
-  
   set obj \
-    [bot01_create  -popsize $population_size -gensize $len_chromo -task $task] 
+    [BOT01 new  -popsize $population_size -gensize $len_chromo -task $task] 
 
 
   set pop [$obj GET_pop]
@@ -586,37 +554,8 @@ oo::class create BOT02 {
     [self] SET_pop  $pop1
   }
   #---------------------------------------------------------
-  method final {} {
-    
-    set obj [self]
-
-  }
-  #---------------------------------------------------------
  
 }
-
-# ------------------------------------------------------------------------------
-proc bot02_create {args} {
-
-  set obj [BOT02 new  {*}$args]
-
-  return $obj
-}
-# ------------------------------------------------------------------------------
-proc bot02_calc {obj args} {
-
-
-  $obj calc {*}$args
-
-}
-# ------------------------------------------------------------------------------
-proc bot02_final {obj} {
-
-  
-  return [bot01_final $obj]
-}
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 
 # //------------------------------------------------------------------------------
 # //  struggle_generation_hook()
@@ -761,36 +700,10 @@ oo::class create BOT03 {
 
   }
   #---------------------------------------------------------
-  method final {} {
-    
-    set obj [self]
-
-  }
-  #---------------------------------------------------------
  
  
 }
 
-# ------------------------------------------------------------------------------
-proc bot03_create {args} {
-
-  set obj [BOT03 new  {*}$args]
-
-  return $obj
-}
-# ------------------------------------------------------------------------------
-proc bot03_calc {obj args} {
-
-
-  return [$obj calc {*}$args]]
-}
-# ------------------------------------------------------------------------------
-proc bot03_final {obj} {
-
-  
-  return [bot01_final $obj]
-}
-# ------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
 proc _03_test {} \
 {
@@ -812,7 +725,8 @@ proc _03_test {} \
   #----------------------------------------------------------------------
 
   set obj \
-    [bot03_create  -popsize $population_size -gensize $len_chromo -task $task] 
+    [BOT03 new  -popsize $population_size -gensize $len_chromo -task $task] 
+
 
   set pop [$obj GET_pop]
 
@@ -975,48 +889,19 @@ oo::class create BOT04 {
 
     set obj [self]
 
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
-
-  set  pop [$obj GET_pop]
-
-  set ret [ga_evolution  $task $pop $max_generations]  
-
-  return $ret
-
-  }
-  #---------------------------------------------------------
-  method final {} {
+    set task            [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations [dict_parse $args "-steps"] 
     
-    set obj [self]
-
+    set  pop [$obj GET_pop]
+    
+    set ret [ga_evolution  $task $pop $max_generations]  
+    
+    return $ret
   }
-  #---------------------------------------------------------
   #---------------------------------------------------------
  
 }
 
-# ------------------------------------------------------------------------------
-proc bot04_create {args} {
-
-
-  set obj [BOT04 new {*}$args]
-
-  return $obj
-}
-# ------------------------------------------------------------------------------
-proc bot04_calc {obj args} {
-
-  set ret [$obj calc {*}$args]
-
-  return $ret
-}
-# ------------------------------------------------------------------------------
-proc bot04_final {obj} {
-
-  
-  return [bot01_final $obj]
-}
 # //------------------------------------------------------------------------------
 # //
 # //  struggle4.c
@@ -1045,11 +930,13 @@ proc _04_test {} \
   set task [task_create "FS_fitness"]
   
   set obj \
-    [bot04_create  -popsize $population_size -gensize $len_chromo -task $task] 
+    [BOT04 new  -popsize $population_size -gensize $len_chromo -task $task] 
 
   set pop [$obj GET_pop]
 
-  bot04_calc  $obj -steps $max_generations -task $task 
+  #bot04_calc  $obj -steps $max_generations -task $task 
+
+  $obj calc -steps $max_generations -task $task 
 
   #-----------------------------------------------------------------
 
@@ -1057,13 +944,6 @@ proc _04_test {} \
 
   return 1
 }
-# ------------------------------------------------------------------------------
-
-set ::_NEW_ 1
-set ::_OLD_ [expr (! $::_NEW_)]
-
-#if {$::_OLD_} {}
-
 # ------------------------------------------------------------------------------
 
 oo::class create BOT05 {
@@ -1132,60 +1012,43 @@ oo::class create BOT05 {
 
     set obj [self]
 
+    set task            [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations [dict_parse $args "-steps"] 
+    
+    set pops [$obj GET_pops]
+    
+    set num_pops [llength $pops]
+    
+    set ret [ga_evolution_archipelago  $num_pops $pops  $max_generations $task]
+    
+  return $ret
   }
   #---------------------------------------------------------
   method final {} {
     
     set obj [self]
 
+
+    set pops [$obj GET_pops]    
+    set pop0 [lindex $pops 0]
+    
+    set num_generations [GET $pop0 "generation"] ;# сколько было генераций
+    set ch_form         [GET $pop0 "ch_form"]
+    
+    set num_pops [llength $pops]
+    
+    for {set i 0} {$i < $num_pops} {incr i} {
+      
+      set pop [lindex $pops $i] 
+      set best_entity     [ga_get_entity_from_rank $pop 0]
+    }
+
+    return [list $num_generations $best_entity $ch_form]
   }
   #---------------------------------------------------------
 
 }
 
-# ------------------------------------------------------------------------------
-proc bot05_create {args} {
-
-  set obj [BOT05 new {*}$args]
-
-  return $obj
-}
-# ------------------------------------------------------------------------------
-proc bot05_calc {obj args} {
-
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
-
-  set pops [$obj GET_pops]
-
-
-  set num_pops [llength $pops]
-
-  set ret [ga_evolution_archipelago  $num_pops $pops  $max_generations $task]
-  
-  return $ret
-}
-# ------------------------------------------------------------------------------
-proc bot05_final {obj} {
- 
-  set pops [$obj GET_pops]
-
-
-  set pop0 [lindex $pops 0]
-
-  set num_generations [GET $pop0 "generation"] ;# сколько было генераций
-  set ch_form         [GET $pop0 "ch_form"]
-  
-  set num_pops [llength $pops]
-
-  for {set i 0} {$i < $num_pops} {incr i} {
-  
-    set pop [lindex $pops $i] 
-    set best_entity     [ga_get_entity_from_rank $pop 0]
-  }
-
-  return [list $num_generations $best_entity $ch_form]
-}
 # //------------------------------------------------------------------------------
 # //
 # //  struggle4.c
@@ -1230,14 +1093,14 @@ proc _05_test {} \
   set task [task_create "FS_fitness"]
   
   #----------------------------------------------------------------------
-  #
+
   set obj \
-    [bot05_create  -popsize $population_size -gensize $len_chromo \
+    [BOT05 new  -popsize $population_size -gensize $len_chromo \
              -task $task -num_pops $num_pops ] 
 
   set pops [$obj GET_pops]
 
-  bot05_calc  $obj -steps $max_generations -task $task 
+  $obj calc -steps $max_generations -task $task
 
   #----------------------------------------------------------------------
 
@@ -1246,12 +1109,10 @@ proc _05_test {} \
     set pop [lindex $pops $i] 
 
     do_print_best $pop [format " on island %d " $i]
-
   }
   
   return 1
 }
-# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
@@ -1319,42 +1180,16 @@ oo::class create BOT06 {
 
     set obj [self]
 
-  }
-  #---------------------------------------------------------
-  method final {} {
+    set task            [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations [dict_parse $args "-steps"] 
     
-    set obj [self]
-
+    set pop  [$obj GET_pop]
+    
+    ga_deterministiccrowding  $task $pop $max_generations
   }
   #---------------------------------------------------------
 }
 
-# ------------------------------------------------------------------------------
-proc bot06_create {args} {
-
-
-  set obj [BOT06 new {*}$args]
-
-  return $obj
-}
-# ------------------------------------------------------------------------------
-proc bot06_calc {obj args} {
-
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
-
-
-  set pop  [$obj GET_pop]
-
-  ga_deterministiccrowding  $task $pop $max_generations
-
-}
-# ------------------------------------------------------------------------------
-proc bot06_final {obj} {
-
-  
-  return [bot01_final $obj]
-}
 # //------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
 # //  struggle_dc.c
@@ -1385,11 +1220,13 @@ proc _dc_test {} \
     #----------------------------------------------------------
 
     set obj \
-      [bot06_create  -popsize $population_size -gensize $len_chromo -task $task] 
+      [BOT06 new  -popsize $population_size -gensize $len_chromo -task $task] 
 
     set pop [$obj GET_pop]
 
-    bot06_calc  $obj -steps $max_generations -task $task 
+    #bot06_calc  $obj -steps $max_generations -task $task 
+
+    $obj calc -steps $max_generations -task $task
 
     #----------------------------------------------------------
 
@@ -1492,59 +1329,31 @@ oo::class create BOT07 {
   #---------------------------------------------------------
   constructor {args} {
 
-    if {! [info exists task]} {
-      set task [dict_parse $args "-task" ] 
-    }
-
-    if {! [info exists pop]} {
-      set popd [dict_parse  $args  "-pop" ] 
-    }
-
-
-#   set task            [dict_parse $args "-task"   ]
-#   set len_chromo      [dict_parse $args "-gensize"] 
-#   set population_size [dict_parse $args "-popsize"] 
-
-#   set popd [make_pop_DARWIN  $task $population_size $len_chromo]
-
-
+    set task            [dict_parse $args "-task"   ]
+    set len_chromo      [dict_parse $args "-gensize"] 
+    set population_size [dict_parse $args "-popsize"] 
+    
+    set popd [make_pop_DARWIN  $task $population_size $len_chromo] 
 
     [self] SET_task  $task
     [self] SET_pop   $popd
   }
   #---------------------------------------------------------
-  #---------------------------------------------------------
   method calc {args} {
 
     set obj [self]
 
-  }
-  #---------------------------------------------------------
-  method final {} {
+    set task             [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations1 [dict_parse $args "-steps"] 
     
-    set obj [self]
+    set popd [$obj GET_pop]
+    do_evolution_and_print_best $task $popd $max_generations1 "Darwinian"
 
   }
   #---------------------------------------------------------
 
 }
 
-# ------------------------------------------------------------------------------
-proc bot7_create {args} {
-
-  set task            [dict_parse $args "-task"   ]
-  set len_chromo      [dict_parse $args "-gensize"] 
-  set population_size [dict_parse $args "-popsize"] 
-
-  set popd [make_pop_DARWIN  $task $population_size $len_chromo]
-
-  set obj [BOT07 new   -task $task -pop $popd]
-
-
-#   set obj [BOT07 new  {*}$args]
-
-  return $obj
-}
 # ------------------------------------------------------------------------------
 
 oo::class create BOT08 {
@@ -1552,15 +1361,30 @@ oo::class create BOT08 {
   superclass BOT
 
   #---------------------------------------------------------
+  constructor {args} {
+
+    set task            [dict_parse $args "-task"   ]
+    set len_chromo      [dict_parse $args "-gensize"] 
+    set population_size [dict_parse $args "-popsize"] 
+    
+    set pop [make_pop_DARWIN  $task $population_size $len_chromo]
+    
+    ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"
+    
+
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+  #---------------------------------------------------------
   method calc {args} {
 
     set obj [self]
 
-  }
-  #---------------------------------------------------------
-  method final {} {
+    set task             [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations2 [dict_parse $args "-steps"] 
     
-    set obj [self]
+    set popb [$obj GET_pop]
+    do_evolution_and_print_best $task $popb $max_generations2 "Baldwinian"
 
   }
   #---------------------------------------------------------
@@ -1568,23 +1392,12 @@ oo::class create BOT08 {
 }
 
 # ------------------------------------------------------------------------------
-proc bot8_create {args} {
 
-  set task            [dict_parse $args "-task"   ]
-  set len_chromo      [dict_parse $args "-gensize"] 
-  set population_size [dict_parse $args "-popsize"] 
+set ::_NEW_ 1
+set ::_OLD_ [expr (! $::_NEW_)]
 
+#if {$::_OLD_} {}
 
-  set pop [make_pop_DARWIN  $task $population_size $len_chromo]
-
-  ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"
-
-
-  set obj [BOT08 new   -task $task -pop $pop]
-
-
-  return $obj
-}
 # ------------------------------------------------------------------------------
 
 oo::class create BOT09 {
@@ -1592,38 +1405,36 @@ oo::class create BOT09 {
   superclass BOT
 
   #---------------------------------------------------------
+  constructor {args} {
+
+    set task            [dict_parse $args "-task"]
+    set len_chromo      [dict_parse $args "-gensize" ] 
+    set population_size [dict_parse $args "-popsize" ] 
+    
+    
+    set pop [make_pop_DARWIN  $task $population_size $len_chromo]
+    
+    ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
+
+    [self] SET_task $task
+    [self] SET_pop  $pop
+  }
+  #---------------------------------------------------------
+  #---------------------------------------------------------
   method calc {args} {
 
     set obj [self]
 
-  }
-  #---------------------------------------------------------
-  method final {} {
+    set task             [dict_parse $args "-task" [$obj GET_task]] 
+    set max_generations3 [dict_parse $args "-steps"] 
     
-    set obj [self]
-
+    set popl [$obj GET_pop]
+    do_evolution_and_print_best $task $popl $max_generations3 "Lamarckian"
   }
   #---------------------------------------------------------
 
 }
 
-# ------------------------------------------------------------------------------
-proc bot9_create {args} {
-
-  set task            [dict_parse $args "-task"]
-  set len_chromo      [dict_parse $args "-gensize" ] 
-  set population_size [dict_parse $args "-popsize" ] 
-
-
-  set pop [make_pop_DARWIN  $task $population_size $len_chromo]
-
-  ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
-
-
-  set obj [BOT07 new   -task $task -pop $pop]
-
-  return $obj
-}
 # //------------------------------------------------------------------------------
 # //  struggle2.c
 # //
@@ -1657,18 +1468,13 @@ proc eschemes {} \
 
 
   set obj7 \
-    [bot7_create  -popsize $population_size -gensize $len_chromo -task $task] 
+    [BOT07 new  -popsize $population_size -gensize $len_chromo -task $task] 
  
   set obj8  \
-    [bot8_create  -popsize $population_size -gensize $len_chromo -task $task] 
+    [BOT08 new  -popsize $population_size -gensize $len_chromo -task $task] 
 
   set obj9 \
-    [bot9_create  -popsize $population_size -gensize $len_chromo -task $task] 
-
-
-  set popd [$obj7 GET_pop]
-  set popb [$obj8 GET_pop]
-  set popl [$obj9 GET_pop]
+    [BOT09 new  -popsize $population_size -gensize $len_chromo -task $task] 
 
 
   #----------------------------------------------------------
@@ -1692,13 +1498,13 @@ proc eschemes {} \
 
 
   if {! $::is_print} {
-    do_evolution_and_print_best $task $popd $max_generations1 "Darwinian"
+    $obj7 calc -task $task -steps $max_generations1
   }
   
-    do_evolution_and_print_best $task $popb $max_generations2 "Baldwinian"
+    $obj8 calc -task $task -steps $max_generations2
   
   if {! $::is_print} {
-    do_evolution_and_print_best $task $popl $max_generations3 "Lamarckian"
+    $obj9 calc -task $task -steps $max_generations3
   }
   
   
@@ -1753,14 +1559,18 @@ proc sort_proc {aa bb} {
 }
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc print_result_maintest {botnames sum_name} {
+#proc print_result_maintest {botnames sum_name} {}
+proc print_result_maintest {botnumes sum_name} {
 
   upvar $sum_name sum
 
   set resultlist {}
 
-  foreach botname $botnames {
+  #foreach botname $botnames {}
+  foreach botnum $botnumes {
  
+    set botname "bot$botnum"
+
     lappend  resultlist [list $botname $sum($botname)]
     #puts "SUM  $botname =  $sum($botname)   eval_counts"
   }
@@ -1792,7 +1602,7 @@ proc print_result_maintest {botnames sum_name} {
 
 }
 # ------------------------------------------------------------------------------
-proc maintest_run {botnames max_generations 
+proc maintest_run {botnumes max_generations 
                num_text num_runs population_size pmin pmax} {
 
 
@@ -1808,8 +1618,11 @@ proc maintest_run {botnames max_generations
   set max -99999
 
   # -----------------------------------------------------------------
-  foreach botname $botnames {
+  #foreach botname $botnames {}
+  foreach botnum $botnumes {
  
+    set botname "bot$botnum"
+
     set sum($botname) 0
   }
   # -----------------------------------------------------------------
@@ -1832,22 +1645,26 @@ proc maintest_run {botnames max_generations
 
     # ------------------------------------------------------------
     # 
-    foreach botname $botnames {
+    #foreach botname $botnames {}
+    foreach botnum $botnumes {
+
+      set botname "bot$botnum"
+      set botcloo "BOT$botnum"
 
       set ::eval_count 0 ;# Number of fitness evaluations performed
 
       test_random_seed $r      
 
       set obj \
-        [${botname}_create  -popsize $population_size \
+        [${botcloo} new  -popsize $population_size \
            -gensize $len_chromosomes -task $task] 
 
       
-      ${botname}_calc $obj  -steps $max_generations  
+      $obj calc -steps $max_generations  
            
 
       foreach {num_generations  best_entity  ch_form} \
-        [${botname}_final $obj] \
+        [$obj final] \
         break
 
       #--------------------------------
@@ -1889,7 +1706,8 @@ proc maintest_run {botnames max_generations
 
 
   if {$max_generations == -1} {
-    print_result_maintest  $botnames sum
+    #print_result_maintest  $botnames sum
+    print_result_maintest  $botnumes sum
   }
 
   
@@ -1914,7 +1732,8 @@ proc maintest_531 {} {
     # фиксированный тест
     srandom_set 2019 ;# постоянный выбор текстовой строки
 
-    set botslist  [list "bot01" "bot02" "bot03" "bot04" "bot05" ]
+    set botslist  [list "01" "02" "03" "04" "05" ]
+    #set botslist  [list "bot01" "bot02" "bot03" "bot04" "bot05" ]
     #set botslist  [list "bot02"]
     
     set population_size 30 ;# 140
@@ -1935,7 +1754,8 @@ proc maintest_531 {} {
     #set botslist  [list "bot01" "bot02" "bot03" "bot04" "bot05" ]
     #set botslist  [list "bot06"] ;#  !!!! очень медленно !!!
 
-    set botslist  [list "bot33"]
+    #set botslist  [list "bot33"]
+    set botslist  [list "33"]
     
     set population_size 30
     set max_generations $mode  ;# -1  - останов по достижению нужной точности

@@ -557,16 +557,29 @@ oo::class create BOT {
 
     set obj [self]
 
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
+    set task            [dict_parse $args "-task"  [$obj GET_task]] 
+    set max_generations [dict_parse $args "-steps"] 
+    
+    set  pop [$obj GET_pop]
+    
+    # pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+    # ga_evolution_main           $task $pop $max_generations ;# 0.01
+    
+    set ret [ga_evolution  $task $pop $max_generations]  
 
-  set  pop [$obj GET_pop]
+  }
+  #---------------------------------------------------------
+  method final {} {
+    
+    set obj [self]
 
-  #   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-  #   ga_evolution_main           $task $pop $max_generations ;# 0.01
+    set pop [$obj GET_pop]
 
-  set ret [ga_evolution  $task $pop $max_generations]  
-
+    set num_generations [GET $pop "generation"] ;# сколько было генераций
+    set best_entity     [ga_get_entity_from_rank $pop 0]
+    set ch_form         [GET $pop "ch_form"]
+    
+    return [list  $num_generations $best_entity $ch_form]
   }
   #---------------------------------------------------------
 
