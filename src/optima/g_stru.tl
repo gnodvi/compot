@@ -1559,17 +1559,13 @@ proc sort_proc {aa bb} {
 }
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#proc print_result_maintest {botnames sum_name} {}
-proc print_result_maintest {botnumes sum_name} {
+proc print_result_maintest {botobjs sum_name} {
 
   upvar $sum_name sum
 
   set resultlist {}
 
-  #foreach botname $botnames {}
-  foreach botnum $botnumes {
- 
-    set botname "bot$botnum"
+  dict for {botname obj} [set $botobjs] {
 
     lappend  resultlist [list $botname $sum($botname)]
     #puts "SUM  $botname =  $sum($botname)   eval_counts"
@@ -1599,17 +1595,17 @@ proc print_result_maintest {botnumes sum_name} {
   #puts "mid_generations = $mid  \[$min ... $max\]"
   #puts ""
 
-
+  return
 }
 # ------------------------------------------------------------------------------
 proc maintest_run {botnumes max_generations 
                num_text num_runs population_size pmin pmax} {
 
 
-
   set task [task_create  "FS_fitness" -fit_target 53.1]
 
   set size 15 ;# длина хромосом (строк)
+  set len_chromosomes $size ;# [strlen $::target_text] 
 
   set ::gp_list "1 2 3 4 5 6 7 8 9"
 
@@ -1617,99 +1613,109 @@ proc maintest_run {botnumes max_generations
   set min +99999
   set max -99999
 
-  # -----------------------------------------------------------------
-  #foreach botname $botnames {}
+  #--------------------------------
+  set botobjs [dict_create]
+  
   foreach botnum $botnumes {
- 
+    
+    set botcloo "BOT$botnum"
     set botname "bot$botnum"
+    
+    #test_random_seed $r      
+    
+    set obj \
+      [${botcloo} new  -popsize $population_size \
+         -gensize $len_chromosomes -task $task -name $botname] 
+    
+    
+    dict_set $botobjs "$botname" $obj
+  }
+  #--------------------------------
+
+  dict for {botname obj} [set $botobjs] {
 
     set sum($botname) 0
   }
-  # -----------------------------------------------------------------
 
+  # -----------------------------------------------------------------
 
   for {set t 0} {$t < $num_text} {incr t} {
 
-  set ::target_text  [make_random_target_text   $::gp_list \
-                                                $size  $pmin $pmax]
-
-  puts "target_text = $::target_text \n"
-
-  set len_chromosomes [strlen $::target_text] 
-
-  # -----------------------------------------------------------------
-
-  for {set r 0} {$r < $num_runs} {incr r} {
-
-    puts -nonewline [format "r= $r   "]
-
-    # ------------------------------------------------------------
-    # 
-    #foreach botname $botnames {}
-    foreach botnum $botnumes {
-
-      set botname "bot$botnum"
-      set botcloo "BOT$botnum"
-
-      set ::eval_count 0 ;# Number of fitness evaluations performed
-
-      test_random_seed $r      
-
-      set obj \
-        [${botcloo} new  -popsize $population_size \
-           -gensize $len_chromosomes -task $task] 
-
+    set ::target_text  [make_random_target_text   $::gp_list \
+                          $size  $pmin $pmax]
+    
+    puts "target_text = $::target_text \n"
+    
+    #set len_chromosomes [strlen $::target_text] 
+    
+    # -----------------------------------------------------------------
+    
+    for {set r 0} {$r < $num_runs} {incr r} {
       
-      $obj calc -steps $max_generations  
-           
-
-      foreach {num_generations  best_entity  ch_form} \
-        [$obj final] \
-        break
-
-      #--------------------------------
-
-      # теперь напечатаем результаты по этому испытанию
-
-      puts ""
-
-      puts -nonewline [format "$botname :  "]
-      puts -nonewline [format "%02d gens, " $num_generations]
-      puts -nonewline [format "%04d eval, " $::eval_count]
-
-      set best_fitnes [item_get_fitn $best_entity] 
-
-      puts -nonewline [format "  res = "]
-      ent_print_ch_ $best_entity "" stdout $ch_form ;# cool
-      puts -nonewline [format ",  fit = %5.2f" $best_fitnes]
-      puts -nonewline [format "   "]
-
+      puts -nonewline [format "r= $r   "]
       
-      # и еще нам нужна общая сумма по всем испытаниям (?)
+      
+      # ------------------------------------------------------------
+      #       
+      dict for {botname obj} [set $botobjs] {
+        
+        set ::eval_count 0 ;# Number of fitness evaluations performed
+        
+        test_random_seed $r      
+        
+        # $obj null or init ????? !!!!! TODO !!!
+
+        $obj calc -steps $max_generations  
+        
+        foreach {num_generations  best_entity  ch_form} \
+          [$obj final] \
+          break
+        
+        #--------------------------------
+        
+        # теперь напечатаем результаты по этому испытанию
+        
+        puts ""
+        
+        puts -nonewline [format "$botname :  "]
+        puts -nonewline [format "%02d gens, " $num_generations]
+        puts -nonewline [format "%04d eval, " $::eval_count]
+        
+        set best_fitnes [item_get_fitn $best_entity] 
+        
+        puts -nonewline [format "  res = "]
+        ent_print_ch_ $best_entity "" stdout $ch_form ;# cool
+        puts -nonewline [format ",  fit = %5.2f" $best_fitnes]
+        puts -nonewline [format "   "]
+        
+        
+        # и еще нам нужна общая сумма по всем испытаниям (?)
+        # 
+        incr sum($botname) $::eval_count
+      }
       # 
-      incr sum($botname) $::eval_count
-    }
-    # 
-    # ------------------------------------------------------------
-
+      # ------------------------------------------------------------
+      
+      
+      
+      puts ""
+      
+    } ;# num_runs
+    # -----------------------------------------------------------------
+    
+    
     puts ""
-
-  } ;# num_runs
-  # -----------------------------------------------------------------
-
-
-  puts ""
-  
+    
   } ;# num_text 
-
+  
   # -----------------------------------------------------------------
-
-
+  
+  
   if {$max_generations == -1} {
-    #print_result_maintest  $botnames sum
-    print_result_maintest  $botnumes sum
+    
+    print_result_maintest  $botobjs sum
   }
-
+  
   
   return
 }

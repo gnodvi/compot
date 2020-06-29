@@ -534,23 +534,21 @@ proc gp_evolution_main {task  pop max_generations \
 
 oo::class create BOT {
 
+  VAR name
   VAR task
   VAR  pop
 
   #---------------------------------------------------------
   constructor {args} {
 
-    if {! [info exists task]} {
-      set task [dict_parse $args "-task" ] 
-    }
+    #     if {! [info exists task]} {
+    #       set task [dict_parse $args "-task" ] 
+    #     }
 
-    if {! [info exists pop]} {
-      set pop [dict_parse  $args  "-pop" ] 
-    }
+    [self] SET_name [dict_parse  $args  "-name"]
+    [self] SET_task [dict_parse  $args  "-task"]
+    [self] SET_pop  [dict_parse  $args  "-pop" ] 
 
-
-    [self] SET_task $task
-    [self] SET_pop  $pop
   }
   #---------------------------------------------------------
   method calc {args} {
@@ -670,12 +668,10 @@ oo::class create BOT33 {
 
     set  pop [$obj GET_pop]
     
-    set num_generations [GET $pop "generation"] ;# сколько было генераций
-    
+    set num_generations [GET $pop "generation"] ;# сколько было генераций   
     set best_entity     [ga_get_entity_from_rank $pop 0]
     set ch_form         [GET $pop "ch_form"]
-    
-    
+        
     return [list $num_generations $best_entity $ch_form]
   }
   #---------------------------------------------------------

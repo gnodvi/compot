@@ -2,20 +2,20 @@
 argc = 2   argv = maintest_531 @
 mode = @
 
-target_text = 133338883755444 
+target_text = 555533665511116 
 
 r= 0   
-bot01 :  15 gens, 0975 eval,   res = 133338883755444,  fit = 53.10   
-bot02 :  18 gens, 1110 eval,   res = 133338883755444,  fit = 53.10   
-bot03 :  10 gens, 1465 eval,   res = 133338883755444,  fit = 53.10   
-bot04 :  13 gens, 2273 eval,   res = 133338883755444,  fit = 53.10   
-bot05 :  23 gens, 1272 eval,   res = 133338883755444,  fit = 53.10   
+bot01 :  40 gens, 2550 eval,   res = 555533665511116,  fit = 53.10   
+bot02 :  29 gens, 1770 eval,   res = 555533665511116,  fit = 53.10   
+bot03 :  11 gens, 1658 eval,   res = 555533665511116,  fit = 53.10   
+bot04 :  10 gens, 1713 eval,   res = 555533665511116,  fit = 53.10   
+bot05 :  32 gens, 1758 eval,   res = 555533665511116,  fit = 53.10   
 
 ------------------------------------------------
 
-1 mesto :    bot01,    975 eval
-2 mesto :    bot02,   1110 eval
-3 mesto :    bot05,   1272 eval
-4 mesto :    bot03,   1465 eval
-5 mesto :    bot04,   2273 eval
+1 mesto :    bot03,   1658 eval
+2 mesto :    bot04,   1713 eval
+3 mesto :    bot05,   1758 eval
+4 mesto :    bot02,   1770 eval
+5 mesto :    bot01,   2550 eval
 
