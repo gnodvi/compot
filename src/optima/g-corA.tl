@@ -488,34 +488,106 @@ proc item_print {item} {
 # (defvar *generation-0-uniquifier-table* (make-hash-table :test #'equal))
 
 #-------------------------------------------------------------------------------
-proc pop_create_gaul {} {
-    
-  set p [dict_create]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rename SET SET_old
 
-  SET $p ch_form     {} ;#  " %02d"
+rename GET GET_old
 
-  SET $p max_size    {} ;# текущий максимальный размер
-  SET $p stable_size {} ;# требуемый размер популяции
-  #SET $p size        {} ;# актуальный размер
+#-------------------------------------------------------------------------------
+proc SET {args} {
+
+  set d    [lindex $args 0]
+
+  set is_obj [info object isa object $d]
+
+  if {$is_obj} {
+
+    set key  [lindex $args 1]
+    set val  [lindex $args 2]
+
+    $d SET_$key $val
+  } else {
+
+    uplevel 1 SET_old $args
+  }
+}
+#-------------------------------------------------------------------------------
+proc GET {args} {
+
+  set d    [lindex $args 0]
+
+  set is_obj [info object isa object $d]
+
+
+  if {$is_obj} {
+
+    set key  [lindex $args 1]
+    set val  [lindex $args 2]
+
+    return [$d GET_$key]
+  } else {
+
+    uplevel 1 GET_old $args
+  }
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+oo::class create POP {
+
+
+  VAR stable_size     ;# требуемый размер популяции
+  VAR len_chromosomes ;#   int : Maximum length of each chromosome.   
+  VAR ch_form         ;#  " %02d"
+  VAR generation_hook ;#-#  GAgeneration_hook generation_hook;
+
+  VAR sort_driver
+  VAR itemslist
+  VAR generation
+
+  constructor {stable_size__ len_chromosomes__} {
+
+    #   set len_chromosomes [dict_parse $args "-gensize"] 
+    #   set population_size [dict_parse $args "-popsize"] 
+
+    set     stable_size      $stable_size__  
+    set len_chromosomes  $len_chromosomes__
+
+    set  "ch_form"  "% 6.3f " ;#  " %02d"   
+    set generation_hook NULL
+
+  }
+
+}
+#-------------------------------------------------------------------------------
+oo::class create GAUL {
+
+  superclass POP
+ 
+ 
+  #VAR ch_form         ;#  " %02d"
+  #VAR generation_hook ;#-#  GAgeneration_hook generation_hook;
+
+  #VAR sort_driver  ;#  $sort_driver
+
+  #----------------------------------------------
+
+
+  VAR max_size    ;# текущий максимальный размер
+  VAR size        ;# актуальный размер
   #SET $p orig_size   {} ;# int : Number of parents (entities at end of previous generation)
 
-  SET $p generation  {} ;# номер текущей генерации
-  SET $p best        {} ;# для хранения лучшего номера
+  VAR generation  ;# номер текущей генерации
+  VAR best        ;# для хранения лучшего номера
 
-  SET $p len_chromosomes {} ;#   int : Maximum length of each chromosome. 
-  
   # здесь основной массив хранения
   # 
-  SET $p itemslist {} ;# "" 
+  VAR itemslist ;# "" 
 
 
   # /*
   #  * The scoring function and the other callbacks are defined here.
   #  */
-  SET $p generation_hook NULL ;#-#  GAgeneration_hook generation_hook;
-  SET $p iteration_hook  NULL ;#-#   GAiteration_hook	iteration_hook;
+  VAR iteration_hook  ;#-#   GAiteration_hook	iteration_hook;
   
   #   GAdata_destructor		data_destructor;        /* entity.data destructor */
   #   GAdata_ref_incrementor	data_ref_incrementor;   /* entity.data reference counter incrementor */
@@ -531,28 +603,27 @@ proc pop_create_gaul {} {
   #   GAchromosome_to_string	chromosome_to_string;
 
   #SET $p evaluate   {} ;#-# GAevaluate	
-  SET $p seed       {} ;#-# GAseed
+  VAR seed       ;#-# GAseed
   
-  SET $p select_state   {} ;#   int select_state;	/* Available to selection algorithms.
-  SET $p selectdata  {} ;#  ga_selectdata_t /* State values for built-in selection operators.
+  VAR select_state ;#   int select_state;	/* Available to selection algorithms.
+  VAR selectdata   ;#  ga_selectdata_t /* State values for built-in selection operators.
   
-  SET $p select_one {} ;#-# GAselect_one	select_one;
-  SET $p select_two {} ;#-# GAselect_two	select_two;
+  VAR select_one   ;#-# GAselect_one	select_one;
+  VAR select_two   ;#-# GAselect_two	select_two;
 
-  SET $p mutate     {} ;#-# GAmutate	mutate;
-  SET $p crossover  {} ;#-# GAcrossover   crossover;
-  SET $p adapt      NULL ;# GAadapt		adapt;
+  VAR mutate       ;#-# GAmutate	mutate;
+  VAR crossover    ;#-# GAcrossover   crossover;
+  VAR adapt        ;# GAadapt		adapt;
 
 
   #   int	allele_min_integer, allele_max_integer;	/* Range for "integer" alleles. 
-  SET $p allele_min_integer {} ;#
-  SET $p allele_max_integer {} ;#
+  VAR allele_min_integer ;#
+  VAR allele_max_integer ;#
 
   #   double	allele_min_double, allele_max_double;	/* Range for "double" alleles. 
-  SET $p allele_min_double  {} ;#
-  SET $p allele_max_double  {} ;#
+  VAR allele_min_double  ;#
+  VAR allele_max_double  ;#
   
-
   # /*
   #  * Special parameters for particular built-in GA operators.
   #  * FIXME: I don't like how this is currently implemented; need a more
@@ -562,22 +633,129 @@ proc pop_create_gaul {} {
   # /*
   #  * Evolutionary parameters.
   #  */
-  SET $p crossover_ratio    {} ;# double	   crossover_ratio;  /* Chance for crossover. */
-  SET $p mutation_ratio     {} ;# double	   mutation_ratio;   /* Chance for mutation.  */
-  SET $p migration_ratio    {} ;# double	   migration_ratio;  /* Chance for migration. */
+  VAR crossover_ratio    ;# double	   crossover_ratio;  /* Chance for crossover. */
+  VAR mutation_ratio     ;# double	   mutation_ratio;   /* Chance for mutation.  */
+  VAR migration_ratio    ;# double	   migration_ratio;  /* Chance for migration. */
 
-  SET $p scheme             {} ;# ga_scheme_type   scheme;	     /* Evolutionary scheme.  */
-  SET $p elitism            {} ;# ga_elitism_type  elitism;	     /* Elitism mode.         */
+  VAR scheme             ;# ga_scheme_type   scheme;	     /* Evolutionary scheme.  */
+  VAR elitism            ;# ga_elitism_type  elitism;	     /* Elitism mode.         */
   
 
-  SET $p algo_params {} ;# сюда будут подключаться все структуры разных "классов" алгоритмов
+  VAR algo_params ;# сюда будут подключаться все структуры разных "классов" алгоритмов
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  SET $p replace    {} ;#-# GAreplace	replace;
-  SET $p rank       {} ;#-# GArank	rank;
+  VAR replace    ;#-# GAreplace	replace;
+  VAR rank       ;#-# GArank	rank;
 
-  return $p
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  VAR island
+  VAR step
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  VAR de_params
+  VAR sa_params
+  VAR dc_params_compare
+  VAR gr_params
+
+  constructor {stable_size__ len_chromosomes__} {
+
+    next $stable_size__ $len_chromosomes__
+
+
+    #-------------------------------------------------
+
+    set  max_size       {}
+    set  size           {}
+
+    set generation      {}  
+    set best            {} 
+    
+    #set len_chromosomes {}
+    set itemslist       {}
+    
+    set iteration_hook  NULL
+    
+    set seed            {}
+    set select_state    {}
+    set selectdata      {}
+    
+    set select_one      {}
+    set select_two      {}
+    
+    set mutate          {}
+    set crossover       {}
+    set adapt           NULL
+    
+    set allele_min_integer {}
+    set allele_max_integer {}
+    set allele_min_double  {}
+    set allele_max_double  {}
+    
+    set crossover_ratio    {}
+    set mutation_ratio     {}
+    set migration_ratio    {}
+    
+    set scheme             {}
+    set elitism            {}
+    set algo_params {}
+    
+    set replace     {}
+    set rank        {}
+    
+    set island      {}
+    set step        {}
+    
+    set de_params   {}
+    set sa_params   {}
+    set dc_params_compare {}
+    set gr_params         {}
+
+    #---------------------------------------
+
+    #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
+    
+    #---------------------------------------
+    
+    #$newpop.selectdata = [selectdata_create]
+    # 
+    set  "selectdata" [selectdata_create]
+    
+    #[$newpop.selectdata].offset1 = 555
+    #puts "offset1 = [[$newpop.selectdata].offset1]"
+    
+    #   newpop->data = NULL;
+    #   newpop->free_index = newpop->max_size-1;
+    set  "island"  -1
+    
+    set "generation"  0
+    
+    #   newpop->fitness_dimensions = 0;
+    #SET $newpop "fitness_dimensions" 0
+
+    set "best"  -1 ;# для хранения лучшего номера (пока нет)
+    
+    #   newpop->crossover_ratio = GA_DEFAULT_CROSSOVER_RATIO;
+    #   newpop->mutation_ratio = GA_DEFAULT_MUTATION_RATIO;
+    #   newpop->migration_ratio = GA_DEFAULT_MIGRATION_RATIO;
+    set "scheme" GA_SCHEME_DARWIN;
+    
+    #   newpop->elitism = GA_ELITISM_PARENTS_SURVIVE;  
+    #   newpop->allele_mutation_prob = GA_DEFAULT_ALLELE_MUTATION_PROB;
+    
+    #   newpop->allele_max_integer = RAND_MAX-1;
+    set "allele_min_integer" 0
+
+    set "allele_max_integer" [expr {$::RANDOM_RAND_MAX - 1}] ;# попробуем так
+    
+    set "allele_min_double" $::DBL_MIN
+    set "allele_max_double" $::DBL_MAX
+    
+    set "rank" "ga_rank_fitness"
+  }
+  
 }
 #-------------------------------------------------------------------------------
 proc pop_set_entity_fitness_ {p i fi} {
@@ -777,7 +955,8 @@ proc pop_sort_ {p} {
 
 
   SET $p best 0 ;# после сортировки это должно быть так
-  }
+
+}
 #-------------------------------------------------------------------------------
 proc pop_print {pop {out "stdout"}} {
 
@@ -909,205 +1088,12 @@ proc print_entit  {entity name} {
 #-------------------------------------------------------------------------------
 proc ga_population_new {stable_size len_chromosomes} {
 
-  #   puts ""
-  #   puts "ga_population_new ..."
-  #   puts ""
-  
-  #   population	*newpop=NULL;	/* New population structure. */
-  #set newpop ""
-  
-  #   unsigned int	pop_id;		/* Handle for new population structure. */
-  #   int		i;		/* Loop over (unassigned) entities. */
-  
-  #   if ( !(newpop = s_malloc(sizeof(population))) )
-  #     die("Unable to allocate memory");
-  
-  set newpop [pop_create_gaul]
 
-  #---------------------------------------
-  
-  #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-
-
-  SET $newpop "ch_form"  "% 6.3f " ;#  " %02d"
-
-  #$newpop configure -size 0   
-  SET $newpop "size" 0   
-
-  #$newpop configure -stable_size $stable_size
-  SET $newpop "stable_size" $stable_size
-  
-  #   newpop->max_size = (1+stable_size)*4;  /* +1 prevents problems if stable_size is 0. */
-  
-  #SET $newpop "orig_size" 0
-  
-  #   //newpop->num_chromosomes = /* num_chromosome */ 1;
-  SET $newpop "len_chromosomes"  $len_chromosomes
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-
-  #$newpop.selectdata = [selectdata_create]
-  # 
-  SET $newpop "selectdata" [selectdata_create]
-
-  #[$newpop.selectdata].offset1 = 555
-  #puts "offset1 = [[$newpop.selectdata].offset1]"
-
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-
-  #   newpop->data = NULL;
-  #   newpop->free_index = newpop->max_size-1;
-  SET $newpop    "island"  -1
-  #   newpop->generation = 0;
-  SET $newpop "generation"  0
-  
-  #   newpop->fitness_dimensions = 0;
-  #SET $newpop "fitness_dimensions" 0
-
-  SET $newpop "best"  -1 ;# для хранения лучшего номера (пока нет)
-
-  #   newpop->crossover_ratio = GA_DEFAULT_CROSSOVER_RATIO;
-  #   newpop->mutation_ratio = GA_DEFAULT_MUTATION_RATIO;
-  #   newpop->migration_ratio = GA_DEFAULT_MIGRATION_RATIO;
-  #   newpop->scheme = GA_SCHEME_DARWIN;
-  SET $newpop "scheme" GA_SCHEME_DARWIN;
-
-  #   newpop->elitism = GA_ELITISM_PARENTS_SURVIVE;
-  
-  #   newpop->allele_mutation_prob = GA_DEFAULT_ALLELE_MUTATION_PROB;
-
-  #   newpop->allele_min_integer = 0;
-  #   newpop->allele_max_integer = RAND_MAX-1;
-  SET $newpop "allele_min_integer" 0
-  #$newpop configure -allele_max_integer [expr $RAND_MAX - 1]
-  SET $newpop "allele_max_integer" [expr {$::RANDOM_RAND_MAX - 1}] ;# попробуем так
-
-  # 
-  #/* this may seem like an odd choice, but it is to maintain compatiability with older versions. */
-  
-  SET $newpop "allele_min_double" $::DBL_MIN
-  SET $newpop "allele_max_double" $::DBL_MAX
-
-    
-  SET $newpop "rank" "ga_rank_fitness"
+  set newpop [GAUL new  $stable_size $len_chromosomes]
 
   
   return $newpop
 }
-#-------------------------------------------------------------------------------
-#   synopsis:	Allocates and initialises a new population structure,
-# 		and fills it with an exact copy of the data from an
-# 		existing population, with the exception that entity
-# 		data is not copied.  The population's user data
-# 		field is referenced.
-#   parameters:	population *	original population structure.
-#   return:	population *	new population structure.
-#-------------------------------------------------------------------------------
-# proc ga_population_clone_empty {pop} \
-# {
-
-#   set newpop [pop_create_gaul]
-  
-#   #   /*
-#   #     * Clone parameters.
-#   #     */
-#   SET $newpop size  0
-#   SET $newpop stable_size [GET $pop stable_size]
-#   SET $newpop max_size    [GET $pop max_size]
-#   SET $newpop orig_size   0
-#   #   //newpop->num_chromosomes = 1/* pop->num_chromosomes */;
-#   SET $newpop len_chromosomes [GET $pop len_chromosomes]
-
-#   #//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-#   SET $newpop ch_form [GET $pop ch_form]
-#   #//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-
-#   #   newpop->free_index = pop->max_size - 1;
-#   #SET $newpop island    -1
-#   SET $newpop generation 0
-  
-#   #SET $newpop fitness_dimensions 0
-  
-#   SET $newpop crossover_ratio [GET $pop crossover_ratio]
-#   SET $newpop mutation_ratio  [GET $pop mutation_ratio]
-#   SET $newpop migration_ratio [GET $pop migration_ratio]
-  
-#   SET $newpop  scheme [GET $pop scheme]
-  
-#   SET $newpop elitism [GET $pop elitism]
-  
-#   #   /*
-#   #     * Clone the callback functions.
-#   #     */
-
-#   SET $newpop generation_hook [GET $pop generation_hook]
-#   #$newpop configure -iteration_hook  [$pop cget -iteration_hook ]
-  
-#   SET $newpop evaluate   [GET $pop evaluate]
-#   SET $newpop seed       [GET $pop seed ]
-#   SET $newpop adapt      [GET $pop adapt]
-#   SET $newpop select_one [GET $pop select_one]
-#   SET $newpop select_two [GET $pop select_two]
-#   SET $newpop mutate     [GET $pop mutate    ]
-#   SET $newpop crossover  [GET $pop crossover ]
-#   SET $newpop replace    [GET $pop replace   ]
-#   SET $newpop rank       [GET $pop rank      ]
-  
-#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-
-#   SET $newpop selectdata  [GET $pop selectdata]
-
-#   #$newpop configure -tabu_params  [$pop cget -tabu_params]
-#   SET $newpop algo_params [GET $pop algo_params]
-
-#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-
-#   SET $newpop de_params   [GET $pop de_params]
-  
-#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-
-#   SET $newpop gr_params   [GET $pop gr_params]
-  
-#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-
-#   return $newpop
-# }
-#-------------------------------------------------------------------------------
-#   synopsis:	Allocates and initialises a new population structure,
-# 		and fills it with an exact copy of the data from an
-# 		existing population, including the individual
-# 		entity data.  The population's user data
-# 		field is referenced.
-# 		Entity id's between the populations will _NOT_
-# 		correspond.
-#   parameters:	population *	original population structure.
-#   return:	population *	new population structure.
-#-------------------------------------------------------------------------------
-# proc ga_population_clone {pop}  \
-# {
-
-#   #  Note that checks are performed in the ga_population_clone_empty() function. 
-  
-#   #   *
-#   #   * Clone the population data.
-#   #   */
-#   set newpop [ga_population_clone_empty $pop]
-  
-#   #   /*
-#   #    * Clone each of the constituent entities.
-#   #    */
-
-#   for {set i 0} {$i < [GET $pop size]} {incr i} \
-#   {
-#     set newentity [ga_get_free_entity  $newpop]
-
-#     ga_entity_copy $newpop $newentity [pop_get_entity_ $pop  $i]
-#   }
-
-#   return $newpop
-# }
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #   synopsis:	Fills a population structure with genes.  Defined in
 # 		a user-specified function.
@@ -2746,8 +2732,6 @@ proc ga_genesis_main {\
   #  * Allocate and initialise a new population.
   #  * This call also sets this as the active population.
   #  */
-  #   if ( !(pop = ga_population_new( population_size, /* num_chromo, */ len_chromo )) )
-  #     return NULL;
   
   set pop [ga_population_new  $population_size $len_chromo]
 

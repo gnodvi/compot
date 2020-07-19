@@ -125,6 +125,93 @@ proc COM0 {} {
 
 }
 #-------------------------------------------------------------------------------
+proc DICT {} {
+
+  source "b-com0.tl"
+  #source "a-dict.tl"
+
+  source "b-mfor.tl"
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+rename SET SET_old
+
+rename GET GET_old
+
+#-------------------------------------------------------------------------------
+proc SET {args} {
+
+  set d    [lindex $args 0]
+
+  set is_obj [info object isa object $d]
+
+  #puts "is_obj = $is_obj"
+
+  if {$is_obj} {
+
+    set key  [lindex $args 1]
+    set val  [lindex $args 2]
+
+    $d SET_$key $val
+  } else {
+
+    uplevel 1 SET_old $args
+  }
+}
+#-------------------------------------------------------------------------------
+proc GET {args} {
+
+  set d    [lindex $args 0]
+
+  set is_obj [info object isa object $d]
+
+
+  if {$is_obj} {
+
+    set key  [lindex $args 1]
+    set val  [lindex $args 2]
+
+    return [$d GET_$key]
+  } else {
+
+    uplevel 1 GET_old $args
+  }
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+oo::class create DICT_OO {
+
+  VAR var1
+  VAR var2
+ 
+}
+#-------------------------------------------------------------------------------
+proc DICTOO {} {
+    
+  puts ""
+  puts "DICTOO .."
+  puts ""
+
+  #set p [dict_create]
+  set p [DICT_OO new]
+
+  set is_obj [info object isa object $p]
+
+  puts "is_obj = $is_obj"
+
+
+  SET $p var1  "var1"
+  SET $p var2  "var2"
+
+  puts "var1 = [GET $p var1]"
+  puts "var2 = [GET $p var2]"
+
+}
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------

@@ -31,14 +31,9 @@ proc VAR {args} {
 
     # а затем к ней методы доступа:
     #
-    #     set setproc ${vn}$setfix 
-    #     set getproc ${vn}$getfix
 
     set setproc ${setfix}${vn} 
     set getproc ${getfix}${vn}
-
-    #puts "setproc = $setproc"
-    #puts "getproc = $getproc"
 
     uplevel 1 method $setproc \{v\} \{[subst -nocommand {set $vn \$v}] \}
     uplevel 1 method $getproc \{\}  \{[subst -nocommand {return $$vn}] \}
@@ -129,16 +124,21 @@ oo::class create summation {
 
   variable MM 0 ;# так тоже можно ?? нет. похоже не создается переменная
  
+  VAR XX 
 
   constructor {} {
-    variable v 5
+    variable v  5
     variable MM 111
+
+    set XX 999
   }
   
   method getMM {} {
     variable MM
     return  $MM
   }
+
+  VAR  RR 
 
   eval VAR  {TT 111}  ;# eval when {name value}
   eval VAR  {NN 555} 
@@ -171,6 +171,18 @@ proc TEST_cloo {} {
   set sum [summation new]
 
   puts ""
+
+  #puts "NN =  [$sum GET_NN]"
+  #puts "NN =  [$sum GET_NN]"
+ 
+  puts "XX =  [$sum GET_XX]"
+  $sum SET_XX 888
+  puts "XX =  [$sum GET_XX]"
+
+  puts ""
+  puts "---------------------------------------------------"
+  puts ""
+
 
   $sum SET_TT 222
   puts "TT =  [$sum GET_TT]"

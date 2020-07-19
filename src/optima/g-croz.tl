@@ -343,13 +343,13 @@ proc popu_sorted_evolve_13 {sorted_items mutprob} {
   return $pop_items
 }
 #-------------------------------------------------------------------------------
-proc pop_create_simp {} {
+# proc pop_create_simp {} {
     
 
-  set p [dict_create]
+#   set p [dict_create]
 
-  return $p
-}
+#   return $p
+# }
 #-------------------------------------------------------------------------------
 proc print_best {task  best_item is_print game_print_proc} {
 
@@ -541,14 +541,24 @@ oo::class create BOT {
   #---------------------------------------------------------
   constructor {args} {
 
+    #puts "BOT .... 01  args = $args"
+
     #     if {! [info exists task]} {
     #       set task [dict_parse $args "-task" ] 
     #     }
 
-    [self] SET_name [dict_parse  $args  "-name"]
-    [self] SET_task [dict_parse  $args  "-task"]
-    [self] SET_pop  [dict_parse  $args  "-pop" ] 
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]] 
+    
+    #puts "BOT .... 02"
 
+    [self] SET_task $task
+    #[self] SET_task [dict_parse  $args  "-task"  NULL]
+
+    [self] SET_name [dict_parse  $args  "-name" ""]
+    [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
+
+    #puts "BOT .... 10"
   }
   #---------------------------------------------------------
   method calc {args} {
@@ -601,11 +611,15 @@ oo::class create BOT33 {
     set len_chromosomes [dict_parse $args "-gensize" ] 
     set population_size [dict_parse $args "-popsize" ] 
     
-    
-    set pop [pop_create_simp]
-    
-    SET $pop "stable_size"      $population_size  
-    SET $pop "len_chromosomes"  $len_chromosomes
+    #-----------------------------------------------
+    #set pop [pop_create_simp]
+    #set pop [dict_create]
+    # 
+    set pop [POP new  $population_size $len_chromosomes]
+
+#     SET $pop "stable_size"      $population_size  
+#     SET $pop "len_chromosomes"  $len_chromosomes
+
     SET $pop  ch_form "%c" 
     SET $pop  "generation_hook" NULL ;# $generation_hook
     
@@ -613,13 +627,13 @@ oo::class create BOT33 {
     set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
     # 
     # "LT_lsort" ;# с меньшим фитнесом - влево. т.е. в лучшие!
-    
-    
+    #
     set      ::sort_driver $sort_driver
     SET $pop "sort_driver" $sort_driver
 
-    [self] SET_task $task
-    [self] SET_pop  $pop
+
+    my SET_task $task
+    my SET_pop  $pop
   }
  
   #---------------------------------------------------------

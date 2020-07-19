@@ -458,9 +458,14 @@ oo::class create BOT01 {
   #---------------------------------------------------------
   constructor {args} {
 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]] 
-    
+    variable pop
+
+    #puts "BOT01 .. 01"
+    next {*}$args
+    #puts "BOT01 .. 02"
+
+#     set task [dict_parse $args "-task" \
+#                 [task_create  "FS_fitness" -fit_target 53.1]]     
     
     set pop [pop1_create  {*}$args]
     
@@ -468,8 +473,8 @@ oo::class create BOT01 {
     SET $pop  select_two   "ga_select_two_sus"
     
     
-    [self] SET_task $task
-    [self] SET_pop  $pop
+    #[self] SET_task $task
+    #[self] SET_pop  $pop
   }
   #---------------------------------------------------------
  
@@ -541,8 +546,12 @@ oo::class create BOT02 {
 
   constructor {args} {
 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]]
+    variable pop
+
+    next {*}$args
+    
+    #     set task [dict_parse $args "-task" \
+    #                 [task_create  "FS_fitness" -fit_target 53.1]]
     
     set pop1 [pop1_create  {*}$args]
     
@@ -550,8 +559,10 @@ oo::class create BOT02 {
     SET $pop1  select_one  "ga_select_one_bestof2"
     SET $pop1  select_two  "ga_select_two_bestof2"  
     
-    [self] SET_task $task
-    [self] SET_pop  $pop1
+    #[self] SET_task $task
+    #[self] SET_pop  $pop1
+
+    set pop $pop1
   }
   #---------------------------------------------------------
  
@@ -640,9 +651,16 @@ oo::class create BOT03 {
   #---------------------------------------------------------
   constructor {args} {
 
+    variable task
 
-  set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target 53.1]]
+    next {*}$args
+
+#     set task [dict_parse $args "-task" \
+#               [task_create  "FS_fitness" -fit_target 53.1]]
+
+    #[self] SET_task $task
+    #set task [[self] GET_task]
+
 
   set len_chromo      [dict_parse $args "-gensize" ] 
   set population_size [dict_parse $args "-popsize" ] 
@@ -681,7 +699,7 @@ oo::class create BOT03 {
     0.0      	          
 
     
-    [self] SET_task $task
+    #[self] SET_task $task
     [self] SET_pop  $pop
   }
   #---------------------------------------------------------
@@ -805,10 +823,12 @@ oo::class create BOT04 {
   #---------------------------------------------------------
   constructor {args} {
 
+    next {*}$args
+
     # если нет в args, то берем значение здесь
     # 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]]
+#     set task [dict_parse $args "-task" \
+#                 [task_create  "FS_fitness" -fit_target 53.1]]
     
     set len_chromo      [dict_parse $args "-gensize" ] 
     set population_size [dict_parse $args "-popsize" ] 
@@ -881,7 +901,7 @@ oo::class create BOT04 {
       0.0      	          
     
     
-    [self] SET_task $task
+    #[self] SET_task $task
     [self] SET_pop  $pop
   }
   #---------------------------------------------------------
@@ -955,9 +975,13 @@ oo::class create BOT05 {
   #---------------------------------------------------------
   constructor {args} {
 
+    next {*}$args
+
     # если нет в args, то берем значение здесь
     # 
-    set task            [dict_parse $args "-task"]
+    #set task            [dict_parse $args "-task"]
+    set task   [[self] GET_task]
+
     set len_chromo      [dict_parse $args "-gensize" ] 
     set population_size [dict_parse $args "-popsize" ] 
     set num_pops        [dict_parse $args "-num_pops" 1]
@@ -997,14 +1021,13 @@ oo::class create BOT05 {
         GA_ELITISM_PARENTS_DIE     \
         0.75			 \
         0.25		         \
-        0.0001      
-      
+        0.0001        
       
       lappend pops $pop
     }
     
     
-    [self] SET_task  $task
+    #[self] SET_task  $task
     [self] SET_pops  $pops
   }
   #---------------------------------------------------------
@@ -1123,10 +1146,13 @@ oo::class create BOT06 {
   #---------------------------------------------------------
   constructor {args} {
 
+    next {*}$args
+
   # если нет в args, то берем значение здесь
   # 
   #set task [dict_parse $args "-task" $task]
-  set task [dict_parse $args "-task"]
+  #set task [dict_parse $args "-task"]
+    set task   [[self] GET_task]
 
   set len_chromo      [dict_parse $args "-gensize" ] 
   set population_size [dict_parse $args "-popsize" ] 
@@ -1172,7 +1198,7 @@ oo::class create BOT06 {
     "ga_compare_char_hamming"
   
 
-    [self] SET_task $task
+    #[self] SET_task $task
     [self] SET_pop  $pop
   }
   #---------------------------------------------------------
@@ -1329,13 +1355,20 @@ oo::class create BOT07 {
   #---------------------------------------------------------
   constructor {args} {
 
-    set task            [dict_parse $args "-task"   ]
+    variable task
+
+    next {*}$args
+
+    #set task            [dict_parse $args "-task"   ]
+    #set task  [[self] GET_task]
+    #set task  [my GET_task]
+
     set len_chromo      [dict_parse $args "-gensize"] 
     set population_size [dict_parse $args "-popsize"] 
     
     set popd [make_pop_DARWIN  $task $population_size $len_chromo] 
 
-    [self] SET_task  $task
+    #[self] SET_task  $task
     [self] SET_pop   $popd
   }
   #---------------------------------------------------------
@@ -1363,7 +1396,11 @@ oo::class create BOT08 {
   #---------------------------------------------------------
   constructor {args} {
 
-    set task            [dict_parse $args "-task"   ]
+    next {*}$args
+
+    #set task            [dict_parse $args "-task"   ]
+    set task [[self] GET_task]
+
     set len_chromo      [dict_parse $args "-gensize"] 
     set population_size [dict_parse $args "-popsize"] 
     
@@ -1372,7 +1409,7 @@ oo::class create BOT08 {
     ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"
     
 
-    [self] SET_task $task
+    #[self] SET_task $task
     [self] SET_pop  $pop
   }
   #---------------------------------------------------------
@@ -1407,7 +1444,11 @@ oo::class create BOT09 {
   #---------------------------------------------------------
   constructor {args} {
 
-    set task            [dict_parse $args "-task"]
+    next {*}$args
+
+    #set task            [dict_parse $args "-task"]
+    set task [[self] GET_task]
+
     set len_chromo      [dict_parse $args "-gensize" ] 
     set population_size [dict_parse $args "-popsize" ] 
     
@@ -1416,7 +1457,7 @@ oo::class create BOT09 {
     
     ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
 
-    [self] SET_task $task
+    #[self] SET_task $task
     [self] SET_pop  $pop
   }
   #---------------------------------------------------------
@@ -1598,23 +1639,10 @@ proc print_result_maintest {botobjs sum_name} {
   return
 }
 # ------------------------------------------------------------------------------
-proc maintest_run {botnumes max_generations 
-               num_text num_runs population_size pmin pmax} {
+proc create_botobjs_1 {botnumes population_size len_chromosomes task} {
 
 
-  set task [task_create  "FS_fitness" -fit_target 53.1]
-
-  set size 15 ;# длина хромосом (строк)
-  set len_chromosomes $size ;# [strlen $::target_text] 
-
-  set ::gp_list "1 2 3 4 5 6 7 8 9"
-
-  set sum_generations 0
-  set min +99999
-  set max -99999
-
-  #--------------------------------
-  set botobjs [dict_create]
+  set botobjs [dict_create] ;# делаем словарь ботов-объектов по именам
   
   foreach botnum $botnumes {
     
@@ -1625,11 +1653,30 @@ proc maintest_run {botnumes max_generations
     
     set obj \
       [${botcloo} new  -popsize $population_size \
-         -gensize $len_chromosomes -task $task -name $botname] 
+         -gensize $len_chromosomes -task $task] 
+#         -gensize $len_chromosomes] 
+#         -gensize $len_chromosomes -task $task -name $botname] 
     
     
     dict_set $botobjs "$botname" $obj
   }
+
+  return $botobjs
+}
+# ------------------------------------------------------------------------------
+
+proc maintest_run {botobjs task \
+                     max_generations \
+                   num_text num_runs population_size pmin pmax len_chromosomes 
+                 } {
+
+
+  set ::gp_list "1 2 3 4 5 6 7 8 9"
+
+  #set sum_generations 0
+  set min +99999
+  set max -99999
+
   #--------------------------------
 
   dict for {botname obj} [set $botobjs] {
@@ -1642,11 +1689,10 @@ proc maintest_run {botnumes max_generations
   for {set t 0} {$t < $num_text} {incr t} {
 
     set ::target_text  [make_random_target_text   $::gp_list \
-                          $size  $pmin $pmax]
+                          $len_chromosomes  $pmin $pmax]
     
     puts "target_text = $::target_text \n"
     
-    #set len_chromosomes [strlen $::target_text] 
     
     # -----------------------------------------------------------------
     
@@ -1665,7 +1711,9 @@ proc maintest_run {botnumes max_generations
         
         # $obj null or init ????? !!!!! TODO !!!
 
-        $obj calc -steps $max_generations  
+        #--------------------------------
+
+        $obj calc -steps $max_generations  -task $task 
         
         foreach {num_generations  best_entity  ch_form} \
           [$obj final] \
@@ -1708,8 +1756,7 @@ proc maintest_run {botnumes max_generations
     
   } ;# num_text 
   
-  # -----------------------------------------------------------------
-  
+  # ----------------------------------------------------------------- 
   
   if {$max_generations == -1} {
     
@@ -1732,15 +1779,23 @@ proc maintest_531 {} {
   puts ""
   
 
+  set ::is_print 0 ;# TODO: здесь уж слишком много печати, надо гибче?
+
+  set pmin 1  ;# выбираем длину блоков повторов из этого интервала: от
+  set pmax 4  ;# и до
+
+  set task [task_create  "FS_fitness" -fit_target 53.1]
+
+  set len_chromosomes 15 ;# [strlen $::target_text] ;# длина хромосом (строк)
+
+
   #-------------------------------------------------------------
   if {$mode == "@"} {
 
     # фиксированный тест
     srandom_set 2019 ;# постоянный выбор текстовой строки
 
-    set botslist  [list "01" "02" "03" "04" "05" ]
-    #set botslist  [list "bot01" "bot02" "bot03" "bot04" "bot05" ]
-    #set botslist  [list "bot02"]
+    set botnumes  [list "01" "02" "03" "04" "05" ]
     
     set population_size 30 ;# 140
     set max_generations -1 ;# 30 ;# 15 - останов по достижению нужной точности
@@ -1757,11 +1812,8 @@ proc maintest_531 {} {
       ERROR "mode not INTEGER !!"
     }
 
-    #set botslist  [list "bot01" "bot02" "bot03" "bot04" "bot05" ]
-    #set botslist  [list "bot06"] ;#  !!!! очень медленно !!!
-
-    #set botslist  [list "bot33"]
-    set botslist  [list "33"]
+    #set botnumes  [list "33"]
+    set botnumes  [list "01"]
     
     set population_size 30
     set max_generations $mode  ;# -1  - останов по достижению нужной точности
@@ -1774,16 +1826,17 @@ proc maintest_531 {} {
 
   #-------------------------------------------------------------
 
-  set ::is_print 0 ;# TODO: здесь уж слишком много печати, надо гибче?
+  set botobjs [create_botobjs_1  $botnumes $population_size $len_chromosomes $task]
 
-  set pmin 1  ;# выбираем длину блоков повторов из этого интервала: от
-  set pmax 4  ;# и до
+  #--------------------------------------
 
-
-  maintest_run  $botslist  \
+  maintest_run  $botobjs $task \
     $max_generations \
-    $num_text $num_runs $population_size $pmin $pmax
+    $num_text $num_runs $population_size $pmin $pmax \
+    $len_chromosomes 
 
+
+return
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
