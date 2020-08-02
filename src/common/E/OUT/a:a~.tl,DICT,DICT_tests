@@ -1,5 +1,5 @@
 
-dict  = name {FIRST Frank LAST Zappa} ID 106 telnum 223344
+dict  = pid 106 name {FIRST Frank LAST Zappa} telnum 223344
 name  = FIRST Frank LAST Zappa
 name  = Frank
 dict  = FIRST Frank LAST Zappa

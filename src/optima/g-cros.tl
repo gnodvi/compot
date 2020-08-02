@@ -1388,9 +1388,7 @@ proc ga_evolution {task pop  max_generations} {
   #  
   pop_initial_score_and_sort  $pop $task
  
- 
   set generation [ga_evolution_main  $task $pop $max_generations]
-
 
   return $generation
 

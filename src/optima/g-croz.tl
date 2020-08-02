@@ -541,8 +541,6 @@ oo::class create BOT {
   #---------------------------------------------------------
   constructor {args} {
 
-    #puts "BOT .... 01  args = $args"
-
     #     if {! [info exists task]} {
     #       set task [dict_parse $args "-task" ] 
     #     }
@@ -550,31 +548,36 @@ oo::class create BOT {
     set task [dict_parse $args "-task" \
                 [task_create  "FS_fitness" -fit_target 53.1]] 
     
-    #puts "BOT .... 02"
 
     [self] SET_task $task
-    #[self] SET_task [dict_parse  $args  "-task"  NULL]
-
-    [self] SET_name [dict_parse  $args  "-name" ""]
+    [self] SET_name [dict_parse  $args  "-name" "BotName"]
     [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
 
-    #puts "BOT .... 10"
+  }
+  #---------------------------------------------------------
+  method init {args} {
+
+    pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+
   }
   #---------------------------------------------------------
   method calc {args} {
 
     set obj [self]
 
+    variable task
     set task            [dict_parse $args "-task"  [$obj GET_task]] 
     set max_generations [dict_parse $args "-steps"] 
     
-    set  pop [$obj GET_pop]
+    variable pop
+    #set  pop [$obj GET_pop]
     
-    # pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-    # ga_evolution_main           $task $pop $max_generations ;# 0.01
-    
-    set ret [ga_evolution  $task $pop $max_generations]  
+    #pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+    my init
 
+    ga_evolution_main           $task $pop $max_generations ;# 0.01
+    
+    #set ret [ga_evolution  $task $pop $max_generations]  
   }
   #---------------------------------------------------------
   method final {} {
@@ -603,27 +606,22 @@ oo::class create BOT33 {
   #---------------------------------------------------------
   constructor {args} {
 
+    variable task ;# pop
+
     # если нет в args, то берем значение здесь
     # 
     set task [dict_parse $args "-task" \
                 [task_create  "FS_fitness_list"]] 
     
-    set len_chromosomes [dict_parse $args "-gensize" ] 
-    set population_size [dict_parse $args "-popsize" ] 
+    #set len_chromosomes [dict_parse $args "-lgen" ] 
+    #set population_size [dict_parse $args "-lpop" ] 
     
+    #my SET_task $task
+
     #-----------------------------------------------
-    #set pop [pop_create_simp]
-    #set pop [dict_create]
     # 
-    set pop [POP new  $population_size $len_chromosomes]
+    set pop [POP new  {*}$args]
 
-#     SET $pop "stable_size"      $population_size  
-#     SET $pop "len_chromosomes"  $len_chromosomes
-
-    SET $pop  ch_form "%c" 
-    SET $pop  "generation_hook" NULL ;# $generation_hook
-    
-    
     set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
     # 
     # "LT_lsort" ;# с меньшим фитнесом - влево. т.е. в лучшие!
@@ -632,7 +630,11 @@ oo::class create BOT33 {
     SET $pop "sort_driver" $sort_driver
 
 
-    my SET_task $task
+    SET $pop  ch_form "%c" 
+    SET $pop  "generation_hook" NULL ;# $generation_hook
+    
+    #-----------------------------------------------
+
     my SET_pop  $pop
   }
  
@@ -727,7 +729,7 @@ proc run_gp_evolution {randpop_proc
   #-------------------------------------
 
   set obj \
-    [bot33_create  -popsize $population_size -gensize $len_chromosomes \
+    [bot33_create  -lpop $population_size -lgen $len_chromosomes \
        -sort_driver $sort_driver  -task $task]
 
     
@@ -818,6 +820,7 @@ proc FS_fitness_list_NEW {list_calc} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+# g_stru.tl _gp_test 2013 10 6 10
 #-------------------------------------------------------------------------------
 proc _gp_test {} {
 
@@ -837,8 +840,7 @@ proc _gp_test {} {
     set steps  5 ;# 1 ;# max_generations 
     
     #mysrand 2013 ;# ???
-    
-    
+     
     set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
     set ::is_fitn_first   0 ;# g-corA.tl -> item_print_fitness_calc
     
@@ -851,7 +853,6 @@ proc _gp_test {} {
 
     # if ! @ -> mysrand var 
   }
-
 
   # ------------------------------------------------
 
@@ -893,6 +894,13 @@ proc _gp_test {} {
 
   return
 }
+#-------------------------------------------------------------------------------
+# g_stru.tl _gp_test 2013 10 6 10
+
+# g_stru.tl _gp_test 2013   10  6    1  - очень быстрый для проверок
+# g_stru.tl _gp_test 2013   30  6  250
+
+
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

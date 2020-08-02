@@ -82,14 +82,8 @@ proc Get {obj var} {
 #-------------------------------------------------------------------------------
 proc TEST_cloo_time {} {
 
-  #package require Itcl
-  #namespace import itcl::*
-  
-  #set nums 10000
-  set nums 100
+  set nums 1000 ;# 1000
 
-  #class A {}
-  
   oo::class create A {
 
     eval VAR  {NN 555} 

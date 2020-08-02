@@ -68,10 +68,13 @@ proc wait_press_enter {} {
   #puts "is_color_menu = $::is_color_menu "
 
   puts_rus -nonewline  "הלס " 
+
   with_color $::is_color_menu $::SGR_CYAN {
     puts_rus -nonewline  "תבקועûומיס " 
   }
+
   puts_rus -nonewline  "מבצםיפו " 
+
   with_color $::is_color_menu $::SGR_CYAN {
     puts -nonewline "ENTER: " 
   }
@@ -137,8 +140,8 @@ proc callmenu_print {menu {is_add_q 1}} {
     }
     
     puts -nonewline " - "
-    #puts_engrus {"RETURN" "קןתקעבפ"}
-    puts_rus  "קןתקעבפ/קשטןה"
+    puts_engrus {"RETURN/EXIT" "קןתקעבפ/קשטןה"}
+    #puts_rus  "קןתקעבפ/קשטןה"
   }
   
 
@@ -167,13 +170,14 @@ proc call_menu {name menu {is_add_q 1}} {
 
     # ÍÅÎÀ ÎÁÐÅÞÁÔÁÌÉ, ÔÅÐÅÒØ ÈÏÔÉÍ ÐÏÌÕÞÉÔØ ÏÔ×ÅÔ:
     # 
-    puts_rus -nonewline "קשגועיפו "
+    #puts_rus -nonewline "קשגועיפו "
+    puts_engrus -nonewline {"CHOICE " "קשגועיפו "}
 
     with_color $::is_color_menu $::SGR_CYAN {
-      puts_rus -nonewline "כלא‏" 
+      puts_engrus -nonewline {"KEY" "כלא‏"} 
     }
 
-    puts_rus -nonewline  " É מבצםיפו " 
+    puts_engrus -nonewline  {" and PUSH " " É מבצםיפו "} 
 
     with_color $::is_color_menu $::SGR_CYAN {
       puts -nonewline "ENTER: " 
@@ -260,16 +264,21 @@ proc TEST_menu {} {
   
   global argc argv
 
-  if {$argc == 2} { # ÌÀÂÏÊ ÆÌÁÖÏË ÏÔÍÅÎÉÔ Ã×ÅÔ
-    set ::is_color_menu 0
+  if {$::__JIM__} {
+    set_en
+  } else {
+    set_ru
   }
 
-  set_en
+  if {$argc == 2} { # ÌÀÂÏÊ ÆÌÁÖÏË ÏÔÍÅÎÉÔ Ã×ÅÔ
+    set ::is_color_menu 0
+    set_en
+  }
 
   set menu_list {
-      {" r"  "RAND TEST" {rand_test}}
+      {" r"  "RAND TEST"        {rand_test}}
       {"  "  "" {}}
-      {"st" "SIMPLE TESTS .."   {menu_TESTS}}
+      {"st"  "SIMPLE TESTS .."  {menu_TESTS}}
       }
 
   call_menu "main" $menu_list

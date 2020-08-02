@@ -310,8 +310,10 @@ if {[::info commands ::tcl::dict::getnull] eq {}} {
     }
   }
 
+  if {$::__TCL__} {
   namespace ensemble configure dict -map [dict replace\
       [namespace ensemble configure dict -map] getnull ::tcl::dict::getnull]
+  }
 }
 
 #-------------------------------------------------------------------------------
@@ -379,8 +381,10 @@ if {[::info commands ::tcl::dict::print] eq {}} {
     return $buffer
   }
   
+  if {$::__TCL__} {
   namespace ensemble configure dict -map [dict replace\
       [namespace ensemble configure dict -map] print ::tcl::dict::print]
+  }
 
 }
 #-------------------------------------------------------------------------------
@@ -399,8 +403,12 @@ if {[::info commands ::tcl::dict::is_dict] eq {}} {
     }
     return 1
   }
+
+  if {$::__TCL__} {
   namespace ensemble configure dict -map [dict replace\
       [namespace ensemble configure dict -map] is_dict ::tcl::dict::is_dict]
+  }
+
 }
 #-------------------------------------------------------------------------------
 
@@ -437,8 +445,10 @@ if {[::info commands ::tcl::dict::rmerge] eq {}} {
     return $result
   }
 
+  if {$::__TCL__} {
   namespace ensemble configure dict -map [dict replace\
       [namespace ensemble configure dict -map] rmerge ::tcl::dict::rmerge]
+  }
 
 }
 
@@ -869,7 +879,10 @@ proc DICT_test_01 {} {
   puts ""
 
   #-------------------------------------------------
-  set personal_data [dict create name [dict create FIRST "Frank" LAST "Zappa"] ID 106]
+  #set personal_data \
+  [dict create  name [dict create FIRST "Frank" LAST "Zappa"] pid 106 ]
+
+  set personal_data [dict create pid 106  name [dict create FIRST "Frank" LAST "Zappa"] ]
 
   set phone 223344
 
@@ -1144,6 +1157,23 @@ proc print_dsubvar {dsubvar dsubvar_key  is_real sp ofile} {
   }
   
   return
+}
+# ------------------------------------------------------------------------------
+if {$::__JIM__} {
+# ------------------------------------------------------------------------------
+#https://wiki.tcl-lang.org/page/max
+# ------------------------------------------------------------------------------
+proc max args {
+
+  set res [lindex $args 0]
+
+  foreach element [lrange $args 1 end] {
+    if {$element > $res} {set res $element}
+  }
+
+  return $res
+}
+# ------------------------------------------------------------------------------
 }
 # ------------------------------------------------------------------------------
 proc get_max_keylen {keys} {
@@ -1467,8 +1497,8 @@ proc TEST_new {} {
   puts "ppp = [dict get [set $d]]"   
   puts "ppp = [dict_get $d]"   
   puts ""
-  puts "ppp print = [dict print [set $d]]"   
-  puts ""
+  #puts "ppp print = [dict print [set $d]]"   
+  #puts ""
 
   puts "ppp(a)   = [dict_get_111 $d  a]"    ;# b
   puts "ppp(c)   = [dict_get_111 $d  c ]"   ;# d e f g
@@ -1541,8 +1571,8 @@ proc TEST_new {} {
   puts ""
   
 
-  puts "dict print = [dict print [set $d]]"   
-  puts ""
+  #puts "dict print = [dict print [set $d]]"   
+  #puts ""
 
   #dict_print $d 
   #puts ""

@@ -297,7 +297,7 @@ proc generation_hook_check {pop generation} \
   return $ret
 }
 # //----------------------------------------------------------------------------
-proc is_check_generation_break {pop generation max_generations \
+proc is_check_generation_break {pop generation max_generations 
                                   fit_target fit_error is_print} {
 
 
@@ -536,7 +536,8 @@ oo::class create POP {
 
 
   VAR stable_size     ;# требуемый размер популяции
-  VAR len_chromosomes ;#   int : Maximum length of each chromosome.   
+  VAR len_chromosomes ;#   int : Maximum length of each chromosome. 
+  
   VAR ch_form         ;#  " %02d"
   VAR generation_hook ;#-#  GAgeneration_hook generation_hook;
 
@@ -544,13 +545,10 @@ oo::class create POP {
   VAR itemslist
   VAR generation
 
-  constructor {stable_size__ len_chromosomes__} {
+  constructor {args} {
 
-    #   set len_chromosomes [dict_parse $args "-gensize"] 
-    #   set population_size [dict_parse $args "-popsize"] 
-
-    set     stable_size      $stable_size__  
-    set len_chromosomes  $len_chromosomes__
+    set  stable_size    [dict_parse $args "-lpop"] 
+    set len_chromosomes [dict_parse $args "-lgen"] 
 
     set  "ch_form"  "% 6.3f " ;#  " %02d"   
     set generation_hook NULL
@@ -558,6 +556,17 @@ oo::class create POP {
   }
 
 }
+#-------------------------------------------------------------------------------
+#   Population handling functions.
+
+#   synopsis:	Allocates and initialises a new population structure,
+# 		and assigns a new population id to it.
+
+#   parameters:	const int stable_size    кол-во переданных в след. поколение.
+# 		const int num_chromosome	Num. of chromosomes.
+# 		const int len_chromosome	Size of chromosomes (may be ignored).
+
+#   return:	population *	new population structure.
 #-------------------------------------------------------------------------------
 oo::class create GAUL {
 
@@ -660,9 +669,11 @@ oo::class create GAUL {
   VAR dc_params_compare
   VAR gr_params
 
-  constructor {stable_size__ len_chromosomes__} {
+  constructor {args} {
 
-    next $stable_size__ $len_chromosomes__
+    # --> POP
+    # 
+    next {*}$args
 
 
     #-------------------------------------------------
@@ -670,12 +681,6 @@ oo::class create GAUL {
     set  max_size       {}
     set  size           {}
 
-    set generation      {}  
-    set best            {} 
-    
-    #set len_chromosomes {}
-    set itemslist       {}
-    
     set iteration_hook  NULL
     
     set seed            {}
@@ -728,15 +733,10 @@ oo::class create GAUL {
     
     #   newpop->data = NULL;
     #   newpop->free_index = newpop->max_size-1;
-    set  "island"  -1
-    
-    set "generation"  0
     
     #   newpop->fitness_dimensions = 0;
     #SET $newpop "fitness_dimensions" 0
 
-    set "best"  -1 ;# для хранения лучшего номера (пока нет)
-    
     #   newpop->crossover_ratio = GA_DEFAULT_CROSSOVER_RATIO;
     #   newpop->mutation_ratio = GA_DEFAULT_MUTATION_RATIO;
     #   newpop->migration_ratio = GA_DEFAULT_MIGRATION_RATIO;
@@ -754,6 +754,19 @@ oo::class create GAUL {
     set "allele_max_double" $::DBL_MAX
     
     set "rank" "ga_rank_fitness"
+
+    #---------------------------------------
+
+    set generation      {}  
+    set best            {}     
+    set itemslist       {}
+    
+    set  "island"    -1
+    set "generation"  0    
+    set "best"       -1 ;# для хранения лучшего номера (пока нет)
+    
+    #---------------------------------------
+
   }
   
 }
@@ -1074,26 +1087,6 @@ proc print_entit  {entity name} {
 
 }
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#   Population handling functions.
-
-#   synopsis:	Allocates and initialises a new population structure,
-# 		and assigns a new population id to it.
-
-#   parameters:	const int stable_size    кол-во переданных в след. поколение.
-# 		const int num_chromosome	Num. of chromosomes.
-# 		const int len_chromosome	Size of chromosomes (may be ignored).
-
-#   return:	population *	new population structure.
-#-------------------------------------------------------------------------------
-proc ga_population_new {stable_size len_chromosomes} {
-
-
-  set newpop [GAUL new  $stable_size $len_chromosomes]
-
-  
-  return $newpop
-}
 #-------------------------------------------------------------------------------
 #   synopsis:	Fills a population structure with genes.  Defined in
 # 		a user-specified function.
@@ -1675,7 +1668,7 @@ proc ga_fitness_mean_stddev {pop &p_mean &p_stddev} \
 #   synopsis:	Allocate the chromosomes for an entity.  Initial
 # 		contents are garbage (there is no need to zero them).
 #-------------------------------------------------------------------------------
-# GAULFUNC boolean ga_chromosome_double_allocate(population *pop, entity *embryo)
+# FUNC boolean ga_chromosome_double_allocate(population *pop, entity *embryo)
 #-------------------------------------------------------------------------------
 proc ga_chromosome_double_allocate {pop embryo} {
 
@@ -1729,7 +1722,6 @@ proc ga_chromosome_double_allocate {pop embryo} {
 # ------------------------------------------------------------------------------
 proc get_random_wordchar {} {
 
-  #   GAULFUNC unsigned int char_num;
   #   char ch;  
   #   int randmax = '~' - ' ';
   
@@ -2718,22 +2710,8 @@ proc ga_genesis_main {\
 			userdata             \
                       } {
 
-
-  
-  #   population	*pop;	/* The new population structure. */
-  #   plog(LOG_VERBOSE, "Genesis is beginning!");
-  
-  # /*
-  #  * Initialise OpenMP code.
-  #  */
-  #   //ga_init_openmp();
-  
-  # /*
-  #  * Allocate and initialise a new population.
-  #  * This call also sets this as the active population.
-  #  */
-  
-  set pop [ga_population_new  $population_size $len_chromo]
+  set pop [GAUL new  \
+                -lpop $population_size -lgen $len_chromo]
 
   # /*
   #  * Assign population's user data.
@@ -2774,21 +2752,6 @@ proc ga_genesis_main {\
   SET $pop  crossover $crossover ;#
   SET $pop  replace   $replace   ;#
   
-  # /*
-  #  * Seed the population.
-  #  */
-  # #if 0
-  #   if (seed==NULL)
-  #     {
-  #     plog(LOG_VERBOSE, "Entity seed function not defined.  Genesis can not occur.  Continuing anyway.");
-  #     }
-  #   else
-  #     {
-  #     ga_population_seed(pop);
-  #     plog(LOG_VERBOSE, "Genesis has occured!");
-  #     }
-  # #endif
-
   return $pop
 }
 #-------------------------------------------------------------------------------

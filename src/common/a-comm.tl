@@ -2,6 +2,15 @@
 
 #-------------------------------------------------------------------------------
 # 
+
+if [info exists tcl_version] {
+  set ::__TCL__ 1
+  set ::__JIM__ 0
+} else {
+  set ::__TCL__ 0
+  set ::__JIM__ 1
+}
+
 #-------------------------------------------------------------------------------
 
 # The common idiom for making an alias for a procedure is interp alias, but the 
@@ -27,8 +36,18 @@ proc alias {alias target} {
 
   namespace eval [namespace qualifiers $fulltarget] {namespace export *}
 
-  while {[namespace exists [
-                            set tmpns [namespace current]::[info cmdcount]]]} {}
+
+  #if {} {
+  #  set count [info cmdcount]
+  #} else {
+  set count 99999999
+  #}
+
+  #   while {[namespace exists [
+  #                             set tmpns [namespace current]::$count]]} {}
+  #
+  set tmpns [namespace current]::$count ;# попроще
+
 
   set code [catch {set newcmd [namespace eval $tmpns [
            string map [list @{fulltarget} [list $fulltarget]] {
@@ -998,7 +1017,7 @@ proc check_true_and_calc_begin {name} {
 
 }
 #-------------------------------------------------------------------------------
-proc run_cmd_and_check {is_replasing dir_cmd rr i \
+proc run_cmd_and_check {is_replasing dir_cmd rr i 
      CALC_FILE TRUE_FILE  CALC_FILE_SED TRUE_FILE_SED  DIFF_FILE   
      } {
 
@@ -1621,62 +1640,63 @@ proc is_ru {} {
 #-------------------------------------------------------------------------------
 proc latinica_from_koi8 {text_ru} {
 
-  set nata_table {\
-     а  a \
-     б  b \
-     в  v \
-     г  g \
-     д  d \
-     е  e \
-     ж  w \
-     з  z \
-     и  i \
-     к  k \
-     л  l \
-     м  m \
-     н  n \
-     о  o \
-     п  p \
-     р  r \
-     с  s \
-     т  t \
-     у  u \
-     ф  f \
-     х  x \
-     ц  c \
-     ч  h \
-     ь  ` \
-     ы  = \
-     ю  y \
-     я  q \
 
-     А  A \
-     Б  B \
-     В  V \
-     Г  G \
-     Д  D \
-     Е  E \
-     Ж  W \
-     З  Z \
-     И  I \
-     К  K \
-     Л  L \
-     М  M \
-     Н  N \
-     О  O \
-     П  P \
-     Р  R \
-     С  S \
-     Т  T \
-     У  U \
-     Ф  F \
-     Х  X \
-     Ц  C \
-     Ч  H \
-     Ь  ` \
-     Ы  = \
-     Ю  Y \
-     Я  Q \
+  set nata_table {
+     а  a 
+     б  b 
+     в  v 
+     г  g 
+     д  d 
+     е  e 
+     ж  w 
+     з  z 
+     и  i 
+     к  k 
+     л  l 
+     м  m 
+     н  n 
+     о  o 
+     п  p 
+     р  r 
+     с  s 
+     т  t 
+     у  u 
+     ф  f 
+     х  x 
+     ц  c 
+     ч  h 
+     ь  ` 
+     ы  = 
+     ю  y 
+     я  q 
+
+     А  A 
+     Б  B 
+     В  V 
+     Г  G 
+     Д  D 
+     Е  E 
+     Ж  W 
+     З  Z 
+     И  I 
+     К  K 
+     Л  L 
+     М  M 
+     Н  N 
+     О  O 
+     П  P 
+     Р  R 
+     С  S 
+     Т  T 
+     У  U 
+     Ф  F 
+     Х  X 
+     Ц  C 
+     Ч  H 
+     Ь  ` 
+     Ы  = 
+     Ю  Y 
+     Я  Q 
 
   } 
 
@@ -1739,39 +1759,50 @@ proc koi_to_console {name_koi} {
     }
 
   } else {
-    set name [koi_to_utf    $name_koi]
+
+    if {$::__JIM__} {
+      set name [latinica_from_koi8 $name_koi]
+    } else {
+      set name [koi_to_utf    $name_koi]
+    }
   }
   
   return $name 
 } 	
 #-------------------------------------------------------------------------------
-proc puts_engrus_parse_args {args &text_eng_rus &is_newline} {
+#proc puts_engrus_parse_isnewline {args @text_eng_rus @is_newline} {}
+proc puts_engrus_parse_isnewline {args @is_newline} {
 
-  USE_REFS
+  USE_REFS @
+
+  #puts "args = $args, len = [llength $args]"
 
   if {[llength $args] > 2} {
     error "INVALID ARGUMENTS = $args"
   }
 
   if {[llength $args] == 2} {
+
     if {![string match -n* [lindex $args 0]]} {
       error "INVALID ARGUMENTS = $args"
     } 
     set text_eng_rus [lindex $args 1]
     set is_newline 0
+
   } else {
     set text_eng_rus [lindex $args 0]
     set is_newline 1
   }
 
-
+  return $text_eng_rus
 }
 #-------------------------------------------------------------------------------
 proc puts_rus {args} {
 
-  puts_engrus_parse_args  $args  text  is_newline
+  #puts_engrus_parse_isnewline  $args  text  is_newline
+  set text [puts_engrus_parse_isnewline  $args is_newline]
 
-	set text_new  [koi_to_console $text]
+  set text_new  [koi_to_console $text]
 
   puts -nonewline  $text_new
 
@@ -1781,36 +1812,47 @@ proc puts_rus {args} {
 #-------------------------------------------------------------------------------
 proc puts_engrus {args} {
 
-# args -  либо один параметр, либо опция
-# -nonewline и строка
+  # args -  либо один параметр, либо опция
+  # -nonewline и строка
 
-  puts_engrus_parse_args  $args  text_eng_rus  is_newline
+  #puts_engrus_parse_isnewline  $args  text_eng_rus  is_newline
 
-  # на самом деле у нас список:
-  set text_en [lindex $text_eng_rus 0] 
-  set text_ru [lindex $text_eng_rus 1] 
+  if {$::__TCL__} {
+    set text_eng_rus [puts_engrus_parse_isnewline  $args is_newline]
+  } else {
+
+    set text_eng_rus [puts_engrus_parse_isnewline  {*}$args is_newline]
+  }
+
+  #puts "text_eng_rus = $text_eng_rus"
+
+  # на самом деле у нас список: 
+  set text_en [lindex  $text_eng_rus 0] 
+  set text_ru [lindex  $text_eng_rus 1] 
+
+  #puts "text_en = $text_en"
+  #puts "text_ru = $text_ru"
 
   #---------------------------------------------------
 
   if {[is_ru]} {
     # здесь бы надо сделать еще возможную перекодировку KOI8->UTF8
-    #set string [koi_to_utf $text_ru]
+    #set text [koi_to_utf $text_ru]
 
     if {$::OS == "QNX"} {
 
-      set string [koi_to_866 $text_ru]
+      set text [koi_to_866 $text_ru]
     } else {
       # выводим русский текст (из редакторного кои8 в выходной утф8)
-      set string [koi_to_utf $text_ru]
+      set text [koi_to_utf $text_ru]
     }
 
   } else {
-    set string $text_en 
+    set text $text_en 
   }
 
-  #if {$is_newline} {append $string "\n"} 
 
-  puts -nonewline $string
+  puts -nonewline $text
 
   if {$is_newline} {puts ""} 
 }
@@ -1828,25 +1870,31 @@ proc TEST_en_ru {} {
     }
   }
 
-  set_ru
 
-#   puts ""  
-#   puts_engrus  {"Hello World !!" "Привет этот грёбаный мир !!"}
-#   puts ""
 
-  puts ""
-  puts_rus  "Привет этот грёбаный мир !!"
-  puts ""
+  if {$::__JIM__} {
+    set_en
+  } else {
+    set_ru
+  }
+
+  puts ""  
+  puts_engrus  {"Hello World !!" "Привет этот грёбаный мир !!"}
+  #puts_engrus   "Hello World !!" "Привет этот грёбаный мир !!"
+  #puts ""
 
   puts_engrus  $text
+
+  #return
 
   puts ""
   puts -nonewline "Hello "
 
   set_en
   puts_engrus -nonewline {"World " "МИР "} 
-  set_ru
-  puts_engrus -nonewline {"World " "МИР "} 
+
+#   set_ru
+#   puts_engrus -nonewline {"World " "МИР "} 
 
   puts "! -------------------->"
   puts ""
@@ -1922,9 +1970,9 @@ proc my_source {name} {
 }
 #-------------------------------------------------------------------------------
 # ;-------------------------------------------------------------------------------
-proc dotimes {&i n body} {
+proc dotimes {@i n body} {
 
-  USE_REFS
+  USE_REFS @
 
   
   for {set i 0} {$i < $n} {incr i} {
@@ -2090,7 +2138,7 @@ proc plog {level format args} {
 set ::is_print 0 
 
 #-------------------------------------------------------------------------------
-proc parse_opts_3 {&par1    &par2    &par3  \
+proc parse_opts_3 {&par1    &par2    &par3  
                      def_par1 def_par2 def_par3 {ind 1}} {
 
   #set ind 1 ;# с какого параметра начинаем обработку (чтение)
@@ -4029,7 +4077,10 @@ proc decr {var {n 1}} {
 #namespace import   tcl::mathop::
 #namespace import ::tcl::mathfunc::*
 
-namespace path {::tcl::mathop ::tcl::mathfunc}
+
+if {$::__TCL__} {
+  namespace path {::tcl::mathop ::tcl::mathfunc}
+}
 
 # более предпочтительный способ, не затрагивает ранее опредеелнные команды в 
 # этом пространстве имен ??
@@ -4130,7 +4181,9 @@ if {[info commands ::lmap] eq {}} {
 
 #-------------------------------------------------------------------------------
 
-if { [package vsatisfies [info patchlevel] 8.5-8.6] } {
+#if { [package vsatisfies [info patchlevel] 8.5-8.6] } {}
+#jimtcl
+if {1} {
 
   # версия удовлетворят условию min-max (т.е >= min и < max)
   #
@@ -4197,7 +4250,7 @@ d- ;# initially, debug mode off
 
 #-------------------------------------------------------------------------------
 
-interp alias {} pn {} puts -nonewline ;# простой алиас
+#interp alias {} pn {} puts -nonewline ;# простой алиас
 
 
 # Вспомогательная процедурка для трюка со списками.

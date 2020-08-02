@@ -214,9 +214,9 @@ proc dispatch_terminate {} {
   return "0"
 }
 #-------------------------------------------------------------------------------
-proc dispatch_internal {dispatch_exact dispatch_nocase dispatch_expr \
-                          dispatch_glob dispatch_regexp dispatch_all \
-                          dispatch_end dispatch_level dispatch_string \
+proc dispatch_internal {dispatch_exact dispatch_nocase dispatch_expr 
+                          dispatch_glob dispatch_regexp dispatch_all 
+                          dispatch_end dispatch_level dispatch_string 
                           dispatch_body } {
 
   global dispatch_argument_error

@@ -8,13 +8,6 @@ ppp = a b c {d e  f g}
 ppp = a b c {d e  f g}
 ppp = a b c {d e  f g}
 
-ppp print = 
-a b
-c {
-  d e
-  f g
-}
-
 ppp(a)   = b
 ppp(c)   = d e  f g
 ppp(c d) = e
@@ -45,10 +38,6 @@ ppp(c j) = o NEWEST
 ------------------------------------------
 
 dict_expand = a h c {j {o NEWEST} l NEW}
-
-dict print = 
-a h
-c ::G_DICT_1
 
 ------------------------------------------
 

@@ -147,7 +147,7 @@ proc win_rect_fill {win  ch  x y w h {color "DEFAULT"}} {
 
 }
 # -------------------------------------------------------------------------------
-proc win_rect {win  ch_horz ch_vert  x y w h {color "DEFAULT"} \
+proc win_rect {win  ch_horz ch_vert  x y w h {color "DEFAULT"} 
                  {colchar "NONE"} {colfill "CYAN"} } {
 
   #USE_REFS
@@ -280,10 +280,11 @@ proc VHandPixel {win x y ch color} {
 # ;  int     x1, y1, x2, y2, delta;
 
 # ;-------------------------------------------------------------------------------
-proc VHandLineFunc {&line flag  x1 y1  x2 y2} {
+proc VHandLineFunc {@line flag  x1 y1  x2 y2} {
 
   #USE_REFS
-  upvar ${&line} line
+  #upvar ${&line} line
+  upvar ${@line} line
 
   global  p_delta_x p_delta_y
   global  p_incy p_incx p_err  retun_x retun_y 
@@ -528,7 +529,8 @@ proc win_ellipse {win ch left  top right bottom  {color "DEFAULT"}} {
 # ;  if (y) bj_drawellps (/* obj, */win, ch, x, y, xcentre, ycentre, asp_ratio);
 
   set x $y
-  if {y != 0}  {
+
+  if {$y != 0}  {
     bj_drawellps  $win  $ch $x $y $xcentre $ycentre $asp_ratio   $color
   }
 
