@@ -47,7 +47,10 @@ source "$COM/a-plot.tl"
 #source "f-rand.tl"
 
 source "g-corA.tl"
+
 exit
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 source "g-corB.tl"  ;# unknown namespace in import pattern "tcltest::*"
 

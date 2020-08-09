@@ -21,11 +21,22 @@ source "a-disp.tl"
 #----------------------------
 
 my_source "a-comp.tl"
-
 my_source "a-menu.tl"
 
 #exit
 
+set MAIN_JIM "JIMTCL" 
+set auto_path [linsert $auto_path 0 $MAIN_JIM]
+
+# ;-------------------------------------------------------------------------------
+proc JIMO {} {
+
+  source "a-jimo.tl"
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
 # ;-------------------------------------------------------------------------------
 proc COMM {} {
 

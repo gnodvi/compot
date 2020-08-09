@@ -539,27 +539,27 @@ oo::class create BOT {
   VAR  pop
 
   #---------------------------------------------------------
-  constructor {args} {
+#   constructor {args} {
 
-    #     if {! [info exists task]} {
-    #       set task [dict_parse $args "-task" ] 
-    #     }
+#     #     if {! [info exists task]} {
+#     #       set task [dict_parse $args "-task" ] 
+#     #     }
 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]] 
+#     set task [dict_parse $args "-task" \
+#                 [task_create  "FS_fitness" -fit_target 53.1]] 
     
 
-    [self] SET_task $task
-    [self] SET_name [dict_parse  $args  "-name" "BotName"]
-    [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
+#     [self] SET_task $task
+#     [self] SET_name [dict_parse  $args  "-name" "BotName"]
+#     [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
 
-  }
-  #---------------------------------------------------------
-  method init {args} {
+#   }
+#   #---------------------------------------------------------
+#   method init {args} {
 
-    pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+#     pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 
-  }
+#   }
   #---------------------------------------------------------
   method calc {args} {
 
@@ -595,6 +595,30 @@ oo::class create BOT {
   #---------------------------------------------------------
 
  
+}
+
+#---------------------------------------------------------
+
+oo::define BOT constructor {args} {
+
+    #     if {! [info exists task]} {
+    #       set task [dict_parse $args "-task" ] 
+    #     }
+
+    set task [dict_parse $args "-task" \
+                [task_create  "FS_fitness" -fit_target 53.1]] 
+    
+
+    [self] SET_task $task
+    [self] SET_name [dict_parse  $args  "-name" "BotName"]
+    [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
+
+  }
+#---------------------------------------------------------
+
+oo::define BOT  method init {args} {
+  
+  pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 }
 
 # ------------------------------------------------------------------------------

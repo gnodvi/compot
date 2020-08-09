@@ -489,9 +489,21 @@ proc item_print {item} {
 
 #-------------------------------------------------------------------------------
 
-rename SET SET_old
+# a-dict.tl
+#
+#alias SET dict_set
+#alias GET dict_get
 
-rename GET GET_old
+if {$::__JIM__} {
+
+  rename dict_set SET_old
+  rename dict_get GET_old
+
+} else {
+
+  rename SET SET_old
+  rename GET GET_old
+}
 
 #-------------------------------------------------------------------------------
 proc SET {args} {

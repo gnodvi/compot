@@ -23,6 +23,14 @@ if [info exists tcl_version] {
 # modified the code below.
 
 #-------------------------------------------------------------------------------
+# a~.tl DICT ARR2_test_NEW
+
+# invalid command name "alias"
+#     while executing
+# "alias SET dict_set"
+ 
+if {$::__TCL__} {
+#-------------------------------------------------------------------------------
 proc alias {alias target} {
 
   set fulltarget [uplevel [list namespace which $target]]
@@ -67,7 +75,7 @@ proc alias {alias target} {
 
   return [uplevel [list namespace which $alias]]
 }
-#----------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Example:
 
@@ -76,6 +84,8 @@ proc alias {alias target} {
 # puts $answer
 # rename ::pset {}
 
+#-------------------------------------------------------------------------------
+}
 #-------------------------------------------------------------------------------
 
 set ::TRUE  1

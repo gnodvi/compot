@@ -1,10 +1,11 @@
 
---------- class Account ------------------------------
+------------------- class Account ------------------------------
 
 Account vars=balance name
 Account methods=classname classvars destroy eval finalize get method methods new vars
 
----- object Account ----
+------------------ object Account -------------------------------
+
 a.vars=balance name
 a.classname=Account
 deposit 100 -> 100
@@ -17,11 +18,13 @@ My variables are:
   balance=60
   name=Bob Smith
 
----- class CreditAccount ----
+----------------- class CreditAccount ------------------------------
+
 CreditAccount vars=balance limit name
 CreditAccount methods=baseclass classname classvars constructor deposit describe destroy eval finalize get method methods new see vars withdraw
 
----- object CreditAccount ----
+----------------- object CreditAccount -----------------------------
+
 b.vars=balance limit name
 b.classname=CreditAccount
 initial balance -> 0
@@ -39,7 +42,7 @@ My variables are:
 
 Total of accounts Bob Smith and John White (Credit Limit: -1000) is: -880
 
----- All objects ----
+------------------- All objects ---------------------------------
 
 Found  CreditAccount: Owner:     John White, Balance:  -940, in object <reference.<CreditA>.00000000000000000002>
 Not an object: <reference.<blah___>.00000000000000000010>
