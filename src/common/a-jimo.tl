@@ -322,8 +322,8 @@ proc class_create {classname {baseclasses {}} classvars} {
   } else {
 
     oo::class create $classname {
-      VAR balance
-      VAR name
+      eval VAR balance
+      eval VAR name
     }
   } 
 
@@ -355,8 +355,148 @@ proc class_constructor {classname vars body} {
 
 }
 #-------------------------------------------------------------------------------
+# proc class_new {classname vars} {
+
+#   if {$::__JIM__} {
+
+#     #class_method $classname constructor $vars $body
+  
+#   } else {
+
+#     #oo::define $classname constructor $vars $body
+#   }
+
+# }
+
+
+  #set a [class_new Account {name "Bob Smith"  balance 4}]
+
+  #set a [Account new  {name "Bob Smith"  balance 4}]
+  #set a [Account new ]
+
+
+#-------------------------------------------------------------------------------
 proc TEST_next {} {
 
+
+
+  #--------------------------------
+  if {$::__JIM__} {
+    
+    class Account {
+      balance 0
+      name    "Unknown"
+    }
+    SETGET Account
+
+    set a [Account new  {name "Bob Smith"  balance 4}]
+
+    puts "balance = [$a GET_balance]"
+
+  #--------------------------------
+  } else {
+  #--------------------------------
+
+    oo::class create Acc {
+
+      #VAR balance
+      #VAR name
+    ##{}
+      #variable balance
+
+    #oo::define Account constructor {args} {}
+    constructor {args} {
+
+      #VAR balance
+
+      puts "args = $args"
+
+      dict for {var val} {*}$args {
+        #puts "var= $var val= $val"
+        #uplevel 1 variable $var
+        #set $var $val
+
+        #uplevel 1 Account method GET_$var \{\}    \{set $var \}
+
+        #uplevel 2 method SET_$var \{v\} \{[subst -nocommand {set $var \$val}] \}
+        #uplevel 1 method GET_$var \{\}  \{[subst -nocommand {return $$var}] \}
+
+        #oo::define Account method GET_balance {} {set balance}
+        #oo::define Account method GET_NEW_balance {} {return $balance}
+
+        #set vv  bal
+        #set vv  bal
+
+        #puts "vv = |$vv|, var = |$var|"
+
+        oo::define Acc variable $var 
+
+        #oo::define Acc variable bal
+        #eval oo::define Account variable $var
+
+        #oo::define Account method get_$var {} {return $$var}
+        #oo::define Account method get_$var {} {return $balance}
+        
+        set $var $val
+
+        #set body {return $balance}
+        set body [subst -nocommand {return $$var}]
+        #puts "var = $var   body = $body"
+
+        #oo::define Account method get_$var {} { return $balance }
+        oo::define Acc method gets_$var {} $body
+
+       # uplevel 1 export gets_$var
+      }
+
+      #oo::define Account method test_NEW {} {return $balance}
+
+      # TODO - надо взять из args все переменные и установить
+      # а также установить для них VAR
+
+      #set balance 33
+      
+      #uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
+      #uplevel 1 $classname method GET_$var \{\}    \{set $var \}
+
+
+      #oo::define Account method GET_balance_NEW {} {set balance}
+      #export  GET_balance_NEW
+    }
+
+    # constructor end
+    #-----------------------------------------------------
+
+    #method test_NEW {} {return 12345}
+
+    }
+    #----------------------------------------------------------
+
+    #oo::define Account method GET_balance_NEW {} {set balance}
+    #export  GET_balance_NEW
+
+
+    #oo::define Account method test_NEW {} {return 98765}
+
+    set a [Acc new  {name "Bob Smith"  bal 4}]
+
+    #$a SET_balance 33
+
+    #puts ""
+    #puts "balance = [$a GET_balance]"
+    #puts "balance_NEW = [$a GET_NEW_balance]"
+
+    puts "bal  = [$a gets_bal]"
+    puts "name = [$a gets_name]"
+    #$a test_NEW
+
+    } ;# else
+  #--------------------------------
+  
+
+  exit
+
+  #-----------------------------------------------------
 
   class_create Account {} {
     balance 0
@@ -364,26 +504,34 @@ proc TEST_next {} {
 
   }
 
+  set a [Account new  {name "Bob Smith"  balance 4}]
+  
+  puts ""
+  puts "balance = [$a GET_balance]"
+  puts ""
+
+  exit
+
+  #-----------------------------------------------------
+
+  #class_constructor Account  {args} {
+
+    #     if {$balance < 0} {
+    #       error "Can't initialise account with a -ve balance \n"
+    #     }
+  #}
+
   #-----------------------------------------------------
 
   class_method Account see {} {
-      set balance
+    set balance
     }
 
-  class_constructor Account  {} {
-
-    if {$balance < 0} {
-      error "Can't initialise account with a -ve balance \n"
-    }
-  }
-
-  #-----------------------------------------------------
-
-  Account method deposit {amount} {
+  class_method Account deposit  {amount} {
     set balance [+ $balance $amount]
   }
   
-  Account method seename {} {
+  class_method Account seename  {} {
     set name
   }
   
@@ -393,6 +541,14 @@ proc TEST_next {} {
 
   set a [Account new  {name "Bob Smith"  balance 4}]
   
+  puts "balance = [$a GET_balance]"
+
+  puts ""
+
+  exit
+
+  #-----------------------------------------------------
+
   puts "vars = [$a vars]"
 
   puts "balance = [$a see]"

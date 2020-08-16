@@ -124,7 +124,7 @@ oo::class create summation {
     variable v  5
     variable MM 111
 
-    set XX 999
+    #set XX 999
   }
   
   method getMM {} {
@@ -132,7 +132,7 @@ oo::class create summation {
     return  $MM
   }
 
-  VAR  RR 
+  #VAR  RR 
 
   eval VAR  {TT 111}  ;# eval when {name value}
   eval VAR  {NN 555} 
@@ -169,8 +169,10 @@ proc TEST_cloo {} {
   #puts "NN =  [$sum GET_NN]"
   #puts "NN =  [$sum GET_NN]"
  
-  puts "XX =  [$sum GET_XX]"
+  #puts "XX =  [$sum GET_XX]"
+
   $sum SET_XX 888
+
   puts "XX =  [$sum GET_XX]"
 
   puts ""
