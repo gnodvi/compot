@@ -1,5 +1,7 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
+
+# a~.tl JIMO TEST_next
 #-------------------------------------------------------------------------------
 #
 # set MAIN_JIM "JIMTCL" 
@@ -23,6 +25,13 @@
 
 # check_JIM 
 
+#-----------------------------------------------------
+
+foreach op {+ - * /} {
+    
+  proc $op args [string map [list @op@ $op] {expr [join $args @op@]}]
+}
+  
 #-------------------------------------------------------------------------------
 proc package_require_OO {} {
 
@@ -296,7 +305,8 @@ proc SETGET {classname} {
 
   uplevel 1 $classname method set \{var val\} \{ set \$var \$val \}
 
-  foreach var [Account vars] {
+  #foreach var [Account vars] {}
+  foreach var [$classname vars] {
 
     #puts "var = $var"
 
@@ -311,20 +321,103 @@ proc SETGET {classname} {
 ##oo::class create POP {}
 
 #-------------------------------------------------------------------------------
+# proc oo_tcl_parse_classvars {classname classvars} {
+
+
+#   dict for {var val} $classvars {
+    
+#     #set classname [self class]
+#     #puts "classname = $classname"
+    
+#     oo::define $classname variable $var 
+    
+#     set $var $val
+    
+#     #set body [subst -nocommand {return $$var}]
+    
+#     oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
+#     oo::define $classname export GET_$var
+    
+#     set body [subst -nocommand {set $var \$v}]
+#     #puts "body = $body"
+    
+#     oo::define $classname method SET_$var {v} $body
+#     oo::define $classname export SET_$var
+#   }
+   
+# }
+#-------------------------------------------------------------------------------
+if {$::__JIM__} {
+} else {
+
+oo::class create SUPERJIM {
+
+
+  constructor {classvars} {
+    
+    #puts ""
+    #puts "THIS IS constructor SUPERJIM"
+    #puts ""
+
+    set classname [self class]
+    #puts "THIS IS classname = $classname"
+    
+    dict for {var val} $classvars {
+      
+      oo::define $classname variable $var 
+      
+      set $var $val
+      
+      #set body [subst -nocommand {return $$var}]
+      
+      oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
+      oo::define $classname export GET_$var
+      
+      set body [subst -nocommand {set $var \$v}]
+      #puts "body = $body"
+      
+      oo::define $classname method SET_$var {v} $body
+      oo::define $classname export SET_$var
+    }
+  }
+  
+}
+
+}
+#-------------------------------------------------------------------------------
+proc NEXT_ {classname args} {
+
+  uplevel 1 next $args
+  
+
+  dict for {var val} {*}$args {
+
+    puts "NEXT_: var=$var val = $val"
+    oo::define $classname variable $var $val
+  }
+  
+}
+#-------------------------------------------------------------------------------
 proc class_create {classname {baseclasses {}} classvars} {
+
 
   if {$::__JIM__} {
 
-    class $classname $classvars
+    class $classname $baseclasses $classvars
 
     SETGET $classname
 
   } else {
 
-    oo::class create $classname {
-      eval VAR balance
-      eval VAR name
+    oo::class create $classname  {
+
+      superclass SUPERJIM
     }
+
+    #oo::define $classname  constructor {args} {
+    #  NEXT_ [self class] {*}$args ;; 
+    #}
+
   } 
 
 }
@@ -344,212 +437,111 @@ proc class_method {classname methodname vars body} {
 #-------------------------------------------------------------------------------
 proc class_constructor {classname vars body} {
 
+    puts "vars = $vars"
+    puts "body = $body"
+
   if {$::__JIM__} {
 
     class_method $classname constructor $vars $body
   
   } else {
 
-    oo::define $classname constructor $vars $body
+    #set newbody " NEXT_ \[self class\] \{*\}\$args ;;  $body "
+    
+    #puts "class_constructor (TCL): newbody = "
+    #puts $newbody
+  
+    #[subst -nocommand {return $$var}]
+  
+    set nextbody {
+      NEXT_ [self class] {*}$args 
+
+      #puts "balance = $balance !!!!!!!!!!"
+
+    }
+
+    #puts "nextbody = $nextbody"
+    #set newbody [concat $nextbody $body]
+    #puts "newbody = $newbody"
+
+    #oo::define $classname  constructor {args} $nextbody
+
+    oo::define $classname constructor {args}  $nextbody
   }
 
 }
 #-------------------------------------------------------------------------------
-# proc class_new {classname vars} {
-
-#   if {$::__JIM__} {
-
-#     #class_method $classname constructor $vars $body
-  
-#   } else {
-
-#     #oo::define $classname constructor $vars $body
-#   }
-
-# }
-
-
-  #set a [class_new Account {name "Bob Smith"  balance 4}]
-
-  #set a [Account new  {name "Bob Smith"  balance 4}]
-  #set a [Account new ]
-
-
-#-------------------------------------------------------------------------------
 proc TEST_next {} {
 
+  puts ""
 
-
-  #--------------------------------
-  if {$::__JIM__} {
-    
-    class Account {
-      balance 0
-      name    "Unknown"
-    }
-    SETGET Account
-
-    set a [Account new  {name "Bob Smith"  balance 4}]
-
-    puts "balance = [$a GET_balance]"
-
-  #--------------------------------
-  } else {
-  #--------------------------------
-
-    oo::class create Acc {
-
-      #VAR balance
-      #VAR name
-    ##{}
-      #variable balance
-
-    #oo::define Account constructor {args} {}
-    constructor {args} {
-
-      #VAR balance
-
-      puts "args = $args"
-
-      dict for {var val} {*}$args {
-        #puts "var= $var val= $val"
-        #uplevel 1 variable $var
-        #set $var $val
-
-        #uplevel 1 Account method GET_$var \{\}    \{set $var \}
-
-        #uplevel 2 method SET_$var \{v\} \{[subst -nocommand {set $var \$val}] \}
-        #uplevel 1 method GET_$var \{\}  \{[subst -nocommand {return $$var}] \}
-
-        #oo::define Account method GET_balance {} {set balance}
-        #oo::define Account method GET_NEW_balance {} {return $balance}
-
-        #set vv  bal
-        #set vv  bal
-
-        #puts "vv = |$vv|, var = |$var|"
-
-        oo::define Acc variable $var 
-
-        #oo::define Acc variable bal
-        #eval oo::define Account variable $var
-
-        #oo::define Account method get_$var {} {return $$var}
-        #oo::define Account method get_$var {} {return $balance}
-        
-        set $var $val
-
-        #set body {return $balance}
-        set body [subst -nocommand {return $$var}]
-        #puts "var = $var   body = $body"
-
-        #oo::define Account method get_$var {} { return $balance }
-        oo::define Acc method gets_$var {} $body
-
-       # uplevel 1 export gets_$var
-      }
-
-      #oo::define Account method test_NEW {} {return $balance}
-
-      # TODO - надо взять из args все переменные и установить
-      # а также установить для них VAR
-
-      #set balance 33
-      
-      #uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
-      #uplevel 1 $classname method GET_$var \{\}    \{set $var \}
-
-
-      #oo::define Account method GET_balance_NEW {} {set balance}
-      #export  GET_balance_NEW
-    }
-
-    # constructor end
-    #-----------------------------------------------------
-
-    #method test_NEW {} {return 12345}
-
-    }
-    #----------------------------------------------------------
-
-    #oo::define Account method GET_balance_NEW {} {set balance}
-    #export  GET_balance_NEW
-
-
-    #oo::define Account method test_NEW {} {return 98765}
-
-    set a [Acc new  {name "Bob Smith"  bal 4}]
-
-    #$a SET_balance 33
-
-    #puts ""
-    #puts "balance = [$a GET_balance]"
-    #puts "balance_NEW = [$a GET_NEW_balance]"
-
-    puts "bal  = [$a gets_bal]"
-    puts "name = [$a gets_name]"
-    #$a test_NEW
-
-    } ;# else
-  #--------------------------------
-  
-
-  exit
-
-  #-----------------------------------------------------
-
-  class_create Account {} {
+  class_create AccountMore {} {
     balance 0
     name    "Unknown"
 
   }
 
-  set a [Account new  {name "Bob Smith"  balance 4}]
+  #-----------------------------------------------------
+
+
+  class_constructor AccountMore {args} {
+
+    #if {$::__TCL__} {
+    ##  NEXT_ [self class] {*}$args
+    #}
+    
+    if {$::__TCL__} {
+      NEXT_ AccountMore {*}$args
+    }
+    
+    puts "balance = $balance !!!!!!!!!!"
+
+    #if {$balance < 0} {
+    #  error "Can't initialise account with a -ve balance \n"
+    #}
+  }
   
+  #-----------------------------------------------------
+
+
+  set a [AccountMore new  {name "Bob Smith"  balance +1}]
+  
+  #exit
+
   puts ""
   puts "balance = [$a GET_balance]"
+  puts "name    = [$a GET_name]"
+  
+  $a SET_balance 88
+  puts "balance = [$a GET_balance]"
   puts ""
+  
+  #exit
 
-  exit
-
-  #-----------------------------------------------------
-
-  #class_constructor Account  {args} {
-
-    #     if {$balance < 0} {
-    #       error "Can't initialise account with a -ve balance \n"
-    #     }
-  #}
-
-  #-----------------------------------------------------
-
-  class_method Account see {} {
+  class_method AccountMore see {} {
     set balance
     }
 
-  class_method Account deposit  {amount} {
+  class_method AccountMore deposit  {amount} {
     set balance [+ $balance $amount]
   }
   
-  class_method Account seename  {} {
+  class_method AccountMore seename  {} {
     set name
   }
   
+  #exit
+
   #-----------------------------------------------------
 
-  puts ""
-
-  set a [Account new  {name "Bob Smith"  balance 4}]
+  #   puts ""
+  #   set a [Account new  {name "Bob Smith"  balance 4}]
+  #   puts "balance = [$a GET_balance]"
+  #   puts ""
   
-  puts "balance = [$a GET_balance]"
-
-  puts ""
-
-  exit
+  #   exit
 
   #-----------------------------------------------------
-
-  puts "vars = [$a vars]"
 
   puts "balance = [$a see]"
 
@@ -561,12 +553,23 @@ proc TEST_next {} {
   puts "name    = [$a seename]"
   #puts "b       = [$a GET_b]"
 
-  $a set name    GENA
-  $a set balance  999
+  puts ""
+
+  exit
+
+  #-----------------------------------------------------
+
+  puts "balance = [$a see]"
+  puts "name    = [$a seename]"
+
+
   puts "name    = [$a get name]    [$a GET_name]"
   puts "balance = [$a get balance]"
+
   $a SET_name "hjhjkjhkj"
   puts "name    = [$a get name]    [$a GET_name]"
+
+  puts "vars = [$a vars]"
 
   puts ""
 

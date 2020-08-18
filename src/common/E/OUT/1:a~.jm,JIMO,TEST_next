@@ -1,9 +1,28 @@
 
-vars = balance name
-balance = 4
-balance = 14
+vars = args
+body = 
+
+    #if {$::__TCL__} {
+    ##  NEXT_ [self class] {*}$args
+    #}
+    
+    if {$::__TCL__} {
+      NEXT_ AccountMore {*}$args
+    }
+    
+    puts "balance = $balance !!!!!!!!!!"
+
+    #if {$balance < 0} {
+    #  error "Can't initialise account with a -ve balance \n"
+    #}
+  
+balance = +1 !!!!!!!!!!
+
+balance = +1
 name    = Bob Smith
-name    = GENA    GENA
-balance = 999
-name    = hjhjkjhkj    hjhjkjhkj
+balance = 88
+
+balance = 88
+balance = 98
+name    = Bob Smith
 
