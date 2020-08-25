@@ -557,17 +557,28 @@ oo::class create POP {
   VAR itemslist
   VAR generation
 
-  constructor {args} {
+#   constructor {args} {
 
-    set  stable_size    [dict_parse $args "-lpop"] 
-    set len_chromosomes [dict_parse $args "-lgen"] 
+#     set  stable_size    [dict_parse $args "-lpop"] 
+#     set len_chromosomes [dict_parse $args "-lgen"] 
 
-    set  "ch_form"  "% 6.3f " ;#  " %02d"   
-    set generation_hook NULL
+#     set  "ch_form"  "% 6.3f " ;#  " %02d"   
+#     set generation_hook NULL
 
-  }
+#   }
 
 }
+
+oo::define POP constructor {args} {
+
+  set  stable_size    [dict_parse $args "-lpop"] 
+  set len_chromosomes [dict_parse $args "-lgen"] 
+  
+  set  "ch_form"  "% 6.3f " ;#  " %02d"   
+  set generation_hook NULL
+  
+}
+
 #-------------------------------------------------------------------------------
 #   Population handling functions.
 

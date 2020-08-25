@@ -347,56 +347,83 @@ proc SETGET {classname} {
    
 # }
 #-------------------------------------------------------------------------------
+proc define_variables_and_SET_GET {obj classname classvars } {
+
 if {$::__JIM__} {
 } else {
 
-oo::class create SUPERJIM {
+  #set obj [self] ;# здесь не прокатывает!
 
-
-  constructor {classvars} {
+  #set classname [self class]
+  #puts "THIS IS classname = $classname"
+  
+  dict for {var val} $classvars {
     
-    #puts ""
-    #puts "THIS IS constructor SUPERJIM"
-    #puts ""
-
-    set classname [self class]
-    #puts "THIS IS classname = $classname"
+    oo::define $classname variable $var     
+    #set $var $val
     
-    dict for {var val} $classvars {
-      
-      oo::define $classname variable $var 
-      
-      set $var $val
-      
-      #set body [subst -nocommand {return $$var}]
-      
-      oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
-      oo::define $classname export GET_$var
-      
-      set body [subst -nocommand {set $var \$v}]
-      #puts "body = $body"
-      
-      oo::define $classname method SET_$var {v} $body
-      oo::define $classname export SET_$var
-    }
+    #set body [subst -nocommand {return $$var}]
+    
+    oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
+    oo::define $classname export GET_$var
+    
+    set body [subst -nocommand {set $var \$v}]
+    #puts "body = $body"
+    
+    oo::define $classname method SET_$var {v} $body
+    oo::define $classname export SET_$var
   }
-  
-}
 
-}
-#-------------------------------------------------------------------------------
-proc NEXT_ {classname args} {
-
-  uplevel 1 next $args
-  
-
-  dict for {var val} {*}$args {
-
-    puts "NEXT_: var=$var val = $val"
+  dict for {var val} $classvars {      
+    $obj SET_$var $val
     oo::define $classname variable $var $val
   }
+
+
+  #   #dict for {var val} {*}$args {}
+  #   dict for {var val} $classvars {
+  
+  #     #puts "NEXT: var=$var val = $val" 
+  #     oo::define $classname variable $var $val
+  #   }
   
 }
+
+  return
+}
+#-------------------------------------------------------------------------------
+# if {$::__JIM__} {
+# } else {
+
+#   oo::class create SUPERJIM {
+    
+#   }
+  
+#   oo::define SUPERJIM constructor {args} { 
+   
+#     define_variables_and_SET_GET  [self]  [self class]  {*}$args 
+#   }
+
+# }
+#-------------------------------------------------------------------------------
+# proc NEXT {obj classname args} {
+
+#   #
+#   #uplevel 1 next $args
+  
+#   # TODO:
+#   # 
+#   define_variables_and_SET_GET $obj  $classname {*}$args 
+
+
+# #   dict for {var val} {*}$args {
+
+# #     puts "NEXT: var=$var val = $val"
+
+# #     oo::define $classname variable $var $val
+# #   }
+  
+# }
 #-------------------------------------------------------------------------------
 proc class_create {classname {baseclasses {}} classvars} {
 
@@ -411,62 +438,87 @@ proc class_create {classname {baseclasses {}} classvars} {
 
     oo::class create $classname  {
 
-      superclass SUPERJIM
+      #superclass SUPERJIM
     }
 
     #oo::define $classname  constructor {args} {
-    #  NEXT_ [self class] {*}$args ;; 
+    #  NEXT [self class] {*}$args ;; 
     #}
 
   } 
 
 }
 #-------------------------------------------------------------------------------
-proc class_method {classname methodname vars body} {
+#proc class_method {classname methodname vars body} {}
+proc class_method {classname methodname args body} {
 
   if {$::__JIM__} {
 
-    $classname method $methodname $vars $body
+    #$classname method $methodname $vars $body
+    $classname method $methodname {*}$args $body
   
   } else {
 
-    oo::define $classname method $methodname $vars $body
+    #oo::define $classname method $methodname $vars $body
+    oo::define $classname method $methodname $args $body
   }
 
 }
 #-------------------------------------------------------------------------------
-proc class_constructor {classname vars body} {
+#proc class_constructor {classname vars body} {}
+proc class_constructor {classname args body} {
 
-    puts "vars = $vars"
-    puts "body = $body"
+  #puts "class_constructor:  vars = $vars"
+  puts "class_constructor:  body = $body"
 
   if {$::__JIM__} {
 
-    class_method $classname constructor $vars $body
-  
-  } else {
+    #define_variables_and_SET_GET [self] [self class] {*}$args 
 
-    #set newbody " NEXT_ \[self class\] \{*\}\$args ;;  $body "
+    #class_method $classname constructor $vars $body
+    #class_method $classname constructor $vars {}
+    class_method $classname constructor $args {
+
+      puts "balance = $balance !!!!!!!!!!"
+      
+      if {$balance < 0} {
+        error "Can't initialise account with a -ve balance \n"
+      }
+    }
+  
+    #-------------------------------
+  } else {
+    #-------------------------------
+
+    #set newbody " NEXT \[self class\] \{*\}\$args ;;  $body "
     
     #puts "class_constructor (TCL): newbody = "
     #puts $newbody
   
     #[subst -nocommand {return $$var}]
   
-    set nextbody {
-      NEXT_ [self class] {*}$args 
+#     set nextbody {
+#       NEXT [self class] {*}$args 
 
-      #puts "balance = $balance !!!!!!!!!!"
+#       #puts "balance = $balance !!!!!!!!!!"
 
-    }
+#     }
 
     #puts "nextbody = $nextbody"
     #set newbody [concat $nextbody $body]
     #puts "newbody = $newbody"
 
     #oo::define $classname  constructor {args} $nextbody
+    #oo::define $classname constructor {args}  $nextbody
 
-    oo::define $classname constructor {args}  $nextbody
+    oo::define $classname constructor {args} {
+
+      #set obj [self]
+
+      #NEXT [self] [self class] {*}$args 
+
+      define_variables_and_SET_GET [self] [self class] {*}$args 
+    }
   }
 
 }
@@ -481,24 +533,7 @@ proc TEST_next {} {
 
   }
 
-  #-----------------------------------------------------
-
-
   class_constructor AccountMore {args} {
-
-    #if {$::__TCL__} {
-    ##  NEXT_ [self class] {*}$args
-    #}
-    
-    if {$::__TCL__} {
-      NEXT_ AccountMore {*}$args
-    }
-    
-    puts "balance = $balance !!!!!!!!!!"
-
-    #if {$balance < 0} {
-    #  error "Can't initialise account with a -ve balance \n"
-    #}
   }
   
   #-----------------------------------------------------
