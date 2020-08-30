@@ -1,27 +1,20 @@
 
-vars = args
-body = 
 
-    #if {$::__TCL__} {
-    ##  NEXT_ [self class] {*}$args
-    #}
-    
-    if {$::__TCL__} {
-      NEXT_ AccountMore {*}$args
-    }
-    
-    puts "balance = $balance !!!!!!!!!!"
+balance = 0 !!!!!!!!!!
 
-    #if {$balance < 0} {
-    #  error "Can't initialise account with a -ve balance \n"
-    #}
-  
-balance = +1 !!!!!!!!!!
-
-balance = +1
+balance = 0
 name    = Bob Smith
 balance = 88
 
+class_method: methodname = see vars =  body = 
+    set balance
+  
+class_method: methodname = deposit vars = amount body = 
+    set balance [+ $balance $amount]
+  
+class_method: methodname = seename vars =  body = 
+    set name
+  
 balance = 88
 balance = 98
 name    = Bob Smith
