@@ -4268,5 +4268,199 @@ d- ;# initially, debug mode off
 proc K {a b} {set a}
 
 ################################################################################
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc SETGET {classname} {
+
+  uplevel 1 $classname method set \{var val\} \{ set \$var \$val \}
+
+  #foreach var [Account vars] {}
+  foreach var [$classname vars] {
+
+    #puts "var = $var"
+
+    uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
+    uplevel 1 $classname method GET_$var \{\}    \{set $var \}
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc class_method {classname methodname vars body} {
+#proc class_method {classname methodname args body} {}
+
+    puts "class_method: methodname = $methodname vars = $vars body = $body"
+
+  if {$::__JIM__} {
+
+    $classname method $methodname $vars $body
+    #$classname method $methodname {*}$args $body
+  
+  } else {
+
+    #oo::define $classname method $methodname AAA $body
+    oo::define $classname method $methodname $vars $body
+    #oo::define $classname method $methodname $args $body
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc define_vars_for_OBJ {obj vars } {
+
+
+  dict for {var val} $vars {
+    
+    $obj SET_$var $val
+    variable $var
+  }
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc define_vars_for_CLASS {classname classvars} {
+
+
+  dict for {var val} $classvars {
+    
+    if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
+
+    #puts "define_vars_for_CLASS: var = $var, val = $val"
+
+    oo::define $classname variable $var     
+    set $var $val
+    
+    #set body [subst -nocommand {return $$var}]
+    
+    oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
+    oo::define $classname export GET_$var
+    
+    set body [subst -nocommand {set $var \$v}]
+    #puts "body = $body"
+    
+    oo::define $classname method SET_$var {v} $body
+    oo::define $classname export SET_$var
+
+    oo::define $classname variable $var $val
+  }
+
+  return
+}
+
+##proc # args {}
+
+#-------------------------------------------------------------------------------
+proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
+
+
+  if {$::__JIM__} {
+    #---------------------------------------------------------
+
+    class $classname $baseclasses $classvars
+
+    SETGET $classname
+
+    $classname method constructor args $constructorbody
+
+    #---------------------------------------------------------
+  } else {
+    #---------------------------------------------------------
+
+    #if {$classname == "AccountNext"} {
+    #  set classbody { superclass AccountMore }
+    #} else {
+    set classbody {}
+    #}
+
+    #foreach b $baseclasses {
+    #  puts "b = $b"
+      #append classbody "\{ superclass  $b \}"
+    #}
+
+    #
+    #superclass POP
+    #puts "classbody = $classbody"
+
+    oo::class create $classname  $classbody
+ 
+    #----------------------------------------
+
+    #puts "classvars = $classvars"
+
+    define_vars_for_CLASS $classname $classvars 
+
+    #----------------------------------------
+
+    set    fullbody {}
+
+    if {$mode == 1} {
+
+      #puts "info object variables  = [info object variables $tst]"
+      #puts "info object vars       = [info object vars      $tst]"
+      
+      # подготавливаем конструктор --------------
+      
+      #if {$classname == "AccountNext"} {
+      #  set body2 {next {*}$args}
+      #} else {
+      set body2 {}
+      #}
+      
+      set body1 {
+        
+        set cl [self class]
+        
+        set classvars    [info class  variables    $cl]
+        set superclasses [info class  superclasses $cl]
+        
+        puts "info class  variables    = $classvars"
+        puts "info class  superclasses  = $superclasses"
+        puts "constructor args = $args"
+        
+        define_vars_for_OBJ [self] $classvars
+        define_vars_for_OBJ [self] {*}$args
+        
+        puts "cl = $cl"
+        #if {$cl == "::AccountNext"} {
+        #  set nextvars [info class  variables AccountMore]
+        #  puts "..................  nextvars = $nextvars"
+        #  define_vars_for_OBJ [self] $nextvars
+        #} 
+      }
+
+      append fullbody $body2
+      append fullbody $body1
+    }
+
+    append fullbody $constructorbody
+
+    #-------------------------------------------
+
+    #foreach b $baseclasses {
+    #  puts "b = $b"
+      #append classbody "\{ superclass  $b \}"
+    #}
+
+    oo::define $classname superclass {*}$baseclasses    
+
+    # теперь делаеи  конструктор ---------------
+
+    #puts "constructor_fullbody = $fullbody"
+
+    oo::define $classname constructor {args} $fullbody
+
+    #----------------------------------------------------
+  } 
+
+}
+#--------------------------------------------------------
+proc SUPER {method args} {
+
+  if {$::__JIM__} {
+    uplevel 1 super $method {*}$args
+  } else {
+    uplevel 1 next {*}$args
+  }
+
+}
+#-------------------------------------------------------------------------------
 # ==============================================================================
 #-------------------------------------------------------------------------------

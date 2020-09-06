@@ -46,6 +46,10 @@ source "g-diff.tl"
 source "g-detw.tl"
 
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
 
 set ::gp_list "1 2 3 4 5 6 7 8 9"
 
@@ -447,27 +451,22 @@ proc pop1_create {args} {
 }
 # ------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
+class_create 0 BOT01 {BOT} {
 
-oo::class create BOT01 {
-
-  superclass BOT
- 
-  #---------------------------------------------------------
-  constructor {args} {
+  # это перечисление переменных
+  
+} {
+  # а это конструктор класса 
 
     variable pop
 
-    next {*}$args
+    SUPER constructor {*}$args
     
     set pop [pop1_create  {*}$args]
     
     SET $pop  select_one   "ga_select_one_sus"
     SET $pop  select_two   "ga_select_two_sus"
     
-  }
-  #---------------------------------------------------------
- 
 }
 
 # ------------------------------------------------------------------------------
@@ -530,26 +529,24 @@ proc _01_test {} {
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-oo::class create BOT02 {
+class_create 0 BOT02 {BOT} {
 
-  superclass BOT
+  # это перечисление переменных
+  
+} {
+  # а это конструктор класса 
 
-  constructor {args} {
-
-    variable pop
-
-    next {*}$args
-    
-    set pop1 [pop1_create  {*}$args]
-    
-    SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
-    SET $pop1  select_one  "ga_select_one_bestof2"
-    SET $pop1  select_two  "ga_select_two_bestof2"  
-    
-    set pop $pop1
-  }
-  #---------------------------------------------------------
- 
+  variable pop
+  
+  SUPER constructor {*}$args
+  
+  set pop1 [pop1_create  {*}$args]
+  
+  SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
+  SET $pop1  select_one  "ga_select_one_bestof2"
+  SET $pop1  select_two  "ga_select_two_bestof2"  
+  
+  set pop $pop1
 }
 
 # //------------------------------------------------------------------------------
@@ -628,12 +625,14 @@ proc parse_opts_2 {&par1    &par2 \
 }
 # ------------------------------------------------------------------------------
 
-oo::class create BOT03 {
+#oo::class create BOT03 {}
+class_create 0 BOT03 {BOT} {
 
-  superclass BOT
+  #superclass BOT
 
+} {
   #---------------------------------------------------------
-  constructor {args} {
+  #constructor {args} {}
 
     variable task
 
@@ -675,26 +674,27 @@ oo::class create BOT03 {
       0.0      	          
 
     [self] SET_pop  $pop
-  }
-  #---------------------------------------------------------
-  method calc {args} {
+  #{}
 
-    set obj [self]
-
-    set task            [dict_parse $args "-task" [$obj GET_task]] 
-    set max_generations [dict_parse $args "-steps"] 
-    
-    set  pop [$obj GET_pop]
-    
-    set ret [ga_evolution  $task $pop $max_generations]  
-    
-    return $ret
-
-  }
-  #---------------------------------------------------------
- 
- 
 }
+
+#-------------------------------------------------------------------
+
+oo::define BOT03 method calc {args} {
+
+  set obj [self]
+  
+  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  set  pop [$obj GET_pop]
+  
+  set ret [ga_evolution  $task $pop $max_generations]  
+  
+  return $ret
+  
+}
+
 
 # //------------------------------------------------------------------------------
 proc _03_test {} \
@@ -790,14 +790,17 @@ proc _4_struggle_crossover {pop father mother son daughter} \
 # //------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-oo::class create BOT04 {
+#oo::class create BOT04 {}
+class_create 0 BOT04 {BOT} {
 
-  superclass BOT
+  #superclass BOT
 
+} {
   #---------------------------------------------------------
-  constructor {args} {
+  #constructor {args} {}
 
-    next {*}$args
+    #next {*}$args
+    SUPER constructor  {*}$args
 
     # если нет в args, то берем значение здесь
     # 
@@ -873,24 +876,25 @@ oo::class create BOT04 {
     
     
     [self] SET_pop  $pop
-  }
-  #---------------------------------------------------------
-  method calc {args} {
-
-    set obj [self]
-
-    set task            [dict_parse $args "-task" [$obj GET_task]] 
-    set max_generations [dict_parse $args "-steps"] 
-    
-    set  pop [$obj GET_pop]
-    
-    set ret [ga_evolution  $task $pop $max_generations]  
-    
-    return $ret
-  }
-  #---------------------------------------------------------
+  #{}
  
 }
+
+#---------------------------------------------------------
+oo::define BOT04  method calc {args} {
+  
+  set obj [self]
+  
+  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  set  pop [$obj GET_pop]
+  
+  set ret [ga_evolution  $task $pop $max_generations]  
+  
+  return $ret
+}
+#---------------------------------------------------------
 
 # //------------------------------------------------------------------------------
 # //
@@ -936,16 +940,20 @@ proc _04_test {} \
 }
 # ------------------------------------------------------------------------------
 
-oo::class create BOT05 {
+#oo::class create BOT05 {}
+class_create 0 BOT05 {BOT} {
 
-  superclass BOT
+  #superclass BOT
  
-  VAR  pops
+  #VAR  pops
+  pops ""
 
+} {
   #---------------------------------------------------------
-  constructor {args} {
+  #constructor {args} {}
 
-    next {*}$args
+    #next {*}$args
+    SUPER constructor  {*}$args
 
     # если нет в args, то берем значение здесь
     # 
@@ -998,9 +1006,13 @@ oo::class create BOT05 {
     
     
     [self] SET_pops  $pops
-  }
+    #{}
+
+}
+
+
   #---------------------------------------------------------
-  method calc {args} {
+oo::define BOT05  method calc {args} {
 
     set obj [self]
 
@@ -1016,7 +1028,7 @@ oo::class create BOT05 {
     return $ret
   }
   #---------------------------------------------------------
-  method final {} {
+oo::define BOT05    method final {} {
     
     set obj [self]
 
@@ -1038,8 +1050,6 @@ oo::class create BOT05 {
     return [list $num_generations $best_entity $ch_form]
   }
   #---------------------------------------------------------
-
-}
 
 # //------------------------------------------------------------------------------
 # //
@@ -1108,14 +1118,16 @@ proc _05_test {} \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-oo::class create BOT06 {
+class_create 0 BOT06 {BOT} {
 
-  superclass BOT
+  #superclass BOT
 
+} {
   #---------------------------------------------------------
-  constructor {args} {
+  #constructor {args} {}
 
-    next {*}$args
+    #next {*}$args
+    SUPER constructor {*}$args
 
     # если нет в args, то берем значение здесь
     # 
@@ -1167,21 +1179,24 @@ oo::class create BOT06 {
 
     #[self] SET_task $task
     [self] SET_pop  $pop
-  }
-  #---------------------------------------------------------
-  method calc {args} {
+    #{}
 
-    set obj [self]
-
-    set task            [dict_parse $args "-task" [$obj GET_task]] 
-    set max_generations [dict_parse $args "-steps"] 
-    
-    set pop  [$obj GET_pop]
-    
-    ga_deterministiccrowding  $task $pop $max_generations
-  }
-  #---------------------------------------------------------
 }
+
+#---------------------------------------------------------
+oo::define BOT06 method calc {args} {
+
+  set obj [self]
+  
+  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  set pop  [$obj GET_pop]
+  
+  ga_deterministiccrowding  $task $pop $max_generations
+}
+#---------------------------------------------------------
+
 
 # //------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
@@ -1320,16 +1335,18 @@ set ::_OLD_ [expr (! $::_NEW_)]
 
 # ------------------------------------------------------------------------------
 
-oo::class create BOT79 {
+class_create 0 BOT79 {BOT} {
 
-  superclass BOT
+  #superclass BOT
 
+} {
   #---------------------------------------------------------
-  constructor {args} {
+  #constructor {args} {}
 
     variable task
 
-    next {*}$args
+    #next {*}$args
+    SUPER constructor {*}$args
 
     set len_chromo      [dict_parse $args "-lgen"] 
     set population_size [dict_parse $args "-lpop"] 
@@ -1337,60 +1354,67 @@ oo::class create BOT79 {
     set pop [make_pop_DARWIN  $task $population_size $len_chromo] 
 
     [self] SET_pop   $pop
-  }
-  #---------------------------------------------------------
-  method calc {args} {
-
-    set obj [self]
-
-    set task             [dict_parse $args "-task" [$obj GET_task]] 
-    set max_generations1 [dict_parse $args "-steps"] 
-    
-    set popd [$obj GET_pop]
-
-    set name [my GET_name]
-
-    do_evolution_and_print_best $task $popd $max_generations1 $name
-  }
-  #---------------------------------------------------------
-
+    #{}
 }
+
+#---------------------------------------------------------
+oo::define BOT79 method calc {args} {
+  
+  set obj [self]
+  
+  set task             [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations1 [dict_parse $args "-steps"] 
+  
+  set popd [$obj GET_pop]
+  
+  set name [my GET_name]
+  
+  do_evolution_and_print_best $task $popd $max_generations1 $name
+}
+#---------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # 
-oo::class create BOT07 {
+#oo::class create BOT07 {}
+class_create 0 BOT07 {BOT79} {
 
-  superclass BOT79
+} {
+  #superclass BOT79
+  SUPER constructor {*}$args ;# в JIM надо явно вызывать всегда?
 
 }
 # --------------------------------------------------------------
 # 
-oo::class create BOT08 {
+class_create 0 BOT08 {BOT79} {
 
-  superclass BOT79
+  #superclass BOT79
 
-  constructor {args} {
+} {
+  #constructor {args} {}
 
-    next {*}$args
+    #next {*}$args
+    SUPER constructor {*}$args
 
     variable pop
     ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"    
-  }
+    #{}
 
 }
 # --------------------------------------------------------------
 # 
-oo::class create BOT09 {
+class_create 0 BOT09 {BOT79} {
 
-  superclass BOT79
+  #superclass BOT79
 
-  constructor {args} {
+} {
+  #constructor {args} {}
 
-    next {*}$args
+    #next {*}$args
+    SUPER constructor {*}$args
 
     variable pop
     ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
-  }
+    #{}
 
 }
 # //------------------------------------------------------------------------------

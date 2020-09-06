@@ -544,32 +544,23 @@ proc GET {args} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-oo::class create POP {
 
+class_create 0 POP {} {
 
-  VAR stable_size     ;# требуемый размер популяции
-  VAR len_chromosomes ;#   int : Maximum length of each chromosome. 
+  # это перечисление переменных
   
-  VAR ch_form         ;#  " %02d"
-  VAR generation_hook ;#-#  GAgeneration_hook generation_hook;
+  stable_size      ""  ;# _требуемый_размер_популяции
+  len_chromosomes  ""  ;# _int_:_Maximum_length_of_each_chromosome
+  
+  ch_form          ""  ;# _"%02d"     
+  generation_hook  ""  ;# _GAgeneration_hook_generation_hook 
 
-  VAR sort_driver
-  VAR itemslist
-  VAR generation
+  sort_driver      ""  ;# _
+  itemslist        ""  ;# _ 
+  generation       ""  ;# _ 
 
-#   constructor {args} {
-
-#     set  stable_size    [dict_parse $args "-lpop"] 
-#     set len_chromosomes [dict_parse $args "-lgen"] 
-
-#     set  "ch_form"  "% 6.3f " ;#  " %02d"   
-#     set generation_hook NULL
-
-#   }
-
-}
-
-oo::define POP constructor {args} {
+} {
+  # а это конструктор класса 
 
   set  stable_size    [dict_parse $args "-lpop"] 
   set len_chromosomes [dict_parse $args "-lgen"] 
@@ -578,6 +569,7 @@ oo::define POP constructor {args} {
   set generation_hook NULL
   
 }
+
 
 #-------------------------------------------------------------------------------
 #   Population handling functions.
@@ -591,113 +583,95 @@ oo::define POP constructor {args} {
 
 #   return:	population *	new population structure.
 #-------------------------------------------------------------------------------
-oo::class create GAUL {
-
-  superclass POP
- 
- 
-  #VAR ch_form         ;#  " %02d"
-  #VAR generation_hook ;#-#  GAgeneration_hook generation_hook;
-
-  #VAR sort_driver  ;#  $sort_driver
-
-  #----------------------------------------------
 
 
-  VAR max_size    ;# текущий максимальный размер
-  VAR size        ;# актуальный размер
-  #SET $p orig_size   {} ;# int : Number of parents (entities at end of previous generation)
+#--------------------------------
+if {1} {
+#--------------------------------
 
-  VAR generation  ;# номер текущей генерации
-  VAR best        ;# для хранения лучшего номера
+class_create 0 GAUL {POP} {
 
-  # здесь основной массив хранения
-  # 
-  VAR itemslist ;# "" 
-
-
-  # /*
-  #  * The scoring function and the other callbacks are defined here.
-  #  */
-  VAR iteration_hook  ;#-#   GAiteration_hook	iteration_hook;
+  # это перечисление переменных
   
-  #   GAdata_destructor		data_destructor;        /* entity.data destructor */
-  #   GAdata_ref_incrementor	data_ref_incrementor;   /* entity.data reference counter incrementor */
+  max_size  ""  ;# _текущий_максимальный_размер
+  size      ""  ;# _актуальный_размер
+
+  generation "" ;# _номер_текущей_генерации
+  best       "" ;# _для_хранения_лучшего_номера
+
+  ;# _здесь_основной_массив_хранения
+  ;# _
+  itemslist  "" 
+
+
+  ;# _/*
+  ;# __*_The_scoring_function_and_the_other_callbacks_are_defined_here.
+  ;# __*/
+  iteration_hook ""
   
-  #   GAdata_destructor		population_data_destructor;
-  #   GAdata_copy		population_data_copy;
-  #chromosome_constructor ;#-# GAchromosome_constructor :
+  seed           "" 
   
-  #   GAchromosome_destructor	chromosome_destructor;
-  #   GAchromosome_replicate	chromosome_replicate;
-  #   GAchromosome_to_bytes	chromosome_to_bytes;
-  #   GAchromosome_from_bytes	chromosome_from_bytes;
-  #   GAchromosome_to_string	chromosome_to_string;
-
-  #SET $p evaluate   {} ;#-# GAevaluate	
-  VAR seed       ;#-# GAseed
+  select_state "" ;# _Available_to_selection_algorithms.
+  selectdata   "" ;# _State_values_for_built-in_selection_operators.
   
-  VAR select_state ;#   int select_state;	/* Available to selection algorithms.
-  VAR selectdata   ;#  ga_selectdata_t /* State values for built-in selection operators.
+  select_one   "" 
+  select_two   "" 
+
+  mutate       "" 
+  crossover    "" 
+  adapt        "" 
+
+
+  allele_min_integer "" 
+  allele_max_integer ""
+
+  allele_min_double  ""
+  allele_max_double  ""
   
-  VAR select_one   ;#-# GAselect_one	select_one;
-  VAR select_two   ;#-# GAselect_two	select_two;
+  ;# _/*
+  ;#  _*_Special_parameters_for_particular_built-in_GA_operators.
+  ;#  _*_FIXME:_I_don't_like_how_this_is_currently_implemented;_need_a_more
+  ;#  _*_elegant_approach.
+  ;#  _*/
 
-  VAR mutate       ;#-# GAmutate	mutate;
-  VAR crossover    ;#-# GAcrossover   crossover;
-  VAR adapt        ;# GAadapt		adapt;
+  ;# _/*
+  ;# __*_Evolutionary_parameters.
+  ;# __*/
+  crossover_ratio "" ;# _double___/*_Chance_for_crossover._*/
+  mutation_ratio  "" ;# _double___/*_Chance_for_mutation.__*/
+  migration_ratio "" ;# _double___/*_Chance_for_migration._*/
 
-
-  #   int	allele_min_integer, allele_max_integer;	/* Range for "integer" alleles. 
-  VAR allele_min_integer ;#
-  VAR allele_max_integer ;#
-
-  #   double	allele_min_double, allele_max_double;	/* Range for "double" alleles. 
-  VAR allele_min_double  ;#
-  VAR allele_max_double  ;#
-  
-  # /*
-  #  * Special parameters for particular built-in GA operators.
-  #  * FIXME: I don't like how this is currently implemented; need a more
-  #  * elegant approach.
-  #  */
-
-  # /*
-  #  * Evolutionary parameters.
-  #  */
-  VAR crossover_ratio    ;# double	   crossover_ratio;  /* Chance for crossover. */
-  VAR mutation_ratio     ;# double	   mutation_ratio;   /* Chance for mutation.  */
-  VAR migration_ratio    ;# double	   migration_ratio;  /* Chance for migration. */
-
-  VAR scheme             ;# ga_scheme_type   scheme;	     /* Evolutionary scheme.  */
-  VAR elitism            ;# ga_elitism_type  elitism;	     /* Elitism mode.         */
+  scheme          "" ;# _ga_scheme_type__/*_Evolutionary_scheme.__*/
+  elitism         "" ;# _ga_elitism_type_/*_Elitism_mode._________*/
   
 
-  VAR algo_params ;# сюда будут подключаться все структуры разных "классов" алгоритмов
+  algo_params     "" ;# _сюда_будут_по_дключаться_все_структуры_разных_"классов"_алгоритмов
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ;# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  VAR replace    ;#-# GAreplace	replace;
-  VAR rank       ;#-# GArank	rank;
+  replace         "" ;# _GAreplace_replace;
+  rank            "" ;# _GArank_rank;
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ;# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  VAR island
-  VAR step
+  island          ""
+  step            ""
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ;# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  VAR de_params
-  VAR sa_params
-  VAR dc_params_compare
-  VAR gr_params
+  de_params         ""
+  sa_params         ""
+  dc_params_compare ""
+  gr_params         ""
 
-  constructor {args} {
+
+
+} {
+  # а это конструктор класса 
 
     # --> POP
     # 
-    next {*}$args
-
+    SUPER constructor $args
 
     #-------------------------------------------------
 
@@ -788,11 +762,18 @@ oo::class create GAUL {
     set "generation"  0    
     set "best"       -1 ;# для хранения лучшего номера (пока нет)
     
-    #---------------------------------------
-
-  }
-  
 }
+
+#--------------------------------
+} else {
+#--------------------------------
+
+#--------------------------------
+}
+#--------------------------------
+
+
+
 #-------------------------------------------------------------------------------
 proc pop_set_entity_fitness_ {p i fi} {
     

@@ -266,208 +266,19 @@ proc TEST_main {} {
   
 }
 #-------------------------------------------------------------------------------
-# proc VAR {args} {
-  
-#   set setfix "SET_"
-#   set getfix "GET_"
-
-
-#   foreach {vn val} $args {
-
-#     #uplevel 1 variable $vn $val  ;# сначала создаем переменную
-#     uplevel 1  $vn $val  ;# сначала создаем переменную
-
-#     # а затем к ней методы доступа:
-#     #
-
-#     #uplevel 2 proc testproc {} {puts "TESTPROC !!!!!!!!!!!!!!!"}
-
-
-#     #set setproc ${setfix}${vn} 
-#     #set getproc ${getfix}${vn}
-
-#     #uplevel 1 Account method SET_b {val} {set b $val}
-
-#     #uplevel 2 Account method $setproc \{v\} \{[subst -nocommand {set $vn \$v}] \}
-#     #uplevel 1 method $getproc \{\}  \{[subst -nocommand {return $$vn}] \}
-
-#     #The  method  will  be
-#     #          exported  if  name  starts  with  a  lower-case letter, and non-
-#     #          exported otherwise; this behavior can be overridden  via  export
-#     #          and unexport.
-
-#     #uplevel 1 export $setproc $getproc ;# теперь можно слюбых букв начинать!
-#   }
-
-# }
-#-------------------------------------------------------------------------------
-proc SETGET {classname} {
-
-  uplevel 1 $classname method set \{var val\} \{ set \$var \$val \}
-
-  #foreach var [Account vars] {}
-  foreach var [$classname vars] {
-
-    #puts "var = $var"
-
-    uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
-    uplevel 1 $classname method GET_$var \{\}    \{set $var \}
-  }
-
-
-}
-#-------------------------------------------------------------------------------
-
-##oo::class create POP {}
-
-#-------------------------------------------------------------------------------
-# proc oo_tcl_parse_classvars {classname classvars} {
-
-
-#   dict for {var val} $classvars {
-    
-#     #set classname [self class]
-#     #puts "classname = $classname"
-    
-#     oo::define $classname variable $var 
-    
-#     set $var $val
-    
-#     #set body [subst -nocommand {return $$var}]
-    
-#     oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
-#     oo::define $classname export GET_$var
-    
-#     set body [subst -nocommand {set $var \$v}]
-#     #puts "body = $body"
-    
-#     oo::define $classname method SET_$var {v} $body
-#     oo::define $classname export SET_$var
-#   }
-   
-# }
-#-------------------------------------------------------------------------------
-proc class_method {classname methodname vars body} {
-#proc class_method {classname methodname args body} {}
-
-    puts "class_method: methodname = $methodname vars = $vars body = $body"
-
-  if {$::__JIM__} {
-
-    $classname method $methodname $vars $body
-    #$classname method $methodname {*}$args $body
-  
-  } else {
-
-    #oo::define $classname method $methodname AAA $body
-    oo::define $classname method $methodname $vars $body
-    #oo::define $classname method $methodname $args $body
-  }
-
-}
-#-------------------------------------------------------------------------------
-proc define_vars_for_CLASS {classname classvars } {
-
-
-  dict for {var val} $classvars {
-    
-    oo::define $classname variable $var     
-    set $var $val
-    
-    #set body [subst -nocommand {return $$var}]
-    
-    oo::define $classname method GET_$var {} [subst -nocommand {return $$var}]
-    oo::define $classname export GET_$var
-    
-    set body [subst -nocommand {set $var \$v}]
-    #puts "body = $body"
-    
-    oo::define $classname method SET_$var {v} $body
-    oo::define $classname export SET_$var
-
-    oo::define $classname variable $var $val
-  }
-
-  return
-}
-#-------------------------------------------------------------------------------
-proc define_vars_for_OBJ {obj vars } {
-
-
-  dict for {var val} $vars {
-    
-    $obj SET_$var $val
-    variable $var
-  }
-
-  return
-}
-#-------------------------------------------------------------------------------
-proc class_create {classname {baseclasses {}} classvars constructorbody} {
-
-
-  if {$::__JIM__} {
-    #---------------------------------------------------------
-
-    class $classname $baseclasses $classvars
-
-    SETGET $classname
-
-    $classname method constructor args $constructorbody
-
-    #---------------------------------------------------------
-  } else {
-    #---------------------------------------------------------
-
-    oo::class create $classname  {}
-
-    puts "classvars = $classvars"
-
-    define_vars_for_CLASS $classname $classvars 
-
-    #puts "info object variables  = [info object variables $tst]"
-    #puts "info object vars       = [info object vars      $tst]"
-
-    # подготавливаем конструктор --------------
-
-    set body1 {
-
-      # переменные для класса уже определены были ранее !
-      #
-      set classvars [info class  variables [self class]]
-
-      puts "info class  variables  = $classvars"
-      puts "constructor args = $args"
-
-      define_vars_for_OBJ [self] $classvars
-      define_vars_for_OBJ [self] {*}$args
-    }
-
-    set    fullbody {}
-    append fullbody $body1
-    append fullbody $constructorbody
-
-    # теперь делаеи  конструктор --------------
-
-    oo::define $classname constructor {args} $fullbody
-
-    #---------------------------------------------------------
-  } 
-
-}
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc TEST_next {} {
 
   puts ""
 
-  class_create AccountMore {} {
+  class_create 1 AccountMore {} {
 
     balance 0
     name    "Unknown"
   } {
       puts ""
       puts "balance = $balance !!!!!!!!!!"
+      puts ""
       
       if {$balance < 0} {
         error "Can't initialise account with a -ve balance \n"
@@ -504,7 +315,6 @@ proc TEST_next {} {
   }
   
   #exit
-
   #-----------------------------------------------------
 
   #   puts ""
@@ -513,7 +323,6 @@ proc TEST_next {} {
   #   puts ""
   
   #   exit
-
   #-----------------------------------------------------
 
   puts "balance = [$a see]"
@@ -528,21 +337,57 @@ proc TEST_next {} {
 
   puts ""
 
-  exit
+  #exit
+  #-----------------------------------------------------
+
+  puts ""
+  puts "-----------------------------------------------"
+  puts ""
+
+  class_create 1 AccountNext {AccountMore} {
+
+    limit 100
+  } {
+
+    puts ""
+    #puts "balance = $balance !!"
+    puts "limit   = $limit    !!!!!"
+    puts ""
+  }
+
+  #set n [AccountNext new {limit 10}]
+  set n [AccountNext new {}]
 
   #-----------------------------------------------------
+
+  #exit
 
   puts "balance = [$a see]"
   puts "name    = [$a seename]"
 
+  #exit
 
-  puts "name    = [$a get name]    [$a GET_name]"
-  puts "balance = [$a get balance]"
+  puts "name    = [$a GET_name]"
+  puts "balance = [$a GET_balance]"
+
+  #exit
 
   $a SET_name "hjhjkjhkj"
-  puts "name    = [$a get name]    [$a GET_name]"
+  puts "name    = [$a GET_name]"
 
-  puts "vars = [$a vars]"
+  #exit
+  puts ""
+
+  if {$::__JIM__} {
+ 
+    puts "vars = [$a vars]"
+  } else {
+
+    puts "info object variables  = [info object variables $a]"
+    puts "info object vars       = [info object vars      $a]"      
+    puts "info class  variables (AccountMore) = [info class  variables AccountMore]"
+    puts "info class  variables (AccountNext) = [info class  variables AccountNext]"
+  }
 
   puts ""
 

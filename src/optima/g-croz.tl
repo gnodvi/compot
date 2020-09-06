@@ -531,104 +531,94 @@ proc gp_evolution_main {task  pop max_generations \
   return
 }
 # ------------------------------------------------------------------------------
+if {1} {
 
 oo::class create BOT {
 
   VAR name
   VAR task
   VAR  pop
-
-  #---------------------------------------------------------
-#   constructor {args} {
-
-#     #     if {! [info exists task]} {
-#     #       set task [dict_parse $args "-task" ] 
-#     #     }
-
-#     set task [dict_parse $args "-task" \
-#                 [task_create  "FS_fitness" -fit_target 53.1]] 
-    
-
-#     [self] SET_task $task
-#     [self] SET_name [dict_parse  $args  "-name" "BotName"]
-#     [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
-
-#   }
-#   #---------------------------------------------------------
-#   method init {args} {
-
-#     pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-
-#   }
-  #---------------------------------------------------------
-  method calc {args} {
-
-    set obj [self]
-
-    variable task
-    set task            [dict_parse $args "-task"  [$obj GET_task]] 
-    set max_generations [dict_parse $args "-steps"] 
-    
-    variable pop
-    #set  pop [$obj GET_pop]
-    
-    #pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-    my init
-
-    ga_evolution_main           $task $pop $max_generations ;# 0.01
-    
-    #set ret [ga_evolution  $task $pop $max_generations]  
-  }
-  #---------------------------------------------------------
-  method final {} {
-    
-    set obj [self]
-
-    set pop [$obj GET_pop]
-
-    set num_generations [GET $pop "generation"] ;# сколько было генераций
-    set best_entity     [ga_get_entity_from_rank $pop 0]
-    set ch_form         [GET $pop "ch_form"]
-    
-    return [list  $num_generations $best_entity $ch_form]
-  }
-  #---------------------------------------------------------
-
  
 }
-
-#---------------------------------------------------------
 
 oo::define BOT constructor {args} {
 
-    #     if {! [info exists task]} {
-    #       set task [dict_parse $args "-task" ] 
-    #     }
+  #     if {! [info exists task]} {
+  #       set task [dict_parse $args "-task" ] 
+  #     }
+  
+  set task [dict_parse $args "-task" \
+              [task_create  "FS_fitness" -fit_target 53.1]] 
+  
+  
+  [self] SET_task $task
+  [self] SET_name [dict_parse  $args  "-name" "BotName"]
+  [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
+  
+}
 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness" -fit_target 53.1]] 
-    
+#---------------------------------
+} else {
+#---------------------------------
 
-    [self] SET_task $task
-    [self] SET_name [dict_parse  $args  "-name" "BotName"]
-    [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
+class_create 0 POP {} {
 
-  }
+  # это перечисление переменных
+  
+} {
+  # а это конструктор класса 
+
+}
+
+
+}
 #---------------------------------------------------------
-
 oo::define BOT  method init {args} {
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-}
 
+}
+#---------------------------------------------------------
+oo::define BOT  method calc {args} {
+  
+  set obj [self]
+  
+  variable task
+  set task            [dict_parse $args "-task"  [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  variable pop
+  #set  pop [$obj GET_pop]
+  
+  #pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+  my init
+  
+  ga_evolution_main           $task $pop $max_generations ;# 0.01
+  
+  #set ret [ga_evolution  $task $pop $max_generations]  
+}
+#---------------------------------------------------------
+oo::define BOT method final {} {
+    
+  set obj [self]
+  
+  set pop [$obj GET_pop]
+  
+  set num_generations [GET $pop "generation"] ;# сколько было генераций
+  set best_entity     [ga_get_entity_from_rank $pop 0]
+  set ch_form         [GET $pop "ch_form"]
+  
+  return [list  $num_generations $best_entity $ch_form]
+}
+# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-oo::class create BOT33 {
+class_create 0 BOT33 {BOT} {
 
-  superclass BOT
- 
-  #---------------------------------------------------------
-  constructor {args} {
+  # это перечисление переменных
+  
+} {
+  # а это конструктор класса 
 
     variable task ;# pop
 
@@ -660,63 +650,61 @@ oo::class create BOT33 {
     #-----------------------------------------------
 
     my SET_pop  $pop
-  }
- 
-  #---------------------------------------------------------
-  method calc {args} {
-
-    set obj [self]
-
-    set task [dict_parse $args "-task" [$obj GET_task]] 
-    
-    if {! [info exists max_generations]} {
-      set max_generations [dict_parse $args "-steps" ] 
-    }
-    
-    set  pop [$obj GET_pop]
-    
-    set is_print         [dict_parse $args "-is_print"        1]
-    set game_print_proc  [dict_parse $args "-game_print_proc" 0]
-    set mutprob          [dict_parse $args "-mutprob"         0.1]
-    
-    
-    set randpop_proc [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
-    
-    # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
-    #
-    
-    set population_size [GET $pop "stable_size"]
-    set len_chromosomes [GET $pop "len_chromosomes"]
-    
-    set itemslist [make_itemslist   \
-                     $randpop_proc \
-                     $population_size $len_chromosomes   $is_print]
-    
-    SET $pop "itemslist" $itemslist
-       
-    gp_evolution_main  $task $pop  $max_generations \
-      $is_print        \
-      $game_print_proc \
-      $mutprob  
-    
-    return
-  }
-  #---------------------------------------------------------
-  method final {} {
-    
-    set obj [self]
-
-    set  pop [$obj GET_pop]
-    
-    set num_generations [GET $pop "generation"] ;# сколько было генераций   
-    set best_entity     [ga_get_entity_from_rank $pop 0]
-    set ch_form         [GET $pop "ch_form"]
-        
-    return [list $num_generations $best_entity $ch_form]
-  }
-  #---------------------------------------------------------
-  
 }
+
+#-----------------------------------------------------------
+oo::define BOT33   method calc {args} {
+  
+  set obj [self]
+  
+  set task [dict_parse $args "-task" [$obj GET_task]] 
+  
+  if {! [info exists max_generations]} {
+    set max_generations [dict_parse $args "-steps" ] 
+  }
+  
+  set  pop [$obj GET_pop]
+  
+  set is_print         [dict_parse $args "-is_print"        1]
+  set game_print_proc  [dict_parse $args "-game_print_proc" 0]
+  set mutprob          [dict_parse $args "-mutprob"         0.1]
+  
+  
+  set randpop_proc [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
+  
+  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
+  #
+  
+  set population_size [GET $pop "stable_size"]
+  set len_chromosomes [GET $pop "len_chromosomes"]
+  
+  set itemslist [make_itemslist   \
+                   $randpop_proc \
+                   $population_size $len_chromosomes   $is_print]
+  
+  SET $pop "itemslist" $itemslist
+  
+  gp_evolution_main  $task $pop  $max_generations \
+    $is_print        \
+    $game_print_proc \
+    $mutprob  
+  
+  return
+}
+#-----------------------------------------------------------
+oo::define BOT33 method final {} {
+  
+  set obj [self]
+  
+  set  pop [$obj GET_pop]
+  
+  set num_generations [GET $pop "generation"] ;# сколько было генераций   
+  set best_entity     [ga_get_entity_from_rank $pop 0]
+  set ch_form         [GET $pop "ch_form"]
+  
+  return [list $num_generations $best_entity $ch_form]
+}
+#-----------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 proc bot33_create {args} {

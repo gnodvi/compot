@@ -51,7 +51,6 @@ source "g-corA.tl"
 exit
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
 source "g-corB.tl"  ;# unknown namespace in import pattern "tcltest::*"
 
 source "g-cros.tl"
