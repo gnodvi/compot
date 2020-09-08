@@ -18,7 +18,7 @@
 # //------------------------------------------------------------------------------
 # // `Mates' two chromosomes by single-point crossover.
 # //------------------------------------------------------------------------------
-proc ga_singlepoint_crossover_integer_chromosome {pop  father_CH  mother_CH \
+proc ga_singlepoint_crossover_integer_chromosome {pop  father_CH  mother_CH 
                                                          &son_CH    &dau_CH} {
 
   USE_REFS
@@ -53,7 +53,7 @@ proc ga_singlepoint_crossover_integer_chromosome {pop  father_CH  mother_CH \
 # !!!! это один в один с ga_doublepoint_crossover_double...., но еам нужна другая!
 #
 # //------------------------------------------------------------------------------
-proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH \
+proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH 
                                                         &son_CH    &dau_CH} {
 
   USE_REFS
@@ -255,7 +255,7 @@ proc memcpy {&new n  old o  size} {
 #                                             double    *son, double *daughter)
 
 # //------------------------------------------------------------------------------
-proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH \
+proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH 
                                                         &son_CH    &dau_CH} {
 
   USE_REFS

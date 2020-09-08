@@ -439,7 +439,7 @@ proc gp_pop_calc_fitness_all {task pop  itemspop fitnessfunc} {
   return
 }
 # ------------------------------------------------------------------------------
-proc is_check_generation_break_gp {pop i max_generations \
+proc is_check_generation_break_gp {pop i max_generations 
                                    is_print} {
 
   set steps $max_generations
@@ -455,11 +455,11 @@ proc is_check_generation_break_gp {pop i max_generations \
   return false
 }
 # ------------------------------------------------------------------------------
-proc gp_evolution_main {task  pop max_generations \
-                          {is_print        1}    \
-                          {game_print_proc 0}    \
-                          {mutprob         0.1}  \
-                          {fit_error       0.01} \
+proc gp_evolution_main {task  pop max_generations 
+                          {is_print        1}    
+                          {game_print_proc 0}    
+                          {mutprob         0.1}  
+                          {fit_error       0.01} 
                         } {
 
   set fitnessfunc [GET $task "fitness_proc"]  
@@ -531,17 +531,25 @@ proc gp_evolution_main {task  pop max_generations \
   return
 }
 # ------------------------------------------------------------------------------
-if {1} {
+proc SELF {} {
 
-oo::class create BOT {
 
-  VAR name
-  VAR task
-  VAR  pop
- 
+  #return [uplevel 1 [self]]
+  uplevel 1 \[self\]
+
 }
+# ------------------------------------------------------------------------------
 
-oo::define BOT constructor {args} {
+class_create 0 BOT {} {
+
+  ;# _это_перечисление_переменных
+  
+  name  ""
+  task  ""
+  pop   ""
+
+} {
+  # а это конструктор класса 
 
   #     if {! [info exists task]} {
   #       set task [dict_parse $args "-task" ] 
@@ -551,35 +559,30 @@ oo::define BOT constructor {args} {
               [task_create  "FS_fitness" -fit_target 53.1]] 
   
   
-  [self] SET_task $task
-  [self] SET_name [dict_parse  $args  "-name" "BotName"]
-  [self] SET_pop  [dict_parse  $args  "-pop"  ""] 
+  if {$::__JIM__} {
+    
+    set obj $self  ;# JIM: $self - текущий объект    
+  } else {
+
+    set obj [self]
+  }
+  
+  $obj SET_task $task
+  $obj SET_name [dict_parse  $args  "-name" "BotName"]
+  $obj SET_pop  [dict_parse  $args  "-pop"  ""] 
   
 }
 
-#---------------------------------
-} else {
-#---------------------------------
-
-class_create 0 POP {} {
-
-  # это перечисление переменных
-  
-} {
-  # а это конструктор класса 
-
-}
-
-
-}
 #---------------------------------------------------------
-oo::define BOT  method init {args} {
+#oo::define BOT  method init {args} {}
+class_method  BOT  init {args} {
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 
 }
 #---------------------------------------------------------
-oo::define BOT  method calc {args} {
+#oo::define BOT  method calc {args} }{
+class_method BOT  calc {args} {
   
   set obj [self]
   
@@ -598,7 +601,7 @@ oo::define BOT  method calc {args} {
   #set ret [ga_evolution  $task $pop $max_generations]  
 }
 #---------------------------------------------------------
-oo::define BOT method final {} {
+class_method BOT final {} {
     
   set obj [self]
   
@@ -653,7 +656,7 @@ class_create 0 BOT33 {BOT} {
 }
 
 #-----------------------------------------------------------
-oo::define BOT33   method calc {args} {
+class_method BOT33 calc {args} {
   
   set obj [self]
   
@@ -692,7 +695,7 @@ oo::define BOT33   method calc {args} {
   return
 }
 #-----------------------------------------------------------
-oo::define BOT33 method final {} {
+class_method BOT33  final {} {
   
   set obj [self]
   

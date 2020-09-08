@@ -4274,10 +4274,11 @@ proc SETGET {classname} {
 
   uplevel 1 $classname method set \{var val\} \{ set \$var \$val \}
 
-  #foreach var [Account vars] {}
   foreach var [$classname vars] {
 
     #puts "var = $var"
+    if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
+
 
     uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
     uplevel 1 $classname method GET_$var \{\}    \{set $var \}
@@ -4288,7 +4289,7 @@ proc SETGET {classname} {
 proc class_method {classname methodname vars body} {
 #proc class_method {classname methodname args body} {}
 
-    puts "class_method: methodname = $methodname vars = $vars body = $body"
+   # puts "class_method: methodname = $methodname vars = $vars body = $body"
 
   if {$::__JIM__} {
 

@@ -64,11 +64,11 @@ proc ga_sa_boltzmann_acceptance {pop original putative} {
 #                                  const double            temp_step,
 #                                  const int               temp_freq )
 # //------------------------------------------------------------------------------
-proc ga_population_set_sa_parameters { pop          \
-                                      sa_accept     \
-                                      initial_temp  \
-                                      final_temp    \
-                                      temp_step     \
+proc ga_population_set_sa_parameters { pop          
+                                      sa_accept     
+                                      initial_temp  
+                                      final_temp    
+                                      temp_step     
                                       temp_freq}    \
 {
 
@@ -114,8 +114,8 @@ proc ga_population_set_sa_parameters { pop          \
 #        entity	   *initial,
 #        const int    max_iterations)
 # ------------------------------------------------------------------------------
-proc  ga_sa {task pop     \
-             initial \
+proc  ga_sa {task pop 
+             initial 
              max_iterations} {
 
 

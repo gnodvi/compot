@@ -54,8 +54,8 @@ proc make_itemslist_from_prgpop {prgpop} {
 # n - требуемое кол-во особей в популяции
 #
 #-------------------------------------------------------------------------------
-proc make_rand_prgpop_unikum {n \
-                               minlen maxlen \
+proc make_rand_prgpop_unikum {n 
+                               minlen maxlen 
                                gp_list randinstr quotes_proc} {
 
   set prgpop {}
@@ -134,9 +134,9 @@ proc pop_print_B {pop} {
 set ::len_is_constant 0
 
 #-------------------------------------------------------------------------------
-proc make_prgpop {randpop_proc \
-                            population_size len \
-                            is_print \
+proc make_prgpop {randpop_proc 
+                            population_size len 
+                            is_print 
                           } {
 
 
@@ -169,9 +169,9 @@ proc make_prgpop {randpop_proc \
   return $prgpop
 }
 #-------------------------------------------------------------------------------
-proc make_itemslist {randpop_proc \
-                            population_size len \
-                            is_print \
+proc make_itemslist {randpop_proc 
+                            population_size len 
+                            is_print 
                           } {
 
   
@@ -1173,7 +1173,7 @@ proc make_randprog {n gp_list {randinstr "randinstr_SIMP"} {quotes_proc "quotes_
   return $prg
 }
 #-------------------------------------------------------------------------------
-proc get_randprog_unikum {result minlen maxlen attempts max_attempts \
+proc get_randprog_unikum {result minlen maxlen attempts max_attempts 
                           gp_list randinstr quotes_proc} {
 
  #puts "... 1"

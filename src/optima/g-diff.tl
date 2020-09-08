@@ -51,12 +51,12 @@
 #                                                     const double crossover_factor)
 
 # ------------------------------------------------------------------------------
-proc ga_population_set_differentialevolution_parameters {pop            \
-                                                    strategy            \
-                                                    crossover           \
-                                                    num_perturbed       \
-                                                    weighting_min       \
-                                                    weighting_max       \
+proc ga_population_set_differentialevolution_parameters {pop            
+                                                    strategy            
+                                                    crossover           
+                                                    num_perturbed       
+                                                    weighting_min       
+                                                    weighting_max       
                                                     crossover_factor} {
 
   set DE [dict_create]
@@ -526,7 +526,7 @@ proc DE_rand_3_exp {pop i n best tmpentity &name_permutation weighting_factor} {
   return
 }
 # //------------------------------------------------------------------------------
-proc DE_best_exp {pop i n best tmpentity &name_permutation weighting_factor  \
+proc DE_best_exp {pop i n best tmpentity &name_permutation weighting_factor 
                  N  calc_proc } {
 
   USE_REFS
@@ -636,7 +636,7 @@ proc DE_best_1_bin_new {pop i n best tmpentity  &name_permutation weighting_fact
   return
 }
 # //------------------------------------------------------------------------------
-proc DE_best_bin {pop i n best tmpentity  &name_permutation weighting_factor \
+proc DE_best_bin {pop i n best tmpentity  &name_permutation weighting_factor 
                  N calc_proc} {
   
   USE_REFS

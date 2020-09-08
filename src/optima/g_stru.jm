@@ -2,7 +2,7 @@
 
 #!/bin/sh
 # \
-exec tclsh "$0" ${1+"$@"}
+exec jimsh "$0" ${1+"$@"}
 
 
 source "g_stru_all.tl"

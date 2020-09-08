@@ -271,18 +271,22 @@ proc TEST_next {} {
 
   puts ""
 
-  class_create 1 AccountMore {} {
+  class_create 0 AccountMore {} {
 
-    balance 0
+    balance 0          ;# _____________
     name    "Unknown"
   } {
-      puts ""
-      puts "balance = $balance !!!!!!!!!!"
-      puts ""
-      
-      if {$balance < 0} {
-        error "Can't initialise account with a -ve balance \n"
-      }
+    
+    set balance  123  ;# для JIM не нужно !!
+    set name    "123"
+
+    puts "NEW AccountMore: args = $args"
+    puts "balance = $balance !!!!!!!!!!"
+    puts ""
+    
+    if {$balance < 0} {
+      error "Can't initialise account with a -ve balance \n"
+    }
   }
 
   #-----------------------------------------------------
@@ -290,6 +294,8 @@ proc TEST_next {} {
   #set a [AccountMore new  {name "Bob Smith"  balance +1}]
   set a [AccountMore new  {name "Bob Smith" }]
   
+  puts "a (AccountMore new) = $a"
+
   #exit
 
   puts ""
@@ -344,10 +350,12 @@ proc TEST_next {} {
   puts "-----------------------------------------------"
   puts ""
 
-  class_create 1 AccountNext {AccountMore} {
+  class_create 0 AccountNext {AccountMore} {
 
     limit 100
   } {
+    
+    set limit 101 ;# для JIM не нужно !!
 
     puts ""
     #puts "balance = $balance !!"

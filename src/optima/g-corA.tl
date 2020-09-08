@@ -506,21 +506,40 @@ if {$::__JIM__} {
 }
 
 #-------------------------------------------------------------------------------
+proc OBJ_TYPE {o} {
+
+  if [string equal -length  8 $o "::G_DICT"]    {return 0}
+
+  if [string equal -length 11 $o "<reference."] {return 1}
+  
+  if [string equal -length  6 $o "::oo::"] {return 2}
+  
+}
+#-------------------------------------------------------------------------------
 proc SET {args} {
 
   set d    [lindex $args 0]
 
-  set is_obj [info object isa object $d]
+  #set is_obj [info object isa object $d] ;# объект или словарь?
 
-  if {$is_obj} {
+  set type [OBJ_TYPE $d];
+
+  #puts "SET: d = $d   type = $type"
+  # 
+  # > SET: d = ::G_DICT_184
+  # a = <reference.<Account>.00000000000000000000>
+  # > SET: d = ::oo::Obj15
+
+  if {$type == 0} { ;# dictionary
+
+    uplevel 1 SET_old $args
+
+  } else { ;# object JIM ot TCL
 
     set key  [lindex $args 1]
     set val  [lindex $args 2]
 
     $d SET_$key $val
-  } else {
-
-    uplevel 1 SET_old $args
   }
 }
 #-------------------------------------------------------------------------------
@@ -528,26 +547,40 @@ proc GET {args} {
 
   set d    [lindex $args 0]
 
-  set is_obj [info object isa object $d]
+  #set is_obj [info object isa object $d]
 
+  set type [OBJ_TYPE $d];
 
-  if {$is_obj} {
+  if {$type == 0} { ;# dictionary
+
+    uplevel 1 GET_old $args
+
+  } else { ;# object JIM ot TCL
 
     set key  [lindex $args 1]
     set val  [lindex $args 2]
 
     return [$d GET_$key]
-  } else {
-
-    uplevel 1 GET_old $args
   }
+
+#   if {$is_obj} {
+
+#     set key  [lindex $args 1]
+#     set val  [lindex $args 2]
+
+#     return [$d GET_$key]
+#   } else {
+
+#     uplevel 1 GET_old $args
+#   }
+
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 class_create 0 POP {} {
 
-  # это перечисление переменных
+  ;# _это_перечисление_переменных
   
   stable_size      ""  ;# _требуемый_размер_популяции
   len_chromosomes  ""  ;# _int_:_Maximum_length_of_each_chromosome
@@ -1432,9 +1465,9 @@ proc ga_entity_clone_without_add {pop parent} {
 #   synopsis:	Sets the GA parameters for a population.
 
 #-------------------------------------------------------------------------------
-proc ga_population_set_parameters { pop  scheme elitism  \
-                                    crossover \
-                                    mutation  \
+proc ga_population_set_parameters { pop  scheme elitism 
+                                    crossover 
+                                    mutation  
                                     migration} {  
   if {$::is_print} {
     puts "ga_population_set_parameters ... "
@@ -2695,23 +2728,23 @@ proc task_create {fitness_proc  args} {
   return $t
 }
 #-------------------------------------------------------------------------------
-proc ga_genesis_main {\
+proc ga_genesis_main {
 			task 
-			population_size      \
-			num_chromo           \
-			len_chromo           \
-			generation_hook      \
-			iteration_hook       \
-			data_destructor      \
-			data_ref_incrementor \
-			seed                 \
-			adapt                \
-			select_one           \
-			select_two           \
-			mutate               \
-			crossover            \
-			replace              \
-			userdata             \
+			population_size      
+			num_chromo           
+			len_chromo           
+			generation_hook      
+			iteration_hook       
+			data_destructor      
+			data_ref_incrementor 
+			seed                 
+			adapt                
+			select_one           
+			select_two           
+			mutate               
+			crossover            
+			replace              
+			userdata             
                       } {
 
   set pop [GAUL new  \

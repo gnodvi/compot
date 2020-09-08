@@ -47,10 +47,6 @@ source "$COM/a-plot.tl"
 #source "f-rand.tl"
 
 source "g-corA.tl"
-
-exit
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 source "g-corB.tl"  ;# unknown namespace in import pattern "tcltest::*"
 
 source "g-cros.tl"
@@ -60,6 +56,7 @@ source "g-detw.tl"
 source "g-tabu.tl"
 source "g-sima.tl"
 
+#exit
 # //******************************************************************************
 # //  Synopsis:	Test GAUL pseudo-random number generator.
 
