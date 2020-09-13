@@ -105,6 +105,7 @@ proc TEST_main {} {
   # Create a constructor. This does validation, but it could
   # do other things
   
+  #Account method constructor {args} {}
   Account method constructor {} {
     if {$balance < 0} {
       error "Can't initialise account with a -ve balance"
@@ -189,16 +190,46 @@ proc TEST_main {} {
   
   puts "----------------- class CreditAccount ------------------------------"
   puts ""
-  puts "CreditAccount vars=[CreditAccount vars]"
-  puts "CreditAccount methods=[CreditAccount methods]"
+  puts "CreditAccount vars      = [CreditAccount vars]"
+  puts "CreditAccount classvars = [CreditAccount classvars]"
+  puts "CreditAccount methods   = [CreditAccount methods]"
   puts ""
   
   puts "----------------- object CreditAccount -----------------------------"
   puts ""
   set b [CreditAccount new {name "John White"}]
   
-  puts b.vars=[$b vars]
-  puts b.classname=[$b classname]
+  puts "b.vars = [$b vars]"
+  puts "b.classname = [$b classname]"
+  puts "b.limit     = [$b get limit]"
+
+  set var "limit"
+  set val -998
+  #set val {ee ff gg}
+
+  #$b eval "set $var $val"
+  #$b eval {set limit "111 222 555"}
+  #$b eval "set limit \{ $val \}"
+
+  puts "b.limit     = [$b get limit]"
+
+  #exit
+  #---------------------
+
+  puts "b.limit     = [$b eval {set limit}]"
+  puts "b.limit     = [GET $b limit]"
+  SET $b limit -1000
+  puts "b.limit     = [GET $b limit]"
+
+  SET $b limit {aa bb cc}  ;# не установить список ????
+  #SET $b limit [list aa bb cc]  ;# не установить список ????
+  puts "b.limit     = [GET $b limit]"
+
+  puts "CreditAccount classvars = [CreditAccount classvars]"
+  
+  puts ""
+
+  #===================================================
   
   puts "initial balance -> [$b see]"
   $b deposit 100
@@ -236,7 +267,7 @@ proc TEST_main {} {
   
   Account new {name "Terry Green" balance 20}
 
-  set x [Account]
+  set x [Account] ;# ???? что за извращение?
   lambda {} {dummy}
   ref blah blah
   
@@ -355,18 +386,36 @@ proc TEST_next {} {
     limit 100
   } {
     
+    if {$::__JIM__} {
+      
+      puts "args      = $args"
+      puts "vars      = [$self vars]"
+      puts "classvars = [$self classvars]"
+      #puts "instvars = [$self instvars]"
+
+      #puts "balance = $balance !!!!!!!!!"
+      #puts "-lone   = ${-lone}"
+    } else {
+      
+      puts "args = $args"
+    }
+
     set limit 101 ;# для JIM не нужно !!
 
     puts ""
-    #puts "balance = $balance !!"
-    puts "limit   = $limit    !!!!!"
-    puts ""
+    puts "limit   = $limit  ???"
   }
 
   #set n [AccountNext new {limit 10}]
-  set n [AccountNext new {}]
+  set n [AccountNext new {-lone "one" -ltwo "two"}]
 
-  #-----------------------------------------------------
+  # "-lpop $population_size -lgen $len_chromo -task $task"
+  # 
+  #---------------------------------------------------------
+
+  puts ""
+  puts "-----------------------------------------------"
+  puts ""
 
   #exit
 
@@ -377,6 +426,7 @@ proc TEST_next {} {
 
   puts "name    = [$a GET_name]"
   puts "balance = [$a GET_balance]"
+  #puts "limit   = [$a GET_limit]"
 
   #exit
 
@@ -387,8 +437,10 @@ proc TEST_next {} {
   puts ""
 
   if {$::__JIM__} {
+
+      puts "vars      = [$a vars]"
+      puts "classvars = [$a classvars]"
  
-    puts "vars = [$a vars]"
   } else {
 
     puts "info object variables  = [info object variables $a]"
@@ -398,6 +450,52 @@ proc TEST_next {} {
   }
 
   puts ""
+
+
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc dotimes_TEST {@i n body} {
+
+  USE_REFS @
+
+  
+  for {set i 0} {$i < $n} {incr i} {
+
+    uplevel $body
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc dotimes_JIM {&i n body} {
+
+  
+  for {set i 0} {$i < $n} {incr i} {
+
+    uplevel $body
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc TEST_refs {}  {
+
+  puts ""
+
+  dotimes_TEST i 10 {
+    puts "dotimes: i = $i"
+  }
+
+  puts ""
+
+  if {$::__JIM__} {
+
+    dotimes_JIM i 10 {
+      puts "dotimes: i = $i"
+    }
+
+    puts ""
+  }
 
 }
 #-------------------------------------------------------------------------------

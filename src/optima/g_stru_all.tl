@@ -40,6 +40,8 @@ if {$::__JIM__} {
   source "$COM/a-comp.tl"
   source "$COM/a-plot.tl"
   
+  source "$COM/a-j-oo.tl"
+
   source "$COM/b-com0.tl"
   #source "$COM/b-com1.tl"
   #  "b_cloo.tl"
@@ -47,7 +49,7 @@ if {$::__JIM__} {
   source "$COM/f-func.tl"
   #source "$COM/f-tabs.tl"
   #  "f-tour.tl"
-  #  "f-sort.tl"
+  source "$COM/f-sort.tl"
   source "$COM/f-rand.tl"
 
 } else {
@@ -68,6 +70,7 @@ if {$::__JIM__} {
   #   source [file join $dir "f-func.tl"]
   #   source [file join $dir "f-tabs.tl"]
   #   source [file join $dir "f-tour.tl"]
+
   #   source [file join $dir "f-sort.tl"]
   #   source [file join $dir "f-rand.tl"]
   
@@ -472,13 +475,13 @@ proc  strlen {str} {
 # ------------------------------------------------------------------------------
 proc pop1_create {args} {
 
-  #puts "pop1_create: args = $args"
+  #puts stderr "pop1_create: args = $args"
 
   set len_chromosomes [dict_parse $args "-lgen"] 
   set population_size [dict_parse $args "-lpop"] 
 
   set pop [GAUL new  \
-                -lpop $population_size -lgen $len_chromosomes]
+                "-lpop $population_size -lgen $len_chromosomes"]
 
   
   SET $pop  generation_hook NULL ;# $generation_hook
@@ -500,6 +503,18 @@ proc pop1_create {args} {
   
   SET $pop  seed   "maintest_seed_proc"   ;#   $seed_proc 
   
+  # ??
+  #
+#   if {$::__JIM__} {
+    
+#     puts "classvars = [$pop classvars]"
+#     puts ""
+
+#     puts "crossover_ratio = [GET $pop crossover_ratio]"
+
+#     puts ""
+#     exit
+#   }
      
   return $pop
 }
@@ -512,9 +527,9 @@ class_create 0 BOT01 {BOT} {
 } {
   # а это конструктор класса 
   # 
-  puts stderr "new BOT01: args = $args \n"
+  #puts stderr "new BOT01: args = $args \n"
 
-  set args [lindex $args 0]
+  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
 
   #puts "new BOT01: args = $args"
 
@@ -526,7 +541,13 @@ class_create 0 BOT01 {BOT} {
   
   SET $pop  select_one   "ga_select_one_sus"
   SET $pop  select_two   "ga_select_two_sus"
-    
+
+  if {$::__JIM__} {
+    SET $self  pop $pop
+  } else {
+    SET [self] pop $pop
+  }
+
 }
 
 # ------------------------------------------------------------------------------
@@ -575,11 +596,29 @@ proc _01_test {} {
   set obj \
     [BOT01 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
 
+  #set pop [$obj GET_pop]
+  set pop [GET $obj pop]
+  
+  puts stderr "_01_test: obj = $obj ,, pop = $pop \n"
+ 
+  SET $pop  seed $seed_proc   
+  
+  #----------------------------------------------------
+  if {$::__JIM__} {
 
-  set pop [$obj GET_pop]
-  
-  SET $pop        seed   $seed_proc   
-  
+    #puts "popars = [$pop vars]"
+    #puts ""
+
+    puts "crossover_ratio = [GET $pop crossover_ratio]"
+    puts "best            = [GET $pop best]"
+    puts "seed            = [GET $pop seed]"
+
+    puts ""
+
+    #exit
+  } 
+  #----------------------------------------------------
+
   ga_evolution  $task $pop $max_generations   
   
   do_print_best $pop ""
@@ -870,7 +909,7 @@ class_create 0 BOT04 {BOT} {
     set population_size [dict_parse $args "-lpop" ] 
     
     set pop [GAUL new  \
-                -lpop $population_size -lgen $len_chromo]
+                "-lpop $population_size -lgen $len_chromo"]
     
     SET $pop ch_form "%c" ;# 
     
@@ -1002,12 +1041,8 @@ proc _04_test {} \
 }
 # ------------------------------------------------------------------------------
 
-#oo::class create BOT05 {}
 class_create 0 BOT05 {BOT} {
 
-  #superclass BOT
- 
-  #VAR  pops
   pops ""
 
 } {

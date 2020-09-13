@@ -1112,8 +1112,8 @@ proc dict_set {d_keys args} {
 }
 # ==============================================================================
 
-alias SET dict_set
-alias GET dict_get
+# alias SET dict_set
+# alias GET dict_get
 
 # ------------------------------------------------------------------------------
 proc print_dsubvar {dsubvar dsubvar_key  is_real sp ofile} {

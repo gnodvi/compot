@@ -233,6 +233,8 @@ proc _1_main {} \
   
   set task [task_create "all5s_score"]
 
+  #puts stderr ".... 1"
+
   set pop [ga_genesis_main   \
 	     $task \
              $population_size    \
@@ -253,6 +255,8 @@ proc _1_main {} \
           ]
   
 
+  #puts stderr ".... 2"
+
   SET $pop "ch_form" " %02d" ;# 
 
   #   ga_population_set_parameters (
@@ -264,6 +268,8 @@ proc _1_main {} \
   #      0.0              	/* double		 migration */
   #      );
   
+  #puts stderr ".... 3"
+
   ga_population_set_parameters                            \
                                $pop	                  \
                                GA_SCHEME_DARWIN	          \

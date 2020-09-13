@@ -28,6 +28,8 @@ my_source "a-menu.tl"
 set MAIN_JIM "JIMTCL" 
 set auto_path [linsert $auto_path 0 $MAIN_JIM]
 
+source "a-j-oo.tl"
+
 # ;-------------------------------------------------------------------------------
 proc JIMO {} {
 

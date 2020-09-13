@@ -488,93 +488,6 @@ proc item_print {item} {
 # (defvar *generation-0-uniquifier-table* (make-hash-table :test #'equal))
 
 #-------------------------------------------------------------------------------
-
-# a-dict.tl
-#
-#alias SET dict_set
-#alias GET dict_get
-
-if {$::__JIM__} {
-
-  rename dict_set SET_old
-  rename dict_get GET_old
-
-} else {
-
-  rename SET SET_old
-  rename GET GET_old
-}
-
-#-------------------------------------------------------------------------------
-proc OBJ_TYPE {o} {
-
-  if [string equal -length  8 $o "::G_DICT"]    {return 0}
-
-  if [string equal -length 11 $o "<reference."] {return 1}
-  
-  if [string equal -length  6 $o "::oo::"] {return 2}
-  
-}
-#-------------------------------------------------------------------------------
-proc SET {args} {
-
-  set d    [lindex $args 0]
-
-  #set is_obj [info object isa object $d] ;# объект или словарь?
-
-  set type [OBJ_TYPE $d];
-
-  #puts "SET: d = $d   type = $type"
-  # 
-  # > SET: d = ::G_DICT_184
-  # a = <reference.<Account>.00000000000000000000>
-  # > SET: d = ::oo::Obj15
-
-  if {$type == 0} { ;# dictionary
-
-    uplevel 1 SET_old $args
-
-  } else { ;# object JIM ot TCL
-
-    set key  [lindex $args 1]
-    set val  [lindex $args 2]
-
-    $d SET_$key $val
-  }
-}
-#-------------------------------------------------------------------------------
-proc GET {args} {
-
-  set d    [lindex $args 0]
-
-  #set is_obj [info object isa object $d]
-
-  set type [OBJ_TYPE $d];
-
-  if {$type == 0} { ;# dictionary
-
-    uplevel 1 GET_old $args
-
-  } else { ;# object JIM ot TCL
-
-    set key  [lindex $args 1]
-    set val  [lindex $args 2]
-
-    return [$d GET_$key]
-  }
-
-#   if {$is_obj} {
-
-#     set key  [lindex $args 1]
-#     set val  [lindex $args 2]
-
-#     return [$d GET_$key]
-#   } else {
-
-#     uplevel 1 GET_old $args
-#   }
-
-}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -702,10 +615,14 @@ class_create 0 GAUL {POP} {
 } {
   # а это конструктор класса 
 
-    # --> POP
-    # 
-    SUPER constructor $args
+  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+  
+  # --> POP
+  # 
+  #SUPER constructor $args
 
+  SUPER constructor {*}$args
+  
     #-------------------------------------------------
 
     set  max_size       {}
@@ -872,8 +789,12 @@ proc pop_add_entity_ {p entity} {
 
   
   set tmp [GET $p itemslist]
+
+  #puts "pop_add_entity_: tmp = $tmp, entity = [set $entity]"
+
   lappend tmp $entity
-  SET $p  itemslist $tmp
+
+  SET $p  itemslist $tmp ;# ERROR on JIM !!???
 
   #pop_incr_size_ $p  1
   
@@ -1148,12 +1069,19 @@ proc ga_entity_seed {pop adam} \
 #-------------------------------------------------------------------------------
 proc  gaul_population_fill {pop num} {
 
+  # ------------------------
+  #
+  #if {$::__JIM__} {
+  #  set ::is_print 3
+  #}
+  #
+  # ------------------------
 
   set proc_seed [GET $pop seed]
 
   if {$::is_print >= 3} {
     puts ""
-    puts "   gaul_population_fill ..........."
+    puts "   gaul_population_fill ........... num = $num pop = $pop proc_seed = $proc_seed"
     puts ""
   }
 
@@ -1180,12 +1108,15 @@ proc  gaul_population_fill {pop num} {
     # вообще-то теперь надо добавить в популяцию: 
     # 
 
+    #puts stderr "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  1111 "
     pop_add_entity_ $pop  $adam
+    #puts stderr "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  2222 "
     
   }
   #----------------------------------------------------------
 
   if {$::is_print >= 2} {
+    #puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     puts ""
   }
 
@@ -2435,7 +2366,13 @@ proc ga_select_one_sus {pop &mother}  {
 # boolean 
 # ga_select_two_sus (population *pop, entity **mother, entity **father)
 #-------------------------------------------------------------------------------
+#
+#Reference Argument - The caller is expected to pass the name of an existing 
+# variable. An implicit 
+# upvar 1 origname name 
+# is done to make the variable available in the proc scope. 
 # 
+
 proc ga_select_two_sus {pop &mother &father}  {
 
   if {$::ISREVERSE} {puts stderr ".................................. 005_1_1"}
@@ -2748,7 +2685,7 @@ proc ga_genesis_main {
                       } {
 
   set pop [GAUL new  \
-                -lpop $population_size -lgen $len_chromo]
+                "-lpop $population_size -lgen $len_chromo"]
 
   # /*
   #  * Assign population's user data.

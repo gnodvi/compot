@@ -36,6 +36,8 @@ source "$COM/a-plot.tl"
 #   source [file join $dir "f-func.tl"]
 #   source [file join $dir "f-tabs.tl"]
 #   source [file join $dir "f-tour.tl"]
+
+source "$COM/f-sort.tl"
 #   source [file join $dir "f-sort.tl"]
 #   source [file join $dir "f-rand.tl"]
 #-------------------------------------------

@@ -4270,22 +4270,6 @@ proc K {a b} {set a}
 ################################################################################
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc SETGET {classname} {
-
-  uplevel 1 $classname method set \{var val\} \{ set \$var \$val \}
-
-  foreach var [$classname vars] {
-
-    #puts "var = $var"
-    if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
-
-
-    uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
-    uplevel 1 $classname method GET_$var \{\}    \{set $var \}
-  }
-
-}
-#-------------------------------------------------------------------------------
 proc class_method {classname methodname vars body} {
 #proc class_method {classname methodname args body} {}
 
@@ -4349,6 +4333,26 @@ proc define_vars_for_CLASS {classname classvars} {
 ##proc # args {}
 
 #-------------------------------------------------------------------------------
+proc SETGET {classname} {
+
+  uplevel 1 $classname method set \{var val\} \{ set \$var \$val \}
+
+  foreach var [$classname vars] {
+
+    #puts stderr "SETGET for $classname: var = $var"
+
+    if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
+
+
+    uplevel 1 $classname method SET_$var \{val\} \{set $var \$val\}
+    uplevel 1 $classname method GET_$var \{\}    \{set $var \}
+  }
+
+  #puts stderr "SETGET for $classname: --------------------------- \n"
+
+  return
+}
+#-------------------------------------------------------------------------------
 proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 
 
@@ -4360,6 +4364,7 @@ proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
     SETGET $classname
 
     $classname method constructor args $constructorbody
+    #$classname method constructor {} $constructorbody
 
     #---------------------------------------------------------
   } else {
@@ -4459,6 +4464,121 @@ proc SUPER {method args} {
     uplevel 1 super $method {*}$args
   } else {
     uplevel 1 next {*}$args
+  }
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# a-dict.tl
+#
+#alias SET dict_set
+#alias GET dict_get
+
+# if {$::__JIM__} {
+
+#   rename dict_set SET_old
+#   rename dict_get GET_old
+
+# } else {
+
+# #   rename SET SET_old
+# #   rename GET GET_old
+# }
+
+#-------------------------------------------------------------------------------
+proc OBJ_TYPE {o} {
+
+  #if [string equal -length  8 $o "::G_DICT"]    {return 0}
+  if [string equal -length  4 $o "::G_"]    {return 0}
+
+  if [string equal -length 11 $o "<reference."] {return 1}
+  
+  if [string equal -length  6 $o "::oo::"] {return 2}
+  
+}
+#-------------------------------------------------------------------------------
+proc SET {args} {
+
+  #puts stderr "SET: args = $args"
+
+  set d    [lindex $args 0]
+
+  #set is_obj [info object isa object $d] ;# объект или словарь?
+
+  set type [OBJ_TYPE $d];
+
+  #puts "SET: d = $d   type = $type"
+  # 
+  # > SET: d = ::G_DICT_184
+  # a = <reference.<Account>.00000000000000000000>
+  # > SET: d = ::oo::Obj15
+
+  if {$type == 0} { ;# dictionary
+
+    #uplevel 1 SET_old $args
+    uplevel 1 dict_set $args
+
+  } else { ;# object JIM or TCL
+
+    set key  [lindex $args 1]
+    set val  [lindex $args 2]
+
+    set len [llength $val]
+
+    if {$type == 1} {
+      #puts "SET for JIM: d= $d key= $key val= $val   len= $len"
+
+      #$d SET_$key $val
+
+      if {$len == 1} {
+        $d eval "set $key $val"
+      } else {
+        $d eval "set $key \{ $val \}"
+      }
+
+    } else {
+      $d SET_$key $val
+    }
+
+    #$d SET_$key $val
+  }
+}
+# ----------------------------------------------
+# 
+# g_stru.jm _01_test 10 10
+# g-corA.tl:542: Error: invalid command name ""
+# 
+#-------------------------------------------------------------------------------
+proc GET {args} {
+
+  #puts stderr "GET: args = $args"
+
+  set d    [lindex $args 0]
+
+  #set is_obj [info object isa object $d]
+
+  set type [OBJ_TYPE $d];
+
+  if {$type == 0} { ;# dictionary
+
+    #uplevel 1 GET_old $args
+    uplevel 1 dict_get $args
+
+  } else { ;# object JIM ot TCL
+
+    set key  [lindex $args 1]
+    #set val  [lindex $args 2]
+
+    if {$type == 1} {
+      #puts stderr "GET (for JIM): key= $key val= $val"
+
+      return [$d eval "set $key"]
+    } else {
+      return [$d GET_$key]
+    }
+
+    #return [$d GET_$key]
   }
 
 }

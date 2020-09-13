@@ -20,13 +20,22 @@ My variables are:
 
 ----------------- class CreditAccount ------------------------------
 
-CreditAccount vars=balance limit name
-CreditAccount methods=baseclass classname classvars constructor deposit describe destroy eval finalize get method methods new see vars withdraw
+CreditAccount vars      = balance limit name
+CreditAccount classvars = name Unknown balance 0 limit -1000
+CreditAccount methods   = baseclass classname classvars constructor deposit describe destroy eval finalize get method methods new see vars withdraw
 
 ----------------- object CreditAccount -----------------------------
 
-b.vars=balance limit name
-b.classname=CreditAccount
+b.vars = balance limit name
+b.classname = CreditAccount
+b.limit     = -1000
+b.limit     = -1000
+b.limit     = -1000
+b.limit     = -1000
+b.limit     = -1000
+b.limit     =  aa bb cc 
+CreditAccount classvars = name Unknown balance 0 limit -1000
+
 initial balance -> 0
 deposit 100 -> 100
 withdraw 40 -> 60
@@ -36,11 +45,11 @@ I am object <reference.<CreditA>.00000000000000000002> of class CreditAccount
 My 'see' method returns -940
 My variables are:
   balance=-940
-  limit=-1000
+  limit= aa bb cc 
   name=John White
 *** Account is in debit
 
-Total of accounts Bob Smith and John White (Credit Limit: -1000) is: -880
+Total of accounts Bob Smith and John White (Credit Limit:  aa bb cc ) is: -880
 
 ------------------- All objects ---------------------------------
 
