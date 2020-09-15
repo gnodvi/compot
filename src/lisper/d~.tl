@@ -11,7 +11,8 @@ set COMPOT "COM"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
-package require compot::common 1.0
+#package require compot::common 1.0
+package require compot::common
 
 #-------------------------------------------------------------------------------
 #

@@ -12,7 +12,7 @@ lappend auto_path \
   [file join [file dirname [info script]] "."] 
 
 
-package require compot::common 1.0
+package require compot::common 
 
 #-------------------------------------------------------------------------------
 #

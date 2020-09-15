@@ -9,8 +9,6 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 
 source "a-comm.tl"
-#source "a-rand.tl"
-
 source "a-disp.tl"
 
 # подключаем тесты только если  файлы есть;
@@ -19,13 +17,15 @@ source "a-disp.tl"
 my_source "a-comp.tl"
 my_source "a-menu.tl"
 
+source "a-j-oo.tl"
+source "a-jimo.tl"
 
 # ;-------------------------------------------------------------------------------
 proc JIMO {} {
 
-  source "b_cloo.tl"
+  #source "b_cloo.tl"
 
-  source "a-jimo.tl"
+  #source "a-jimo.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
@@ -626,6 +626,7 @@ proc DISP {} {
 #-------------------------------------------------------------------------------
 
 set CUR_DIR "a"
+#set CUR_DIR "1"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 

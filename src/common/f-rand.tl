@@ -1,5 +1,13 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
+#-------------------------------------------------------------------------------
+# 
+if [info exists ::F_RAND_TL] {
+  return
+} else {
+  set  ::F_RAND_TL ""
+}
+
 # /*****************************************************************************
 #  *                                                                           *
 #  *  Имя этого файла: c_random_util.c                                         *
@@ -76,7 +84,8 @@ set ::RANDOM_LC_BETA	257
 set ::RANDOM_LC_GAMMA	RANDOM_RAND_MAX
 
 # static boolean	is_initialised=FALSE;
-set ::is_initialised false
+#set ::is_initialised false
+set ::is_initialised 0
 
 
 # /*----------------------------------------------------------------------------*/
@@ -136,7 +145,8 @@ proc random_seed {seed} {
 
   #   int	i; 
   
-  set ::is_initialised true
+  #set ::is_initialised true
+  set ::is_initialised 1
 
   #   current_state.v[0]=(seed & RANDOM_RAND_MAX);
   set ::current_state_v(0) [expr {$seed & $::RANDOM_RAND_MAX}]
@@ -476,9 +486,9 @@ proc random_unit_gaussian {} {
 #proc random_int_permutation {size iarray  &oarray}
 proc random_int_permutation {size &iarray  &oarray} \
 {
-  #USE_REFS
-  upvar ${&iarray} iarray
-  upvar ${&oarray} oarray
+  USE_REFS
+  #upvar ${&iarray} iarray
+  #upvar ${&oarray} oarray
 
   # int   i,j=0;    /* Loop variables over arrays. */
   # int   pos;	    /* Randomly selected index.    */
@@ -609,6 +619,14 @@ proc random_test {} {
   #//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return true ;#  // ????????
   #//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+}
+# ------------------------------------------------------------------------------
+proc test_random_seed {i} {
+
+  random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
+
+  mysrand $i     ;# для lrand (начальная инициация)
+
 }
 # /*----------------------------------------------------------------------------*/
 

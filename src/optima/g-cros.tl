@@ -436,7 +436,7 @@ proc ga_seed_integer_random {pop adam}  {
 
   #   //}
 
-  return true
+  return 1 ;#true
 }
 #-------------------------------------------------------------------------------
 #   synopsis:	Sets the minimum value for an integer allele for a
@@ -840,6 +840,10 @@ proc gaul_crossover {pop task} {
   #set eval_proc [GET $pop "evaluate"]
   set eval_proc [GET $task "fitness_proc"]
 
+  # For JIM
+  set mother "" ;# ссылка
+  set father "" ;# ссылка
+
   #  Select pairs of entities to mate via crossover.
   #
   while {! [$select_two_proc $pop  mother father]} {
@@ -904,7 +908,8 @@ proc gaul_mutation {pop task} {
   #set eval_proc [GET $pop "evaluate"]
   set eval_proc [GET $task "fitness_proc"]
 
-
+  set mother "" ;# <-------- &
+  # 
   while { ! [$select_one_proc  $pop mother] } {
 
     set dau [ga_get_free_entity $pop]  ;# создали нового !!!
@@ -1318,7 +1323,7 @@ proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
         $fit_target $fit_error \
         $::is_print] {
 
-    return false
+    return 0 ;# false
   }
   
   # основная часть !!!! делаем новое поколение!
@@ -1329,7 +1334,7 @@ proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
   SET $pop generation $generation
   
 
-  return true
+  return 1 ;# true
 }
 # //----------------------------------------------------------------------------
 # //  synopsis:	Main genetic algorithm routine.  Performs GA-based

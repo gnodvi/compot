@@ -211,15 +211,15 @@ proc is_equal {item1 item2} {
 
   set len [llength $item1]
 
-  if {$len == 1} {return false}
+  if {$len == 1} {return $::false}
 
   for {set i 0} {$i < $len} {incr i} {
 
 
-    if {[lindex $item1 $i] != [lindex $item2 $i]} {return false}
+    if {[lindex $item1 $i] != [lindex $item2 $i]} {return $::false}
   }
 
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 proc add_num_to_item {i item w} {
@@ -454,7 +454,7 @@ proc interval_draw_check_new {i1 i2} {
     set is_1 [expr {$i2 < $i_beg}] ;# целиком слева  от проверяемого
     set is_2 [expr {$i1 > $i_end}] ;# целиком справа от проверяемого
 
-    if {[expr ! ($is_1 || $is_2)]} {return false} ;# пересекаются?
+    if {[expr ! ($is_1 || $is_2)]} {return $::false} ;# пересекаются?
   }
 
   # вроде бы место свободно, все хорошо. но !
@@ -462,10 +462,10 @@ proc interval_draw_check_new {i1 i2} {
 
   if {[random_0_or_1] == 0} {
 
-    return false ;# колесо фортуны
+    return $::false ;# колесо фортуны
   }
 
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 proc interval_draw {fl_ptr  i1 i2} {
@@ -474,11 +474,11 @@ proc interval_draw {fl_ptr  i1 i2} {
   # 
 
 
-  if {! [interval_draw_check_new  $i1 $i2]} {return false}
+  if {! [interval_draw_check_new  $i1 $i2]} {return $::false}
 
   interval_push  [list $i1 $i2] 
 
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 proc interval_init {} {
@@ -540,10 +540,10 @@ proc find_equal_index {nums i} {
 
   foreach n $nums {
 
-    if {$n == $i} {return true}
+    if {$n == $i} {return $::true}
   }
 
-  return false
+  return $::false
 }
 #-------------------------------------------------------------------------------
 proc find_proc_index_w {clean_items_with_proc i} {
@@ -700,7 +700,7 @@ proc clean_on_border_one_item_NEW {item fl  &ret} {
     
     lappend ret [list  $subs $nums_new $w]
 
-    return true;
+    return $::true;
   }
 
   if {$len_new == 1} {
@@ -711,7 +711,7 @@ proc clean_on_border_one_item_NEW {item fl  &ret} {
     interval_pop
   }
 
-  return false; ;# не найдено пары интервалов, так и ничего не запишем.
+  return $::false; ;# не найдено пары интервалов, так и ничего не запишем.
 }
 #-------------------------------------------------------------------------------
 proc witems_to_prog_main_NEW {prg witems} {

@@ -9,9 +9,9 @@ exec tclsh "$0" ${1+"$@"}
 set auto_path [linsert $auto_path 0 "COMPOT/src"]
 set auto_path [linsert $auto_path 0 "."]
 
-package require compot::common 1.0
+package require compot::common 
 
-package require compot::graphs 1.0
+package require compot::graphs 
 
 # ;-----------------------------------------------------------------------------
 proc GRAF {} {

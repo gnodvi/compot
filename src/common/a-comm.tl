@@ -2,6 +2,18 @@
 
 #-------------------------------------------------------------------------------
 # 
+if [info exists ::A_COMM_TL] {
+
+  #puts "::A_COMM_TL     exist 1"
+  return
+  #puts "::A_COMM_TL     exist 2"
+} else {
+
+  #puts "::A_COMM_TL not exist"
+  set  ::A_COMM_TL ""
+}
+
+#-------------------------------------------------------------------------------
 
 if [info exists tcl_version] {
   set ::__TCL__ 1
@@ -10,6 +22,9 @@ if [info exists tcl_version] {
   set ::__TCL__ 0
   set ::__JIM__ 1
 }
+
+set ::false 0
+set ::true  1
 
 #-------------------------------------------------------------------------------
 
@@ -204,9 +219,9 @@ proc is_GLOBAL_DICT {l} {
 
   if $is {
 
-    return true
+    return $::true
   } else {
-    return false
+    return $::false
   }
 
 }
@@ -219,9 +234,9 @@ proc is_GLOBAL_LIST {l} {
 
   if $is {
 
-    return true
+    return $::true
   } else {
-    return false
+    return $::false
   }
 
 }
@@ -238,9 +253,9 @@ proc is_GLOBAL_NAME {l} {
 
   if [expr {$is_NAME || $is_DICT || $is_LIST}] {
 
-    return true
+    return $::true
   } else {
-    return false
+    return $::false
   }
 
 }
@@ -723,7 +738,7 @@ proc repeat {n script} {
 #-------------------------------------------------------------------------------
 proc mysrand {seed} {
 
-    expr {srand($seed)}
+  expr {srand($seed)}
 
 }
 #-------------------------------------------------------------------------------
@@ -744,6 +759,23 @@ proc lrand {list} {
     
   lindex $list [expr {int(rand()*[llength $list])}]
     
+}
+#-------------------------------------------------------------------------------
+proc TEST_lrand {} {
+    
+  set ll {1 2 3 4 5 6 7 8 9}
+ 
+  #test_random_seed 0 ;# in file f-rand.tl
+
+  #random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
+  mysrand   0     ;# для lrand (начальная инициация)
+
+  puts ""
+  puts "lrand = [lrand $ll]"
+  puts "lrand = [lrand $ll]"
+  puts "lrand = [lrand $ll]"
+  puts ""
+   
 }
 #-------------------------------------------------------------------------------
 # 
@@ -1781,9 +1813,9 @@ proc koi_to_console {name_koi} {
 } 	
 #-------------------------------------------------------------------------------
 #proc puts_engrus_parse_isnewline {args @text_eng_rus @is_newline} {}
-proc puts_engrus_parse_isnewline {args @is_newline} {
+proc puts_engrus_parse_isnewline {args &is_newline} {
 
-  USE_REFS @
+  USE_REFS ;# @
 
   #puts "args = $args, len = [llength $args]"
 
@@ -2510,8 +2542,8 @@ proc random_in_interval {fmin fmax} {
 # ;-------------------------------------------------------------------------------
 proc setf_nth {index &s val} {
 
-  #USE_REFS
-  upvar ${&s} s 
+  USE_REFS
+  #upvar ${&s} s 
 
   lset s $index  $val
 
@@ -4583,5 +4615,21 @@ proc GET {args} {
 
 }
 #-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc SELF {} {
+
+
+  if {$::__JIM__} {
+
+    #upvar self self_local
+    #return $self_local
+
+    uplevel 1 {return $self} 
+  } else {
+
+    uplevel 1 {return [self]} 
+  }
+
+}
 # ==============================================================================
 #-------------------------------------------------------------------------------

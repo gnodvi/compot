@@ -26,8 +26,10 @@ package ifneeded compot::common 1.0 "
   package provide compot::common 1.0
 "
 
-#  source [file join $dir "g-graf.tl"]
+#  package provide compot::common 1.0
+
 #-------------------------------------------------------------------------------
+#  source [file join $dir "g-graf.tl"]
 
 #  source [file join $dir "b-com0.tl"]
 #  load   [file join $dir ./a_capt.so] Capture

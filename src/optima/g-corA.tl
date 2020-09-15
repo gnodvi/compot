@@ -290,7 +290,7 @@ proc generation_hook_check {pop generation} \
 
   set  g_hook [GET $pop generation_hook]
 
-  if {$g_hook == "NULL"} {return true}
+  if {$g_hook == "NULL"} {return 1} ;# true
 
   set ret [$g_hook  $generation $pop] 
 
@@ -331,17 +331,17 @@ proc is_check_generation_break {pop generation max_generations
     set delta [expr {abs ($fitn0 - $fit_target)}]
     if {$delta <= $fit_error} {
       #break
-      return true
+      return 1 ;# true
     } 
     
   } else {
     if {$generation >= $max_generations} {
      # break
-      return true
+      return 1 ;# true
     } 
   }
   
-  return false
+  return 0 ;# false
 }
 #-------------------------------------------------------------------------------
 proc item_calc_fitness {item_ptr fitnessfunc task} {
@@ -1031,7 +1031,7 @@ set ::GA_MIN_FITNESS   "NOT-FIT"
 
 set ::is_print   0
 
-set ::__is_print false
+set ::__is_print 0 ;# false
 
 
 # //------------------------------------------------------------------------------
@@ -1072,7 +1072,7 @@ proc  gaul_population_fill {pop num} {
   # ------------------------
   #
   #if {$::__JIM__} {
-  #  set ::is_print 3
+  #set ::is_print 3
   #}
   #
   # ------------------------
@@ -1120,7 +1120,7 @@ proc  gaul_population_fill {pop num} {
     puts ""
   }
 
-  return true
+  return 1 ;# true
 }
 # //------------------------------------------------------------------------------
 # //  synopsis:	Fitness evaluations.
@@ -1144,7 +1144,7 @@ proc pop_check_all_eval {pop task} \
 
       set ret [pop_eval_item  $pop $entity $eval_proc $task] 
 
-      if {$ret == false} {
+      if {$ret == 0} {
         puts "ERROR ............. !!!!!!!!!!!!!!!!!!!!!!"
         exit ;# пока сделаем просто ошибку..
       }
@@ -1213,7 +1213,7 @@ proc pop_eval_item {pop item eval_proc  task} \
   #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  
  
-  if {$ret == false} {
+  if {$ret == 0} {
     puts "ERROR ............. !!!!!!!!!!!!!!!!!!!!!!"
     exit ;# пока сделаем просто ошибку..
   }
@@ -1247,7 +1247,7 @@ proc ga_population_score_and_sort {pop task} \
 
   sort_population  $pop
   
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 proc pop_get_entity_id {pop e} \
@@ -1359,7 +1359,7 @@ proc ga_entity_copy {pop dest src} {
 
   item_set_fitn $dest [item_get_fitn $src]
 
-  return true;
+  return $::true;
 }
 #-------------------------------------------------------------------------------
 proc ga_entity_clone_ {dolly parent} {
@@ -1446,7 +1446,7 @@ proc ga_genocide {pop target_size} \
 
   pop_to_size  $pop $target_size
 
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 
@@ -1496,7 +1496,7 @@ proc ga_genocide_by_fitness {pop target_fitness}  {
      
   }
   
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -1516,7 +1516,7 @@ proc ga_entity_set_fitness {e fitness} {
 
   item_set_fitn $e $fitness
 
-  return true;
+  return $::true;
 }
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -1621,7 +1621,7 @@ proc ga_fitness_mean_stddev {pop &p_mean &p_stddev} \
   set p_mean   $mean
   set p_stddev [expr {sqrt ($sumsq / $size)}]
 
-  return true
+  return $::true
 }
 #-------------------------------------------------------------------------------
 # //******************************************************************************
@@ -1662,7 +1662,7 @@ proc ga_chromosome_double_allocate {pop embryo} {
   # /*     embryo->chromosome[i] = &(((double *)embryo->chromosome[i-1])[pop->len_chromosomes]); */
   # /*     } */
 
-  return true;
+  return $::true;
 }
 # //******************************************************************************
 
@@ -1747,7 +1747,7 @@ proc ga_seed_printable_random {pop adam}  {
 
   #   //}
 
-  return true
+  return $::true
 }
 # //------------------------------------------------------------------------------
 # //******************************************************************************
@@ -1920,7 +1920,7 @@ proc ga_select_one_randomrank {pop &mother} {
 
   if {$orig_size < $select_state} \
   {
-    return true
+    return $::true
   }
   
   if {[random_boolean_prob [GET $pop mutation_ratio]]} \
@@ -1929,9 +1929,9 @@ proc ga_select_one_randomrank {pop &mother} {
     #set mother [$pop get_entity [random_int $select_state]]
     set mother [pop_get_entity_ $pop [random_int $select_state]]
 
-    return false
+    return 0 ;# false
   } else {
-    return true
+    return 1 ;# true
   }
   
   #return false
@@ -1969,7 +1969,7 @@ proc ga_select_two_randomrank {pop &mother &father} {
   if {$orig_size < $select_state} \
   {
     #puts "!!!!!!!!!!!!!????????????"
-    return true
+    return $::true
   }
 
   #   if ( random_boolean_prob (pop->crossover_ratio) )
@@ -1986,9 +1986,9 @@ proc ga_select_two_randomrank {pop &mother &father} {
     set mother [pop_get_entity_ $pop  [random_int $select_state]]
     set father [pop_get_entity_ $pop              $select_state]
 
-    return false
+    return 0 ;# false
   } else {
-    return true
+    return 1 ;# true
   }
   
   #return false
@@ -2274,7 +2274,7 @@ proc ga_select_one_sus {pop &mother}  {
 
   if {$orig_size < 1} \
   {
-      return true
+      return $::true
   }
   
   set sd [GET $pop selectdata]
@@ -2284,7 +2284,13 @@ proc ga_select_one_sus {pop &mother}  {
   { 
     # First call of this generation.
 
-    set f  [expr {max (1, int (floor ($orig_size * $mutation_ratio)))}]
+    #set f  [expr {max (1, int (floor ($orig_size * $mutation_ratio)))}]
+    # 
+    set f_tmp [* $orig_size $mutation_ratio]
+    set f_tmp [expr {int (floor ($f_tmp))}]
+    set f [max  1 $f_tmp]
+
+
     #set sd [$pop.selectdata]
 
     SET $sd "num_to_select" $f
@@ -2309,7 +2315,7 @@ proc ga_select_one_sus {pop &mother}  {
     set num_to_select  [GET $sd "num_to_select"]
 
     if {$select_state > $num_to_select} {
-      return true ;# признак окончания
+      return $::true ;# признак окончания
     }
 
     set step [GET $pop step]
@@ -2350,7 +2356,7 @@ proc ga_select_one_sus {pop &mother}  {
   #   pop->select_state++;
   SET $pop select_state [expr {[GET $pop select_state] + 1}]
   
-  return false
+  return 0 ;# false
 }
 #-------------------------------------------------------------------------------
 # /**********************************************************************
@@ -2372,7 +2378,8 @@ proc ga_select_one_sus {pop &mother}  {
 # upvar 1 origname name 
 # is done to make the variable available in the proc scope. 
 # 
-
+#-------------------------------------------------------------------------------
+# 
 proc ga_select_two_sus {pop &mother &father}  {
 
   if {$::ISREVERSE} {puts stderr ".................................. 005_1_1"}
@@ -2383,10 +2390,13 @@ proc ga_select_two_sus {pop &mother &father}  {
   #   int	*ordered;		/* Ordered indices. */
   #   int	i;			/* Loop variable over indices. */
   
+  set ordered "" ;# &
+  set oarray  "" ;# &
+
   #   if (!pop) die("Null pointer to population structure passed.");  
   #   *mother = NULL;
   
-  #set orig_size       [GET $pop orig_size]
+  #set orig_size      [GET $pop orig_size]
   set orig_size       [GET $pop stable_size]
   set select_state    [GET $pop select_state]
   set crossover_ratio [GET $pop crossover_ratio]
@@ -2401,7 +2411,7 @@ proc ga_select_two_sus {pop &mother &father}  {
 
   if {$orig_size < 1} \
   {
-      return true
+      return $::true
   }
   
   if {$::is_print > 1} {
@@ -2419,7 +2429,13 @@ proc ga_select_two_sus {pop &mother &father}  {
 
     # First call of this generation
 
-    set f [expr {max (1, int (floor ($orig_size * $crossover_ratio)))}]
+    set f_tmp [* $orig_size $crossover_ratio]
+    set f_tmp [expr {int (floor ($f_tmp))}]
+
+    #set f [expr {max (1, int (floor ($orig_size * $crossover_ratio)))}]
+    #set f [expr {max (1, int (floor ($f_tmp)))}]
+    #set f [expr {max (1, $f_tmp)}]
+    set f [max  1 $f_tmp]
 
 
     SET $sd "num_to_select"  $f      
@@ -2433,8 +2449,11 @@ proc ga_select_two_sus {pop &mother &father}  {
 
     #$pop configure -selectdata_step $selectdata_step
     SET $pop step  $selectdata_step
+ 
+    #puts stderr "selectdata_step = $selectdata_step"
+    #exit
 
-    SET $sd "offset1" [random_double $selectdata_step]
+    SET $sd "offset1" [random_double  $selectdata_step]
     SET $sd "offset2" [GET $sd "offset1"]
 
     #puts  stderr [format "sum = %f  step = %f  off1 = %f " $sum $selectdata_step [$pop cget -selectdata_offset1]]
@@ -2456,6 +2475,7 @@ proc ga_select_two_sus {pop &mother &father}  {
     # вообще-то в оригинале массив "ordered" тоже портится, но здесь незаметно
     # поскольку вызывается один раз
     #
+
     random_int_permutation  $orig_size  ordered oarray ;# перемешали числа
 
     
@@ -2480,7 +2500,7 @@ proc ga_select_two_sus {pop &mother &father}  {
 
       SET $sd "permutation" ""
 
-      return true ;# признак окончания
+      return $::true ;# признак окончания
     }
 
 
@@ -2580,7 +2600,7 @@ proc ga_select_two_sus {pop &mother &father}  {
   
   SET $pop select_state [expr {$select_state + 1}]
 
-  return false
+  return 0 ;# false
 }
 #-------------------------------------------------------------------------------
 # //******************************************************************************

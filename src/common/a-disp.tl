@@ -1,6 +1,14 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
 #-------------------------------------------------------------------------------
+# 
+if [info exists ::A_DISP_TL] {
+  return
+} else {
+  set  ::A_DISP_TL ""
+}
+
+#-------------------------------------------------------------------------------
 # http://wiki.tcl.tk/924
 
 # MAK: While working on optimizations for TkPNG, alternating between using time 

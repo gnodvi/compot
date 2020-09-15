@@ -445,14 +445,14 @@ proc is_check_generation_break_gp {pop i max_generations
   set steps $max_generations
 
   if {$i >= $steps} {
-    return true
+    return $::true
   } 
   
   if {$is_print} {
     puts "EVOLVE ..................................... i = $i \n"    
   }
 
-  return false
+  return $::false
 }
 # ------------------------------------------------------------------------------
 proc gp_evolution_main {task  pop max_generations 
@@ -531,14 +531,6 @@ proc gp_evolution_main {task  pop max_generations
   return
 }
 # ------------------------------------------------------------------------------
-proc SELF {} {
-
-
-  #return [uplevel 1 [self]]
-  uplevel 1 \[self\]
-
-}
-# ------------------------------------------------------------------------------
 
 class_create 0 BOT {} {
 
@@ -558,14 +550,7 @@ class_create 0 BOT {} {
   set task [dict_parse $args "-task" \
               [task_create  "FS_fitness" -fit_target 53.1]] 
   
-  
-  if {$::__JIM__} {
-    
-    set obj $self  ;# JIM: $self - текущий объект    
-  } else {
-
-    set obj [self]
-  }
+  set obj [SELF]
   
   $obj SET_task $task
   $obj SET_name [dict_parse  $args  "-name" "BotName"]

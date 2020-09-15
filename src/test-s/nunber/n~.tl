@@ -11,7 +11,7 @@ lappend auto_path \
   [file join [file dirname [info script]] "COMPOT/src"]
 
 
-package require compot::common 1.0
+package require compot::common 
 
 #package require tcltest
 

@@ -16,7 +16,7 @@ set auto_path [linsert $auto_path 0 $COMPOT]
 
 #
 #
-package require compot::common 1.0
+package require compot::common 
 
 source "v_0000.tl"
 
