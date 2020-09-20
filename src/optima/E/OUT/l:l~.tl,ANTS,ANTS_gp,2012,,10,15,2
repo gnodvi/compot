@@ -41,10 +41,10 @@ PRINT BEST: 'i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_F
    4)  fitn =  79 :   MOVE
    5)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop i
    6)  fitn =  79 :   i MOVE
-   7)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop IF_FOOD_AHEAD
+   7)  fitn =  57 :   i MOVE i {IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT} IF_FOOD_AHEAD i IF_FOOD_AHEAD nop nop
    8)  fitn =  79 :   MOVE
    9)  fitn =  79 :   MOVE nop i
-  10)  fitn =  79 :   i i i {i MOVE MOVE} MOVE i i
+  10)  fitn =  79 :   i IF_FOOD_AHEAD {i MOVE MOVE} i i
 
 ================================================
 

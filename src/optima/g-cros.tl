@@ -111,9 +111,11 @@ proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
 # //------------------------------------------------------------------------------
 proc ga_crossover_integer_singlepoints {pop father mother son daughter} {
 
+  set son_CH      "" ;# <---
+  set daughter_CH "" ;# <---
 
-  ga_singlepoint_crossover_integer_chromosome  $pop [ent_CH_ $father ] [ent_CH_ $mother] \
-                                                   son_CH  daughter_CH
+  ga_singlepoint_crossover_integer_chromosome  $pop \
+    [ent_CH_ $father ] [ent_CH_ $mother]    son_CH  daughter_CH
 
   ent_set_chromosome_ $son      $son_CH
   ent_set_chromosome_ $daughter $daughter_CH
@@ -1429,7 +1431,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
   #
   set generation 0
 
-  set complete FALSE ;# Whether evolution is terminated
+  set complete ::false ;# Whether evolution is terminated
   
   set fit_target [GET $task "fit_target"]
   set fit_error  [GET $task "fit_error"]
@@ -1438,7 +1440,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
   while {1} {
 
     #     if {$generation >= $max_generations} {break}
-    if {$complete   != FALSE}            {break}
+    if {$complete != $::false}            {break}
 
     # // Migration step.
     # //

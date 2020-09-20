@@ -87,7 +87,6 @@ set ::RANDOM_LC_GAMMA	RANDOM_RAND_MAX
 #set ::is_initialised false
 set ::is_initialised 0
 
-
 # /*----------------------------------------------------------------------------*/
 # //  Replacement for the standard rand().
 # //  Returns a new pseudo-random value from the sequence, in
@@ -103,7 +102,7 @@ proc random_rand {} {
   #   unsigned int val;
 
   if {! $::is_initialised} {
-    die "Neither random_init() or random_seed() have been called."
+    die "Neither 'random_init' or 'random_seed' have been called."
   }
 
   #   THREAD_LOCK(random_state_lock);
@@ -188,6 +187,11 @@ proc  random_init {} {
 
   return
 }
+#-----------------------------------------------------------
+
+random_init ;# сразу подготовим к выполнению, на всяк случай.
+
+
 # /*----------------------------------------------------------------------------*/
 # //  Return TRUE 50% of the time.
 # /*----------------------------------------------------------------------------*/
@@ -628,6 +632,73 @@ proc test_random_seed {i} {
   mysrand $i     ;# для lrand (начальная инициация)
 
 }
-# /*----------------------------------------------------------------------------*/
+#-------------------------------------------------------------------------------
+# возвращаем случайный элемент из списка 
+#-------------------------------------------------------------------------------
+proc lrand {list} {
+    
+  lindex $list [expr {int(rand()*[llength $list])}]
+    
+}
+#-------------------------------------------------------------------------------
+proc lrand_new {list} {
+    
+  set l [llength $list]
 
+  set r [random_int $l]
+
+  #set i [* $r ]
+
+  #puts "l = $l r = $r"
+
+  lindex $list $r
+    
+}
+#-------------------------------------------------------------------------------
+proc TEST_lrand {} {
+    
+  set ll {1 2 3 4 5 6 7 8 9}
+ 
+  #test_random_seed 0 ;# in file f-rand.tl
+
+  #random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
+  mysrand   0     ;# для lrand (начальная инициация)
+
+  puts ""
+  puts "lrand = [lrand $ll]"
+  puts "lrand = [lrand $ll]"
+  puts "lrand = [lrand $ll]"
+  puts ""
+   
+  random_seed 0     ;# для lrand (начальная инициация)
+
+  puts ""
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts "lrand = [lrand_new $ll]"
+  puts ""
+   
+}
+# /*----------------------------------------------------------------------------*/
 # /*----------------------------------------------------------------------------*/

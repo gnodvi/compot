@@ -13,7 +13,8 @@
 #-------------------------------------------------------------------------------
 proc randinstr_NEXT {gp_list} {
 
-  set  instr  [lrand $gp_list] ;# ???
+  #set  instr  [lrand $gp_list] ;# ???
+  set  instr  [lrand_new $gp_list] ;# ???
     
   return $instr
 }
@@ -723,6 +724,10 @@ proc run_gp_evolution {randpop_proc
                        {game_print_proc 0} 
                      } {
 
+
+  random_seed 0 ;# ?? mysrand 2013
+
+  #-------------------------------------
 
   set task [task_create $fitnessfunc]
 

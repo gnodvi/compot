@@ -82,10 +82,10 @@ NUM = 6
    9)  fitn =   5 :   M L
   10)  fitn =   5 :   L M
   11)  fitn =   3 :   M M M M M M
-  12)  fitn =   5 :   R L M R R M M
-  13)  fitn =   5 :   M L L R M M R R R R L L L M R L
-  14)  fitn =   5 :   R L
-  15)  fitn =   5 :   M L
+  12)  fitn =   5 :   M L M R R M M
+  13)  fitn =   5 :   M L L R M M R M R R R L R L M L
+  14)  fitn =   5 :   R
+  15)  fitn =   5 :   M R L
 
 ================================================
 

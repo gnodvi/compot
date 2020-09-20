@@ -753,31 +753,6 @@ proc myrand {min max} {
 
 }
 #-------------------------------------------------------------------------------
-# возвращаем случайный элемент из списка 
-#-------------------------------------------------------------------------------
-proc lrand {list} {
-    
-  lindex $list [expr {int(rand()*[llength $list])}]
-    
-}
-#-------------------------------------------------------------------------------
-proc TEST_lrand {} {
-    
-  set ll {1 2 3 4 5 6 7 8 9}
- 
-  #test_random_seed 0 ;# in file f-rand.tl
-
-  #random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
-  mysrand   0     ;# для lrand (начальная инициация)
-
-  puts ""
-  puts "lrand = [lrand $ll]"
-  puts "lrand = [lrand $ll]"
-  puts "lrand = [lrand $ll]"
-  puts ""
-   
-}
-#-------------------------------------------------------------------------------
 # 
 
 # надо бы сделать более гибко !
@@ -2086,13 +2061,15 @@ set ::ApproxZero [expr {1e-18}]
 proc die {X} {
 
 
-  puts ""
-  puts "DON-T IMPLEMENT macro DIE !! (see c_all_util.h.tl)"
-  puts "X = "
+  #puts ""
+  #puts "DON-T IMPLEMENT macro DIE !! (see c_all_util.h.tl)"
+  #puts "X = "
+  puts "DIE !!!!!!!! : "
   puts "$X"
   puts ""
 
-  abort ;# ???
+  #abort ;# ???
+  exit
 
   return
 }

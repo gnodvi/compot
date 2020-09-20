@@ -18,6 +18,16 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
 package require compot::common 
 
+# ;-------------------------------------------------------------------------------
+proc COMM {} {
+
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+  #   (run_cdr_argus (first argus) argus "COMM ..")
+
+}
 #-------------------------------------------------------------------------------
 # proc SORT-TEST {} {
 
