@@ -8,10 +8,149 @@ exec jimsh "$0" ${1+"$@"}
 #
 #-------------------------------------------------------------------------------
 
+#source "g~.tl"
 
-source "g~.tl"
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
+
+#lappend auto_path \
+  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+
+#-------------------------------------------
+
+package require compot::common 
+
+#package require compot
+
+#-------------------------------------------
+
+#source "f-rand.tl"
+
+source "g-corA.tl"
+source "g-corB.tl"  ;# unknown namespace in import pattern "tcltest::*"
+
+source "g-cros.tl"
+
+source "g-diff.tl"
+source "g-detw.tl"
+source "g-tabu.tl"
+source "g-sima.tl"
+
+# //******************************************************************************
+# //  Synopsis:	Test GAUL pseudo-random number generator.
+
+# ;-------------------------------------------------------------------------------
+proc random_test_old {} {
+
+  set ::debug_print 1
+  set ::simp_random 1
+
+  puts ""
+
+  YRAND_C
+
+  #puts "r = [YRAND 0 0.095]"
+  #puts "r = [YRAND 0 0.095]"
+  #puts "r = [YRAND 0 0.095]"
+  #puts "r = [YRAND 0 0.095]"
+
+  YRAND 0 0.095 ;# здесь целые наверное нужны !!!??
+  YRAND 0 0.095
+
+  #puts "Y-random = [Y-random]"
+  #puts "Y-random = [Y-random]"
+
+  puts ""
+}
+# ;-------------------------------------------------------------------------------
+# ;-------------------------------------------------------------------------------
+proc random_test_new {} {
 
 
+  set ::debug_print 1
+  set ::simp_random 1
+
+  puts ""
+
+  #puts "[RandomInit 5049]"
+
+  puts "[_Random]"
+  puts "[_Random]"
+
+  puts "[_RandomRange 100]"
+
+  puts ""
+
+  puts "(YRandF 10 20) = [YRandF 10 20]"
+  puts "(YRandF 10 20) = [YRandF 10 20]"
+
+  puts ""
+
+  puts "(YRandF 80 90) = [YRandF 80 90]"
+  puts "(YRandF 80 90) = [YRandF 80 90]"
+
+  puts ""
+
+  puts "(random-value 0.095) = [random-value 0.095]"
+
+#   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+#   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+
+#   puts "(YRAND 10 20) = [YRAND 10 20]"
+#   puts "(YRAND 10 20) = [YRAND 10 20]"
+
+   puts ""
+
+}
+# //------------------------------------------------------------------------------
+# void 
+# test_prng (int argc, char **argv)
+# //------------------------------------------------------------------------------
+proc prng {} {
+
+  #   boolean  success;
+  
+  #   /* Usual initializations */
+  random_init 
+  
+  #   /* Run randomness test function */
+  #   success = random_test ();
+  random_test 
+  
+  #   if (success == FALSE)
+  #     printf ("*** Routines DO NOT produce sufficiently random numbers.\n");
+  #   else
+  #     printf ("Routines produce sufficiently random numbers.\n");
+  
+   puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+set CUR_DIR "g"
+  
+READ_AND_CALL_ARGUS  $CUR_DIR
+
+puts "" 
+
+#-------------------------------------------------------------------------------
+#
+# TODO:
+# 
+# 1) g_stru.tl/TODO
+# 
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------

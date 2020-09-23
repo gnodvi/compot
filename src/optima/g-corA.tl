@@ -199,6 +199,7 @@ proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form ""}} {
     if {[catch {puts -nonewline $out [format $ch_form $c]} err]} {
 
       puts -nonewline $out "$c "
+      #puts -nonewline $out "$c ;"
     }
   } 
   
@@ -508,6 +509,12 @@ class_create 0 POP {} {
 } {
   # а это конструктор класса 
 
+  #-----------------------------------------------
+  # 
+  #set args [lindex $args 0]  
+  # 
+  #-----------------------------------------------
+
   set  stable_size    [dict_parse $args "-lpop"] 
   set len_chromosomes [dict_parse $args "-lgen"] 
   
@@ -623,7 +630,7 @@ class_create 0 GAUL {POP} {
 
   SUPER constructor {*}$args
   
-    #-------------------------------------------------
+  #-------------------------------------------------
 
     set  max_size       {}
     set  size           {}

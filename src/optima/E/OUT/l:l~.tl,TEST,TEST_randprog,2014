@@ -1,10 +1,16 @@
 
 
-run_v1_src:  PRG = {i dup dup i i dup - +} * -
+run_v1_src:  PRG = dup * dup * dup - {- +} dup dup
 
-stack= |                         3 |  instr= i dup dup i i dup - +  
-stack= | 3 {i dup dup i i dup - +} |  instr= *  
-stack= | 3 {i dup dup i i dup - +} * |  instr= -  
+stack= |                         3 |  instr= dup  
+stack= |                     3 dup |  instr= *  
+stack= |                   3 dup * |  instr= dup  
+stack= |               3 dup * dup |  instr= *  
+stack= |             3 dup * dup * |  instr= dup  
+stack= |         3 dup * dup * dup |  instr= -  
+stack= |       3 dup * dup * dup - |  instr= - +  
+stack= | 3 dup * dup * dup - {- +} |  instr= dup  
+stack= | 3 dup * dup * dup - {- +} dup |  instr= dup  
 
-x= 3  result= -
+x= 3  result= dup
 

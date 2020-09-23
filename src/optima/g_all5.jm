@@ -2,8 +2,12 @@
 
 #!/bin/sh
 # \
-exec tclsh "$0" ${1+"$@"}
-#
+exec jimsh "$0" ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+
+#source "g_all5.tl"
+
 #-------------------------------------------------------------------------------
 # Josef Knecht @ Copyright 
 #-------------------------------------------------------------------------------
@@ -12,9 +16,9 @@ set COMPOT "./COMPOT"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
-#lappend auto_path \
-  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
+#------------------------------------------
 
 package require compot::common 
 
@@ -202,12 +206,11 @@ proc _1_main {} \
   #   size_t       beststrlen = 0;    /* Length of beststring.                  */
   
   
-  #   int len_chromo, population_size, max_generations;
+  set len_chromo      ""
+  set population_size ""
+  set max_generations ""
   
-  #   parse_opts_len (argc, argv, &len_chromo, &population_size, &max_generations,  
-  #                   100, 200, 250);
   
-  #parse_opts_len  len_chromo population_size max_generations 100 200 250
   parse_opts_3  len_chromo population_size max_generations 100 200 250
   
   random_seed  20092004
@@ -343,10 +346,9 @@ proc _2_main {} \
   #   char	      *beststring = NULL;  /* Human readable form of best solution.    */
   #   size_t       beststrlen = 0;	   /* Length of beststring.                    */
   
-  #   int len_chromo, population_size, max_generations;
-  
-  #   parse_opts_len (argc, argv, &len_chromo, &population_size, &max_generations,  
-  #                   100, 200, 250);
+  set len_chromo      ""
+  set population_size ""
+  set max_generations ""
   
   parse_opts_3  len_chromo population_size max_generations 100 200 250
 
@@ -498,6 +500,4 @@ main
 
 # //-----------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
-# //******************************************************************************
-
-
+# ******************************************************************************

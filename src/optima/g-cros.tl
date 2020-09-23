@@ -365,14 +365,17 @@ proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH
 proc ga_crossover_double_doublepoints {pop father mother son daughter} {
 
 
-#   if (!father || !mother || !son || !daughter)
-#     die ("Null pointer to entity structure passed");
+  #   if (!father || !mother || !son || !daughter)
+  #     die ("Null pointer to entity structure passed");
+  
+  #   ga_doublepoint_crossover_double_chromosome (pop,
+  #                                               (double *) father->CH,
+  #                                               (double *) mother->CH,
+  #                                               (double *) son->CH,
+  #                                               (double *) daughter->CH);
 
-#   ga_doublepoint_crossover_double_chromosome (pop,
-#                                               (double *) father->CH,
-#                                               (double *) mother->CH,
-#                                               (double *) son->CH,
-#                                               (double *) daughter->CH);
+  set son_CH      ""  
+  set daughter_CH ""
 
   ga_doublepoint_crossover_double_chromosome  $pop [ent_CH_ $father] [ent_CH_ $mother ] \
                                                    son_CH  daughter_CH

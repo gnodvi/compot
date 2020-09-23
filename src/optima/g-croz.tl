@@ -609,42 +609,49 @@ class_create 0 BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
-    variable task ;# pop
+  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
 
-    # если нет в args, то берем значение здесь
-    # 
-    set task [dict_parse $args "-task" \
-                [task_create  "FS_fitness_list"]] 
-    
-    #set len_chromosomes [dict_parse $args "-lgen" ] 
-    #set population_size [dict_parse $args "-lpop" ] 
-    
-    #my SET_task $task
+  SUPER constructor {*}$args
+  
+  # если нет в args, то берем значение здесь
+  # 
+  set task [dict_parse $args "-task" \
+              [task_create  "FS_fitness_list"]] 
+  
+  #set len_chromosomes [dict_parse $args "-lgen" ] 
+  #set population_size [dict_parse $args "-lpop" ] 
+  
+  [SELF] SET_task $task
+  
+  #-----------------------------------------------
+  # 
+  set pop [POP new  {*}$args]
+  
+  #set pop [POP new  $args]
+  
+  #-----------------------------------------------
 
-    #-----------------------------------------------
-    # 
-    set pop [POP new  {*}$args]
-
-    set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
-    # 
-    # "LT_lsort" ;# с меньшим фитнесом - влево. т.е. в лучшие!
-    #
-    set      ::sort_driver $sort_driver
-    SET $pop "sort_driver" $sort_driver
-
-
-    SET $pop  ch_form "%c" 
-    SET $pop  "generation_hook" NULL ;# $generation_hook
-    
-    #-----------------------------------------------
-
-    my SET_pop  $pop
+  set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
+  # 
+  # "LT_lsort" ;# с меньшим фитнесом - влево. т.е. в лучшие!
+  #
+  set      ::sort_driver $sort_driver
+  SET $pop "sort_driver" $sort_driver
+  
+  
+  SET $pop  ch_form "%c" 
+  SET $pop  "generation_hook" NULL ;# $generation_hook
+  
+  #-----------------------------------------------
+  
+  [SELF] SET_pop  $pop
+  #my SET_pop  $pop
 }
 
 #-----------------------------------------------------------
 class_method BOT33 calc {args} {
   
-  set obj [self]
+  set obj [SELF]
   
   set task [dict_parse $args "-task" [$obj GET_task]] 
   
@@ -683,7 +690,7 @@ class_method BOT33 calc {args} {
 #-----------------------------------------------------------
 class_method BOT33  final {} {
   
-  set obj [self]
+  set obj [SELF]
   
   set  pop [$obj GET_pop]
   
@@ -699,7 +706,9 @@ class_method BOT33  final {} {
 proc bot33_create {args} {
 
 
-  set obj [BOT33 new {*}$args]
+  #set obj [BOT33 new {*}$args]
+
+  set obj [BOT33 new $args]
 
   return $obj
 }
@@ -854,6 +863,11 @@ proc _gp_test {} {
     # берем данные из командной строки: k~.tl TEST FS  @  20 15 100
     #                                   cd ../others ; h_stru.tl FS
     incr ::ind0
+
+    set bnums ""
+    set bsize ""
+    set steps ""
+
     parse_opt_seed_3_new  bnums bsize steps 
 
     # if ! @ -> mysrand var 

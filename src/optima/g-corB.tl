@@ -26,8 +26,6 @@ namespace import tcltest::*
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 proc make_itemslist_from_prgpop {prgpop} {
 
 
@@ -339,13 +337,18 @@ proc substrings_find_all {prg start_w} {
   set len   [llength  $prg]
   set max_w [expr $len / 2] ;# 
 
+ 
+ if {0} {
 
-  #dputs "substrings_find_all: ~~~~~~~~~"
-  #dputs ""
-  #dputs "prg   = $prg"
-  #dputs "len   = $len"
-  #dputs "max_w = $max_w"
-  #dputs ""
+   puts "substrings_find_all: ~~~~~~~~~"
+   puts ""
+   puts "prg   = $prg"
+   puts "len   = $len"
+   puts "max_w = $max_w"
+   puts ""
+
+   exit
+  }
 
 
   for {set w $start_w} {$w <= $max_w} {incr w} {
@@ -371,31 +374,42 @@ proc substrings_find_all {prg start_w} {
   }
 
 
-
-  set ret [dict create]
-
+  set ret      [dict create]
+  #puts "ret = |$ret| ................  "
   set ret_list {} ;# сделаем по-новому - "новичок"
 
-  
-  foreach w [lsort -decreasing [array names L]] {
+  set names [array names L]
+
+  set sortnames [lsort -decreasing $names]
+
+  foreach w $sortnames {
 
     set L_w [set L($w)] ;# items
 
     if {$L_w == {}} {continue} ;# оставляем только те, где есть повторения
 
-    #puts "w = $w  L_w = $L_w" ;# TODO: надо дописать туда w в каждый item !!!!
+    #puts "substrings_find_all: w = $w  L_w = $L_w" 
+    # TODO: надо дописать туда w в каждый item !!!!
 
-    dict set ret  $w $L_w
-    lappend ret_list $L_w
+    #dict set ret      $w $L_w ;# для JIM получается не тот порядок
+    lappend  ret_list $w $L_w
   }
 
-  #dputs ""
-  #dputs "ret = $ret"
-  #dputs ""
-  #dputs "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  #dputs ""
+  if {0} {
 
-  return [list $ret] ;# уже по убыванию!
+    puts ""
+    puts "substrings_find_all: names = $names, sortnames = $sortnames"
+    #puts "substrings_find_all: ret      = $ret"
+    puts "substrings_find_all: ret_list = $ret_list"
+    puts ""
+    puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    puts ""
+
+    exit
+  }
+
+  #return [list $ret] ;# уже по убыванию!
+  return [list $ret_list] 
 }
 #-------------------------------------------------------------------------------
 proc interval_set_null {} {
@@ -811,7 +825,8 @@ proc commit_to_from {prog_new  prog_old} {
     # (и по имени и по содержанию) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # 
 
-    dict set prog_ret $key $value 
+    #dict set prog_ret $key $value 
+    lappend prog_ret $key $value 
   }
 
   prog_set_prg_src  prog_ret "main" $prg_new ;# !!!
@@ -852,11 +867,11 @@ proc libra_refactoring {prog {start_w 2}} {
   # TODO: нельзя сделать рефакторинг отдельно тела MAIN программs без
   # учета продпроцедур в библиотеке !!!
 
-
   # получаем словарь для всех ширин W (исключая пустые) по убыванию
   # 
-  foreach {all_witems} [substrings_find_all $prg_old $start_w] {break}
+  foreach {all_witems} [substrings_find_all  $prg_old $start_w] {break}
 
+  #puts "libra_refactoring: all_witems = $all_witems"
 
   # TODO: здесь надо посмотреть все имена в библиотеке
   # и установить стартер (начальный номер?)
@@ -925,6 +940,38 @@ proc make_unfactoring_prog {prog_old} {
   return $prog_new
 }
 #-------------------------------------------------------------------------------
+
+# http://www.wellho.net/mouth/3638_Sorting-dicts-and-arrays-in-Tcl.html
+
+# Once version 8.6 ofTcl gets to a production release (and you have it on all 
+# your systems), you'll be able to use the -stride and index options on lsort, 
+# which will directly return you a sorted dict if you pass in a parameter 2 to 
+# the stride. Thus:
+
+#  lsort -stride 2 {grapefruit 10 banana 110 cherry 25}
+# will return
+#  banana 110 cherry 25 grapefruit 10
+
+# and
+#  lsort -stride 2 -index 1 -integer {grapefruit 10 banana 110 cherry 25}
+# wlll return
+#  grapefruit 10 cherry 25 banana 110
+
+#-------------------------------------------------------------------------------
+proc dict_sort {d} {
+
+  if {$::__TCL__} {
+
+    return [lsort -stride 2 $d]
+  } else {
+
+    # в JIM такого ключа нет, но тут, похоже и не нужна сортировка?
+    # 
+    return $d
+  }
+
+}
+#-------------------------------------------------------------------------------
 proc canonical_form {prog} {
 
   set prog_ret {}
@@ -934,9 +981,15 @@ proc canonical_form {prog} {
     #puts "canonical_form: key= $key value= $value"
 
     set prg_src [dict get $value "src"]    
-    dict set prog_ret $key $prg_src
+    #dict set prog_ret $key $prg_src
+    lappend prog_ret $key $prg_src
 
   }
+
+  # но словарь может быть в произвольном порядке 
+  # поэтому надо бы отсортировать по алфавиту
+
+  set prog_ret [dict_sort $prog_ret] 
 
   return $prog_ret
 }
@@ -1045,7 +1098,8 @@ proc get_arglist {instr} {
 #-------------------------------------------------------------------------------
 proc randinstr_ARGS {gp_list} {
 
-  set instr [lrand $gp_list]
+  #set instr [lrand $gp_list]
+  set instr [lrand_new $gp_list]
   
   set arglist [info args $instr]
   
@@ -1072,7 +1126,8 @@ proc randinstr_SIMP {gp_list} {
   #puts ""
   #puts "RANDINSTR ... !!"
 
-  set  instr   [lrand $gp_list]
+  #set  instr   [lrand $gp_list]
+  set  instr   [lrand_new $gp_list]
 
   #------------------------------------------------------------
   #set  procname ::joy::builtin::${instr} ;# делаем имя более уникальным!
@@ -1259,6 +1314,7 @@ proc ALL_TESTS {} {
      set src {p0 p0  p1 p1 p1  p2 p2  p2 p2  p1 p1 p1  p3 p3}
 
      set prog [make_simple_main_prog $src]
+
      set prog [libra_refactoring $prog] 
 
      return [canonical_form $prog]
@@ -1357,7 +1413,7 @@ proc ALL_TESTS {} {
 
   #-----------------------------------------------
 
-  test simple_06 {} {
+  test simple_07 {} {
     
     set prog_old [list \
                     "main"  {"src" {proc1 p2 p2 proc1 p2 p2 proc1}}  \
@@ -1369,12 +1425,12 @@ proc ALL_TESTS {} {
 
     return [canonical_form $prog_new]
 
-  } {main {proc2 proc2 proc1} proc2 {proc1 p2 p2} proc1 {p1 p1 p1}}
+  } {main {proc2 proc2 proc1} proc1 {p1 p1 p1} proc2 {proc1 p2 p2}}
+  # {} {main {proc2 proc2 proc1} proc2 {proc1 p2 p2} proc1 {p1 p1 p1}}
 
   #-----------------------------------------------
 
 }
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -1385,6 +1441,9 @@ proc ITEM_test {} {
   puts ""
 
   ALL_TESTS
+
+  puts "----------------------------------------------------"
+  puts ""
 
   # TODO:
   #

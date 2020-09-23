@@ -12,13 +12,12 @@ set COMPOT "./COMPOT"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
-#lappend auto_path \
-  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
+#------------------------------------------
 
 package require compot::common 
 
-#------------------------------------------
 #------------------------------------------
 
 # source "b-com0.tl"
@@ -486,8 +485,8 @@ proc  pingpong_mutate {pop mother son r_prob} {
 #   play twice.
 
 # //------------------------------------------------------------------------------
-proc pingpong_genesis {population_size len_chromo         \
-                       mutate                             \
+proc pingpong_genesis {population_size len_chromo         
+                       mutate                             
                        select_one select_two crossover} { \
 
 
@@ -743,6 +742,10 @@ proc main_t1 {len_chromo} {
 # //------------------------------------------------------------------------------
 proc main_sa {} {
 
+  
+  set num_runs        ""
+  set population_size ""
+  set max_iterations  ""
   
   parse_opts_3   num_runs population_size max_iterations  50 50 1000
   

@@ -23,13 +23,13 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 #-------------------------------------------------------------------------------
 # 
 
-if [info exists tcl_version] {
-  set ::__TCL__ 1
-  set ::__JIM__ 0
-} else {
-  set ::__TCL__ 0
-  set ::__JIM__ 1
-}
+# if [info exists tcl_version] {
+#   set ::__TCL__ 1
+#   set ::__JIM__ 0
+# } else {
+#   set ::__TCL__ 0
+#   set ::__JIM__ 1
+# }
 
 #------------------------------------------
 
@@ -1361,32 +1361,31 @@ class_create 0 BOT79 {BOT} {
 
 } {
   #---------------------------------------------------------
-  #constructor {args} {}
+  #set args [lindex $args 0]
 
-    variable task
+  SUPER constructor {*}$args
+  
+  set len_chromo      [dict_parse $args "-lgen"] 
+  set population_size [dict_parse $args "-lpop"] 
+  set task            [dict_parse $args "-task"] 
+  
+  set pop [make_pop_DARWIN  $task $population_size $len_chromo] 
+  
+  [SELF] SET_pop   $pop
 
-    #next {*}$args
-    SUPER constructor {*}$args
-
-    set len_chromo      [dict_parse $args "-lgen"] 
-    set population_size [dict_parse $args "-lpop"] 
-    
-    set pop [make_pop_DARWIN  $task $population_size $len_chromo] 
-
-    [self] SET_pop   $pop
-    #{}
 }
-
 #---------------------------------------------------------
 class_method  BOT79 calc {args} {
   
-  set obj [self]
+  set obj [SELF]
   
   set task             [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations1 [dict_parse $args "-steps"] 
   
   set popd [$obj GET_pop]
   
+  # ????????????????????
+  # set name [my GET_name]
   set name [my GET_name]
   
   do_evolution_and_print_best $task $popd $max_generations1 $name
@@ -1400,47 +1399,52 @@ class_create 0 BOT07 {BOT79} {
   ;# _это_перечисление_переменных
 
 } {
-  #superclass BOT79
+  #---------------------------------------------------------
+  set args [lindex $args 0]
+
   SUPER constructor {*}$args ;# в JIM надо явно вызывать всегда?
 
 }
-# --------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # 
 class_create 0 BOT08 {BOT79} {
 
   ;# _это_перечисление_переменных
 
 } {
-  #constructor {args} {}
+  #---------------------------------------------------------
+  set args [lindex $args 0]
 
-    #next {*}$args
-    SUPER constructor {*}$args
-
-    variable pop
-    ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"    
-    #{}
+  SUPER constructor {*}$args
+  
+  variable pop
+  ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"    
 
 }
-# --------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # 
 class_create 0 BOT09 {BOT79} {
 
   ;# _это_перечисление_переменных
 
 } {
-  #constructor {args} {}
+  #---------------------------------------------------------
+  set args [lindex $args 0]
 
-    #next {*}$args
-    SUPER constructor {*}$args
-
-    variable pop
-    ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
-    #{}
+  SUPER constructor {*}$args
+  
+  variable pop
+  ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
 
 }
 # //------------------------------------------------------------------------------
 proc eschemes {} \
 {
+
+  set population_size  ""
+  set max_generations1 ""
+  set max_generations2 ""
+  set max_generations3 ""
 
   parse_opts_4  population_size max_generations1 max_generations2 max_generations3    \
                 150 600 300 300
@@ -1453,13 +1457,13 @@ proc eschemes {} \
   #----------------------------------------------------------------------
 
   set obj7 \
-    [BOT07 new  -lpop $population_size -lgen $len_chromo -task $task -name "Darwinian "] 
+    [BOT07 new  "-lpop $population_size -lgen $len_chromo -task $task -name Darwinian "] 
  
   set obj8  \
-    [BOT08 new  -lpop $population_size -lgen $len_chromo -task $task -name "Baldwinian"] 
+    [BOT08 new  "-lpop $population_size -lgen $len_chromo -task $task -name Baldwinian"] 
 
   set obj9 \
-    [BOT09 new  -lpop $population_size -lgen $len_chromo -task $task -name "Lamarckian"] 
+    [BOT09 new  "-lpop $population_size -lgen $len_chromo -task $task -name Lamarckian"] 
 
   #----------------------------------------------------------
 

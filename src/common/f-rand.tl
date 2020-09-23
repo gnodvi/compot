@@ -597,7 +597,7 @@ proc random_test {} {
   for {set i 0} {$i < $::NUM_SAMPLES} {incr i} {
   
     set r [random_unit_uniform]    
-    puts "r = $r"
+    puts [format "r = %f" $r]
 
     if {$r >= 0.0 && $r < 1.0} {
 

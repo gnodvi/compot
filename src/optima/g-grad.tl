@@ -56,11 +56,11 @@
 # 					const int		dimensions,
 # 					const double		step_size)
 # //------------------------------------------------------------------------------
-proc ga_population_set_gradient_parameters {pop          \
-                                            to_double    \
-                                            from_double  \
-                                            gradient     \
-                                            dimensions   \
+proc ga_population_set_gradient_parameters {pop          
+                                            to_double    
+                                            from_double  
+                                            gradient     
+                                            dimensions   
                                             step_size}   \
 {
 
@@ -238,14 +238,12 @@ proc ga_steepestascent_double {task pop current max_iterations} \
 
   #set eval_proc [GET $pop evaluate]
   
-  
-  #$eval_proc $pop $current
   pop_eval_item $pop $current $eval_proc $task
-
-  
-  #   grms = gradient_proc (pop, current, (double *)current->CH, current_g);
+ 
   set current_CH [ent_CH_ $current]
-  #set grms [gradient_proc  $pop $current $current_CH $current_g]
+
+  set current_g ""
+
   set grms [$gradient_proc  $pop $current $current_CH current_g]
   
   

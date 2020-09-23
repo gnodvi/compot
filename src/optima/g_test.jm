@@ -2,7 +2,11 @@
 
 #!/bin/sh
 # \
-exec tclsh "$0" ${1+"$@"}
+exec jimsh "$0" ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+
+#source "g_test.tl"
 
 #-------------------------------------------------------------------------------
 # Josef Knecht @ Copyright 
@@ -12,13 +16,12 @@ set COMPOT "./COMPOT"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
-#lappend auto_path \
-  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
+#------------------------------------------
 
 package require compot::common 
 
-#------------------------------------------
 #------------------------------------------
 
 # source "b-com0.tl"
@@ -37,7 +40,7 @@ source "g-grad.tl"
 
 # /*******************************************************************************
 #-------------------------------------------------------------------------------
-proc parse_opts {&population_size &max_generations  \
+proc parse_opts {&population_size &max_generations  
                 def_population_size def_max_generations} {
 
   USE_REFS
@@ -312,8 +315,9 @@ proc _test_analytical_gradient {pop this_entity params &grad} \
 # void 
 proc test_ga {} {
 
-  #   population		*pop;	  /* Population of solutions. */
-  # 
+  set population_size ""
+  set max_generations ""
+
   parse_opts  population_size max_generations  200 500
 
   puts ""
@@ -409,8 +413,8 @@ proc main_sd2 {} \
   
   random_seed  23091975
   
-  #set population_size   50
-  #set max_iterations  1000
+  set population_size  ""
+  set max_iterations   ""
 
   parse_opts  population_size max_iterations  50 1000
 
@@ -650,8 +654,8 @@ proc test_generation_callback {generation pop} {
 # test_de (/* int argc, char **argv */)
 
 #-------------------------------------------------------------------------------
-proc strategy_parse_and_print {s \
-                       &label &strategy &crossover &num_perturbed &crossover_factor \
+proc strategy_parse_and_print {s 
+                       &label &strategy &crossover &num_perturbed &crossover_factor
                        &weighting_factor &weighting_factor2} {
 
 
@@ -704,14 +708,23 @@ proc test_de {strategy_list} {
   #   entity		*best;	/* Fittest entity.                */
   #   int		i=0;	/* Loop variable over strategies. */
   
+  set population_size  "" 
+  set max_generations  ""
+
   parse_opts  population_size max_generations  40 50
 
   random_seed 23091975
 
-  #   log_init (LOG_NORMAL, NULL, NULL, FALSE);
   puts ""
 
-  #  while (strategy[i].label != NULL)
+  set label             ""
+  set strategy          "" 
+  set crossover         "" 
+  set num_perturbed     "" 
+  set crossover_factor  ""
+  set weighting_factor  "" 
+  set weighting_factor2 ""
+  
   foreach s $strategy_list {
 
     strategy_parse_and_print $s \
@@ -909,5 +922,4 @@ main
 
 # //******************************************************************************
 
-
-
+# ******************************************************************************
