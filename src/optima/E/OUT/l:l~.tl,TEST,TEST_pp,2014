@@ -1,7 +1,7 @@
 
 
 
-RANDTRUEPROG = i i i i i i dup dup i i
+RANDTRUEPROG = i dup i dup i i dup i dup i
 SIZETRUEPROG = 10
 
 x= 3  result= 3

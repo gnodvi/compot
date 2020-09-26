@@ -527,9 +527,9 @@ proc pingpong_genesis {population_size len_chromo
 # //------------------------------------------------------------------------------
 proc main_ga {len_chromo} {
 
-  #   int num_runs        ;
-  #   int population_size ;
-  #   int max_generations ;
+  set num_runs        "" ;
+  set population_size "" ;
+  set max_generations "" ;
   
   parse_opts_3   num_runs population_size max_generations  50 50 200
   
@@ -661,6 +661,10 @@ proc pingpong_mutate_0_5 {pop mother son} {
 proc main_t1 {len_chromo} {
 
   #   //int len_chromo      =  25; // т.е. правила .. можно ли изменять ??
+  
+  set num_runs        ""
+  set population_size ""
+  set max_iterations  ""
   
   parse_opts_3   num_runs population_size max_iterations  50 50 100
   
@@ -825,7 +829,28 @@ proc main_sa {} {
              10.0                      \
              50 	       
     
-    SET $pop  ch_form "%s "  
+    
+    #------------------------------------------------------------
+    if {0} {
+
+      set ch_form {%s }
+      #set ch_form {123 4}
+      
+      puts "ch_form = |$ch_form|"
+      
+      SET $pop  ch_form $ch_form  
+      
+      set ch_form [GET $pop "ch_form"]
+      
+      puts "ch_form = |$ch_form|"
+      
+      exit
+
+    } else {
+
+      SET $pop  ch_form "%s " 
+    }
+    #------------------------------------------------------------
     
     if {$::is_print} { 
       puts ""
@@ -862,29 +887,20 @@ proc main_sa {} {
     # // 
     ga_population_score_and_sort  $pop $task
 
-    #     entity *bestentity = ga_get_entity_from_rank (pop, 0);
-    
-    #     printf ("Final best: i = %d, seed = %d  fitness %f, beststring = \n", i, seed,
-    #             bestentity->fitness);
-    
     set bestentity [ga_get_entity_from_rank $pop 0]
     
     puts ""
     puts [format "Final best: i = %d, seed = %d  fitness %f, beststring = " $i $seed \
             [item_get_fitn $bestentity]]
-#            [ent_get_fitness $bestentity]]
-
-    #     //printf ("The best solution found on attempt %d with fitness %f was:\n", 
-    #     //        i, solution->fitness);
-    
-    #     beststring = ga_chromosome_integer_to_string (pop, /*solution*/ bestentity, 
-    #                                                   beststring, &beststrlen);
-    
-    #     printf ("%s\n", beststring);
-    #     printf ("\n");
 
     ent_print_ch_ $bestentity ""
     puts ""
+
+    # ошибка в ch_form: надо {%s }, а у нас в JIM почему-то просто %s
+    # это было в a-comm.tl : proc SET - скобочки {} надо для всех значений !!??
+    #
+    #puts stderr "bestentity = [set $bestentity]"
+
     puts ""
     
     #     // Just used here to write the resulting solution.

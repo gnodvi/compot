@@ -6,87 +6,87 @@ nums         = 4
 ::sum_target = 20
 
 
-INIT POPULATION = 
+make_prgpop: INIT POPULATION = 
 
-{p1 p1} {p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1} p1 {p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1} {p1 p1 p1 p1} {p1 p1} 
+{p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1 p1} p1 {p1 p1 p1} p1 p1 
 
 
-   1)  p1 p1
-   2)  p1 p1 p1 p1
-   3)  p1 p1 p1 p1 p1 p1 p1
-   4)  p1
-   5)  p1 p1 p1 p1 p1
+   1)  p1 p1 p1 p1
+   2)  p1 p1 p1 p1 p1 p1 p1 p1
+   3)  p1 p1 p1 p1 p1 p1 p1 p1
+   4)  p1 p1 p1 p1 p1 p1 p1 p1
+   5)  p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    6)  p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  p1 p1 p1 p1 p1 p1
-   8)  p1 p1 p1 p1 p1
-   9)  p1 p1 p1 p1
-  10)  p1 p1
+   7)  p1
+   8)  p1 p1 p1
+   9)  p1
+  10)  p1
 
 
 
 
-   1)  fitn =  18 :   p1 p1
-   2)  fitn =  16 :   p1 p1 p1 p1
-   3)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =  19 :   p1
-   5)  fitn =  15 :   p1 p1 p1 p1 p1
+   1)  fitn =  16 :   p1 p1 p1 p1
+   2)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+   4)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+   5)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    6)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =  14 :   p1 p1 p1 p1 p1 p1
-   8)  fitn =  15 :   p1 p1 p1 p1 p1
-   9)  fitn =  16 :   p1 p1 p1 p1
-  10)  fitn =  18 :   p1 p1
+   7)  fitn =  19 :   p1
+   8)  fitn =  17 :   p1 p1 p1
+   9)  fitn =  19 :   p1
+  10)  fitn =  19 :   p1
 
 ================================================
 
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 11
+PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 10
 
 
-   1)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =  14 :   p1 p1 p1 p1 p1 p1
-   4)  fitn =   5 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  17 :   p1 p1 p1
-   6)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
+   1)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   2)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+   4)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   5)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+   6)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    7)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  14 :   p1 p1 p1 p1 p1 p1
+   8)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   9)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+  10)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
 
 ================================================
 
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 5
+PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 8
 
 
-   1)  fitn =   5 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   1)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    2)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  14 :   p1 p1 p1 p1 p1 p1
-   6)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =   1 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   4)  fitn =  17 :   p1 p1 p1
+   5)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   6)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   7)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   8)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   9)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
   10)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
 
 ================================================
 
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 1
+PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 3
 
 
-   1)  fitn =   1 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =   5 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   1)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   2)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   4)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   5)  fitn =  14 :   p1 p1 p1 p1 p1 p1
    6)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =   5 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   7)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   8)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   9)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+  10)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
 
 ================================================
 
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 1
+PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 2
 
 
 

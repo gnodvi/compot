@@ -11,13 +11,12 @@ set COMPOT "./COMPOT"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
-#lappend auto_path \
-  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
+#------------------------------------------
 
 package require compot::common 
 
-#------------------------------------------
 #------------------------------------------
 
 # source "b-com0.tl"
@@ -574,10 +573,10 @@ proc draw_results {pop} {
   
 }
 # ;#-------------------------------------------------------------------------------
-proc pntssolver_do {population_size max_generations             \
-                    {strategy      "GA_DE_STRATEGY_BEST"}       \
-                    {crossover     "GA_DE_CROSSOVER_BINOMIAL"}  \
-                    {num_perturbed 1}                           \
+proc pntssolver_do {population_size max_generations             
+                    {strategy      "GA_DE_STRATEGY_BEST"}       
+                    {crossover     "GA_DE_CROSSOVER_BINOMIAL"}  
+                    {num_perturbed 1}                           
                     } {
                   
   set crossover_factor    0.8 

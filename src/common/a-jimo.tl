@@ -175,8 +175,10 @@ proc TEST_main {} {
   # Override the 'withdraw' method to allow overdrawing
   CreditAccount method withdraw {amount} {
 
+    puts "CreditAccount method withdraw: limit = $limit"
     if {$balance - $amount < $limit} {
       error "Sorry $name, that would exceed your credit limit of [expr -$limit]"}
+
     set balance [- $balance $amount]
   }
   # Override the 'describe' method, but invoke the baseclass method first
@@ -221,9 +223,14 @@ proc TEST_main {} {
   SET $b limit -1000
   puts "b.limit     = [GET $b limit]"
 
-  SET $b limit {aa bb cc}  ;# не установить список ????
-  #SET $b limit [list aa bb cc]  ;# не установить список ????
-  puts "b.limit     = [GET $b limit]"
+  #---------------------
+
+  #SET $b limit {aa bb cc}  ;# не установить список ????
+
+  #puts "b.limit     = |[GET $b limit]|"
+  puts ""
+
+  #---------------------
 
   puts "CreditAccount classvars = [CreditAccount classvars]"
   
@@ -232,6 +239,7 @@ proc TEST_main {} {
   #===================================================
   
   puts "initial balance -> [$b see]"
+
   $b deposit 100
   puts "deposit 100 -> [$b see]"
   
@@ -306,6 +314,7 @@ proc TEST_next {} {
 
     balance 0          ;# _____________
     name    "Unknown"
+    ch_form ""
   } {
     
     set balance  123  ;# для JIM не нужно !!
@@ -409,10 +418,6 @@ proc TEST_next {} {
   #set n [AccountNext new {limit 10}]
   set n [AccountNext new {-lone "one" -ltwo "two"}]
 
-  # "-lpop $population_size -lgen $len_chromo -task $task"
-  # 
-  #---------------------------------------------------------
-
   puts ""
   puts "-----------------------------------------------"
   puts ""
@@ -450,10 +455,31 @@ proc TEST_next {} {
   }
 
   puts ""
-
   puts "-------------------------------------------"
+  puts ""
   puts -nonewline "name ................ "  ;
   puts ""
+
+
+  if {1} {
+    
+    #set ch_form "%s "
+    #set ch_form {%sss @}
+    set ch_form {123 4}
+    
+    puts "ch_form = |$ch_form|"
+    
+    SET $a   ch_form $ch_form    
+    set ch_form [GET $a "ch_form"]
+    
+    puts "ch_form = |$ch_form|"
+    
+    puts ""
+
+    exit
+    
+  } 
+
   puts ""
 
 }

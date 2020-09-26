@@ -4478,54 +4478,24 @@ proc SUPER {method args} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-
-# a-dict.tl
-#
-#alias SET dict_set
-#alias GET dict_get
-
-# if {$::__JIM__} {
-
-#   rename dict_set SET_old
-#   rename dict_get GET_old
-
-# } else {
-
-# #   rename SET SET_old
-# #   rename GET GET_old
-# }
-
-#-------------------------------------------------------------------------------
 proc OBJ_TYPE {o} {
 
-  #if [string equal -length  8 $o "::G_DICT"]    {return 0}
-  if [string equal -length  4 $o "::G_"]    {return 0}
+  if [string equal -length  4 $o "::G_"]        {return 0}
 
   if [string equal -length 11 $o "<reference."] {return 1}
   
-  if [string equal -length  6 $o "::oo::"] {return 2}
+  if [string equal -length  6 $o "::oo::"]      {return 2}
   
 }
 #-------------------------------------------------------------------------------
 proc SET {args} {
 
-  #puts stderr "SET: args = $args"
-
   set d    [lindex $args 0]
-
-  #set is_obj [info object isa object $d] ;# объект или словарь?
 
   set type [OBJ_TYPE $d];
 
-  #puts "SET: d = $d   type = $type"
-  # 
-  # > SET: d = ::G_DICT_184
-  # a = <reference.<Account>.00000000000000000000>
-  # > SET: d = ::oo::Obj15
-
   if {$type == 0} { ;# dictionary
 
-    #uplevel 1 SET_old $args
     uplevel 1 dict_set $args
 
   } else { ;# object JIM or TCL
@@ -4535,22 +4505,27 @@ proc SET {args} {
 
     set len [llength $val]
 
-    if {$type == 1} {
-      #puts "SET for JIM: d= $d key= $key val= $val   len= $len"
+    if {$type == 1} {  ;# <reference.
 
+      #puts "SET for JIM: d= $d key= $key val= $val   len= $len"
       #$d SET_$key $val
 
       if {$len == 1} {
-        $d eval "set $key $val"
+
+        #$d eval "set $key $val"
+        $d eval "set $key \{$val\}"
       } else {
-        $d eval "set $key \{ $val \}"
+
+        #$d eval "set $key \{ $val \}"
+        $d eval "set $key \{$val\}"
+        #$d eval "set $key $val"
       }
 
-    } else {
+    } else {  ;# ::oo::
+
       $d SET_$key $val
     }
 
-    #$d SET_$key $val
   }
 }
 # ----------------------------------------------

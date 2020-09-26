@@ -1361,9 +1361,14 @@ class_create 0 BOT79 {BOT} {
 
 } {
   #---------------------------------------------------------
-  #set args [lindex $args 0]
 
+  #if {$::__JIM__} {
+    #set args [lindex $args 0]
+
+  #  SUPER constructor    $args
+  #} else {
   SUPER constructor {*}$args
+  #}
   
   set len_chromo      [dict_parse $args "-lgen"] 
   set population_size [dict_parse $args "-lpop"] 
@@ -1383,15 +1388,10 @@ class_method  BOT79 calc {args} {
   set max_generations1 [dict_parse $args "-steps"] 
   
   set popd [$obj GET_pop]
-  
-  # ????????????????????
-  # set name [my GET_name]
-  set name [my GET_name]
+  set name [$obj GET_name]
   
   do_evolution_and_print_best $task $popd $max_generations1 $name
 }
-#---------------------------------------------------------
-
 # ------------------------------------------------------------------------------
 # 
 class_create 0 BOT07 {BOT79} {
@@ -1399,7 +1399,7 @@ class_create 0 BOT07 {BOT79} {
   ;# _это_перечисление_переменных
 
 } {
-  #---------------------------------------------------------
+  #------------------------------
   set args [lindex $args 0]
 
   SUPER constructor {*}$args ;# в JIM надо явно вызывать всегда?
@@ -1412,7 +1412,7 @@ class_create 0 BOT08 {BOT79} {
   ;# _это_перечисление_переменных
 
 } {
-  #---------------------------------------------------------
+  #------------------------------
   set args [lindex $args 0]
 
   SUPER constructor {*}$args
@@ -1428,7 +1428,7 @@ class_create 0 BOT09 {BOT79} {
   ;# _это_перечисление_переменных
 
 } {
-  #---------------------------------------------------------
+  #------------------------------
   set args [lindex $args 0]
 
   SUPER constructor {*}$args

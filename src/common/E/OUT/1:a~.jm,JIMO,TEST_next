@@ -16,8 +16,8 @@ name    = 123
 -----------------------------------------------
 
 args      = {-lone "one" -ltwo "two"}
-vars      = {;#} balance limit name
-classvars = {;#} _____________ name Unknown balance 0 limit 100
+vars      = {;#} balance ch_form limit name
+classvars = {;#} _____________ name Unknown balance 0 ch_form {} limit 100
 
 limit   = 101  ???
 
@@ -29,9 +29,12 @@ name    = 123
 balance = 98
 name    = hjhjkjhkj
 
-vars      = {;#} balance name
-classvars = {;#} _____________ name Unknown balance 0
+vars      = {;#} balance ch_form name
+classvars = {;#} _____________ name Unknown balance 0 ch_form {}
 
 -------------------------------------------
+
 name ................ 
+ch_form = |123 4|
+ch_form = | 123 4 |
 

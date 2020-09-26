@@ -1,52 +1,52 @@
 
 
-INIT POPULATION = 
+make_prgpop: INIT POPULATION = 
 
-{M M R R R R} {R R M M M L L M R R L} {L R M L} {L L L R L M L M R M} {R L L L L R} {R L L} {R L} {R M M M M L M L R R L L R M R} {L M M M} {L L L R M R M L M R M R} {L L M L M M M R M L L L M R} {L R M L L M M L L} {R L M L} M {L M L L L M L} 
-
-
-   1)  M M R R R R
-   2)  R R M M M L L M R R L
-   3)  L R M L
-   4)  L L L R L M L M R M
-   5)  R L L L L R
-   6)  R L L
-   7)  R L
-   8)  R M M M M L M L R R L L R M R
-   9)  L M M M
-  10)  L L L R M R M L M R M R
-  11)  L L M L M M M R M L L L M R
-  12)  L R M L L M M L L
-  13)  R L M L
-  14)  M
-  15)  L M L L L M L
+{M R R R} {R R M M M L L M} {R L L R M L L L} {R L M} {M R M R L L L L R} {L L R L R M M M M L M L R R} {L R M R L M M M L L L R M R M} {M R M R L L M L M M M R M L L} {M R L R M L L M M L L R L M L} {L M L L L M L} {M M M L} {L R R R R R M M L L R M} {M L M R} {R M M M R R M} {M R R M} 
 
 
+   1)  M R R R
+   2)  R R M M M L L M
+   3)  R L L R M L L L
+   4)  R L M
+   5)  M R M R L L L L R
+   6)  L L R L R M M M M L M L R R
+   7)  L R M R L M M M L L L R M R M
+   8)  M R M R L L M L M M M R M L L
+   9)  M R L R M L L M M L L R L M L
+  10)  L M L L L M L
+  11)  M M M L
+  12)  L R R R R R M M L L R M
+  13)  M L M R
+  14)  R M M M R R M
+  15)  M R R M
 
 
-   1)  fitn =   5 :   M M R R R R
-   2)  fitn =   5 :   R R M M M L L M R R L
-   3)  fitn =   5 :   L R M L
-   4)  fitn =   5 :   L L L R L M L M R M
-   5)  fitn =   5 :   R L L L L R
-   6)  fitn =   5 :   R L L
-   7)  fitn =   5 :   R L
-   8)  fitn =   5 :   R M M M M L M L R R L L R M R
-   9)  fitn =   5 :   L M M M
-  10)  fitn =   5 :   L L L R M R M L M R M R
-  11)  fitn =   5 :   L L M L M M M R M L L L M R
-  12)  fitn =   5 :   L R M L L M M L L
-  13)  fitn =   5 :   R L M L
-  14)  fitn =   5 :   M
-  15)  fitn =   5 :   L M L L L M L
+
+
+   1)  fitn =   5 :   M R R R
+   2)  fitn =   5 :   R R M M M L L M
+   3)  fitn =   5 :   R L L R M L L L
+   4)  fitn =   5 :   R L M
+   5)  fitn =   5 :   M R M R L L L L R
+   6)  fitn =   5 :   L L R L R M M M M L M L R R
+   7)  fitn =   5 :   L R M R L M M M L L L R M R M
+   8)  fitn =   5 :   M R M R L L M L M M M R M L L
+   9)  fitn =   5 :   M R L R M L L M M L L R L M L
+  10)  fitn =   5 :   L M L L L M L
+  11)  fitn =   5 :   M M M L
+  12)  fitn =   5 :   L R R R R R M M L L R M
+  13)  fitn =   5 :   M L M R
+  14)  fitn =   5 :   R M M M R R M
+  15)  fitn =   5 :   M R R M
 
 ================================================
 
-PRINT BEST: 'M M R R R R' with fitness 5
+PRINT BEST: 'M R R R' with fitness 5
 
 
 ================================================ 
-- - > . . x x x x x . . . . . . . . . . 
+- ^ . . . x x x x x . . . . . . . . . . 
 . . . . . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . . . . . 
@@ -68,32 +68,32 @@ PRINT BEST: 'M M R R R R' with fitness 5
 . . . . . . . . . . . . . . . . . . . . 
 
 EAT = 0 / 5
-NUM = 6
+NUM = 4
 ================================================ 
 
-   1)  fitn =   5 :   M M R R R R
-   2)  fitn =   5 :   R R M M M L L M R R L
-   3)  fitn =   5 :   L R M L
-   4)  fitn =   5 :   L L L R L M L M R M
-   5)  fitn =   5 :   R L L L L R
-   6)  fitn =   5 :   L L L R L L M
-   7)  fitn =   5 :   L R M M L M R
-   8)  fitn =   5 :   L
-   9)  fitn =   5 :   L M M R R R R L R L M L M R M
-  10)  fitn =   5 :   R L L L L R L
-  11)  fitn =   5 :   M M M M R R R
-  12)  fitn =   5 :   R R M M M L L L M R R L L
-  13)  fitn =   5 :   L R M L
-  14)  fitn =   5 :   L L L R L M L M R M
-  15)  fitn =   5 :   L R L L R L L R
+   1)  fitn =   5 :   M R R R
+   2)  fitn =   5 :   R R M M M L L M
+   3)  fitn =   5 :   R L L R M L L L
+   4)  fitn =   5 :   R L M
+   5)  fitn =   5 :   M R M R L L L L R
+   6)  fitn =   5 :   L L R M L L
+   7)  fitn =   5 :   R R L L R M L L L L
+   8)  fitn =   5 :   R R M M M L L M
+   9)  fitn =   5 :   R L L R M L L L
+  10)  fitn =   5 :   R L L M M L L M
+  11)  fitn =   5 :   M R R R
+  12)  fitn =   5 :   R R M M M L L M
+  13)  fitn =   5 :   R L L R M L L L
+  14)  fitn =   5 :   R L M
+  15)  fitn =   5 :   M R M R L L L L R
 
 ================================================
 
-PRINT BEST: 'M M R R R R' with fitness 5
+PRINT BEST: 'M R R R' with fitness 5
 
 
 ================================================ 
-- - > . . x x x x x . . . . . . . . . . 
+- ^ . . . x x x x x . . . . . . . . . . 
 . . . . . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . . . . . 
@@ -115,7 +115,7 @@ PRINT BEST: 'M M R R R R' with fitness 5
 . . . . . . . . . . . . . . . . . . . . 
 
 EAT = 0 / 5
-NUM = 6
+NUM = 4
 ================================================ 
 
 

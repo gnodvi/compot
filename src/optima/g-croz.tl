@@ -84,13 +84,13 @@ proc ga_crossover {a b} {
   # получить четыре точки скрещивания
   # поменять две точки если необходимо, чтобы a0>=a1 и b0>=b1
 
-  set a0 [myrand 0 [expr {[llength $a]-1}]]
-  set a1 [myrand 0 [expr {[llength $a]-1}]]
+  set a0 [myrand_new 0 [expr {[llength $a]-1}]]
+  set a1 [myrand_new 0 [expr {[llength $a]-1}]]
 
   if {$a0 > $a1} {set t $a0; set a0 $a1; set a1 $t}
 
-  set b0 [myrand 0 [expr {[llength $b]-1}]]
-  set b1 [myrand 0 [expr {[llength $b]-1}]]  
+  set b0 [myrand_new 0 [expr {[llength $b]-1}]]
+  set b1 [myrand_new 0 [expr {[llength $b]-1}]]  
 
   if {$b0 > $b1} {set t $b0; set b0 $b1; set b1 $t}
   
@@ -132,18 +132,23 @@ proc gp_joy_mutate {program prob} {
 
   set gp_list $::gp_list
 
-
   for {set i 0} {$i < [llength $program]} {incr i} {
     
+    #set r [expr {rand()}]
+    set r [random_rand]
+
     # заменяем итем-строку
     # 
-    if {[expr {rand()}] <= $prob} {            
+    if {$r <= $prob} {            
       lset program $i [randinstr_NEXT $gp_list] ; # для Tcl-8.4            
     }
 
+    #set r [expr {rand()}]
+    set r [random_rand]
+
     # добавляем итем-стрку
     # 
-    if {[expr {rand()}] <= $prob} {
+    if {$r <= $prob} {
       set program [linsert $program $i [randinstr_NEXT $gp_list]]
     }
   }
@@ -190,7 +195,9 @@ proc make_mutated_from_leaders {leaders l mutprob} {
 #-------------------------------------------------------------------------------
 proc get_rand_offspring {leaders l} {
 
-  set x       [myrand 0 [expr {$l - 1}]]
+
+  #set x       [myrand 0 [expr {$l - 1}]]
+  set x       [myrand_new 0 [expr {$l - 1}]]
 
   set item    [lindex $leaders $x]
 
@@ -468,7 +475,6 @@ proc gp_evolution_main {task  pop max_generations
 
   # запускаем каждую программу, и формируем список из нее и ее фитнеса
   #  
-  #gp_pop_calc_fitness_all  $task $pop ;#  $itemslist $fitnessfunc
   gp_pop_calc_fitness_all  $task $pop  $itemslist $fitnessfunc
 
 
@@ -609,7 +615,13 @@ class_create 0 BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
+  puts stderr "BOT33: args = |$args|"
+  puts stderr ""
+
   set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+
+  puts stderr "BOT33: args = |$args|"
+  puts stderr ""
 
   SUPER constructor {*}$args
   
@@ -625,9 +637,15 @@ class_create 0 BOT33 {BOT} {
   
   #-----------------------------------------------
   # 
-  set pop [POP new  {*}$args]
-  
-  #set pop [POP new  $args]
+  if {$::__JIM__} {
+
+    set ::NEWPOP 1
+    set pop [POP new     $args]
+
+  } else {
+    set pop [POP new  {*}$args]
+  }
+
   
   #-----------------------------------------------
 
@@ -674,7 +692,7 @@ class_method BOT33 calc {args} {
   set population_size [GET $pop "stable_size"]
   set len_chromosomes [GET $pop "len_chromosomes"]
   
-  set itemslist [make_itemslist   \
+  set itemslist [make_itemslist  \
                    $randpop_proc \
                    $population_size $len_chromosomes   $is_print]
   
@@ -707,6 +725,9 @@ proc bot33_create {args} {
 
 
   #set obj [BOT33 new {*}$args]
+
+  puts stderr "bot33_create: args = |$args|"
+  puts stderr ""
 
   set obj [BOT33 new $args]
 

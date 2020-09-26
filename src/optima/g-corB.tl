@@ -98,7 +98,7 @@ proc make_rand_prgpop {bnums minlen maxlen  gp_list randinstr quotes_proc} {
 
   while {[incr bnums -1] >= 0} {
 
-    set n [myrand $minlen $maxlen]
+    set n [myrand_new $minlen $maxlen]
 
     lappend prgpop [make_randprog $n  $gp_list $randinstr $quotes_proc]
   }
@@ -153,11 +153,11 @@ proc make_prgpop {randpop_proc
   #----------------------------------------
 
   set prgpop [$randpop_proc  $population_size  $minlen $maxlen \
-                           $::gp_list   $::randinstr $::quotes_proc]
+                             $::gp_list   $::randinstr $::quotes_proc]
   
   if {$is_print} {
     puts ""
-    puts "INIT POPULATION = \n"
+    puts "make_prgpop: INIT POPULATION = \n"
     puts "$prgpop \n"
     puts ""
     pop_print_B  $prgpop 
@@ -1233,7 +1233,7 @@ proc get_randprog_unikum {result minlen maxlen attempts max_attempts
 
  #puts "... 1"
 
- set prg [make_randprog [myrand $minlen $maxlen] \
+ set prg [make_randprog [myrand_new  $minlen $maxlen] \
             $gp_list $randinstr \
             $quotes_proc]
 

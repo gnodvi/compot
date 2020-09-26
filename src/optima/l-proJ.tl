@@ -201,7 +201,7 @@ proc make_prelist {n} {
 
   repeat $n {
 
-    if {[myrand 0 3] == 0} {
+    if {[myrand_new 0 3] == 0} {
 
       lappend ret $ind 
     }
@@ -327,7 +327,7 @@ proc randinstr_or_LIST {} {
     #set  instr { nop nop} ;# очень простой список!
 
   #} else {
-    set  instr   [lrand $::gp_list]
+    set  instr   [lrand_new  $::gp_list]
   #}
 
   return $instr
