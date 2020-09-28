@@ -310,18 +310,19 @@ proc TEST_next {} {
 
   puts ""
 
-  class_create 0 AccountMore {} {
+  class_create 0 Account1 {} {
 
     balance 0          ;# _____________
     name    "Unknown"
     ch_form ""
   } {
     
+    puts "Account1 Constructor: args = $args"
+
+    puts "balance = $balance !!!!!!!!!!"
     set balance  123  ;# для JIM не нужно !!
     set name    "123"
 
-    puts "NEW AccountMore: args = $args"
-    puts "balance = $balance !!!!!!!!!!"
     puts ""
     
     if {$balance < 0} {
@@ -331,32 +332,32 @@ proc TEST_next {} {
 
   #-----------------------------------------------------
 
-  #set a [AccountMore new  {name "Bob Smith"  balance +1}]
-  set a [AccountMore new  {name "Bob Smith" }]
+  #set a [Account1 new  {name "Bob Smith"  balance +1}]
+  set a1 [Account1 new  {name "Bob Smith" }]
   
-  puts "a (AccountMore new) = $a"
+  puts "a1 (Account1 new) = $a1"
 
   #exit
 
   puts ""
-  puts "balance = [$a GET_balance]"
-  puts "name    = [$a GET_name]"
+  puts "balance = [$a1 GET_balance]"
+  puts "name    = [$a1 GET_name]"
   
-  $a SET_balance 88
-  puts "balance = [$a GET_balance]"
+  $a1 SET_balance 88
+  puts "balance = [$a1 GET_balance]"
   puts ""
   
   #exit
 
-  class_method AccountMore see {} {
+  class_method Account1 see {} {
     set balance
   }
 
-  class_method AccountMore deposit  {amount} {
+  class_method Account1 deposit  {amount} {
     set balance [+ $balance $amount]
   }
   
-  class_method AccountMore seename  {} {
+  class_method Account1 seename  {} {
     set name
   }
   
@@ -371,14 +372,14 @@ proc TEST_next {} {
   #   exit
   #-----------------------------------------------------
 
-  puts "balance = [$a see]"
+  puts "balance = [$a1 see]"
 
-  $a deposit 10
+  $a1 deposit 10
 
   #$a SET_b 10
   
-  puts "balance = [$a see]"
-  puts "name    = [$a seename]"
+  puts "balance = [$a1 see]"
+  puts "name    = [$a1 seename]"
   #puts "b       = [$a GET_b]"
 
   puts ""
@@ -388,35 +389,52 @@ proc TEST_next {} {
 
   puts ""
   puts "-----------------------------------------------"
+  puts "----------------Account2-----------------------"
+  puts "-----------------------------------------------"
   puts ""
 
-  class_create 0 AccountNext {AccountMore} {
+  class_create 0 Account2 {Account1} {
 
     limit 100
   } {
+    # Constructor
+    puts "Account2 Constructor: args = $args"
+    puts ""
     
     if {$::__JIM__} {
       
       puts "args      = $args"
       puts "vars      = [$self vars]"
       puts "classvars = [$self classvars]"
-      #puts "instvars = [$self instvars]"
 
+      #puts "instvars = [$self instvars]"
       #puts "balance = $balance !!!!!!!!!"
       #puts "-lone   = ${-lone}"
+
     } else {
       
       puts "args = $args"
     }
 
-    set limit 101 ;# для JIM не нужно !!
-
     puts ""
-    puts "limit   = $limit  ???"
+    puts "limit   = $limit "
+
+    #SUPER constructor {*}$args
+    # 
+    if {$::__JIM__} {
+      #super constructor  {*}$args
+      super constructor 
+    } else {
+      next {*}$args
+    }
+
+    puts "limit   = $limit "
+
+    set limit 101 ;# для JIM не нужно !!
+    puts "limit   = $limit "
   }
 
-  #set n [AccountNext new {limit 10}]
-  set n [AccountNext new {-lone "one" -ltwo "two"}]
+  set a2 [Account2 new {-lone "one" -ltwo "two" limit 10} ]
 
   puts ""
   puts "-----------------------------------------------"
@@ -424,34 +442,29 @@ proc TEST_next {} {
 
   #exit
 
-  puts "balance = [$a see]"
-  puts "name    = [$a seename]"
+  puts "balance = [$a2 see]"
+  puts "name    = [$a2 seename]"
 
-  #exit
+  puts "name    = [$a2 GET_name]"
+  puts "balance = [$a2 GET_balance]"
 
-  puts "name    = [$a GET_name]"
-  puts "balance = [$a GET_balance]"
-  #puts "limit   = [$a GET_limit]"
-
-  #exit
-
-  $a SET_name "hjhjkjhkj"
-  puts "name    = [$a GET_name]"
+  $a1 SET_name "hjhjkjhkj"
+  puts "name    = [$a1 GET_name]"
 
   #exit
   puts ""
 
   if {$::__JIM__} {
 
-      puts "vars      = [$a vars]"
-      puts "classvars = [$a classvars]"
+      puts "vars      = [$a1 vars]"
+      puts "classvars = [$a1 classvars]"
  
   } else {
 
-    puts "info object variables  = [info object variables $a]"
-    puts "info object vars       = [info object vars      $a]"      
-    puts "info class  variables (AccountMore) = [info class  variables AccountMore]"
-    puts "info class  variables (AccountNext) = [info class  variables AccountNext]"
+    puts "info object variables  = [info object variables $a1]"
+    puts "info object vars       = [info object vars      $a1]"      
+    puts "info class  variables (Account1) = [info class  variables Account1]"
+    puts "info class  variables (Account2) = [info class  variables Account2]"
   }
 
   puts ""
@@ -469,16 +482,41 @@ proc TEST_next {} {
     
     puts "ch_form = |$ch_form|"
     
-    SET $a   ch_form $ch_form    
-    set ch_form [GET $a "ch_form"]
+    SET $a1   ch_form $ch_form    
+    set ch_form [GET $a1 "ch_form"]
     
     puts "ch_form = |$ch_form|"
-    
     puts ""
 
-    exit
-    
+    #exit
   } 
+
+  puts ""
+  puts "-----------------------------------------------"
+  puts "----------------Account3-----------------------"
+  puts "-----------------------------------------------"
+  puts ""
+
+  class_create 0 Account3 {Account2} {
+
+    limit 200
+  } {
+    # Constructor
+    puts "Account3 Constructor: args = $args"
+    puts ""
+    
+    #SUPER constructor {*}$args
+    #
+    #if {$::__JIM__} {
+    #  #super constructor  {*}$args
+    #  super constructor 
+    #} else {
+    #  next {*}$args
+    #}
+
+  }
+
+  set a3 [Account3 new]
 
   puts ""
 

@@ -566,17 +566,15 @@ class_create 0 BOT {} {
 }
 
 #---------------------------------------------------------
-#oo::define BOT  method init {args} {}
 class_method  BOT  init {args} {
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 
 }
 #---------------------------------------------------------
-#oo::define BOT  method calc {args} }{
 class_method BOT  calc {args} {
   
-  set obj [self]
+  set obj [SELF]
   
   variable task
   set task            [dict_parse $args "-task"  [$obj GET_task]] 
@@ -586,7 +584,8 @@ class_method BOT  calc {args} {
   #set  pop [$obj GET_pop]
   
   #pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-  my init
+  #my init
+  $obj init
   
   ga_evolution_main           $task $pop $max_generations ;# 0.01
   
@@ -595,7 +594,7 @@ class_method BOT  calc {args} {
 #---------------------------------------------------------
 class_method BOT final {} {
     
-  set obj [self]
+  set obj [SELF]
   
   set pop [$obj GET_pop]
   

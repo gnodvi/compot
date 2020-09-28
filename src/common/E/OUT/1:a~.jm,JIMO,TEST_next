@@ -1,8 +1,8 @@
 
-NEW AccountMore: args = {name "Bob Smith" }
-balance = 123 !!!!!!!!!!
+Account1 Constructor: args = {name "Bob Smith" }
+balance = 0 !!!!!!!!!!
 
-a (AccountMore new) = <reference.<Account>.00000000000000000000>
+a1 (Account1 new) = <reference.<Account>.00000000000000000000>
 
 balance = 123
 name    = 123
@@ -14,19 +14,28 @@ name    = 123
 
 
 -----------------------------------------------
+----------------Account2-----------------------
+-----------------------------------------------
 
-args      = {-lone "one" -ltwo "two"}
+Account2 Constructor: args = {-lone "one" -ltwo "two" limit 10}
+
+args      = {-lone "one" -ltwo "two" limit 10}
 vars      = {;#} balance ch_form limit name
 classvars = {;#} _____________ name Unknown balance 0 ch_form {} limit 100
 
-limit   = 101  ???
+limit   = 10 
+Account1 Constructor: args = 
+balance = 0 !!!!!!!!!!
+
+limit   = 10 
+limit   = 101 
 
 -----------------------------------------------
 
-balance = 98
+balance = 123
 name    = 123
 name    = 123
-balance = 98
+balance = 123
 name    = hjhjkjhkj
 
 vars      = {;#} balance ch_form name
@@ -36,5 +45,13 @@ classvars = {;#} _____________ name Unknown balance 0 ch_form {}
 
 name ................ 
 ch_form = |123 4|
-ch_form = | 123 4 |
+ch_form = |123 4|
+
+
+-----------------------------------------------
+----------------Account3-----------------------
+-----------------------------------------------
+
+Account3 Constructor: args = {}
+
 

@@ -567,9 +567,11 @@ class_create 0 BOT02 {BOT} {
 } {
   # а это конструктор класса 
 
-  variable pop
-  
+  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+
   SUPER constructor {*}$args
+  
+  variable pop
   
   set pop1 [pop1_create  {*}$args]
   
@@ -604,6 +606,9 @@ proc _3_struggle_generation_hook {generation pop} \
     #puts [format "Generation = %d " $generation]
     #puts [format "Number of evaluations = %ld" $::eval_count]
     #puts [format "Best fitness = %f" $fi]
+
+    set average ""
+    set stddev  ""
 
     ga_fitness_mean_stddev  $pop  average stddev
     
@@ -709,7 +714,7 @@ class_create 0 BOT03 {BOT} {
 
 class_method  BOT03 calc {args} {
 
-  set obj [self]
+  set obj [SELF]
   
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
@@ -1362,13 +1367,13 @@ class_create 0 BOT79 {BOT} {
 } {
   #---------------------------------------------------------
 
-  #if {$::__JIM__} {
-    #set args [lindex $args 0]
+  if {$::__JIM__} {
+    set args [lindex $args 0]
 
-  #  SUPER constructor    $args
-  #} else {
-  SUPER constructor {*}$args
-  #}
+    SUPER constructor    $args
+  } else {
+    SUPER constructor {*}$args
+  }
   
   set len_chromo      [dict_parse $args "-lgen"] 
   set population_size [dict_parse $args "-lpop"] 
@@ -1393,51 +1398,51 @@ class_method  BOT79 calc {args} {
   do_evolution_and_print_best $task $popd $max_generations1 $name
 }
 # ------------------------------------------------------------------------------
-# 
-class_create 0 BOT07 {BOT79} {
+proc BOT07_new {arg_s} {
 
-  ;# _это_перечисление_переменных
 
-} {
-  #------------------------------
-  set args [lindex $args 0]
+  if {$::__JIM__} {
+    set obj  [BOT79 new     $arg_s] 
+  } else {
+    set obj  [BOT79 new  {*}$arg_s] 
+  }
 
-  SUPER constructor {*}$args ;# в JIM надо явно вызывать всегда?
-
+  return $obj
 }
 # ------------------------------------------------------------------------------
-# 
-class_create 0 BOT08 {BOT79} {
+proc BOT08_new {arg_s} {
 
-  ;# _это_перечисление_переменных
 
-} {
-  #------------------------------
-  set args [lindex $args 0]
+  if {$::__JIM__} {
+    set obj  [BOT79 new     $arg_s] 
+  } else {
+    set obj  [BOT79 new  {*}$arg_s] 
+  }
 
-  SUPER constructor {*}$args
-  
-  variable pop
+  set pop [GET $obj pop]
+
   ga_population_set_scheme  $pop "GA_SCHEME_BALDWIN_CHILDREN"    
 
+  return $obj
 }
 # ------------------------------------------------------------------------------
-# 
-class_create 0 BOT09 {BOT79} {
+proc BOT09_new {arg_s} {
 
-  ;# _это_перечисление_переменных
 
-} {
-  #------------------------------
-  set args [lindex $args 0]
+  if {$::__JIM__} {
+    set obj  [BOT79 new     $arg_s] 
+  } else {
+    set obj  [BOT79 new  {*}$arg_s] 
+  }
 
-  SUPER constructor {*}$args
-  
-  variable pop
+
+  set pop [GET $obj pop]
+
   ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
 
+  return $obj
 }
-# //------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 proc eschemes {} \
 {
 
@@ -1457,13 +1462,13 @@ proc eschemes {} \
   #----------------------------------------------------------------------
 
   set obj7 \
-    [BOT07 new  "-lpop $population_size -lgen $len_chromo -task $task -name Darwinian "] 
+    [BOT07_new  "-lpop $population_size -lgen $len_chromo -task $task -name Darwinian "] 
  
   set obj8  \
-    [BOT08 new  "-lpop $population_size -lgen $len_chromo -task $task -name Baldwinian"] 
+    [BOT08_new  "-lpop $population_size -lgen $len_chromo -task $task -name Baldwinian"] 
 
   set obj9 \
-    [BOT09 new  "-lpop $population_size -lgen $len_chromo -task $task -name Lamarckian"] 
+    [BOT09_new  "-lpop $population_size -lgen $len_chromo -task $task -name Lamarckian"] 
 
   #----------------------------------------------------------
 
@@ -1480,6 +1485,10 @@ proc eschemes {} \
   
   return 1
 }
+# ------------------------------------------------------------------------------
+  # TODO : 
+  #   YRAND ->
+
 # ------------------------------------------------------------------------------
 proc make_random_list_member {source_list} {
 
@@ -1652,7 +1661,10 @@ proc maintest_run {botobjs task
   
   # ----------------------------------------------------------------- 
   
-  if {$max_generations == -1} {
+  if {$max_generations == -1
+
+
+} {
     
     print_result_maintest  $botobjs sum
   }
@@ -1664,7 +1676,7 @@ proc make_bots_standart {bots lpop lgen task} {
 
 
   dict_set $bots "bot01" [BOT01 new "-lpop $lpop -lgen $lgen -task $task"]
-  dict_set $bots "bot02" [BOT02 new -lpop $lpop -lgen $lgen -task $task]
+  dict_set $bots "bot02" [BOT02 new "-lpop $lpop -lgen $lgen -task $task"]
   dict_set $bots "bot03" [BOT03 new "-lpop $lpop -lgen $lgen -task $task"]
   dict_set $bots "bot04" [BOT04 new "-lpop $lpop -lgen $lgen -task $task"]
   dict_set $bots "bot05" [BOT05 new "-lpop $lpop -lgen $lgen -task $task"]
