@@ -19,14 +19,14 @@ make_prgpop: INIT POPULATION =
 
 
 
-   1)  fitn = 250 :   dup - - -
+   1)  fitn =  27 :   dup + dup
    2)  fitn =  40 :   dup nop nop dup
    3)  fitn =  40 :   dup nop
-   4)  fitn = 250 :   - * dup * dup i
-   5)  fitn =  40 :   i nop
-   6)  fitn = 250 :   - + dup
-   7)  fitn = 250 :   * i i *
-   8)  fitn =  27 :   dup + dup
+   4)  fitn =  40 :   i nop
+   5)  fitn = 250 :   dup - - -
+   6)  fitn = 250 :   - * dup * dup i
+   7)  fitn = 250 :   - + dup
+   8)  fitn = 250 :   * i i *
    9)  fitn = 250 :   + -
   10)  fitn = 250 :   -
 
@@ -36,12 +36,12 @@ PRINT BEST: 'dup + dup' with fitness 27
 
 
    1)  fitn =  27 :   dup + dup
-   2)  fitn =  40 :   dup nop nop dup
-   3)  fitn =  40 :   dup nop
-   4)  fitn =  40 :   dup nop nop nop
-   5)  fitn =  40 :   dup dup
+   2)  fitn =  27 :   dup + dup
+   3)  fitn =  40 :   dup nop nop dup
+   4)  fitn =  40 :   dup nop
+   5)  fitn =  40 :   dup nop nop nop
    6)  fitn =  40 :   dup dup
-   7)  fitn =  27 :   dup + dup
+   7)  fitn =  40 :   dup dup
    8)  fitn =  40 :   dup nop nop dup
    9)  fitn =  40 :   dup nop
   10)  fitn =  40 :   i nop
@@ -53,12 +53,12 @@ PRINT BEST: 'dup + dup' with fitness 27
 
    1)  fitn =  27 :   dup + dup
    2)  fitn =  27 :   dup + dup
-   3)  fitn =  40 :   dup nop nop dup
-   4)  fitn =  27 :   nop nop dup + dup
-   5)  fitn =  40 :   dup dup
+   3)  fitn =  27 :   nop nop dup + dup
+   4)  fitn =  27 :   dup + dup
+   5)  fitn =  27 :   dup + dup
    6)  fitn =  40 :   dup nop nop dup
-   7)  fitn =  27 :   dup + dup
-   8)  fitn =  27 :   dup + dup
+   7)  fitn =  40 :   dup dup
+   8)  fitn =  40 :   dup nop nop dup
    9)  fitn =  40 :   dup nop nop dup
   10)  fitn =  40 :   dup nop
 
@@ -83,32 +83,16 @@ PRINT BEST: 'dup + dup' with fitness 27
 PRINT BEST: 'dup + dup' with fitness 27
 
 
-   1)  fitn =  27 :   dup + dup
-   2)  fitn =  27 :   dup + dup
-   3)  fitn =  27 :   nop nop dup + dup
-   4)  fitn =  40 :   nop nop dup
-   5)  fitn =  15 :   dup + dup + dup
-   6)  fitn =  27 :   dup + dup
-   7)  fitn =  27 :   dup + dup
-   8)  fitn =  27 :   dup + dup
-   9)  fitn =  27 :   nop nop dup + dup
-  10)  fitn =  27 :   dup + dup
-
-================================================
-
-PRINT BEST: 'dup + dup + dup' with fitness 15
-
-
    1)  fitn =  15 :   dup + dup + dup
    2)  fitn =  27 :   dup + dup
    3)  fitn =  27 :   dup + dup
-   4)  fitn =  27 :   dup dup + dup dup
-   5)  fitn = 250 :   + + dup
-   6)  fitn = 250 :   + dup + dup + dup + dup
-   7)  fitn =  15 :   dup + dup + dup
-   8)  fitn =  27 :   dup + dup
+   4)  fitn =  27 :   nop nop dup + dup
+   5)  fitn =  27 :   dup + dup
+   6)  fitn =  27 :   dup + dup
+   7)  fitn =  27 :   dup + dup
+   8)  fitn =  27 :   nop nop dup + dup
    9)  fitn =  27 :   dup + dup
-  10)  fitn =  27 :   nop nop dup + dup
+  10)  fitn =  40 :   nop nop dup
 
 ================================================
 
@@ -118,13 +102,13 @@ PRINT BEST: 'dup + dup + dup' with fitness 15
    1)  fitn =  15 :   dup + dup + dup
    2)  fitn =  15 :   dup + dup + dup
    3)  fitn =  27 :   dup + dup
-   4)  fitn = 250 :   +
-   5)  fitn =  65 :   dup + dup dup + dup + dup dup
+   4)  fitn =  27 :   dup + dup
+   5)  fitn =  27 :   dup dup + dup dup
    6)  fitn =  27 :   dup + dup
-   7)  fitn =  15 :   dup + dup + dup
-   8)  fitn =  15 :   dup + dup + dup
-   9)  fitn =  27 :   dup + dup
-  10)  fitn =  27 :   dup + dup
+   7)  fitn =  27 :   dup + dup
+   8)  fitn =  27 :   nop nop dup + dup
+   9)  fitn = 250 :   + + dup
+  10)  fitn = 250 :   + dup + dup + dup + dup
 
 ================================================
 
@@ -134,13 +118,29 @@ PRINT BEST: 'dup + dup + dup' with fitness 15
    1)  fitn =  15 :   dup + dup + dup
    2)  fitn =  15 :   dup + dup + dup
    3)  fitn =  15 :   dup + dup + dup
-   4)  fitn = 250 :   + dup + + dup
-   5)  fitn =  27 :   dup dup + dup dup
+   4)  fitn =  15 :   dup + dup + dup
+   5)  fitn =  27 :   dup + dup
+   6)  fitn =  27 :   dup + dup
+   7)  fitn =  27 :   dup + dup
+   8)  fitn =  27 :   dup + dup
+   9)  fitn =  65 :   dup + dup dup + dup + dup dup
+  10)  fitn = 250 :   +
+
+================================================
+
+PRINT BEST: 'dup + dup + dup' with fitness 15
+
+
+   1)  fitn =  15 :   dup + dup + dup
+   2)  fitn =  15 :   dup + dup + dup
+   3)  fitn =  15 :   dup + dup + dup
+   4)  fitn =  15 :   dup + dup + dup
+   5)  fitn =  15 :   dup + dup + dup
    6)  fitn =  15 :   dup + dup + dup
    7)  fitn =  15 :   dup + dup + dup
    8)  fitn =  15 :   dup + dup + dup
-   9)  fitn =  15 :   dup + dup + dup
-  10)  fitn =  15 :   dup + dup + dup
+   9)  fitn =  27 :   dup dup + dup dup
+  10)  fitn = 250 :   + dup + + dup
 
 ================================================
 
@@ -152,11 +152,11 @@ PRINT BEST: 'dup + dup + dup' with fitness 15
    3)  fitn =  15 :   dup + dup + dup
    4)  fitn =  15 :   dup + dup +
    5)  fitn =  15 :   dup + dup dup + dup
-   6)  fitn =  65 :   dup + dup + dup + dup
+   6)  fitn =  15 :   dup + dup + dup
    7)  fitn =  15 :   dup + dup + dup
    8)  fitn =  15 :   dup + dup + dup
    9)  fitn =  15 :   dup + dup + dup
-  10)  fitn =  15 :   dup + dup + dup
+  10)  fitn =  65 :   dup + dup + dup + dup
 
 ================================================
 
@@ -167,16 +167,31 @@ PRINT BEST: 'dup + dup + dup' with fitness 15
    2)  fitn =  15 :   dup + dup + dup
    3)  fitn =  15 :   dup + dup + dup
    4)  fitn =  15 :   dup + dup dup + dup
-   5)  fitn = 250 :   dup + + dup
-   6)  fitn =  65 :   dup + dup + dup + dup dup
+   5)  fitn =  15 :   dup + dup + dup
+   6)  fitn =  15 :   dup + dup + dup
    7)  fitn =  15 :   dup + dup + dup
-   8)  fitn =  15 :   dup + dup + dup
-   9)  fitn =  15 :   dup + dup + dup
-  10)  fitn =  15 :   dup + dup +
+   8)  fitn =  15 :   dup + dup +
+   9)  fitn =  65 :   dup + dup + dup + dup dup
+  10)  fitn = 250 :   dup + + dup
 
 ================================================
 
 PRINT BEST: 'dup + dup + dup' with fitness 15
 
+
+   1)  fitn =  15 :   dup + dup + dup
+   2)  fitn =  15 :   dup + dup + dup
+   3)  fitn =  15 :   dup + dup + dup
+   4)  fitn =  15 :   dup + dup + dup
+   5)  fitn =  15 :   dup + dup + dup
+   6)  fitn =  15 :   dup + dup + dup
+   7)  fitn =  15 :   dup + dup dup + dup
+   8)  fitn =  27 :   dup +
+   9)  fitn =  27 :   dup +
+  10)  fitn =  65 :   dup + dup + dup dup + dup
+
+================================================
+
+PRINT BEST: 'dup + dup + dup' with fitness 15
 
 

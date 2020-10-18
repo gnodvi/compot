@@ -1,0 +1,54 @@
+
+argc = 2   argv = maintest_531 S
+mode = S
+
+-------------------------- task --------------
+fitness_proc = FS_fitness
+fit_target   = 53.1
+fit_error    = 8.0
+-------------------------- task --------------
+
+target_text = 111111999444999 
+
+r= 0   
+
+---------------------------------
+num_generations = 3
+best_entity     = main {src {49 50 50 49 55 49 55 53 57 52 50 52 57 57 56}} ch_form %c fitn 45.760000000000005
+ch_form         = %c
+---------------------------------
+
+
+bot01 :  03 gens,  0219 eval,  str = 122171759424998,  fit = 45.76 
+---------------------------------
+num_generations = 3
+best_entity     = main {src {49 49 49 50 49 56 55 57 57 57 57 52 57 55 56}} ch_form %c fitn 45.64
+ch_form         = %c
+---------------------------------
+
+
+bot02 :  03 gens,  0210 eval,  str = 111218799994978,  fit = 45.64 
+---------------------------------
+num_generations = 3
+best_entity     = main {src {49 49 49 49 56 55 57 49 57 52 52 54 50 52 56}} ch_form %c fitn 45.37999999999999
+ch_form         = %c
+---------------------------------
+
+
+bot03 :  03 gens,  0442 eval,  str = 111187919446248,  fit = 45.38 
+---------------------------------
+num_generations = 3
+best_entity     = main {src {56 49 49 49 54 49 57 57 57 56 57 52 53 52 52}} ch_form %c fitn 45.39999999999999
+ch_form         = %c
+---------------------------------
+
+
+bot04 :  03 gens,  0504 eval,  str = 811161999894544,  fit = 45.40 
+
+------------------------------------------------
+
+1 mesto :    bot02,    210 eval
+2 mesto :    bot01,    219 eval
+3 mesto :    bot03,    442 eval
+4 mesto :    bot04,    504 eval
+

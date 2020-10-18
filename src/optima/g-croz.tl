@@ -278,7 +278,7 @@ proc dict_print_real_all_in_list {name list_pd} {
 
 }
 #-------------------------------------------------------------------------------
-proc popu_sorted_evolve_13 {sorted_items mutprob} {
+proc itemslist_sorted_evolution_3parts {sorted_items mutprob} {
 
 
   # TODO: а зачем мне тут так хитро выедлять начальную треть группы?
@@ -312,7 +312,7 @@ proc popu_sorted_evolve_13 {sorted_items mutprob} {
 
   set offsprings_prg   [make_offsprings_from_leaders  $sorted_items $o]
   
-  #puts stderr "popu_sorted_evolve_13: offsprings_prg = $offsprings_prg"
+  #puts stderr "itemslist_sorted_evolution_3parts: offsprings_prg = $offsprings_prg"
 
   set offsprings_items [make_itemslist_from_prgpop     $offsprings_prg]
 
@@ -326,7 +326,7 @@ proc popu_sorted_evolve_13 {sorted_items mutprob} {
 
   set mutated_items  [make_mutated_from_leaders  $sorted_items $m  $mutprob]
 
-  #dict_print_real_all_in_list  "popu_sorted_evolve_13"  $mutated_items
+  #dict_print_real_all_in_list  "itemslist_sorted_evolution_3parts"  $mutated_items
 
   #---------------------------------------
   # отделяем "leaders" от фитнеса и делаем обычный спсок программ-исходников ??
@@ -411,38 +411,68 @@ proc popu_sort_command {a b} {
   return [$::sort_driver $a_fit $b_fit] ; # т.е МЕНЬШИЕ будут слева в списке 
 }
 #-------------------------------------------------------------------------------
-proc gp_pop_calc_fitness_all_and_print {task pop  itemspop fitnessfunc} {
+proc item_print_fitness {item i} {
+
+
+  puts -nonewline [format "  %2d)" $i]
+  
+  #set src   [item_get_main_src   $item] 
+  #set fitn  [item_get_fitn       $item] 
+
+  # а если фитнес уже есть, зачем его вычилять ????????
+  # 
+  
+  if {$::is_fitn_first} {
+
+    set src   [item_get_main_src   $item] 
+    set fitn  [item_get_fitn       $item] 
+    
+    puts [format "  fitn = % 3s :   %s" $fitn $src]
+    
+  } else {
+    
+    set src   [item_get_main_src   $item] 
+    set fitn  [item_get_fitn       $item] 
+    
+    puts -nonewline [format "  %s     " $src]
+    flush stdout               ;# все данные должны быть выведены
+    
+    puts [format "fitn = %s" $fitn]
+  }
+  #
+  # item_print  $item
+  
+  return
+}
+#-------------------------------------------------------------------------------
+proc gp_pop_calc_fitness_all {pop task} {
 
   set fitnessfunc [GET $task "fitness_proc"]  
-  set itemslist   [GET $pop  "itemslist"] 
-
-  set i 1
+  set itemlist    [GET $pop  "itemslist"] 
   
-  foreach item $itemspop {
+  foreach item $itemlist {
 
-    item_print_fitness_calc  $task $item $i ;#$fitnessfunc
-
-    incr i
+    item_calc_fitness  $item $fitnessfunc  $task
   }
-
-  puts ""
 
   return
 }
 #-------------------------------------------------------------------------------
-proc gp_pop_calc_fitness_all {task pop  itemspop fitnessfunc} {
+proc gp_pop_all_print {pop} {
 
-  set fitnessfunc [GET $task "fitness_proc"]  
-  set itemslist   [GET $pop  "itemslist"] 
+
+  set itemspop   [GET $pop  "itemslist"] 
 
   set i 1
   
   foreach item $itemspop {
 
-    item_calc_fitness  $item $fitnessfunc    $task
-
+    item_print_fitness  $item $i ;###$fitnessfunc
+    
     incr i
   }
+
+  puts ""
 
   return
 }
@@ -470,12 +500,8 @@ proc gp_evolution_main {task  pop max_generations
                           {fit_error       0.01} 
                         } {
 
-  set fitnessfunc [GET $task "fitness_proc"]  
-  set itemslist   [GET $pop  "itemslist"] 
-
-  # запускаем каждую программу, и формируем список из нее и ее фитнеса
-  #  
-  gp_pop_calc_fitness_all  $task $pop  $itemslist $fitnessfunc
+  #set fitnessfunc [GET $task "fitness_proc"]  
+  #set itemslist   [GET $pop  "itemslist"] 
 
 
   set steps $max_generations
@@ -493,38 +519,63 @@ proc gp_evolution_main {task  pop max_generations
   # 
   while {1} {
 
-    set i [GET $pop "generation"]
-    
-    if [is_check_generation_break  $pop $i $max_generations \
-          $fit_target $fit_error \
-          $::is_print] {
-      
-      return false
-    }
-  
-    #----------------------------------------------
-    # запускаем каждую программу, и формируем список из нее и ее фитнеса
-    #  
-    gp_pop_calc_fitness_all_and_print  $task $pop  $itemslist $fitnessfunc
-    
-    
-    # сортируем особей по фитнесу (низкий фитнес идет влево == лучше)
-    #  
-    set sorted_items [lsort -command "popu_sort_command" $itemslist]
+    set i         [GET $pop "generation"]
+    set itemslist [GET $pop  "itemslist"] 
     
 
-    set best_item [lindex $sorted_items 0]
-    #
-    # а потому-что печать игры идет с этой последней
-    #
+    # запускаем каждую программу, и формируем список из нее и ее фитнеса
+    #  
+    gp_pop_calc_fitness_all $pop $task ;#  $itemslist ;###$fitnessfunc
+
+    #gp_pop_all_print        $pop ;# $itemslist 
+
+    set itemslist   [GET $pop  "itemslist"] 
+    #----------------------------------------------
+
+    # сортируем особей по фитнесу (низкий фитнес идет влево == лучше)
+    #  
+
+    if {1} {
+      set itemslist_sorted [lsort -command "popu_sort_command" $itemslist]
+    
+      set best_item [lindex $itemslist_sorted 0]
+    
+      SET $pop "itemslist" $itemslist_sorted
+
+    } else {
+      
+      pop_sorting $pop "popu_sort_command"
+      set best_item [GET $pop best]
+
+    }
+
+    gp_pop_all_print        $pop ;# $itemslist 
+    #exit
+
     print_best  $task $best_item  $is_print $game_print_proc ;# $fitnessfunc 
+
+    #----------------------------------------------
+
+    if [is_check_generation_break  $pop $i $max_generations \
+          $fit_target $fit_error \
+          0] \
+      {     
+        return false
+      }      
+    #----------------------------------------------
 
 
     # а это основная эволюция:
     # 
-    set itemslist [popu_sorted_evolve_13  $sorted_items  $mutprob]
+    set itemslist [itemslist_sorted_evolution_3parts  $itemslist_sorted  $mutprob]
     #
+    # после нее итемы не сортированы
+    #
+
     #----------------------------------------------
+
+    SET $pop "itemslist" $itemslist
+
 
     if {$is_print} {
       puts ""
@@ -566,30 +617,38 @@ class_create 0 BOT {} {
 }
 
 #---------------------------------------------------------
-class_method  BOT  init {args} {
+# class_method  BOT  init {args} {
+  
+#   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+
+# }
+#---------------------------------------------------------
+proc calc_BOT {obj args} {
+  
+  #set obj [SELF]
+  #---------------------------
+  
+  #variable task
+  set task            [dict_parse $args "-task"  [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  #variable pop
+  set  pop [$obj GET_pop]
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-
+  #$obj init
+  
+  ga_evolution_main           $task $pop $max_generations ;# 0.01
+  
+  #set ret [ga_evolution  $task $pop $max_generations]  
 }
 #---------------------------------------------------------
 class_method BOT  calc {args} {
   
   set obj [SELF]
   
-  variable task
-  set task            [dict_parse $args "-task"  [$obj GET_task]] 
-  set max_generations [dict_parse $args "-steps"] 
-  
-  variable pop
-  #set  pop [$obj GET_pop]
-  
-  #pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-  #my init
-  $obj init
-  
-  ga_evolution_main           $task $pop $max_generations ;# 0.01
-  
-  #set ret [ga_evolution  $task $pop $max_generations]  
+  calc_BOT $obj {*}$args
+  #CALC $obj {*}$args
 }
 #---------------------------------------------------------
 class_method BOT final {} {
@@ -598,6 +657,10 @@ class_method BOT final {} {
   
   set pop [$obj GET_pop]
   
+  #puts ""
+  #puts "BOT final: pop = [pop_print $pop]"
+
+
   set num_generations [GET $pop "generation"] ;# сколько было генераций
   set best_entity     [ga_get_entity_from_rank $pop 0]
   set ch_form         [GET $pop "ch_form"]
@@ -614,13 +677,13 @@ class_create 0 BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
-  puts stderr "BOT33: args = |$args|"
-  puts stderr ""
+  #puts stderr "BOT33: args = |$args|"
+  #puts stderr ""
 
   set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
 
-  puts stderr "BOT33: args = |$args|"
-  puts stderr ""
+  #puts stderr "BOT33: args = |$args|"
+  #puts stderr ""
 
   SUPER constructor {*}$args
   
@@ -644,7 +707,6 @@ class_create 0 BOT33 {BOT} {
   } else {
     set pop [POP new  {*}$args]
   }
-
   
   #-----------------------------------------------
 
@@ -656,7 +718,9 @@ class_create 0 BOT33 {BOT} {
   SET $pop "sort_driver" $sort_driver
   
   
-  SET $pop  ch_form "%c" 
+  #SET $pop  ch_form "%c" 
+  SET $pop  ch_form "%s" 
+
   SET $pop  "generation_hook" NULL ;# $generation_hook
   
   #-----------------------------------------------
@@ -666,9 +730,10 @@ class_create 0 BOT33 {BOT} {
 }
 
 #-----------------------------------------------------------
-class_method BOT33 calc {args} {
+#class_method BOT33 calc {args} {}
+proc calc_BOT33  {obj args} {
   
-  set obj [SELF]
+  #set obj [SELF]
   
   set task [dict_parse $args "-task" [$obj GET_task]] 
   
@@ -681,13 +746,12 @@ class_method BOT33 calc {args} {
   set is_print         [dict_parse $args "-is_print"        1]
   set game_print_proc  [dict_parse $args "-game_print_proc" 0]
   set mutprob          [dict_parse $args "-mutprob"         0.1]
-  
-  
-  set randpop_proc [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
+   
   
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
-  #
-  
+  #  
+  set randpop_proc     [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
+
   set population_size [GET $pop "stable_size"]
   set len_chromosomes [GET $pop "len_chromosomes"]
   
@@ -697,12 +761,21 @@ class_method BOT33 calc {args} {
   
   SET $pop "itemslist" $itemslist
   
+
   gp_evolution_main  $task $pop  $max_generations \
     $is_print        \
     $game_print_proc \
     $mutprob  
   
   return
+}
+#---------------------------------------------------------
+class_method BOT33  calc {args} {
+  
+  set obj [SELF]
+  
+  calc_BOT33 $obj {*}$args
+  #CALC $obj {*}$args
 }
 #-----------------------------------------------------------
 class_method BOT33  final {} {
@@ -711,39 +784,36 @@ class_method BOT33  final {} {
   
   set  pop [$obj GET_pop]
   
+  puts "BOT33 final: pop = [pop_print $pop]"
+
+
   set num_generations [GET $pop "generation"] ;# сколько было генераций   
-  set best_entity     [ga_get_entity_from_rank $pop 0]
+
+  set best_entity     [ga_get_entity_from_rank $pop 0] ;# ??? не сортирована !?
+
   set ch_form         [GET $pop "ch_form"]
   
   return [list $num_generations $best_entity $ch_form]
 }
 #-----------------------------------------------------------
-
 # ------------------------------------------------------------------------------
 proc bot33_create {args} {
-
-
-  #set obj [BOT33 new {*}$args]
-
-  puts stderr "bot33_create: args = |$args|"
-  puts stderr ""
 
   set obj [BOT33 new $args]
 
   return $obj
 }
 # ------------------------------------------------------------------------------
-proc bot33_calc {obj args} {
+proc CALC {obj args} {
 
-
-  return [$obj calc {*}$args]
+  return [ONEMETHOD $obj {*}$args]
 }
 # ------------------------------------------------------------------------------
-proc bot33_final {obj} {
+# proc bot33_final {obj} {
 
 
-  return [$obj final {*}$args]
-}
+#   return [$obj final {*}$args]
+# }
 #-------------------------------------------------------------------------------
 proc run_gp_evolution {randpop_proc 
                        population_size  len_chromosomes 
@@ -770,7 +840,7 @@ proc run_gp_evolution {randpop_proc
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
-  bot33_calc  $obj  \
+  CALC $obj  \
     -steps           $max_generations \
     -task            $task \
     -is_print        $is_print        \
@@ -853,8 +923,15 @@ proc FS_fitness_list_NEW {list_calc} {
 
 }
 #-------------------------------------------------------------------------------
+# ищем пока простто структуру
 #-------------------------------------------------------------------------------
 # g_stru.tl _gp_test 2013 10 6 10
+#-------------------------------------------------------------------------------
+proc gp_fitness_test {item} {
+
+  puts "item = $item,  ret = [FS_fitness_list $item] "
+
+}
 #-------------------------------------------------------------------------------
 proc _gp_test {} {
 
@@ -864,21 +941,29 @@ proc _gp_test {} {
 
   global argc
 
+  #----------------------------------------------------------------
   if {$argc == 1} {
 
-    #puts "GP ... test !! \n"
-    #exit
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 4"
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 4 4"
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 0 0"
+    gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+
+    puts ""
+
+    exit
 
     set bnums 10 ;# population_size
     set bsize 15
-    set steps  5 ;# 1 ;# max_generations 
+    set steps  1 ;# 1 ;# max_generations 
     
-    #mysrand 2013 ;# ???
-     
     set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
-    set ::is_fitn_first   0 ;# g-corA.tl -> item_print_fitness_calc
+    set ::is_fitn_first   1 ;# 0 ;# g-corA.tl -> item_print_fitness
     
+  #----------------------------------------------------------------
   } else {
+  #----------------------------------------------------------------
 
     # берем данные из командной строки: k~.tl TEST FS  @  20 15 100
     #                                   cd ../others ; h_stru.tl FS
@@ -892,22 +977,25 @@ proc _gp_test {} {
 
     # if ! @ -> mysrand var 
   }
+  #----------------------------------------------------------------
 
-  # ------------------------------------------------
+  set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"    
+
+  #set ::randinstr  "randinstr_NEXT"
+  #set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
+
 
   set  fitnessfunc  "FS_fitness_list"
   #set  fitnessfunc  "FS_fitness_list_NEW"
 
-  set  sort_driver  "GT_lsort" 
+  set  sort_driver  "GT_lsort" ;## большие влево?
 
   # ------------------------------------------------
 
-  # FINS STRUCT - ищем пока простто структуру
-
   #random_seed 0 ;# ?? mysrand 2013
 
-  puts ""
-  puts "GP_find ..."
+  #puts ""
+  #puts "GP_find ..."
   puts ""
   puts "bnums  = $bnums"  ;# колич-во ботов
   puts "bsize  = $bsize"  ;# макс. длина ботов (при начальном старте?)
@@ -916,13 +1004,7 @@ proc _gp_test {} {
 
 
   set is_print 1
-  #DebugOn
-
   set ::gp_list   "1 2 3 4 5 6 7 8 9" ;#   
-
-  set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-    
-  #set ::randinstr  "randinstr_NEXT"
 
   run_gp_evolution  $randpop_proc \
                     $bnums $bsize \

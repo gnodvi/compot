@@ -6,8 +6,8 @@ exec jimsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 #
-set MAIN_JIM "JIMTCL" 
-set auto_path [linsert $auto_path 0 $MAIN_JIM]
+# set MAIN_JIM "JIMTCL" 
+# set auto_path [linsert $auto_path 0 $MAIN_JIM]
 
 
 source "f~.tl"

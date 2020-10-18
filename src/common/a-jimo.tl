@@ -65,8 +65,8 @@ proc TEST_time {} {
   }
 
   puts ""
-
   set i 0
+
   #   puts "Create:   [time {A create $i;   incr i} $nums]"
   
   puts "Create:   [time {set objs($i) [A new] ;  incr i} $nums]"
@@ -77,11 +77,27 @@ proc TEST_time {} {
   set i 0
   puts "Delete:   [time {$objs($i) destroy; incr i} $nums]"
 
-#   A destroy
+  #   A destroy
 
   puts ""
 
 }
+#-------------------------------------------------------------------------------
+
+# $ a~.jm JIMO TEST_time
+
+# Create:   13 microseconds per iteration
+# SetGet:   23 microseconds per iteration
+# Delete:   12 microseconds per iteration
+
+
+# b~.tl TEST_cloo_time
+# b~.tl TEST TIME_all
+
+# Create:   4.443 microseconds per iteration
+# SetGet:   3.025 microseconds per iteration
+# Delete:   4.556 microseconds per iteration
+
 #-------------------------------------------------------------------------------
 proc TEST_main {} {
 
@@ -185,6 +201,7 @@ proc TEST_main {} {
   CreditAccount method describe {} {
     # First invoke the base class 'describe'
     super describe
+
     if {$balance < 0} {
       puts "*** Account is in debit"
     }
@@ -317,7 +334,9 @@ proc TEST_next {} {
     ch_form ""
   } {
     
+    puts ""
     puts "Account1 Constructor: args = $args"
+    puts ""
 
     puts "balance = $balance !!!!!!!!!!"
     set balance  123  ;# для JIM не нужно !!
@@ -398,6 +417,8 @@ proc TEST_next {} {
     limit 100
   } {
     # Constructor
+
+    puts ""
     puts "Account2 Constructor: args = $args"
     puts ""
     
@@ -433,6 +454,8 @@ proc TEST_next {} {
     set limit 101 ;# для JIM не нужно !!
     puts "limit   = $limit "
   }
+  #----------------------------------------------------------------------------
+
 
   set a2 [Account2 new {-lone "one" -ltwo "two" limit 10} ]
 
@@ -505,14 +528,19 @@ proc TEST_next {} {
     puts "Account3 Constructor: args = $args"
     puts ""
     
-    #SUPER constructor {*}$args
-    #
-    #if {$::__JIM__} {
-    #  #super constructor  {*}$args
-    #  super constructor 
-    #} else {
-    #  next {*}$args
-    #}
+    #----------------------------------------
+    if {0} {
+
+      #SUPER constructor {*}$args
+      #
+      if {$::__JIM__} {
+        #  #super constructor  {*}$args
+        super constructor 
+      } else {
+        next {*}$args
+      }
+    }
+    #----------------------------------------
 
   }
 

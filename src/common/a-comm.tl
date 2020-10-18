@@ -1029,7 +1029,7 @@ proc tst {LL OUT DIR_CMD CMD} {
 proc check_true_and_calc_begin {name} { 
 
 
-  puts -nonewline "$name ................ "  ;
+  puts -nonewline "$name ................ " 
   flush stdout
 
 }
@@ -2274,21 +2274,6 @@ proc parse_opt_seed_3_new {&par1 &par2 &par3} {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
@@ -3501,14 +3486,25 @@ proc RandYes {procent} {
 # ;-------------------------------------------------------------------------------
 proc rand_0 {} {
 
+  #puts stderr "......... 05-stderr"
+  #puts stdout "......... 05-stdout"
+
   dotimes i 10 {
 
-    puts -nonewline [format "YRAND(1 4)= %s \n" [YRAND 1 4]]
+    set str [format "YRAND(1 4)= %s \n" [YRAND 1 4]]
+
+    puts -nonewline $str 
   }
+
+  # a~.jm COMM rand_1
+  #a-comm.tl:3506: Error: wrong # args: should be "stdout switch ?file?"
 
 }
 # ;-------------------------------------------------------------------------------
 proc rand_1 {} {
+
+  #puts stderr "......... 04-stderr"
+  #puts stdout "......... 04-stdout"
 
   set ::simp_random 1  ;# ??!!
   #set ::debug_print 1
@@ -4582,6 +4578,30 @@ proc SELF {} {
     uplevel 1 {return [self]} 
   }
 
+}
+# ------------------------------------------------------------------------------
+proc CLASSNAME {obj} {
+
+
+  if {$::__JIM__} {
+
+    return [$obj classname]
+  } else {
+    
+    return [string trimleft [info object class $obj] ":"]
+  }
+
+}
+# ------------------------------------------------------------------------------
+proc ONEMETHOD {obj args} {
+
+  set procname  [string tolower [lindex [info level -1] 0]]
+  set classname [CLASSNAME $obj]
+
+  #puts "procname = $procname, classname = $classname, "
+  #exit
+
+  return [${procname}_${classname} $obj {*}$args]
 }
 # ==============================================================================
 #-------------------------------------------------------------------------------

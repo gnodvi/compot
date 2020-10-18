@@ -12,16 +12,21 @@
 # methods and instance variables are inherited.
 # The *last* baseclass can be accessed directly with [super]
 # Later baseclasses take precedence if the same method exists in more than one
+
 #-------------------------------------------------------------------------------
 
 proc class {classname {baseclasses {}} classvars} {
 
   set baseclassvars {}
+
   foreach baseclass $baseclasses {
+
     # Start by mapping all methods to the parent class
     foreach method [$baseclass methods] { alias "$classname $method" "$baseclass $method" }
+
     # Now import the base class classvars
     set baseclassvars [dict merge $baseclassvars [$baseclass classvars]]
+
     # The last baseclass will win here
     proc "$classname baseclass" {} baseclass { return $baseclass }
   }
@@ -33,6 +38,7 @@ proc class {classname {baseclasses {}} classvars} {
   # This is the class dispatcher for $classname
   # It simply dispatches 'classname cmd' to a procedure named {classname cmd}
   # with a nice message if the class procedure doesn't exist
+
   proc $classname {{cmd new} args} classname {
     if {![exists -command "$classname $cmd"]} {
       return -code error "$classname, unknown command \"$cmd\": should be [join [$classname methods] ", "]"
@@ -122,16 +128,17 @@ proc class {classname {baseclasses {}} classvars} {
   proc "$classname vars"      {} vars      { return $vars }
   proc "$classname classvars" {} classvars { return $classvars }
   proc "$classname classname" {} classname { return $classname }
-  proc "$classname methods" {} classname {
+  proc "$classname methods"   {} classname {
     lsort [lmap p [info commands "$classname *"] {
       lindex [split $p " "] 1
     }]
   }
 
   # Pre-defined some instance methods
-  $classname method destroy {} { rename $self "" }
-  $classname method get {var} { set $var }
-  $classname method eval {{locals {}} __code} {
+
+  $classname method destroy {}    { rename $self "" }
+  $classname method get     {var} { set $var }
+  $classname method eval   {{locals {}} __code} {
     foreach var $locals { upvar 2 $var $var }
     eval $__code
   }
@@ -139,11 +146,33 @@ proc class {classname {baseclasses {}} classvars} {
   return $classname
 }
 #-------------------------------------------------------------------------------
-
 # From within a method, invokes the given method on the base class.
 # Note that this will only call the last baseclass given
+#-------------------------------------------------------------------------------
 proc super {method args} {
-	upvar self self
-	uplevel 2 [$self baseclass] $method {*}$args
+
+  #upvar self self
+
+  #puts stderr ""
+  #puts stderr "self classname = [$self classname]"
+  #puts stderr "self baseclass = [$self baseclass]"
+
+  #set baseclass [$self baseclass]
+  #uplevel 2 $baseclass $method {*}$args
+
+  # --------------------------------------------------------------
+  # From: Steve Bennett <steveb@workware.net.au>
+  # Date: Sun, 4 Oct 2020 13:46:01 +1000
+  # Subject: [PATCH] oo: fix super for >2 levels of inheritance
+
+  # Need to find the baseclass based on the current method class,
+  # not based on the object class.
+
+  # If we are called from "class method", we want to call "[$class baseclass] method"
+  # 
+  set classname [lindex [info level -1] 0 0]
+  uplevel 2 [list [$classname baseclass] $method {*}$args]
+
 }
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 
+
 Account1 Constructor: args = {name "Bob Smith" }
+
 balance = 0 !!!!!!!!!!
 
 a1 (Account1 new) = <reference.<Account>.00000000000000000000>
@@ -17,6 +19,7 @@ name    = 123
 ----------------Account2-----------------------
 -----------------------------------------------
 
+
 Account2 Constructor: args = {-lone "one" -ltwo "two" limit 10}
 
 args      = {-lone "one" -ltwo "two" limit 10}
@@ -24,7 +27,9 @@ vars      = {;#} balance ch_form limit name
 classvars = {;#} _____________ name Unknown balance 0 ch_form {} limit 100
 
 limit   = 10 
+
 Account1 Constructor: args = 
+
 balance = 0 !!!!!!!!!!
 
 limit   = 10 

@@ -243,7 +243,27 @@ proc myrand_new {min max} {
 
   incr max
 
+  #puts "myrand_new: min= $min, max= $max"
+
   return [random_int_range  $min $max]
+}
+#-------------------------------------------------------------------------------
+proc YRAND_new {imin imax} {
+
+
+  return [myrand_new  $imin $imax]
+}
+#-------------------------------------------------------------------------------
+proc rand_0_new {} {
+
+  dotimes i 30 {
+
+    #puts -nonewline [format "random_int_range (1 4)= %d \n" [myrand_new 1 4]]
+    #puts -nonewline [format "random_int_range (1 4)= %s \n" [random_int_range 1 4]]
+    #puts -nonewline [format "random_int_range (1 4)= %s \n" [random_int_range 1 5]] ;# ????????
+    puts -nonewline [format "YRAND_new (1 4)= %s \n" [YRAND_new 1 5]]
+  }
+
 }
 # /*----------------------------------------------------------------------------*/
 # //  Return a random integer between 0 and (N-1) inclusive.
@@ -285,9 +305,11 @@ proc random_int_range {min max} \
   set max_min [expr {$max - $min}]
 
   if {$max_min == 0} {
+
     return $max
 
   } else {
+
     return [expr {$min + ([random_rand] % $max_min)}]
   }
   

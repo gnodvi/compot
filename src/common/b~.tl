@@ -65,10 +65,10 @@ proc TIME_all {} {
   TEST_cloo_time
 
 
-#   puts ""
-#   puts "TEST_itcl_time: "
-#   #
-#   TEST_itcl_time
+  #   puts ""
+  #   puts "TEST_itcl_time: "
+  #   #
+  #   TEST_itcl_time
 
 
   source "b-com0.tl"
@@ -84,11 +84,11 @@ proc TIME_all {} {
   namespace delete ::struct::record 
 
 
-#   source "b-com1.tl"
-#   puts ""
-#   puts "TEST_com1_time: "
-#   #
-#   TEST_com1_time
+  #   source "b-com1.tl"
+  #   puts ""
+  #   puts "TEST_com1_time: "
+  #   #
+  #   TEST_com1_time
 
 
 }

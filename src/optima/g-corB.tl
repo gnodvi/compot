@@ -133,9 +133,9 @@ set ::len_is_constant 0
 
 #-------------------------------------------------------------------------------
 proc make_prgpop {randpop_proc 
-                            population_size len 
-                            is_print 
-                          } {
+                  population_size len 
+                  is_print 
+                } {
 
 
   # создаем стартовую популяцию (здесь пока только сами программы, не агенты!!!)
@@ -168,9 +168,9 @@ proc make_prgpop {randpop_proc
 }
 #-------------------------------------------------------------------------------
 proc make_itemslist {randpop_proc 
-                            population_size len 
-                            is_print 
-                          } {
+                     population_size len 
+                     is_print 
+                   } {
 
   
   set prgpop [make_prgpop  $randpop_proc \

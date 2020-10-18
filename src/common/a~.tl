@@ -6,6 +6,9 @@ exec tclsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 #
+# set MAIN_JIM "JIMTCL" 
+# set auto_path [linsert $auto_path 0 $MAIN_JIM]
+
 #-------------------------------------------------------------------------------
 
 source "a-comm.tl"
@@ -17,15 +20,41 @@ source "a-disp.tl"
 my_source "a-comp.tl"
 my_source "a-menu.tl"
 
-source "a-j-oo.tl"
-source "a-jimo.tl"
 
 # ;-------------------------------------------------------------------------------
 proc JIMO {} {
 
-  #source "b_cloo.tl"
+  source "a-j-oo.tl" ;# загрузка не скомпилированного варианта
+                     ;# практически не влияет на скорость (на 1 microsec может)
 
-  #source "a-jimo.tl"
+  #mgena@mgena-ThinkPad common $ a~.jm JIMO TEST_time (без компиляции)
+  #
+  #Create:   13 microseconds per iteration
+  #SetGet:   24 microseconds per iteration
+  #Delete:   12 microseconds per iteration  т.е. вполне норм !!
+
+
+  #Create:   11 microseconds per iteration   (с компиляцией)
+  #SetGet:   23 microseconds per iteration
+  #Delete:   12 microseconds per iteration
+
+  # для сравнения 
+
+  # b~.tl TEST_cloo_time
+  # b~.tl TEST TIME_all
+
+  # Create:   4.443 microseconds per iteration
+  # SetGet:   3.025 microseconds per iteration
+  # Delete:   4.556 microseconds per iteration
+
+  #TEST_com0_time: 
+
+  #Create:   62.56 microseconds per iteration
+  #SGcget:   36.14 microseconds per iteration
+  #SGvget:   11.23 microseconds per iteration
+  #Delete:   143.63 microseconds per iteration
+
+  source "a-jimo.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
@@ -33,7 +62,6 @@ proc JIMO {} {
 }
 # ;-------------------------------------------------------------------------------
 proc COMM {} {
-
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
@@ -265,6 +293,10 @@ proc TEST_reopen1 {} {
 
 }
 #-------------------------------------------------------------------------------
+# эта команда портит работу для JIM! (puts ..)
+#
+if {0} {
+
 ##********************************************************
  ## Name: stdout
  ##
@@ -330,6 +362,8 @@ proc stdout { switch { file "" } } {
     rename __puts puts
   }
 
+}
+##********************************************************
 }
 #-------------------------------------------------------------------------------
 proc TEST_reopen2 {} {
@@ -625,6 +659,7 @@ proc DISP {} {
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
+#set CUR_DIR "a"
 set CUR_DIR "a"
 #set CUR_DIR "1"
   

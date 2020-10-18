@@ -183,44 +183,63 @@ proc ent_get_chromo_len_ {e} {
   return [llength $tmp]
 }
 #-------------------------------------------------------------------------------
-proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form ""}} {
+# TODO: выводить в строку сначала !!
+# 
+#-------------------------------------------------------------------------------
+proc ent_as_string {e ch_form} {
 
-  #set ch_form ""
 
   if {$ch_form == ""} {
     set ch_form [GET $e ch_form] ;# локальная переменная
   }
 
-  set ch      [ent_get_chromosome_ $e]
+  set ch  [ent_get_chromosome_ $e]
   
-  puts -nonewline $out $name
+  #puts -nonewline $out $name
   
+  set buf {}
+
   foreach c $ch {
 
-    if {[catch {puts -nonewline $out [format $ch_form $c]} err]} {
+    append buf [format $ch_form $c]
 
-      puts -nonewline $out "$c "
-      #puts -nonewline $out "$c ;"
-    }
+    #puts -nonewline $out [format $ch_form $c]
+
+    #if {[catch {puts -nonewline $out [format $ch_form $c]} err]} {
+      #puts -nonewline $out "$c "
+    #}
   } 
   
+  return $buf
+}
+#-------------------------------------------------------------------------------
+proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form ""}} {
+
+
+  puts -nonewline $out $name
+  
+  set buf [ent_as_string  $e $ch_form]
+  
+  puts -nonewline $out $buf
+
   flush $out  ;# все данные должны быть выведены
 }
 #-------------------------------------------------------------------------------
-proc ent_print_oneline_ {e {out "stdout"}} {
+proc ent_print_oneline_ {e {out "stdout"} {ch_form ""}} {
 
 
-  ent_print_ch_ $e "ch=   " $out
-  
+  #ent_print_ch_ $e "ch=  " $out $ch_form
   
   set fi [item_get_fitn $e]
   
   if {[string equal $fi $::GA_MIN_FITNESS]} {
 
-    puts -nonewline $out "   fitness= GA_NOT_FITNESS"
+    puts -nonewline $out "fitness= NOT_FITNESS"
   } else {
-    puts -nonewline $out "   fitness= [format "%f"  $fi]"
+    puts -nonewline $out "fitness= [format "%9.3f"  $fi]"
   }
+  
+  ent_print_ch_ $e "   ch=  " $out $ch_form
   
   puts $out ""
 }
@@ -250,6 +269,8 @@ proc item_get_fitn {item} {
 
   # dict get работает не с именем, а непосредственно со словаоем, и получить его 
   # можно используя $name, либо надежнее, если имя уже по ссылке, то [set $name]
+
+  #puts "item_get_fitn: iten = $item"
 
   return  [dict_get  $item "fitn"]
 
@@ -350,6 +371,13 @@ proc item_calc_fitness {item_ptr fitnessfunc task} {
 
   #pop_eval_item $pop $e $eval_proc $task
 
+  # а может уже посчитано?
+  # 
+  set fitn  [item_get_fitn  $item_ptr] 
+
+#   if {$fitn != $::GA_MIN_FITNESS} {
+#     return
+#   }
 
   set prog [item_get_prog    $item_ptr]
   set src  [prog_get_prg_src $prog "main"] 
@@ -390,47 +418,6 @@ proc item_calc_fitness {item_ptr fitnessfunc task} {
 
 set ::is_fitn_first 1
 
-#-------------------------------------------------------------------------------
-proc item_print_fitness_calc {task item i} {
-
-
-  set fitnessfunc [GET $task "fitness_proc"]  
-
-
-  puts -nonewline [format "  %2d)" $i]
-  
-  #-----------------------------------------------
-  #set src   [item_get_main_src   $item] 
-  #set fitn  [item_get_fitn       $item] 
-  
-  if {$::is_fitn_first} {
-
-    item_calc_fitness  $item $fitnessfunc  $task
-    
-    set src   [item_get_main_src   $item] 
-    set fitn  [item_get_fitn       $item] 
-    
-    puts [format "  fitn = % 3s :   %s" $fitn $src]
-    
-  } else {
-    
-    set src   [item_get_main_src   $item] 
-    set fitn  [item_get_fitn       $item] 
-    
-    #puts [format "  %s     fitn = %s" $src $fitn]
-    puts -nonewline [format "  %s     " $src]
-    flush stdout               ;# все данные должны быть выведены
-    
-    item_calc_fitness  $item $fitnessfunc   $task 
-    
-    puts [format "fitn = %s" $fitn]
-  }
-  #-----------------------------------------------
-  #
-  # item_print  $item
-  
-  return
-}
 #-------------------------------------------------------------------------------
 proc item_print {item} {
 
@@ -507,6 +494,8 @@ class_create 0 POP {} {
   itemslist        ""  ;# _ 
   generation       ""  ;# _ 
 
+  best       "" ;# _для_хранения_лучшего_номера
+
 } {
   # а это конструктор класса 
 
@@ -526,6 +515,8 @@ class_create 0 POP {} {
   set  "ch_form"  "% 6.3f " ;#  " %02d"   
   set generation_hook NULL
   
+  set generation      {}  
+  set best            {}     
 }
 
 #-------------------------------------------------------------------------------
@@ -553,8 +544,8 @@ class_create 0 GAUL {POP} {
   max_size  ""  ;# _текущий_максимальный_размер
   size      ""  ;# _актуальный_размер
 
-  generation "" ;# _номер_текущей_генерации
-  best       "" ;# _для_хранения_лучшего_номера
+  #generation "" ;# _номер_текущей_генерации
+  #best       "" ;# _для_хранения_лучшего_номера
 
   ;# _здесь_основной_массив_хранения
   ;# _
@@ -715,8 +706,8 @@ class_create 0 GAUL {POP} {
 
     #---------------------------------------
 
-    set generation      {}  
-    set best            {}     
+    #set generation      {}  
+    #set best            {}     
     set itemslist       {}
     
     set  "island"    -1
@@ -841,12 +832,13 @@ proc pop_print_lite_ {p {out "stdout"}} {
   set i 0  
   set tmp [GET $p itemslist]
   
+  set ch_form [GET $p "ch_form"]
 
   foreach e $tmp {
     
     puts -nonewline $out [format "   i = %3d   " $i]
     
-    ent_print_oneline_ $e $out
+    ent_print_oneline_ $e $out $ch_form
 
     incr i
   }
@@ -856,9 +848,6 @@ proc pop_print_lite_ {p {out "stdout"}} {
 #-------------------------------------------------------------------------------
 proc pop_print_ {p {out "stdout"}} {
 
-  #puts "options = [array get options]"
-  
-  #set out "stdout"
 
   puts $out "---------------------- POPULATION PRINT -------------------------------"
   puts $out ""
@@ -867,7 +856,7 @@ proc pop_print_ {p {out "stdout"}} {
   
   pop_print_lite_ $p $out
   
-  set best     [GET $p best]
+  set best  [GET $p best]
   
   puts $out ""
   puts $out "STABLE_SIZE = [GET $p stable_size] "
@@ -876,8 +865,8 @@ proc pop_print_ {p {out "stdout"}} {
   puts $out "BEST        = $best "
   puts $out ""
   
-  if {$best != -1} {
-    #set best_fit [$p get_entity_fitness $best]
+  if {$best != -1 && $best != ""} {
+
     set best_fit [pop_get_entity_fitness_ $p  $best]
     
     puts $out [format "BEST = $best  (fitness = %f) " $best_fit]
@@ -914,30 +903,6 @@ proc MIN_to_LEFT {a b} {
   #                      (вариант для особых случаев)
 
   return [LT $a_fit $b_fit]
-}
-#-------------------------------------------------------------------------------
-proc pop_sort_ {p} {
-
-  if {[get_pop_size $p] == 0} {
-    return ;# если в популяции ничего еще нет !!
-  }
-  
-  # в случае, если специально определена функция сравнения (а не просто по фитнесу)
-  # т.е. if (pop->rank != ga_rank_fitness) то надл использовать эту функцию!
-  #
-  #set rank_proc [$self cget -rank]
-  #if {$rank_proc != "ga_rank_fitness"} {
-  #  die "NOT ..... ga_rank_fitness"
-  #}
-  
-  #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-  # будем определять при создании популяции
-
-  SET $p itemslist  [qsort_AF [GET $p  itemslist] $::sort_driver]
-
-
-  SET $p best 0 ;# после сортировки это должно быть так
-
 }
 #-------------------------------------------------------------------------------
 proc pop_print {pop {out "stdout"}} {
@@ -1181,7 +1146,7 @@ proc pop_initial_score_and_sort {pop task} {
   
   pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
 
-  sort_population     $pop
+  pop_sorting     $pop
   
   return
 }
@@ -1256,7 +1221,7 @@ proc ga_population_score_and_sort {pop task} \
   # а теперь сортируем !!! !!! !!! !!!
   # 
 
-  sort_population  $pop
+  pop_sorting  $pop
   
   return $::true
 }
@@ -2642,12 +2607,41 @@ proc ga_select_two_sus {pop &mother &father}  {
 # 		it works.
 
 #-------------------------------------------------------------------------------
-proc sort_population {pop} {
+proc pop_sorting {p {sort_driver ""}} {
 
-  #$pop sort 
-  pop_sort_ $pop
+  if {$sort_driver == ""} {
+    set sort_driver $::sort_driver
+  }
+
+  if {[get_pop_size $p] == 0} {
+    return ;# если в популяции ничего еще нет !!
+  }
+  
+  # в случае, если специально определена функция сравнения (а не просто по фитнесу)
+  # т.е. if (pop->rank != ga_rank_fitness) то надл использовать эту функцию!
+  #
+  #set rank_proc [$self cget -rank]
+  #if {$rank_proc != "ga_rank_fitness"} {
+  #  die "NOT ..... ga_rank_fitness"
+  #}
+  
+  #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
+  # будем определять при создании популяции
+
+  set itemslist [GET $p itemslist]
+
+  SET $p itemslist  [qsort_AF $itemslist $sort_driver]
+
+
+  SET $p best 0 ;# после сортировки это должно быть так
 
 }
+#-------------------------------------------------------------------------------
+# proc sort_population {pop} {
+
+#   pop_sorting $pop
+
+# }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #   ga_utility.c
@@ -2692,6 +2686,18 @@ proc task_create {fitness_proc  args} {
 
   SET $t "fit_target"   [dict_parse $args "-fit_target" 0] 
   SET $t "fit_error"    [dict_parse $args "-fit_error"  0.01] 
+
+  return $t
+}
+#-------------------------------------------------------------------------------
+proc task_print {t} {
+
+  puts "-------------------------- task --------------"
+  puts "fitness_proc = [GET $t fitness_proc]"
+  puts "fit_target   = [GET $t fit_target]" 
+  puts "fit_error    = [GET $t fit_error]" 
+  puts "-------------------------- task --------------"
+  puts ""
 
   return $t
 }

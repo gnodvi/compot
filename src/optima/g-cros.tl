@@ -1100,7 +1100,7 @@ proc gaul_adapt_and_evaluate {pop task} \
 
 #   # сортируем всех челнов популяции по фитнесу
 #   #  
-#   sort_population $pop
+#   pop_sorting $pop
 
 #   # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
 #   # численность до ее стабильного первоначального размера.
@@ -1233,7 +1233,7 @@ proc crossover_mutation_adapt_survival {pop task} {
   # сортируем всех челнов популяции по фитнесу
   # 
  
-  sort_population $pop
+  pop_sorting $pop
 
   #-----------------------------------------------------------------
   # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
@@ -1313,7 +1313,7 @@ proc gaul_migration {num_pops pops} {
   
   for {set i 0} {$i < $num_pops} {incr i} \
   {
-    sort_population [lindex $pops $i];
+    pop_sorting [lindex $pops $i];
   }
 
   return
