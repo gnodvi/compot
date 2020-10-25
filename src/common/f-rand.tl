@@ -693,46 +693,37 @@ proc TEST_lrand {} {
     
   set ll {1 2 3 4 5 6 7 8 9}
  
+  #-----------------------------------------------------
   #test_random_seed 0 ;# in file f-rand.tl
 
   #random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
-  mysrand   0     ;# для lrand (начальная инициация)
+  #-----------------------------------------------------
+
+  #mysrand   0     ;# для lrand (начальная инициация)
 
   puts ""
-  puts "lrand = [lrand $ll]"
-  puts "lrand = [lrand $ll]"
-  puts "lrand = [lrand $ll]"
-  puts ""
-   
-  random_seed 0     ;# для lrand (начальная инициация)
+
+  for {set i 0} {$i < 10} {incr i} {
+
+    puts "lrand     = [lrand $ll]"
+  }
 
   puts ""
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
-  puts "lrand = [lrand_new $ll]"
+
+  #-----------------------------------------------------
+
+  #random_seed 0     ;# для lrand (начальная инициация)
+
   puts ""
-   
+
+  for {set i 0} {$i < 10} {incr i} {
+
+    puts "lrand_new = [lrand_new $ll]"
+  }
+
+  puts ""
+
+  return
 }
 # /*----------------------------------------------------------------------------*/
 # /*----------------------------------------------------------------------------*/

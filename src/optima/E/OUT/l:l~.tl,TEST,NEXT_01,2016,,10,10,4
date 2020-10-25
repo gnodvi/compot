@@ -42,13 +42,13 @@ PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 10
 
 
    1)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   2)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   4)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   5)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    6)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
+   7)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
+   8)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
    9)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
   10)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
 
@@ -57,32 +57,32 @@ PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 10
 PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 8
 
 
-   1)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   1)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    2)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    4)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   6)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   5)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   6)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   7)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   8)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    9)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  17 :   p1 p1 p1
+  10)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
 
 ================================================
 
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 3
+PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 6
 
 
    1)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    2)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   4)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   5)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    6)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  14 :   p1 p1 p1 p1 p1 p1
+   7)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   8)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   9)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+  10)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
 
 ================================================
 
@@ -91,14 +91,14 @@ PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness
 
    1)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    2)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   3)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    4)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    5)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    6)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
    7)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   8)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+   9)  fitn =   5 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
+  10)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
 
 ================================================
 

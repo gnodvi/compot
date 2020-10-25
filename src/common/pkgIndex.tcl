@@ -7,6 +7,8 @@
 package ifneeded compot::common 1.0 "
 
   source [file join $dir "a-comm.tl"]
+  source [file join $dir "a-como.tl"]
+
   source [file join $dir "a-dict.tl"]
   source [file join $dir "a-disp.tl"]
   source [file join $dir "a-menu.tl"]

@@ -1,29 +1,264 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
-
-
-# a~.tl JIMO TEST_next
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# 
+if [info exists ::A_COMO_TL] {
+  return
+} else {
+  set  ::A_COMO_TL ""
+}
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# JimTcl OO
+
+# OO support for Jim Tcl, with multiple inheritance
+
+# Create a new class $classname, with the given
+# dictionary as class variables. These are the initial
+# variables which all newly created objects of this class are
+# initialised with.
 #
-# set MAIN_JIM "JIMTCL" 
-# set auto_path [linsert $auto_path 0 $MAIN_JIM]
+# If a list of baseclasses is given,
+# methods and instance variables are inherited.
+# The *last* baseclass can be accessed directly with [super]
+# Later baseclasses take precedence if the same method exists in more than one
 
-#lappend auto_path "[pwd]/.."
-
-# #-------------------------------------------------------------------------------
-# proc check_JIM {} {}
-
-#   if [info exists tcl_version] {
-#     set ::__TCL__ 1
-#     set ::__JIM__ 0
-#   } else {
-#     set ::__TCL__ 0
-#     set ::__JIM__ 1
-#   }
-
-# {}
 #-------------------------------------------------------------------------------
 
-# check_JIM 
+proc class {classname {baseclasses {}} classvars} {
+
+  set baseclassvars {}
+
+  foreach baseclass $baseclasses {
+
+    # Start by mapping all methods to the parent class
+    foreach method [$baseclass methods] { alias "$classname $method" "$baseclass $method" }
+
+    # Now import the base class classvars
+    set baseclassvars [dict merge $baseclassvars [$baseclass classvars]]
+
+    # The last baseclass will win here
+    proc "$classname baseclass" {} baseclass { return $baseclass }
+  }
+  
+  # Merge in the baseclass vars with lower precedence
+  set classvars [dict merge $baseclassvars $classvars]
+  set vars [lsort [dict keys $classvars]]
+  
+  # This is the class dispatcher for $classname
+  # It simply dispatches 'classname cmd' to a procedure named {classname cmd}
+  # with a nice message if the class procedure doesn't exist
+
+  proc $classname {{cmd new} args} classname {
+    if {![exists -command "$classname $cmd"]} {
+      return -code error "$classname, unknown command \"$cmd\": should be [join [$classname methods] ", "]"
+    }
+    tailcall "$classname $cmd" {*}$args
+  }
+  
+  #------------------------------------------------------------------------
+  # Constructor
+  #------------------------------------------------------------------------
+  # gnodvi proc "$classname new" {{instvars {}}} {classname classvars} {}
+  proc "$classname new" {{instvars__ {}}} {classname classvars} {
+
+    # gnodvi: set instvars [dict merge $classvars $instvars]
+    # gnodvi: save arglist for next call
+    #
+    set instvars [dict merge $classvars $instvars__]
+    
+    # This is the object dispatcher for $classname.
+    # Store the classname in both the ref value and tag, for debugging
+    # ref tag (for debugging)
+
+    set obj [ref $classname $classname "$classname finalize"]
+
+
+    proc $obj {method args} {classname instvars} {
+
+      if {![exists -command "$classname $method"]} {
+        if {![exists -command "$classname unknown"]} {
+          return -code error "$classname, unknown method \"$method\": should be [join [$classname methods] ", "]"
+        }
+        return ["$classname unknown" $method {*}$args]
+      }
+
+      "$classname $method" {*}$args
+    }
+
+
+    if {[exists -command "$classname constructor"]} {
+      #puts "instvars__ = $instvars__"
+
+      set info_args [info args "$classname constructor"]
+      #puts "info args = $info_args"
+
+      if {$info_args == ""} {
+        $obj constructor 
+      } else {
+        $obj constructor $instvars__
+      }
+
+      #$obj constructor $instvars__
+      #$obj constructor 
+      #if {$instvars__ != ""} {
+      #  $obj constructor $instvars__
+      #}
+    }
+
+    #puts stderr "!!!!!!!!!!!!!! NEW !!!!!!!!!!!!!!!!!!!!!!"
+    #puts stderr "instvars = $instvars ,,,,, instvars__ = $instvars__"
+    #puts stderr "!!!!!!!!!!!!!! NEW !!!!!!!!!!!!!!!!!!!!!!"
+
+    return $obj
+  }
+  #------------------------------------------------------------------------
+
+  # Finalizer to invoke destructor during garbage collection
+  proc "$classname finalize" {ref classname} { $ref destroy }
+
+  # Method creator
+  proc "$classname method" {method arglist __body} classname {
+
+    proc "$classname $method" $arglist {__body} {
+      # Make sure this isn't incorrectly called without an object
+      if {![uplevel exists instvars]} {
+        return -code error -level 2 "\"[lindex [info level 0] 0]\" method called with no object"
+      }
+      set self [lindex [info level -1] 0]
+      # Note that we can't use 'dict with' here because
+      # the dict isn't updated until the body completes.
+
+      foreach __ [$self vars] {upvar 1 instvars($__) $__}
+      unset __
+      eval $__body
+    }
+  }
+
+  # Other simple class procs
+
+  proc "$classname vars"      {} vars      { return $vars }
+  proc "$classname classvars" {} classvars { return $classvars }
+  proc "$classname classname" {} classname { return $classname }
+  proc "$classname methods"   {} classname {
+    lsort [lmap p [info commands "$classname *"] {
+      lindex [split $p " "] 1
+    }]
+  }
+
+  # Pre-defined some instance methods
+
+  $classname method destroy {}    { rename $self "" }
+  $classname method get     {var} { set $var }
+  $classname method eval   {{locals {}} __code} {
+    foreach var $locals { upvar 2 $var $var }
+    eval $__code
+  }
+
+  return $classname
+}
+#-------------------------------------------------------------------------------
+# From within a method, invokes the given method on the base class.
+# Note that this will only call the last baseclass given
+#-------------------------------------------------------------------------------
+proc super {method args} {
+
+  #upvar self self
+
+  #puts stderr ""
+  #puts stderr "self classname = [$self classname]"
+  #puts stderr "self baseclass = [$self baseclass]"
+
+  #set baseclass [$self baseclass]
+  #uplevel 2 $baseclass $method {*}$args
+
+  # --------------------------------------------------------------
+  # From: Steve Bennett <steveb@workware.net.au>
+  # Date: Sun, 4 Oct 2020 13:46:01 +1000
+  # Subject: [PATCH] oo: fix super for >2 levels of inheritance
+
+  # Need to find the baseclass based on the current method class,
+  # not based on the object class.
+
+  # If we are called from "class method", we want to call "[$class baseclass] method"
+  # 
+  set classname [lindex [info level -1] 0 0]
+  uplevel 2 [list [$classname baseclass] $method {*}$args]
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+
+
+# ------------------------------------------------------------------------------
+proc SELF {} {
+
+
+  if {$::__JIM__} {
+
+    #upvar self self_local
+    #return $self_local
+
+    uplevel 1 {return $self} 
+  } else {
+
+    uplevel 1 {return [self]} 
+  }
+
+}
+# ------------------------------------------------------------------------------
+proc CLASSNAME {obj} {
+
+
+  if {$::__JIM__} {
+
+    return [$obj classname]
+  } else {
+    
+    return [string trimleft [info object class $obj] ":"]
+  }
+
+}
+# ------------------------------------------------------------------------------
+proc BASECLASS {classname} {
+
+
+  if {$::__JIM__} {
+
+    return [$classname baseclass]
+  } else {
+    
+    #return [string trimleft [info object class $obj] ":"]
+
+    set superclasses [info class superclasses $classname]
+    puts "BASECLASS: superclasses = $superclasses"
+  }
+
+}
+#-------------------------------------------------------------------------------
+      #set classname    [$classname baseclass]
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+
+
+
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 #-----------------------------------------------------
 
@@ -577,4 +812,175 @@ proc TEST_refs {}  {
 
 }
 #-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc ONEMETHOD {obj args} {
+
+  set procname  [string tolower [lindex [info level -1] 0]]
+  set classname [CLASSNAME $obj]
+
+  set procforclass "${procname}_${classname}"
+
+
+  while {1} {
+    
+    if {! [exists -command $procforclass]} {
+      
+      set classname    [BASECLASS $classname]
+      #set classname    [$classname baseclass]
+      set procforclass "${procname}_$classname" 
+    } else {
+      break
+    }
+    
+  }
+
+
+  return [$procforclass $obj {*}$args]
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc TEST_simp {} {
+
+
+  proc SEE {obj args} {
+    
+    #puts "SEE: classname= [$obj classname], baseclass= [$obj baseclass]"
+    
+    return [ONEMETHOD $obj {*}$args] 
+  }
+
+
+  proc see_A {obj args} {
+    
+   return [GET $obj balance]  
+   #set balance
+  }
+
+  class A {
+    balance 0
+  }
+
+  A method deposit {amount} {
+    set balance [+ $balance $amount]
+  }
+  
+  A method see {} {
+   set balance
+  }
+
+
+  puts ""
+  set a [A new]
+
+  puts "a balance = [$a see]"
+  $a deposit 100
+  puts "a balance = [$a see]"
+
+  puts ""
+  #-----------------------------------------
+
+  if {0} {
+  proc see_B {obj args} {
+    
+   return [GET $obj balance]  
+   #set balance
+  }
+  }
+
+  class B {A} {
+  }
+
+  B method deposit {amount} {
+    super deposit $amount 
+  }
+  
+  #   B method see {} {
+  #   #  super see
+  #     set obj [SELF]
+  
+  #     return [see_B $obj]
+  #     #return [GET $obj balance] 
+  #   }
+
+
+  puts ""
+  set b [B new]
+
+  #puts "b balance = [$b see]"
+  #puts "b balance = [see_B $b]"
+  puts "b balance = [SEE $b]"
+
+  $b deposit 100
+  puts "b balance = [$b see]"
+
+  puts ""
+
+  #-----------------------------------------
+  #exit 
+  #-----------------------------------------
+
+  class C {B} {
+  }
+
+  C method deposit {amount} {
+    super deposit $amount 
+  }
+  
+  #C method see {} {
+  #  super see
+  #}
+
+
+  puts ""
+  set c [C new]
+
+  puts "c balance = [$c see]"
+  $c deposit 100
+  #puts "c balance = [$c see]"
+  puts "c balance = [SEE $c]"
+
+
+  puts ""
+
+
+  proc classtest {classname {baseclasses {M N O}} classvars} {
+
+    puts ""
+    puts "classname   = $classname"
+    puts "baseclasses = $baseclasses"
+    puts "classvars   = $classvars"
+    puts ""
+  }
+
+  classtest C  {a A}
+
+}
+#-------------------------------------------------------------------------------
+
+#TEST_simp
+
+# Why i have a cyclic error? :
+
+# ...... 
+# ...... 
+# ...... 
+#
+# in procedure 'super' called at file "./a_simp.jm", line 43
+# in procedure 'B' called at file "oo.tcl", line 99
+# at file "oo.tcl", line 65
+# in procedure 'super' called at file "./a_simp.jm", line 43
+# in procedure 'B' called at file "oo.tcl", line 99
+# at file "oo.tcl", line 65
+# in procedure 'super' called at file "./a_simp.jm", line 43
+# in procedure 'B' called at file "oo.tcl", line 99
+# at file "oo.tcl", line 65
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+#TT add
+
 #-------------------------------------------------------------------------------

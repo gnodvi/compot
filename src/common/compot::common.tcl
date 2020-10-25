@@ -15,7 +15,7 @@ proc package_require_compot {COMPOT_} {
   uplevel "source  $COM/a-comp.tl"
   uplevel "source  $COM/a-plot.tl"
   
-  uplevel "source  $COM/a-j-oo.tl"
+  uplevel "source  $COM/a-como.tl"
   uplevel "source  $COM/b-com0.tl"
 
   #   source [file join $dir "b-com1.tl"]

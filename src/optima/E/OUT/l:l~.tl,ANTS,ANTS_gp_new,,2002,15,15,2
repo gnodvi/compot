@@ -82,10 +82,10 @@ NUM = 4
    9)  fitn =   5 :   R L L R M L L L
   10)  fitn =   5 :   R L L M M L L M
   11)  fitn =   5 :   M R R R
-  12)  fitn =   5 :   R R M M M L L M
+  12)  fitn =   5 :   R R R R M M L M M
   13)  fitn =   5 :   R L L R M L L L
-  14)  fitn =   5 :   R L M
-  15)  fitn =   5 :   M R M R L L L L R
+  14)  fitn =   5 :   M R L M
+  15)  fitn =   5 :   M R M R L M L R L R
 
 ================================================
 
@@ -123,16 +123,16 @@ NUM = 4
    3)  fitn =   5 :   R L L R M L L L
    4)  fitn =   5 :   R L M
    5)  fitn =   5 :   M R M R L L L L R
-   6)  fitn =   5 :   R L L R M L L L
-   7)  fitn =   5 :   M R R R
-   8)  fitn =   5 :   R R M R M R M L L M
-   9)  fitn =   5 :   M M L L L L R
-  10)  fitn =   5 :   R M M
+   6)  fitn =   5 :   R M M
+   7)  fitn =   5 :   R L L R L L L L
+   8)  fitn =   5 :   R R M R M M M L L M L L M
+   9)  fitn =   5 :   R M M
+  10)  fitn =   5 :   M R R R
   11)  fitn =   5 :   M R R R
-  12)  fitn =   5 :   R R M M M L L M
-  13)  fitn =   5 :   R L L R M L L L
-  14)  fitn =   5 :   R L M
-  15)  fitn =   5 :   M R M R L L L L R
+  12)  fitn =   5 :   R R M M L M L L M
+  13)  fitn =   5 :   R L L L R M L L L
+  14)  fitn =   5 :   M L M
+  15)  fitn =   5 :   R R M R L L R L R
 
 ================================================
 

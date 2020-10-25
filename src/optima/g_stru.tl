@@ -909,9 +909,9 @@ class_create 0 BOT04 {BOT} {
 }
 
 #---------------------------------------------------------
-class_method  BOT04  calc {args} {
+proc  calc_BOT04  {obj args} {
   
-  set obj [SELF]
+  #set obj [SELF]
   
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
@@ -921,6 +921,13 @@ class_method  BOT04  calc {args} {
   set ret [ga_evolution  $task $pop $max_generations]  
   
   return $ret
+}
+#---------------------------------------------------------
+class_method  BOT04  calc {args} {
+  
+  set obj [SELF]
+  
+  return [calc_BOT04 $obj {*}$args]
 }
 #---------------------------------------------------------
 
@@ -1034,23 +1041,30 @@ class_create 0 BOT05 {BOT} {
   
 }
 
-  #---------------------------------------------------------
+#---------------------------------------------------------
+proc  calc_BOT05 {obj args} {
+
+  #set obj [SELF]
+  
+  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  set pops [$obj GET_pops]
+  
+  set num_pops [llength $pops]
+  
+  set ret [ga_evolution_archipelago  $num_pops $pops  $max_generations $task]
+  
+  return $ret
+}
+#---------------------------------------------------------
 class_method  BOT05  calc {args} {
-
-    set obj [SELF]
-
-    set task            [dict_parse $args "-task" [$obj GET_task]] 
-    set max_generations [dict_parse $args "-steps"] 
-    
-    set pops [$obj GET_pops]
-    
-    set num_pops [llength $pops]
-    
-    set ret [ga_evolution_archipelago  $num_pops $pops  $max_generations $task]
-    
-    return $ret
-  }
-  #---------------------------------------------------------
+  
+  set obj [SELF]
+  
+  return [calc_BOT05 $obj {*}$args]
+}
+#---------------------------------------------------------
 class_method BOT05  final {} {
     
     set obj [SELF]
@@ -1202,9 +1216,9 @@ class_create 0 BOT06 {BOT} {
 }
 
 #---------------------------------------------------------
-class_method  BOT06 calc {args} {
+proc calc_BOT06 {obj args} {
 
-  set obj [SELF]
+  #set obj [SELF]
   
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
@@ -1212,6 +1226,13 @@ class_method  BOT06 calc {args} {
   set pop  [$obj GET_pop]
   
   ga_deterministiccrowding  $task $pop $max_generations
+}
+#---------------------------------------------------------
+class_method  BOT06 calc {args} {
+  
+  set obj [SELF]
+  
+  return [calc_BOT06 $obj {*}$args]
 }
 #---------------------------------------------------------
 
@@ -1381,9 +1402,9 @@ class_create 0 BOT79 {BOT} {
 
 }
 #---------------------------------------------------------
-class_method  BOT79 calc {args} {
+proc calc_BOT79 {obj args} {
   
-  set obj [SELF]
+  #set obj [SELF]
   
   set task             [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations1 [dict_parse $args "-steps"] 
@@ -1392,6 +1413,13 @@ class_method  BOT79 calc {args} {
   set name [$obj GET_name]
   
   do_evolution_and_print_best $task $popd $max_generations1 $name
+}
+#---------------------------------------------------------
+class_method  BOT79 calc {args} {
+  
+  set obj [SELF]
+  
+  return [calc_BOT79 $obj {*}$args]
 }
 # ------------------------------------------------------------------------------
 proc BOT07_new {arg_s} {
@@ -1621,7 +1649,14 @@ proc maintest_run {botobjs task
 
         # вычисляем
         # 
-        $obj calc -steps $max_generations  -task $task 
+        #if {$::__TCL__} {
+          #
+          # кое-что не отлажено в ONEMETHOD
+          # 
+          $obj calc -steps $max_generations  -task $task 
+        #} else {
+        #  CALC $obj -steps $max_generations  -task $task 
+        #}
         
         # забираем результаты
         # 
@@ -1636,7 +1671,7 @@ proc maintest_run {botobjs task
         #set ch_form "%s"
         set best_as_string [ent_as_string  $best_entity $ch_form]
 
-        if {1} {
+        if {0} {
           puts ""
           puts "---------------------------------"
           puts "num_generations = $num_generations"

@@ -4274,6 +4274,9 @@ proc K {a b} {set a}
 
 ################################################################################
 #-------------------------------------------------------------------------------
+
+
+
 #-------------------------------------------------------------------------------
 proc class_method {classname methodname vars body} {
 #proc class_method {classname methodname args body} {}
@@ -4563,45 +4566,5 @@ proc GET {args} {
 
 }
 #-------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-proc SELF {} {
-
-
-  if {$::__JIM__} {
-
-    #upvar self self_local
-    #return $self_local
-
-    uplevel 1 {return $self} 
-  } else {
-
-    uplevel 1 {return [self]} 
-  }
-
-}
-# ------------------------------------------------------------------------------
-proc CLASSNAME {obj} {
-
-
-  if {$::__JIM__} {
-
-    return [$obj classname]
-  } else {
-    
-    return [string trimleft [info object class $obj] ":"]
-  }
-
-}
-# ------------------------------------------------------------------------------
-proc ONEMETHOD {obj args} {
-
-  set procname  [string tolower [lindex [info level -1] 0]]
-  set classname [CLASSNAME $obj]
-
-  #puts "procname = $procname, classname = $classname, "
-  #exit
-
-  return [${procname}_${classname} $obj {*}$args]
-}
 # ==============================================================================
 #-------------------------------------------------------------------------------

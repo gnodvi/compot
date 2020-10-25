@@ -12,19 +12,42 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 
 source "a-comm.tl"
+
 source "a-disp.tl"
 
 # подключаем тесты только если  файлы есть;
 # другой способ - заключить их в отдельные процедуры 0-го уровня
 
-my_source "a-comp.tl"
+#my_source "a-comp.tl"
 my_source "a-menu.tl"
 
 
+#-------------------------------------------------------------------------------
+proc MENU {} {
+
+  ## ???
+
+  my_source "a-menu.tl"
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+  #   (run_cdr_argus (first argus) argus "COMM ..")
+
+}
+# ;-------------------------------------------------------------------------------
+proc COMM {} {
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+  #   (run_cdr_argus (first argus) argus "COMM ..")
+
+}
 # ;-------------------------------------------------------------------------------
 proc JIMO {} {
 
-  source "a-j-oo.tl" ;# загрузка не скомпилированного варианта
+  source "a-como.tl" ;# загрузка не скомпилированного варианта
                      ;# практически не влияет на скорость (на 1 microsec может)
 
   #mgena@mgena-ThinkPad common $ a~.jm JIMO TEST_time (без компиляции)
@@ -54,88 +77,52 @@ proc JIMO {} {
   #SGvget:   11.23 microseconds per iteration
   #Delete:   143.63 microseconds per iteration
 
-  source "a-jimo.tl"
+  #source "a-jimo.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
 }
 # ;-------------------------------------------------------------------------------
-proc COMM {} {
+proc DICT {} {
+
+  #package require "dicttool"
+  #source "dicttool.tcl"
+
+  source "a-dict.tl"
 
   global argc argv
+
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
   #   (run_cdr_argus (first argus) argus "COMM ..")
 
 }
-#-------------------------------------------------------------------------------
-proc test_6 {} {
+# ;-------------------------------------------------------------------------------
+proc PLUT {} {
 
-  puts " == $tcl_platform(threaded)"
+  # b~.tl PLUT p1_test1 
+  # b~.tl PLUT p1_test1_NEW 
 
-}
-#-------------------------------------------------------------------------------
-proc ArrayInvert {arr1Name arr2Name {pattern *}} {
+  # b~.tl PLUT plot_test3_save 
 
-  upvar  $arr1Name arr1   $arr2Name arr2 ;# inverse
+  # b~.tl PLUT plot_test3 
+  # b~.tl PLUT plot_test3_dyn
 
-  foreach {index value} [array get arr1 $pattern] {
+  #package require co-com 1.0
 
-    set arr2($value) $index
-  }
+  #source "b-com0.tl"
+  #source "b-mfor.tl"
 
-}
-#-------------------------------------------------------------------------------
-proc array_test {} {
+  my_source "a-comp.tl"
 
-  set arr1(1)  10 
-  set arr1(2)  20
-  set arr1(3)  30
+  source "a-dict.tl"
 
-  ArrayInvert arr1 arr2
+  source "a-comp.tl"
+  source "a-plot.tl"
 
-  puts ""
-  puts "arr1= [array get arr1]"
-  puts "arr2= [array get arr2]"
-  puts ""
-
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-proc TEST_color_min {} {
-
-  win_sgr $::SGR_DEFAULT
-
-  puts ""
-  puts "COLOR TEST"
-  puts ""
-
-  win_set_color RED
-  puts         "SGR_BOLD - SGR_RED"
-  win_set_color DEFAULT
-
-  win_sgr $::SGR_CYAN
-  puts "SGR_BOLD - SGR_RED"
-  win_sgr $::SGR_DEFAULT
-
-  win_puts "SGR_BOLD - SGR_RED" GREEN
-
-  puts ""
-  puts "COLOR TEST"
-  puts ""
-
-}
-#-------------------------------------------------------------------------------
-proc puts_test_colors {NAME} {
-
-  win_set_color $NAME
-  puts   "  COLOR_$NAME"
-
-  win_set_color_light $NAME
-  puts   "  COLOR_LIGHT_$NAME"
-
-  puts ""
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
 }
 #-------------------------------------------------------------------------------
@@ -162,15 +149,6 @@ proc TEST_color {} {
   #puts ""
 }
 #-------------------------------------------------------------------------------
-proc test_refs {a &b} {
-
-  USE_REFS
-
-  puts "a=$a,  b=$b"
-
-  set b new_value
-}
-#-------------------------------------------------------------------------------
 #proc test_5 {ind} {}
 proc TEST_5 {} {
 
@@ -180,28 +158,6 @@ proc TEST_5 {} {
   puts "bar= $bar"
 
   test_refs  foo bar
-
-  puts "bar= $bar"
-  puts ""
-}
-#-------------------------------------------------------------------------------
-proc test_6_proc {&b} {
-
-  USE_REFS
-
-  puts "b=  $b"
-
-  set b { 2 3 4}
-}
-#-------------------------------------------------------------------------------
-proc test_6 {ind} {
-
-  set bar {42 22 47}
-
-  puts ""
-  puts "bar= $bar"
-
-  test_6_proc bar
 
   puts "bar= $bar"
   puts ""
@@ -248,6 +204,108 @@ proc TEST_true_calc {} {
 
   puts ""
 
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc test_6 {} {
+
+  puts " == $tcl_platform(threaded)"
+
+}
+#-------------------------------------------------------------------------------
+proc ArrayInvert {arr1Name arr2Name {pattern *}} {
+
+  upvar  $arr1Name arr1   $arr2Name arr2 ;# inverse
+
+  foreach {index value} [array get arr1 $pattern] {
+
+    set arr2($value) $index
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc array_test {} {
+
+  set arr1(1)  10 
+  set arr1(2)  20
+  set arr1(3)  30
+
+  ArrayInvert arr1 arr2
+
+  puts ""
+  puts "arr1= [array get arr1]"
+  puts "arr2= [array get arr2]"
+  puts ""
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc puts_test_colors {NAME} {
+
+  win_set_color $NAME
+  puts   "  COLOR_$NAME"
+
+  win_set_color_light $NAME
+  puts   "  COLOR_LIGHT_$NAME"
+
+  puts ""
+
+}
+#-------------------------------------------------------------------------------
+proc TEST_color_min {} {
+
+  win_sgr $::SGR_DEFAULT
+
+  puts ""
+  puts "COLOR TEST"
+  puts ""
+
+  win_set_color RED
+  puts         "SGR_BOLD - SGR_RED"
+  win_set_color DEFAULT
+
+  win_sgr $::SGR_CYAN
+  puts "SGR_BOLD - SGR_RED"
+  win_sgr $::SGR_DEFAULT
+
+  win_puts "SGR_BOLD - SGR_RED" GREEN
+
+  puts ""
+  puts "COLOR TEST"
+  puts ""
+
+}
+#-------------------------------------------------------------------------------
+proc test_refs {a &b} {
+
+  USE_REFS
+
+  puts "a=$a,  b=$b"
+
+  set b new_value
+}
+#-------------------------------------------------------------------------------
+proc test_6_proc {&b} {
+
+  USE_REFS
+
+  puts "b=  $b"
+
+  set b { 2 3 4}
+}
+#-------------------------------------------------------------------------------
+proc test_6 {ind} {
+
+  set bar {42 22 47}
+
+  puts ""
+  puts "bar= $bar"
+
+  test_6_proc bar
+
+  puts "bar= $bar"
+  puts ""
 }
 #-------------------------------------------------------------------------------
 proc TEST_c_api {} {
@@ -595,21 +653,6 @@ proc TEST_ko_uf {} {
 # }
 #-------------------------------------------------------------------------------
 # ;-------------------------------------------------------------------------------
-proc DICT {} {
-
-  #package require "dicttool"
-  #source "dicttool.tcl"
-
-  source "a-dict.tl"
-
-  global argc argv
-
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
-
-  #   (run_cdr_argus (first argus) argus "COMM ..")
-
-}
-# ;-------------------------------------------------------------------------------
 proc MISC_NEW {} {
 
   #source "b-com0.tl"
@@ -621,35 +664,11 @@ proc MISC_NEW {} {
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
 }
-# ;-------------------------------------------------------------------------------
-proc PLUT {} {
-
-  # b~.tl PLUT p1_test1 
-  # b~.tl PLUT p1_test1_NEW 
-
-  # b~.tl PLUT plot_test3_save 
-
-  # b~.tl PLUT plot_test3 
-  # b~.tl PLUT plot_test3_dyn
-
-  #package require co-com 1.0
-
-  #source "b-com0.tl"
-  #source "b-mfor.tl"
-
-  source "a-dict.tl"
-
-  source "a-comp.tl"
-  source "a-plot.tl"
-
-  global argc argv
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
-
-}
 #-------------------------------------------------------------------------------
 proc DISP {} {
 
   #source "a-disp.tl"   ???
+  #source "a-disp.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию

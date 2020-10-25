@@ -14,6 +14,7 @@
 proc randinstr_NEXT {gp_list} {
 
   #set  instr  [lrand $gp_list] ;# ???
+
   set  instr  [lrand_new $gp_list] ;# ???
     
   return $instr
@@ -135,21 +136,29 @@ proc gp_joy_mutate {program prob} {
   for {set i 0} {$i < [llength $program]} {incr i} {
     
     #set r [expr {rand()}]
-    set r [random_rand]
+    #set r [random_rand] - неверно, не в [0,1] !
+    set r [random_double 1.0]
+    #puts "............. gp_joy_mutate: r = $r,  prob = $prob"
 
     # заменяем итем-строку
     # 
-    if {$r <= $prob} {            
-      lset program $i [randinstr_NEXT $gp_list] ; # для Tcl-8.4            
+    if {$r <= $prob} {
+      set item [randinstr_NEXT $gp_list]
+      #puts "................................ lset   item = $item"
+      lset program $i $item ; # для Tcl-8.4            
     }
 
     #set r [expr {rand()}]
-    set r [random_rand]
+    #set r [random_rand]
+    set r [random_double 1.0]
+    #puts "............. gp_joy_mutate: r = $r,  prob = $prob"
 
     # добавляем итем-стрку
     # 
     if {$r <= $prob} {
-      set program [linsert $program $i [randinstr_NEXT $gp_list]]
+      set item [randinstr_NEXT $gp_list]
+      #puts "................................ linsert item = $item"
+      set program [linsert $program $i $item]
     }
   }
   
@@ -840,7 +849,9 @@ proc run_gp_evolution {randpop_proc
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
-  CALC $obj  \
+  ##CALC $obj 
+
+  $obj calc  \
     -steps           $max_generations \
     -task            $task \
     -is_print        $is_print        \
