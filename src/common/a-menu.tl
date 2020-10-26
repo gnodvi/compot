@@ -278,7 +278,14 @@ proc TEST_menu {} {
     set_ru
   }
 
-  if {$argc == 2} { # любой флажок отменит цвет
+  # а если вложенность? a~.tl MENU TEST_menu @
+  # 
+  #puts "argc = $argc, argv = $argv, flag = [lindex $argv end]"
+
+  set color_flag [lindex $argv end]
+
+  if {$color_flag == "@"} {
+
     set ::is_color_menu 0
     set_en
   }

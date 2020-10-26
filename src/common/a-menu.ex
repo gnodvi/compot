@@ -64,8 +64,8 @@ puts ""
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # залазим поуправлять программкой с меню (через EXPECT)
 
-spawn  a~.tl TEST_menu @
-#spawn  a~.tl MENU TEST_menu @
+#spawn  a~.tl TEST_menu @
+spawn  a~.tl MENU TEST_menu @
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -77,14 +77,16 @@ spawn  a~.tl TEST_menu @
 # вообще такой дубовый способ анализа вывода  LOGOUT не очень хорошо,
 # надо бы получать инфу из переменных ... !!
 
-expect_press_enter_and_send $spawn_id "s"
-expect_press_enter_and_send $spawn_id "3"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+expect_press_enter_and_send $spawn_id "st"
 
 expect_press_enter_and_send $spawn_id "q"
+
 expect_press_enter_and_send $spawn_id "q"
-# expect_press_enter_and_send $spawn_id "q"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 puts ""
-#puts "~~~~~~~~~~~~~~~~~~~~"
 
 #-------------------------------------------------------------------------------

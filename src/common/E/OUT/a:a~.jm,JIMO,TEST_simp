@@ -10,3 +10,8 @@ b balance = 100
 c balance = 0
 c balance = 100
 
+
+classname   = C
+baseclasses = M N O
+classvars   = a A
+

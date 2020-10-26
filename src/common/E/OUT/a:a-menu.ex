@@ -1,7 +1,7 @@
 
 CHECK TEST_menu ... 
 
-spawn a~.tl TEST_menu @
+spawn a~.tl MENU TEST_menu @
 ---------------------------------------------------
 MENU (main) :
  
@@ -12,26 +12,17 @@ MENU (main) :
    q - RETURN/EXIT
 ---------------------------------------------------
  
-CHOICE KEY and PUSH ENTER: s
+CHOICE KEY and PUSH ENTER: st
  
 ---------------------------------------------------
-MENU (main) :
+MENU (maun) :
  
-   r - RAND TEST
-     - 
-  st - SIMPLE TESTS ..
- 
-   q - RETURN/EXIT
----------------------------------------------------
- 
-CHOICE KEY and PUSH ENTER: 3
- 
----------------------------------------------------
-MENU (main) :
- 
-   r - RAND TEST
-     - 
-  st - SIMPLE TESTS ..
+   2 - color_print
+
+arr1= 1 10 2 20 3 30
+arr2= 10 1 20 2 30 3
+
+   3 - 
  
    q - RETURN/EXIT
 ---------------------------------------------------
@@ -39,4 +30,14 @@ MENU (main) :
 CHOICE KEY and PUSH ENTER: q
  
  
-
+---------------------------------------------------
+MENU (main) :
+ 
+   r - RAND TEST
+     - 
+  st - SIMPLE TESTS ..
+ 
+   q - RETURN/EXIT
+---------------------------------------------------
+ 
+CHOICE KEY and PUSH ENTER: 

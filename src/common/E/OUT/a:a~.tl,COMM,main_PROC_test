@@ -1,0 +1,9 @@
+
+main_PROC_test ...
+
+var1= Gena, var2= @:   a = 10, b = 0, c = 0
+var1= Bory, var2= !!!!:   a = 10, b = 0, c = 1
+
+var1= A, var2= var2:   a = 20, b = 2, c = 1
+var1= B, var2= varC:   a = 21, b = 3, c = 1
+
