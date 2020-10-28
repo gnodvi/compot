@@ -4694,9 +4694,6 @@ proc get_staticvar_newscript {statics level} {
   return $newscript
 }
 #-------------------------------------------------------------------------------
-
-set ::OLDPROC 1
-
 #-------------------------------------------------------------------------------
 proc PROC {args} {
 
@@ -4708,28 +4705,39 @@ proc PROC {args} {
   } elseif {[llength $args] == 4} {
     lassign $args  name arguments statics script
 
+    # --------------------------------------------------------
     # и надо добавить статические переменные в скрипт (в начало)
     # 
+    set statscript [get_staticvar_newscript $statics 2]
 
-    set newscript [get_staticvar_newscript $statics 2]
-
+    set newscript {}
+    append newscript $statscript
     append newscript $script
-
     set script $newscript
+    # --------------------------------------------------------
 
   } else {
     error "wrong # args: should be\
           \"sproc name arguments ?statics? script\""
   }
    
-  if {$::OLDPROC} {
-    proc $name $arguments $script
-  } else {
 
-    set ::ARGUMENTS $arguments 
-    proc $name {args} $script
-  }
+  # --------------------------------------------------------
+  # добавим в скрипт свой хитрый разбор параметров
 
+  set newscript {}
+  
+  append newscript { ;;; }
+  append newscript {arguments_SETS }
+  append newscript \{ "$arguments" \}  { {*}$args ; }
+  
+  append newscript $script
+  set script $newscript
+  # --------------------------------------------------------
+  
+
+  proc $name {args} $script
+  
 }
 #-------------------------------------------------------------------------------
 # In addition to procedure arguments, Jim procedures may declare 
@@ -4781,7 +4789,7 @@ proc main_PROC_test {} {
   }
   #------------------------------------
 
-  notstatic Gena   @    var3
+  notstatic Gena   @   var3
   notstatic Bory !!!!  var3
 
   puts ""
@@ -4805,6 +4813,8 @@ proc exists_command {comm} {
 
   set ret [info commands $comm]
 
+  puts "exists_command: ret = $ret"
+
   return [llength $ret]
 }
 #-------------------------------------------------------------------------------
@@ -4816,7 +4826,7 @@ PROC classtest {classname {baseclasses {}} classvars} {
 
   set baseclassvars {}
 
-  puts "01 ............."
+  puts "classtest  ............."
 
   foreach baseclass $baseclasses {
 
@@ -5022,64 +5032,349 @@ proc test_CLASS {} {
 #                   4   1     -   2  3  4
 #                   5   1     2   3  4  5
 #                   6   1   2,3   4  5  6
+#-------------------------------------------------------------------------------
+# 
+# зная кол-во формальных параметров и кол-во входных реальных определимся с
+# распределением их по формальным
+# 
+proc calc_rov {R O V numreal arguments} {
+
+
+  set len_R [llength $R]
+  set len_O [llength $O]
+  set len_V [llength $V]
+
+  if {$len_V > 1} {ERROR}
+
+  set numform [+ $len_R $len_O $len_V]
+
+  if {0} {
+    puts "len_R = $len_R"
+    puts "len_O = $len_O"
+    puts "len_V = $len_V"
+    puts "numreal = $numreal"
+    puts "numform = $numform"
+    puts ""
+  }
+
+  # TODO: здесь нужен алгоритм
+
+    set r $len_R
+
+  #----------------------------------------
+  if {$numreal == $numform} {
+    # кол-во реальных епременнх совпадает с кол-вом формальных
+
+    set o $len_O
+    set v $len_V
+  }
+  #----------------------------------------
+
+  #----------------------------------------
+  if {$numreal > $numform} {
+    # реальных больше  формальных
+
+    if {$len_V == 0} { ;# некуда складывать доролнительные
+      #uplevel 2  puts arguments = $arguments, args = $args
+      ERROR "calc_rov: len_V == 0, arguments = |$arguments|"
+    } 
+
+    set o $len_O
+    set v [+ 1 [- $numreal $numform]] ;# все дополнительные кладем тоже в V
+  }
+  #----------------------------------------
+
+  #----------------------------------------
+  if {$numreal < $numform} {
+    # реальных меньше  формальных
+
+    if {$numreal < $len_R} {ERROR} ;# меньше чем обязательных нельзя
+
+    set razn [- $numform $numreal] ;# на столько меньше 
+    #puts "razn = $razn"
+
+    set v 0 
+
+    if {$len_V == 1} {
+      set v 0 
+      incr razn -1
+    }
+
+    set o [- $len_O $razn] 
+  }
+  #----------------------------------------
+
+
+  return [list $r $o $v]
+}
+#-------------------------------------------------------------------------------
+# 
+proc make_flags {R O V numreal numform arguments} {
+
+  # по распределению типов параметров и кол-ву реально входных
+  # определяем квоту 
+
+  lassign [calc_rov  $R $O $V $numreal $arguments] r o v
+
+  #puts "r = $r"
+  #puts "o = $o"
+  #puts "v = $v"
+  #puts ""
+  
+  # сначала проставим шаблон (звездочки), для реальных параметров
+
+  #set flags [list  - - - - -]
+  set flags [list_make $numform "-"]
+
+
+  for {set i 0}  {$i < $r} {incr i} {
+    lset flags [lindex $R $i] "*"
+  }
+
+  for {set i 0}  {$i < $o} {incr i} {
+    lset flags [lindex $O $i] "*"
+  }
+
+  for {set i 0}  {$i < $v} {incr i} {
+    #lset flags [lindex $V $i] "@"
+    lset flags [lindex $V 0] "@"
+  }
+
+  #puts "flags = $flags"
+
+  # теперь в этот шаблон проставим нумерацию реальных параметров
+
+  set count 1
+
+  for {set i 0} {$i < [llength $flags]} {incr i} {
+
+    set f [lindex $flags $i]
+
+    if {$f == "-"} {
+      continue ;# здесь нет параметров
+    }
+
+    if {$f == "@"} { 
+      # здесь будет список дополнительных
+      set argLIST {} ;# сюда складывать все дополнительные,е eсли будут
+
+      for {set j 0}  {$j < $v} {incr j} {
+        lappend argLIST $count
+        incr count
+      }
+      lset flags $i $argLIST
+      continue 
+
+    } else {
+      # а здесь самы обычные одиночные (обязательные или опционные)
+
+      lset flags $i $count
+    }
+
+    incr count
+  }
+
+  # и вернем уже проставленную нумерацию реальных параметров
+
+  return $flags
+}
+#-------------------------------------------------------------------------------
+
+#set ::ARGSNAME argS
+set ::ARGSNAME args
 
 #-------------------------------------------------------------------------------
-proc arguments_PARSE {args} {
+proc arguments_SETS {arguments args} {
 
+  #puts ""
+  #puts "arguments_SETS: argss = $args, arguments = $arguments"
+  #puts ""
+
+  #set flags 
+  #-----------------------------------------
 
   set R {} ;# Required Arguments
   set O {} ;# Optional Arguments
   set V {} ;# Variable Argument
 
+  set names ""
   set index 0
   
-  foreach var $::ARGUMENTS {
+  foreach var $arguments {
     
+
     if {[llength $var] == 1} {
-      lappend R [list $var $index]
+      #----------------------------------
+      # One Argument
+
+      if {$var == $::ARGSNAME} {
+        # специальный аргумент (список всех остальных)
+
+        lappend names $var
+        uplevel 1 set $var  \{\}
+        lappend V $index
+        
+      } else {
+        # Required Arguments
+        
+        lappend names $var
+        lappend R $index
+      }
+      #----------------------------------
+    } else {
+      #----------------------------------
+      # Optional Arguments
+
+      set ovar  [lindex $var 0]
+      set oval  [lindex $var 1]
+
+      uplevel 1 set $ovar \{$oval\}
+
+      lappend names $ovar
+      lappend O $index
+      #----------------------------------
     }
 
     incr index
   }
 
+  set numreal [llength $args]  ;# реально входных
+  set numform [llength $names] ;# всего потенциальных параметров
+
+  #puts "R = $R"
+  #puts "O = $O"
+  #puts "V = $V"
+  #puts ""
+  #puts "numreal = $numreal"
+  #puts "numform = $numform"
 
   #-----------------------------------------
+  #
+  # строка таблицы входнях параметров 
+  # 
+  set flags [make_flags $R $O $V  $numreal $numform $arguments]
 
-  puts "R = $R"
+  #puts "names = $names"
+  #puts "flags = $flags"
 
   #-----------------------------------------
+  # идем по именам всех потенциально входных переменых
+  # и в соответствии с табличной строкой флагов присваиваем
+  # им значения из реально входных параметров
 
-  set index 0
-  
-  foreach var $::ARGUMENTS {
-    
-    uplevel 1 set $var [lindex $args $index]
-    incr index
+  for {set i 0} {$i < $numform} {incr i} {
+
+
+    set n  [lindex $names $i]
+    set ff [lindex $flags $i]
+
+    if {$ff == "-"} {
+      continue
+    }
+
+    set val {}
+
+    foreach f $ff {
+
+      #set f [lindex $ff 0]
+      
+      set index [- $f 1]
+      lappend val [lindex $args $index]
+      
+      #puts "n = $n, ff = $ff, f = $f, val = $val"
+ 
+    }
+
+    if {[llength $val] == 1} {
+      uplevel 1 set $n $val
+    } else {
+      #puts "............!"
+      uplevel 1 set $n \{$val\}
+    }
+
   }
+
+  #-----------------------------------------
+
+  puts ""
+
+  return
+
+  #-----------------------------------------
+
+  foreach r $R {  
+    set var  [lindex $r 0]
+    set ind  [lindex $r 1]
+    uplevel 1 set $var [lindex $args $ind]
+  }
+
+  #set index 0
+  
+  #foreach var $::ARGUMENTS {    
+  #  uplevel 1 set $var [lindex $args $index]
+  #  incr index
+  #}
 
 }
 #-------------------------------------------------------------------------------
 proc main_NEWPROC_test {} {
 
-  puts ""
-  puts "main_NEWPROC_test ..."
-  puts ""
+  #puts ""
+  #puts "main_NEWPROC_test ..."
+  #puts ""
   
   #------------------------------------
 
-  set ::OLDPROC 0
+  #PROC newproc {{a A} argS b {c C} d} {}
 
-  PROC newproc {a b} {
+  PROC newproc {{a A} args b {c C} d} {
 
-    arguments_PARSE {*}$args
+
+    puts "a    = $a"
+    puts "argS = $args"
+    puts "b    = $b"
+    puts "c    = $c"
+    puts "d    = $d"
 
     puts ""
-    puts "newproc ... arguments = $::ARGUMENTS  !!! args = $args, a = $a, b = $b !!!"
-    puts ""
-
   }
 
-  newproc 1 2
+  newproc    1 2
+
+  puts "----------------------------------"
+
+  newproc AA 1 2
+
+  puts "----------------------------------"
+
+  newproc AA 1 CC 2
+
+  puts "----------------------------------"
+
+  newproc AA v1 v2 1 CC 2
+
+  puts "----------------------------------"
+
+  newproc   1 222
+
+}
+#-------------------------------------------------------------------------------
+proc main_NEWPROC_test2 {} {
+
+
+  PROC newproc2 {{a {}} args b {c C} d} {
+
+
+    puts "a    = $a"
+    puts "argS = $args"
+    puts "b    = $b"
+    puts "c    = $c"
+    puts "d    = $d"
+
+    puts ""
+  }
+
+  newproc2  1 2
 
 }
 #-------------------------------------------------------------------------------
