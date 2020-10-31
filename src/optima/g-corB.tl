@@ -177,10 +177,12 @@ proc make_itemslist {randpop_proc
                             $population_size $len \
                              $is_print]
 
-  puts ""
-  puts stderr "randpop_proc = $randpop_proc"
-  puts stderr "prgpop       = $prgpop"
-  puts ""
+  if {$is_print} {
+    puts ""
+    puts stderr "randpop_proc = $randpop_proc"
+    puts stderr "prgpop       = $prgpop"
+    puts ""
+  }
 
   # TODO:
   # 

@@ -1653,7 +1653,7 @@ proc maintest_run {botobjs task
           #
           # кое-что не отлажено в ONEMETHOD
           # 
-          $obj calc -steps $max_generations  -task $task 
+          $obj calc -steps $max_generations  -task $task -is_print 0
         #} else {
         #  CALC $obj -steps $max_generations  -task $task 
         #}
@@ -1831,14 +1831,14 @@ proc maintest_531 {} {
 
   set lpop 10
   set lgen 15 ;# длина хромосом (строк)
-  set max_generations 100 ; #-1 ;#2 ;# -1 ;# 30 ;# 15 - останов по достижению нужной точности
+  set max_generations -1 ;# 100 ; #-1 ;#2 ;# -1 ;# 30 ;# 15 - останов по достижению нужной точности
 
 
   #set ch_form "%s"
 
   set obj \
     [bot33_create  -lpop $lpop -lgen $lgen \
-       -sort_driver $sort_driver  -task $task]
+       -sort_driver $sort_driver  -task $task -is_print 0]
 
   dict_set $bots "bot33" $obj 
 

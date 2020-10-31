@@ -42,7 +42,9 @@ proc class {classname {baseclasses {}} classvars} {
     set baseclassvars [dict merge $baseclassvars [$baseclass classvars]]
 
     # The last baseclass will win here
-    proc "$classname baseclass" {} baseclass { return $baseclass }
+    proc "$classname baseclass" {} baseclass { 
+      return $baseclass 
+    }
   }
   
   # Merge in the baseclass vars with lower precedence
@@ -54,6 +56,9 @@ proc class {classname {baseclasses {}} classvars} {
   # with a nice message if the class procedure doesn't exist
 
   proc $classname {{cmd new} args} classname {
+
+    #static classname
+
     if {![exists -command "$classname $cmd"]} {
       return -code error "$classname, unknown command \"$cmd\": should be [join [$classname methods] ", "]"
     }
@@ -979,7 +984,19 @@ proc TEST_simp {} {
 # at file "oo.tcl", line 65
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+proc test_CLASS {} {
+
+
+  class A {} {
+    
+    balance 0
+    name    "Unknown"
+  }
+
+}
 #-------------------------------------------------------------------------------
+
+#a~.jm JIMO test_CLASS
 
 #TT add
 

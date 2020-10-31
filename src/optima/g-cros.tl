@@ -451,26 +451,24 @@ proc ga_seed_integer_random {pop adam}  {
 # ga_population_set_allele_min_integer (population *pop,
 # 				      int	  value)
 #-------------------------------------------------------------------------------
-proc ga_population_set_allele_min_integer {pop value}  {
+# proc ga_population_set_allele_min_integer__ {pop value}  {
 
 
-  SET $pop  allele_min_integer $value
-  #set ::allele_min_integer $value 
+#   SET $pop  allele_min_integer $value
 
-  return
-}
+#   return
+# }
 #-------------------------------------------------------------------------------
 #   synopsis:	Sets the maximum value for an integer allele for a
 # 		population.
 #-------------------------------------------------------------------------------
-proc ga_population_set_allele_max_integer {pop value}  {
+# proc ga_population_set_allele_max_integer {pop value}  {
 
 
-  SET $pop  allele_max_integer $value
-  #set ::allele_max_integer $value 
+#   SET $pop  allele_max_integer $value
 
-  return
-}
+#   return
+# }
 # /**********************************************************************
 #   ga_mutate.c
 
@@ -494,68 +492,38 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
     #puts ""
   }
 
-  #   //int		i;		/* Loop variable over all chromosomes */
-  #   int		chromo;		/* Index of chromosome to mutate */
-  #   int		point;		/* Index of allele to mutate */
-  #   int		dir=random_boolean()?-1:1;	/* The direction of drift. */
+
+  ent_set_chromosome_ $son [ent_get_chromosome_ $father]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set len_chromo [GET $pop len_chromosomes]
+
+  set point [random_int  $len_chromo] ;# Index of allele to mutate 
   
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # 
+  # Mutate by tweaking a single allele.
+  #    
+  # ((int *)son->chromosome[chromo])[point] += dir;
+  #
+
   if {[random_boolean]} {
-    set dir -1
+    set dir -1  ;# The direction of drift.
   } else {
     set dir  1
   }
 
-  #   /* Checks */
-  #   if (!father || !son) die("Null pointer to entity structure passed");
-  
-  #   /* Select mutation locus. */
-  #   random_int (1/* pop->num_chromosomes */);
-  random_int 1
+  set point_gen [ent_get_chromo_gen_ $son  $point] ;# старое значение
+  set point_gen [expr        {$point_gen + $dir}]  ;# новое  значение
 
-  set len_chromo [GET $pop len_chromosomes]
-
-  #   chromo =  0; 
-  set chromo    0
-  #   point  = (int) random_int (pop->len_chromosomes);
-  set point [random_int  $len_chromo]
-  
-  #   /*
-  #     * Copy unchanged data.
-  #     */
-  #   //i = 0;
-  #   //for (i=0; i<pop->num_chromosomes; i++)
-  #   //{
-
-  #   memcpy (son->CH/* chromosome[i] */, father->CH/* chromosome[i] */, pop->len_chromosomes*sizeof(int));
-  #$son set_chromosome [$father get_chromosome]
-  #set_chromosome_ $son [$father get_chromosome]
-  ent_set_chromosome_ $son [ent_get_chromosome_ $father]
-
-  # /*   if (i!=chromo) */
-  # /*   { */
-  # /*     ga_copy_data(pop, son, father, i); */
-  # /*   } */
-  # /*   else */
-  # /*   { */
-  #   ga_copy_data (pop, son, NULL, 0/* i */); - надо ли это ???????????
-  # /*   } */
-  #   //}
-  
   set allele_max_integer [GET $pop allele_max_integer]
   set allele_min_integer [GET $pop allele_min_integer]
 
-  #   /*
-  #     * Mutate by tweaking a single allele.
-  #     */
-  #   ((int *)son->chromosome[chromo])[point] += dir;
-  #
-  set point_gen [ent_get_chromo_gen_ $son  $point] ;# старое значение
-  set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #   if (((int *)son->chromosome[chromo])[point] > pop->allele_max_integer)
-  #     ((int *)son->chromosome[chromo])[point] = pop->allele_min_integer;
-  
+  ##_
+  #puts "allele_max_integer = $allele_max_integer"
+  #puts "allele_min_integer = $allele_min_integer"
+    
   if {$point_gen > $allele_max_integer} {
     if {$::is_print} {
       puts "  > allele_max_integer"
@@ -563,8 +531,6 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
     set point_gen $allele_min_intege ;# скорректировали
   }
 
-  #   if (((int *)son->chromosome[chromo])[point] < pop->allele_min_integer)
-  #     ((int *)son->chromosome[chromo])[point] = pop->allele_max_integer;
   
   if {$point_gen < $allele_min_integer} {
     if {$::is_print} {
@@ -572,24 +538,36 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
     }
     set point_gen  $allele_max_intege ;# скорректировали
   }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  #$son set_chromo_gen  $point $point_gen ;# записали новое значение
   ent_set_chromo_gen_ $son  $point $point_gen ;# записали новое значение
 
   return
 }
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #   synopsis:	Cause a single mutation event in which a single
 # 		allele is cycled.
-#-------------------------------------------------------------------------------
 # void 
 # ga_mutate_printable_singlepoint_drift (population *pop,
 #                                        entity *father, entity *son)
 #-------------------------------------------------------------------------------
 proc ga_mutate_printable_singlepoint_drift {pop father son}  {
 
+
+
+  ent_set_chromosome_ $son [ent_get_chromosome_ $father] ;# ????
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set len_chromo [GET $pop len_chromosomes]
+
+  set point [random_int  $len_chromo]
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #   /*
+  #     * Mutate by tweaking a single allele.
+  #     */
 
   # The direction of drift. 
   
@@ -599,28 +577,15 @@ proc ga_mutate_printable_singlepoint_drift {pop father son}  {
     set dir  1
   }
 
-  #   /* Select mutation locus. */
-  #   /* chromo =  (int) */ random_int (1/* pop->num_chromosomes */);
-
-  random_int 1
-  set len_chromo [GET $pop len_chromosomes]
-
-  set chromo    0
-  set point [random_int  $len_chromo]
-  
-
-  ent_set_chromosome_ $son [ent_get_chromosome_ $father] ;# ????
-
-  #   /*
-  #     * Mutate by tweaking a single allele.
-  #     */
-
   set point_gen [ent_get_chromo_gen_ $son  $point] ;# старое значение
   set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
 
 
   set char_min_num [scan " " "%c"]
   set char_max_num [scan "~" "%c"] 
+
+  #puts "char_min_num = $char_min_num"
+  #puts "char_max_num = $char_max_num"
     
   if {$point_gen > $char_max_num} {
     set point_gen $char_min_num ;# скорректировали
@@ -630,6 +595,7 @@ proc ga_mutate_printable_singlepoint_drift {pop father son}  {
     set point_gen $char_max_num ;# скорректировали
   }
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   ent_set_chromo_gen_ $son  $point $point_gen ;# записали новое значение
 

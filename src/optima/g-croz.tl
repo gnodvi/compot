@@ -514,9 +514,9 @@ proc gp_evolution_main {task  pop max_generations
 
 
   set steps $max_generations
-  puts stderr ""
-  puts stderr "steps = $steps"
-  puts stderr ""
+  #puts stderr ""
+  #puts stderr "steps = $steps"
+  #puts stderr ""
 
   SET $pop "generation" 0
   set i 0
@@ -558,7 +558,9 @@ proc gp_evolution_main {task  pop max_generations
 
     }
 
-    gp_pop_all_print        $pop ;# $itemslist 
+    if {$is_print} {
+      gp_pop_all_print        $pop ;# $itemslist 
+    }
     #exit
 
     print_best  $task $best_item  $is_print $game_print_proc ;# $fitnessfunc 
@@ -753,10 +755,11 @@ proc calc_BOT33  {obj args} {
   set  pop [$obj GET_pop]
   
   set is_print         [dict_parse $args "-is_print"        1]
+  #puts "is_print = $is_print"
+  #exit
   set game_print_proc  [dict_parse $args "-game_print_proc" 0]
   set mutprob          [dict_parse $args "-mutprob"         0.1]
    
-  
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   #  
   set randpop_proc     [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
@@ -793,7 +796,7 @@ class_method BOT33  final {} {
   
   set  pop [$obj GET_pop]
   
-  puts "BOT33 final: pop = [pop_print $pop]"
+  #puts "BOT33 final: pop = [pop_print $pop]"
 
 
   set num_generations [GET $pop "generation"] ;# сколько было генераций   
@@ -1020,7 +1023,7 @@ proc _gp_test {} {
   run_gp_evolution  $randpop_proc \
                     $bnums $bsize \
     $fitnessfunc $sort_driver \
-    0.1  $steps $is_print 0 ;# not game print
+    0.1  $steps  $is_print 0 ;# not game print
 
   # ------------------------------------------------
 

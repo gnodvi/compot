@@ -6,15 +6,15 @@ maxgs  = 10
 
 GA EVOLUTION   0  ...  f0 =  41.400  i0 =  122177821869521
 GA EVOLUTION   1  ...  f0 =  42.480  i0 =  122163897869523
-GA EVOLUTION   2  ...  f0 =  42.560  i0 =  123133869869524
-GA EVOLUTION   3  ...  f0 =  43.560  i0 =  122137861859524
-GA EVOLUTION   4  ...  f0 =  44.580  i0 =  122133821859521
-GA EVOLUTION   5  ...  f0 =  44.680  i0 =  122133267859524
-GA EVOLUTION   6  ...  f0 =  44.680  i0 =  122133261859524
-GA EVOLUTION   7  ...  f0 =  44.680  i0 =  122133261859524
-GA EVOLUTION   8  ...  f0 =  44.680  i0 =  122133221859524
-GA EVOLUTION   9  ...  f0 =  44.700  i0 =  122133261859534
-GA EVOLUTION  10  ...  f0 =  44.700  i0 =  122133261859534
+GA EVOLUTION   2  ...  f0 =  42.520  i0 =  122437869869524
+GA EVOLUTION   3  ...  f0 =  42.620  i0 =  122437226866521
+GA EVOLUTION   4  ...  f0 =  43.620  i0 =  122137847866523
+GA EVOLUTION   5  ...  f0 =  43.660  i0 =  122137847866543
+GA EVOLUTION   6  ...  f0 =  43.740  i0 =  122433827866544
+GA EVOLUTION   7  ...  f0 =  44.780  i0 =  122433847866544
+GA EVOLUTION   8  ...  f0 =  45.800  i0 =  122433847865544
+GA EVOLUTION   9  ...  f0 =  45.860  i0 =  122433246865544
+GA EVOLUTION  10  ...  f0 =  46.860  i0 =  122333247865544
 
 
 FINAL RESULT: 
@@ -23,25 +23,25 @@ FINAL RESULT:
 
 Generation = 10
 
-   i =   0   fitness=    44.700   ch=  122133261859534
-   i =   1   fitness=    44.700   ch=  122133222859524
-   i =   2   fitness=    44.700   ch=  122133261859534
-   i =   3   fitness=    44.700   ch=  122133261859534
-   i =   4   fitness=    44.680   ch=  122133221859524
-   i =   5   fitness=    44.680   ch=  122133261859524
-   i =   6   fitness=    44.680   ch=  122133221859524
-   i =   7   fitness=    44.680   ch=  122133261859524
-   i =   8   fitness=    44.680   ch=  122133221859524
-   i =   9   fitness=    44.680   ch=  122133221859524
+   i =   0   fitness=    46.860   ch=  122333247865544
+   i =   1   fitness=    45.860   ch=  122433246865544
+   i =   2   fitness=    45.840   ch=  122433246865543
+   i =   3   fitness=    45.820   ch=  122433846865544
+   i =   4   fitness=    45.820   ch=  122433846865544
+   i =   5   fitness=    45.820   ch=  122433247865534
+   i =   6   fitness=    45.800   ch=  122433847865544
+   i =   7   fitness=    45.800   ch=  122433249865544
+   i =   8   fitness=    45.800   ch=  122433847865544
+   i =   9   fitness=    45.800   ch=  122433847865544
 
 STABLE_SIZE = 10 
 SIZE        = 10 
 BEST        = 0 
 
-BEST = 0  (fitness = 44.700000) 
+BEST = 0  (fitness = 46.860000) 
  
 -----------------------------------------------------------------------
 
-Best solution , score = 44.70 : 122133261859534
+Best solution , score = 46.86 : 122333247865544
 
 

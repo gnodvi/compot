@@ -2067,6 +2067,73 @@ proc dict_parse {d key {defaultval NULL}} {
 # a~.tl DICT DICT_save
 
 #-------------------------------------------------------------------------------
+proc dict_class_create {classname {baseclasses {}} classvars constructorbody} {
+
+  set ret [dict_create]
+
+  SET $ret "classname"       $classname
+  SET $ret "baseclasses"     $baseclasses
+  SET $ret "classvars"       $classvars
+  SET $ret "constructorbody" $constructorbody
+
+  return $ret
+}
+#-------------------------------------------------------------------------------
+proc dict_class_new {dclass} {
+
+  set d [dict_create]
+
+  set classvars       [GET $dclass "classvars"]
+  set constructorbody [GET $dclass "constructorbody"]
+
+  foreach l $classvars {
+
+    puts "l = $l"
+  }
+
+  dict for {var val} $classvars {
+    
+    if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
+
+    puts "var = $var, val = $val"
+    SET $d $var $val
+  }
+
+  return $d
+}
+#-------------------------------------------------------------------------------
+proc TEST_class {} {
+
+  puts ""
+  puts "TEST_dict_class"
+  puts ""
+
+
+  set dclass [dict_class_create MUTATE {} {
+
+    ;# _это_перечисление_переменных
+    
+    name  ""
+    
+  } {
+    # а это конструктор класса 
+    #puts "name = [GET $obj name]"
+    puts "!!!!!!!!!!! constructor !!!!!!!!111"
+  }]
+
+  puts "dclass = $dclass"
+  dict_print $dclass
+  puts ""
+
+  set d1 [dict_class_new $dclass]
+
+  puts ""
+  dict_print $d1
+  puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 

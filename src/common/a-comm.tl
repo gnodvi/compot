@@ -4364,8 +4364,9 @@ proc SETGET {classname} {
 proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 
 
+
+  #---------------------------------------------------------
   if {$::__JIM__} {
-    #---------------------------------------------------------
 
     class $classname $baseclasses $classvars
 
@@ -4374,9 +4375,9 @@ proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
     $classname method constructor args $constructorbody
     #$classname method constructor {} $constructorbody
 
-    #---------------------------------------------------------
+  #---------------------------------------------------------
   } else {
-    #---------------------------------------------------------
+  #---------------------------------------------------------
 
     #if {$classname == "AccountNext"} {
     #  set classbody { superclass AccountMore }
@@ -4694,27 +4695,34 @@ proc get_staticvar_newscript {statics level} {
   return $newscript
 }
 #-------------------------------------------------------------------------------
+
+set ::PROCNEW 1
+
 #-------------------------------------------------------------------------------
 proc PROC {args} {
 
   # Unpack arguments.
 
   if       {[llength $args] == 3} {
+
     lassign $args  name arguments script
 
   } elseif {[llength $args] == 4} {
+
     lassign $args  name arguments statics script
 
-    # --------------------------------------------------------
-    # и надо добавить статические переменные в скрипт (в начало)
-    # 
-    set statscript [get_staticvar_newscript $statics 2]
-
-    set newscript {}
-    append newscript $statscript
-    append newscript $script
-    set script $newscript
-    # --------------------------------------------------------
+    if {$::PROCNEW} {
+      # --------------------------------------------------------
+      # и надо добавить статические переменные в скрипт (в начало)
+      # 
+      set statscript [get_staticvar_newscript $statics 2]
+      
+      set newscript {}
+      append newscript $statscript
+      append newscript $script
+      set script $newscript
+      # --------------------------------------------------------
+    }
 
   } else {
     error "wrong # args: should be\
@@ -4722,19 +4730,20 @@ proc PROC {args} {
   }
    
 
-  # --------------------------------------------------------
-  # добавим в скрипт свой хитрый разбор параметров
-
-  set newscript {}
-  
-  append newscript { ;;; }
-  append newscript {arguments_SETS }
-  append newscript \{ "$arguments" \}  { {*}$args ; }
-  
-  append newscript $script
-  set script $newscript
-  # --------------------------------------------------------
-  
+  if {$::PROCNEW} {
+    # --------------------------------------------------------
+    # добавим в скрипт свой хитрый разбор параметров
+    
+    set newscript {}
+    
+    append newscript { ;;; }
+    append newscript {arguments_SETS }
+    append newscript \{ "$arguments" \}  { {*}$args ; }
+    
+    append newscript $script
+    set script $newscript
+    # --------------------------------------------------------
+  }
 
   proc $name {args} $script
   
@@ -4820,9 +4829,13 @@ proc exists_command {comm} {
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+
+alias PROCTEST proc
+
 #-------------------------------------------------------------------------------
 
-PROC classtest {classname {baseclasses {}} classvars} {
+PROCTEST classtest {classname {baseclasses {}} classvars} {
+
 
   set baseclassvars {}
 
@@ -4837,7 +4850,7 @@ PROC classtest {classname {baseclasses {}} classvars} {
     set baseclassvars [dict merge $baseclassvars [$baseclass classvars]]
 
     # The last baseclass will win here
-    PROC "$classname baseclass" {} baseclass { return $baseclass }
+    PROCTEST "$classname baseclass" {} baseclass { return $baseclass }
   }
   
   # Merge in the baseclass vars with lower precedence
@@ -4848,7 +4861,7 @@ PROC classtest {classname {baseclasses {}} classvars} {
   # It simply dispatches 'classname cmd' to a procedure named {classname cmd}
   # with a nice message if the class procedure doesn't exist
 
-  PROC $classname {{cmd new} args} classname {
+  PROCTEST $classname {{cmd new} args} classname {
 
     puts "05 1 ............."
       
@@ -4870,7 +4883,7 @@ PROC classtest {classname {baseclasses {}} classvars} {
   # Constructor
   #------------------------------------------------------------------------
   # gnodvi proc "$classname new" {{instvars {}}} {classname classvars} {}
-  PROC "$classname new" {{instvars__ {}}} {classname classvars} {
+  PROCTEST "$classname new" {{instvars__ {}}} {classname classvars} {
 
     # gnodvi: set instvars [dict merge $classvars $instvars]
     # gnodvi: save arglist for next call
@@ -4884,7 +4897,7 @@ PROC classtest {classname {baseclasses {}} classvars} {
     set obj [ref $classname $classname "$classname finalize"]
 
 
-    PROC $obj {method args} {classname instvars} {
+    PROCTEST $obj {method args} {classname instvars} {
 
       if {![exists -command "$classname $method"]} {
         if {![exists -command "$classname unknown"]} {
@@ -4927,12 +4940,12 @@ PROC classtest {classname {baseclasses {}} classvars} {
   puts "03 ............."
 
   # Finalizer to invoke destructor during garbage collection
-  PROC "$classname finalize" {ref classname} { $ref destroy }
+  PROCTEST "$classname finalize" {ref classname} { $ref destroy }
 
   # Method creator
-  PROC "$classname method" {method arglist __body} classname {
+  PROCTEST "$classname method" {method arglist __body} classname {
 
-    PROC "$classname $method" $arglist {__body} {
+    PROCTEST "$classname $method" $arglist {__body} {
 
       # Make sure this isn't incorrectly called without an object
       if {![uplevel exists instvars]} {
@@ -4952,10 +4965,10 @@ PROC classtest {classname {baseclasses {}} classvars} {
 
   # Other simple class procs
 
-  PROC "$classname vars"      {} vars      { return $vars }
-  PROC "$classname classvars" {} classvars { return $classvars }
-  PROC "$classname classname" {} classname { return $classname }
-  PROC "$classname methods"   {} classname {
+  PROCTEST "$classname vars"      {} vars      { return $vars }
+  PROCTEST "$classname classvars" {} classvars { return $classvars }
+  PROCTEST "$classname classname" {} classname { return $classname }
+  PROCTEST "$classname methods"   {} classname {
     lsort [lmap p [info commands "$classname *"] {
       lindex [split $p " "] 1
     }]
@@ -4978,34 +4991,6 @@ PROC classtest {classname {baseclasses {}} classvars} {
   puts "08 ............."
 
   return $classname
-}
-#-------------------------------------------------------------------------------
-proc test_CLASS {} {
-
-
-  proc proctest {classname {baseclasses {M N O}} classvars} {
-
-    puts ""
-    puts "classname   = $classname"
-    puts "baseclasses = $baseclasses"
-    puts "classvars   = $classvars"
-    puts ""
-  }
-
-  proctest C WW {a A}
-
-  #---------------------------------------------
-
-  classtest A {} {
-    
-    balance 0
-    name    "Unknown"
-  }
-
-  # invalid command name "exists"
-  #     while executing
-  # "exists -command "$classname $cmd""
-
 }
 #-------------------------------------------------------------------------------
 # http://jim.tcl.tk/fossil/doc/trunk/Tcl_shipped.html#_proc
@@ -5362,6 +5347,19 @@ proc main_NEWPROC_test {} {
 proc main_NEWPROC_test2 {} {
 
 
+  proc proctest {classname {baseclasses {M N O}} classvars} {
+
+    puts ""
+    puts "classname   = $classname"
+    puts "baseclasses = $baseclasses"
+    puts "classvars   = $classvars"
+    puts ""
+  }
+
+  proctest C WW {a A}
+
+  #---------------------------------------------
+
   PROC newproc2 {{a {}} args b {c C} d} {
 
 
@@ -5379,12 +5377,28 @@ proc main_NEWPROC_test2 {} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+proc test_CLASSTEST {} {
+
+  #set ::PROCNEW 0
+
+  classtest A {} {
+    
+    balance 0
+    name    "Unknown"
+  }
+
+  # invalid command name "exists"
+  #     while executing
+  # "exists -command "$classname $cmd""
+
+}
+#-------------------------------------------------------------------------------
 
 #main_stest
 #main_PROC_test
 
-#a~.tl COMM test_CLASS
-#a~.jm COMM test_CLASS
+#a~.tl COMM test_CLASSTEST
+#a~.jm COMM test_CLASSTEST
 
 # ==============================================================================
 #-------------------------------------------------------------------------------
