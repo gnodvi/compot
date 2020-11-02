@@ -241,10 +241,13 @@ proc BASECLASS {classname} {
     return [$classname baseclass]
   } else {
     
-    #return [string trimleft [info object class $obj] ":"]
-
     set superclasses [info class superclasses $classname]
-    puts "BASECLASS: superclasses = $superclasses"
+
+    #puts "BASECLASS: superclasses = $superclasses"
+    #
+    # вообще то это список!
+    # 
+    return [string trimleft $superclasses ":"]
   }
 
 }
@@ -259,7 +262,6 @@ proc BASECLASS {classname} {
 
 
 
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -821,25 +823,34 @@ proc TEST_refs {}  {
 # ------------------------------------------------------------------------------
 proc ONEMETHOD {obj args} {
 
+  # вызываемая проц-ра в маленьких буквах, т.е. CALC -> calc
+  # 
   set procname  [string tolower [lindex [info level -1] 0]]
   set classname [CLASSNAME $obj]
 
+  # сделаем вызывемую процедуру-метод 
+  #
   set procforclass "${procname}_${classname}"
 
+  # сдалано не правильно, должны бы идти по всем базовым классам, иерархически
+  # и искать эту процедуру-метод
 
   while {1} {
     
-    if {! [exists -command $procforclass]} {
+    ##if {! [exists -command $procforclass]} {}
+    if {! [exists_command $procforclass]} {
       
       set classname    [BASECLASS $classname]
-      #set classname    [$classname baseclass]
       set procforclass "${procname}_$classname" 
+
+      #puts "new classname = $classname"
+      #puts "procforclass = $procforclass"
+
     } else {
       break
     }
     
   }
-
 
   return [$procforclass $obj {*}$args]
 }

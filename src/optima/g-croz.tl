@@ -601,7 +601,7 @@ proc gp_evolution_main {task  pop max_generations
 }
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT {} {
+class_create $::NEWMODE BOT {} {
 
   ;# _это_перечисление_переменных
   
@@ -654,13 +654,12 @@ proc calc_BOT {obj args} {
   #set ret [ga_evolution  $task $pop $max_generations]  
 }
 #---------------------------------------------------------
-class_method BOT  calc {args} {
+# class_method BOT  calc {args} {
   
-  set obj [SELF]
+#   set obj [SELF]
   
-  calc_BOT $obj {*}$args
-  #CALC $obj {*}$args
-}
+#   calc_BOT $obj {*}$args
+# }
 #---------------------------------------------------------
 class_method BOT final {} {
     
@@ -670,7 +669,6 @@ class_method BOT final {} {
   
   #puts ""
   #puts "BOT final: pop = [pop_print $pop]"
-
 
   set num_generations [GET $pop "generation"] ;# сколько было генераций
   set best_entity     [ga_get_entity_from_rank $pop 0]
@@ -741,7 +739,6 @@ class_create 0 BOT33 {BOT} {
 }
 
 #-----------------------------------------------------------
-#class_method BOT33 calc {args} {}
 proc calc_BOT33  {obj args} {
   
   #set obj [SELF]
@@ -782,13 +779,12 @@ proc calc_BOT33  {obj args} {
   return
 }
 #---------------------------------------------------------
-class_method BOT33  calc {args} {
+# class_method BOT33  calc {args} {
   
-  set obj [SELF]
+#   set obj [SELF]
   
-  calc_BOT33 $obj {*}$args
-  #CALC $obj {*}$args
-}
+#   calc_BOT33 $obj {*}$args
+# }
 #-----------------------------------------------------------
 class_method BOT33  final {} {
   
@@ -817,6 +813,11 @@ proc bot33_create {args} {
 }
 # ------------------------------------------------------------------------------
 proc CALC {obj args} {
+
+  return [ONEMETHOD $obj {*}$args]
+}
+# ------------------------------------------------------------------------------
+proc FINAL {obj args} {
 
   return [ONEMETHOD $obj {*}$args]
 }
@@ -854,7 +855,7 @@ proc run_gp_evolution {randpop_proc
 
   ##CALC $obj 
 
-  $obj calc  \
+  CALC $obj \
     -steps           $max_generations \
     -task            $task \
     -is_print        $is_print        \
@@ -1015,6 +1016,11 @@ proc _gp_test {} {
   puts "bsize  = $bsize"  ;# макс. длина ботов (при начальном старте?)
   puts "steps  = $steps"  ;# шагов эволюции  
   puts ""
+
+
+  #----------------------------
+  #set ::NEWMODE 1
+  #----------------------------
 
 
   set is_print 1

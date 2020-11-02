@@ -1,0 +1,81 @@
+
+TEST_dict_class
+
+c1 = ::G_DICT_0
+
+dict_print ::G_DICT_0 = 
+  constructorbody = 
+    # а это конструктор класса 
+    puts "C1 constructor ......."
+    puts "name = [GET $obj name1]"
+  
+  classname       = C1
+  baseclasses     = {}
+  classvars       {
+    name1 = C1-name
+    ;#    = _это_перечисление_переменных
+  }
+
+
+c2 = ::G_DICT_1
+
+dict_print ::G_DICT_1 = 
+  constructorbody {
+    puts = name = [GET $obj name2]
+  }
+  classname       = C2
+  baseclasses     = C1
+  classvars       {
+    name1 = C2-name
+    name2 = C2-name
+  }
+
+
+-----------------------
+var = name1, val = C1-name
+C1 constructor .......
+name = C1-name
+
+dict_print ::G_DICT_2 = 
+  name1 = C1-name
+
+-----------------------
+-----------------------
+var = name1, val = C1-name
+C1 constructor .......
+name = C1-name
+
+dict_print ::G_DICT_3 = 
+  name1 = C1-name
+
+-----------------------
+-----------------------
+c = C1
+var = name1, val = C1-name
+C1 constructor .......
+name = C1-name
+var = name1, val = C2-name
+var = name2, val = C2-name
+C2 constructor .......
+name = C2-name
+
+dict_print ::G_DICT_4 = 
+  name1 = C2-name
+  name2 = C2-name
+
+-----------------------
+-----------------------
+c = C1
+var = name1, val = C1-name
+C1 constructor .......
+name = C1-name
+var = name1, val = C2-name
+var = name2, val = C2-name
+C2 constructor .......
+name = C2-name
+
+dict_print ::G_DICT_5 = 
+  name1 = C2-name
+  name2 = C2-name
+
+-----------------------

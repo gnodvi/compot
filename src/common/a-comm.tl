@@ -4361,9 +4361,16 @@ proc SETGET {classname} {
   return
 }
 #-------------------------------------------------------------------------------
+
+set ::NEWMODE 0
+
+#-------------------------------------------------------------------------------
 proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 
+  if {$mode} {
 
+    return [dclass_create $classname $baseclasses $classvars $constructorbody]
+  }
 
   #---------------------------------------------------------
   if {$::__JIM__} {
@@ -4406,7 +4413,7 @@ proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 
     set    fullbody {}
 
-    if {$mode == 1} {
+    if {0} {
 
       #puts "info object variables  = [info object variables $tst]"
       #puts "info object vars       = [info object vars      $tst]"
@@ -4822,7 +4829,7 @@ proc exists_command {comm} {
 
   set ret [info commands $comm]
 
-  puts "exists_command: ret = $ret"
+  #puts "exists_command: comm = $comm, ret = $ret"
 
   return [llength $ret]
 }

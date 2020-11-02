@@ -2067,7 +2067,7 @@ proc dict_parse {d key {defaultval NULL}} {
 # a~.tl DICT DICT_save
 
 #-------------------------------------------------------------------------------
-proc dict_class_create {classname {baseclasses {}} classvars constructorbody} {
+proc dclass_create {classname {baseclasses {}} classvars constructorbody} {
 
   set ret [dict_create]
 
@@ -2076,21 +2076,35 @@ proc dict_class_create {classname {baseclasses {}} classvars constructorbody} {
   SET $ret "classvars"       $classvars
   SET $ret "constructorbody" $constructorbody
 
+  proc ${classname}_constructor {obj args} $constructorbody
+
+  set newbody {
+
+    set classname $classname
+    set dclass \$::DCLASSES($classname)
+
+    return [dclass_newobj \$dclass]
+  }
+  # 
+  # подкоректировать тело процедуры: заменить по значению $classname
+  # 
+  set newbody [subst -nocommand $newbody]
+
+  proc ${classname}_new {args} $newbody
+
+  set ::DCLASSES($classname) $ret
+
   return $ret
 }
 #-------------------------------------------------------------------------------
-proc dict_class_new {dclass} {
+proc set_variables {d classname args} {
 
-  set d [dict_create]
+  set dclass $::DCLASSES($classname)
 
   set classvars       [GET $dclass "classvars"]
-  set constructorbody [GET $dclass "constructorbody"]
 
-  foreach l $classvars {
-
-    puts "l = $l"
-  }
-
+  # устанавливаем переменные из этого класса
+  # 
   dict for {var val} $classvars {
     
     if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
@@ -2098,6 +2112,32 @@ proc dict_class_new {dclass} {
     puts "var = $var, val = $val"
     SET $d $var $val
   }
+
+  # и запускаем конструктор
+  # 
+  ${classname}_constructor $d {*}$args
+
+}
+#-------------------------------------------------------------------------------
+proc dclass_newobj {dclass args} {
+
+  set d [dict_create]
+
+  set classname       [GET $dclass "classname" ]
+  #set classvars       [GET $dclass "classvars"]
+  set baseclasses     [GET $dclass "baseclasses"]
+
+  # сначала установим все переменные базовых классов
+  # 
+  foreach c $baseclasses {
+
+    puts "c = $c"
+    set_variables $d $c {*}$args
+  }
+
+  # и после уже переменные своего основного класса
+  # 
+  set_variables $d $classname {*}$args
 
   return $d
 }
@@ -2108,28 +2148,70 @@ proc TEST_class {} {
   puts "TEST_dict_class"
   puts ""
 
+  #-----------------------------------------------
 
-  set dclass [dict_class_create MUTATE {} {
+  set c1 [dclass_create C1 {} {
 
     ;# _это_перечисление_переменных
     
-    name  ""
-    
+    name1  "C1-name"    
   } {
     # а это конструктор класса 
-    #puts "name = [GET $obj name]"
-    puts "!!!!!!!!!!! constructor !!!!!!!!111"
+    puts "C1 constructor ......."
+    puts "name = [GET $obj name1]"
   }]
 
-  puts "dclass = $dclass"
-  dict_print $dclass
+  puts "c1 = $c1"
+  dict_print $c1
   puts ""
 
-  set d1 [dict_class_new $dclass]
+  #-----------------------------------------------
 
+  set c2 [class_create 1 C2 {C1} {
+
+    name1  "C2-name"    
+    name2  "C2-name"    
+  } {
+    puts "C2 constructor ......."
+    puts "name = [GET $obj name2]"
+  }]
+
+  puts "c2 = $c2"
+  dict_print $c2
   puts ""
-  dict_print $d1
-  puts ""
+
+  #-----------------------------------------------
+
+  puts "-----------------------"
+  set c1_obj1 [dclass_newobj $c1]
+
+  dict_print $c1_obj1
+  puts "-----------------------"
+
+
+  puts "-----------------------"
+  set c1_obj2 [C1_new]
+
+  dict_print $c1_obj2
+  puts "-----------------------"
+
+  #-----------------------------------------------
+
+  puts "-----------------------"
+  set c2_obj1 [dclass_newobj $c2]
+
+  dict_print $c2_obj1
+  puts "-----------------------"
+
+
+  puts "-----------------------"
+  set c2_obj2 [C2_new]
+
+  dict_print $c2_obj2
+  puts "-----------------------"
+
+  #-----------------------------------------------
+
 
   return
 }

@@ -923,7 +923,7 @@ proc  calc_BOT04  {obj args} {
   return $ret
 }
 #---------------------------------------------------------
-class_method  BOT04  calc {args} {
+class_method  BOT04 calc {args} {
   
   set obj [SELF]
   
@@ -966,7 +966,8 @@ proc _04_test {} \
 
   set pop [$obj GET_pop]
 
-  $obj calc -steps $max_generations -task $task 
+  CALC $obj -steps $max_generations -task $task 
+
 
   #-----------------------------------------------------------------
 
@@ -1141,7 +1142,7 @@ proc _05_test {} \
 
   set pops [$obj GET_pops]
 
-  $obj calc -steps $max_generations -task $task
+  CALC $obj -steps $max_generations -task $task
 
   #----------------------------------------------------------------------
 
@@ -1218,7 +1219,6 @@ class_create 0 BOT06 {BOT} {
 #---------------------------------------------------------
 proc calc_BOT06 {obj args} {
 
-  #set obj [SELF]
   
   set task            [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations [dict_parse $args "-steps"] 
@@ -1275,7 +1275,7 @@ proc _dc_test {} \
 
     set pop [$obj GET_pop]
 
-    $obj calc -steps $max_generations -task $task
+    CALC $obj -steps $max_generations -task $task
 
     #----------------------------------------------------------
 
@@ -1404,7 +1404,6 @@ class_create 0 BOT79 {BOT} {
 #---------------------------------------------------------
 proc calc_BOT79 {obj args} {
   
-  #set obj [SELF]
   
   set task             [dict_parse $args "-task" [$obj GET_task]] 
   set max_generations1 [dict_parse $args "-steps"] 
@@ -1497,13 +1496,13 @@ proc eschemes {} \
   #----------------------------------------------------------
 
   if {! $::is_print} {
-    $obj7 calc -task $task -steps $max_generations1
+    CALC $obj7 -task $task -steps $max_generations1
   }
   
-    $obj8 calc -task $task -steps $max_generations2
+  CALC $obj8 -task $task -steps $max_generations2
   
   if {! $::is_print} {
-    $obj9 calc -task $task -steps $max_generations3
+    CALC $obj9 -task $task -steps $max_generations3
   }
   
   
@@ -1647,16 +1646,7 @@ proc maintest_run {botobjs task
 
         #--------------------------------
 
-        # вычисляем
-        # 
-        #if {$::__TCL__} {
-          #
-          # кое-что не отлажено в ONEMETHOD
-          # 
-          $obj calc -steps $max_generations  -task $task -is_print 0
-        #} else {
-        #  CALC $obj -steps $max_generations  -task $task 
-        #}
+        CALC $obj -steps $max_generations  -task $task 
         
         # забираем результаты
         # 
