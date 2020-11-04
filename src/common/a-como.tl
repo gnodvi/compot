@@ -207,6 +207,12 @@ proc super {method args} {
 proc SELF {} {
 
 
+  if {$::NEWMODE} {
+
+    uplevel 1 {return $obj} 
+  }
+
+  #----------------------------------------------------
   if {$::__JIM__} {
 
     #upvar self self_local
@@ -217,11 +223,24 @@ proc SELF {} {
 
     uplevel 1 {return [self]} 
   }
+  #----------------------------------------------------
 
 }
 # ------------------------------------------------------------------------------
 proc CLASSNAME {obj} {
 
+
+  if {$::NEWMODE} {
+
+    set classname [GET $obj "classname"]
+
+    #puts stderr "CLASSNAME: .... $classname"
+
+    #exit
+    return $classname
+  }
+
+  #----------------------------------------------------
 
   if {$::__JIM__} {
 
@@ -235,10 +254,21 @@ proc CLASSNAME {obj} {
 # ------------------------------------------------------------------------------
 proc BASECLASS {classname} {
 
+  if {$::NEWMODE} {
+  
+    set dclass $::DCLASSES($classname)
+
+    set baseclasses  [GET $dclass "baseclasses"]
+
+    return [lindex $baseclasses 0] ;# пока предполагаем не более одного
+  }
+
+  #----------------------------------------------------
 
   if {$::__JIM__} {
 
     return [$classname baseclass]
+
   } else {
     
     set superclasses [info class superclasses $classname]
@@ -821,27 +851,28 @@ proc TEST_refs {}  {
 #-------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc ONEMETHOD {obj args} {
+proc RUN1 {procname obj args} {
 
   # вызываемая проц-ра в маленьких буквах, т.е. CALC -> calc
   # 
-  set procname  [string tolower [lindex [info level -1] 0]]
+  #set procname  [string tolower [lindex [info level -1] 0]]
+  #set procname  "${procname}_"
+
   set classname [CLASSNAME $obj]
 
   # сделаем вызывемую процедуру-метод 
   #
-  set procforclass "${procname}_${classname}"
+  set procforclass "${procname}${classname}"
 
   # сдалано не правильно, должны бы идти по всем базовым классам, иерархически
-  # и искать эту процедуру-метод
+  # и искать эту процедуру-метод?
 
   while {1} {
     
-    ##if {! [exists -command $procforclass]} {}
     if {! [exists_command $procforclass]} {
       
       set classname    [BASECLASS $classname]
-      set procforclass "${procname}_$classname" 
+      set procforclass "${procname}$classname" 
 
       #puts "new classname = $classname"
       #puts "procforclass = $procforclass"
@@ -853,6 +884,16 @@ proc ONEMETHOD {obj args} {
   }
 
   return [$procforclass $obj {*}$args]
+}
+# ------------------------------------------------------------------------------
+proc ONEMETHOD {obj args} {
+
+  # вызываемая проц-ра в маленьких буквах, т.е. например CALC -> calc
+  # 
+  set procname  [string tolower [lindex [info level -1] 0]]
+  set procname  "${procname}_"
+
+  return [RUN1 $procname $obj {*}$args]
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -925,9 +966,9 @@ proc TEST_simp {} {
   puts ""
   set b [B new]
 
-  #puts "b balance = [$b see]"
+  puts "b balance = [$b see]"
   #puts "b balance = [see_B $b]"
-  puts "b balance = [SEE $b]"
+  #puts "b balance = [SEE $b]"
 
   $b deposit 100
   puts "b balance = [$b see]"
@@ -955,8 +996,8 @@ proc TEST_simp {} {
 
   puts "c balance = [$c see]"
   $c deposit 100
-  #puts "c balance = [$c see]"
-  puts "c balance = [SEE $c]"
+  puts "c balance = [$c see]"
+  #puts "c balance = [SEE $c]"
 
 
   puts ""

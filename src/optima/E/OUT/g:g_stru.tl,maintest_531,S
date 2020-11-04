@@ -2,12 +2,6 @@
 argc = 2   argv = maintest_531 S
 mode = S
 
--------------------------- task --------------
-fitness_proc = FS_fitness
-fit_target   = 53.1
-fit_error    = 8.0
--------------------------- task --------------
-
 target_text = 111111999444999 
 
 r= 0   

@@ -436,6 +436,8 @@ proc pop1_create {args} {
   set len_chromosomes [dict_parse $args "-lgen"] 
   set population_size [dict_parse $args "-lpop"] 
 
+  #puts stderr "pop1_create: P .... 01, args = $args"
+
   set pop [GAUL new  \
                 "-lpop $population_size -lgen $len_chromosomes"]
 
@@ -476,14 +478,14 @@ proc pop1_create {args} {
 }
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT01 {BOT} {
+class_create $::NEWMODE  BOT01 {BOT} {
 
   ;# _это_перечисление_переменных
   
 } {
   # а это конструктор класса 
 
-  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM??
 
   SUPER constructor {*}$args
   
@@ -541,7 +543,6 @@ proc _01_test {} {
   set obj \
     [BOT01 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
 
-  #set pop [$obj GET_pop]
   set pop [GET $obj pop]
   
   #puts stderr "_01_test: obj = $obj ,, pop = $pop \n"
@@ -557,7 +558,7 @@ proc _01_test {} {
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT02 {BOT} {
+class_create $::NEWMODE  BOT02 {BOT} {
 
   ;# _это_перечисление_переменных
   
@@ -576,9 +577,7 @@ class_create 0 BOT02 {BOT} {
   SET $pop1  select_one  "ga_select_one_bestof2"
   SET $pop1  select_two  "ga_select_two_bestof2"  
   
-  #set pop $pop1
-
-  [SELF] SET_pop $pop1
+  SET [SELF] "pop" $pop1
 }
 
 # //------------------------------------------------------------------------------
@@ -660,7 +659,7 @@ proc parse_opts_2 {&par1    &par2
 }
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT03 {BOT} {
+class_create $::NEWMODE  BOT03 {BOT} {
 
   ;# _это_перечисление_переменных
   
@@ -706,27 +705,20 @@ class_create 0 BOT03 {BOT} {
       0.05		         \
       0.0      	          
 
-    [SELF] SET_pop  $pop
+    SET [SELF] "pop"  $pop
 
 }
 #-------------------------------------------------------------------
 proc calc_BOT03 {obj args} {
 
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set task            [dict_parse $args "-task" [GET $obj task]] 
   set max_generations [dict_parse $args "-steps"] 
   
-  set  pop [$obj GET_pop]
+  set  pop [GET $obj pop]
   
   set ret [ga_evolution  $task $pop $max_generations]  
   
   return $ret  
-}
-#-------------------------------------------------------------------
-class_method  BOT03 calc {args} {
-
-  set obj [SELF]
-  
-  return [calc_BOT03 $obj {*}$args]
 }
 # //------------------------------------------------------------------------------
 proc _03_test {} \
@@ -752,7 +744,7 @@ proc _03_test {} \
     [BOT03 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
 
 
-  set pop [$obj GET_pop]
+  set pop [GET $obj pop]
 
   set ret [ga_evolution  $task $pop $max_generations]  
 
@@ -822,7 +814,7 @@ proc _4_struggle_crossover {pop father mother son daughter} \
 # //------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT04 {BOT} {
+class_create $::NEWMODE  BOT04 {BOT} {
 
   ;# _это_перечисление_переменных
 
@@ -904,7 +896,7 @@ class_create 0 BOT04 {BOT} {
     0.0      	          
   
   
-  [SELF] SET_pop  $pop
+  SET [SELF] "pop"  $pop
   
 }
 
@@ -913,21 +905,14 @@ proc  calc_BOT04  {obj args} {
   
   #set obj [SELF]
   
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set task            [dict_parse $args "-task" [GET $obj task]] 
   set max_generations [dict_parse $args "-steps"] 
   
-  set  pop [$obj GET_pop]
+  set  pop [GET $obj pop]
   
   set ret [ga_evolution  $task $pop $max_generations]  
   
   return $ret
-}
-#---------------------------------------------------------
-class_method  BOT04 calc {args} {
-  
-  set obj [SELF]
-  
-  return [calc_BOT04 $obj {*}$args]
 }
 #---------------------------------------------------------
 
@@ -964,9 +949,9 @@ proc _04_test {} \
   set obj \
     [BOT04 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
 
-  set pop [$obj GET_pop]
+  set pop [GET $obj pop]
 
-  CALC $obj -steps $max_generations -task $task 
+  RUN1 "calc_" $obj -steps $max_generations -task $task 
 
 
   #-----------------------------------------------------------------
@@ -977,7 +962,7 @@ proc _04_test {} \
 }
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT05 {BOT} {
+class_create $::NEWMODE  BOT05 {BOT} {
 
   ;# _это_перечисление_переменных
 
@@ -985,13 +970,20 @@ class_create 0 BOT05 {BOT} {
 
 } {
   #---------------------------------------------------------
-  set args [lindex $args 0]
+
+  if {$::NEWMODE} {
+    set args {*}$args
+  } else {
+    set args [lindex $args 0]
+  }
 
   SUPER constructor  {*}$args
   
+  set obj [SELF]
+
   # если нет в args, то берем значение здесь
   # 
-  set task  [[SELF] GET_task]
+  set task  [GET $obj task]
 
   set len_chromo      [dict_parse $args "-lgen" ] 
   set population_size [dict_parse $args "-lpop" ] 
@@ -1038,19 +1030,18 @@ class_create 0 BOT05 {BOT} {
   }
   
   
-  [SELF] SET_pops  $pops
+  SET $obj "pops"  $pops
   
 }
 
 #---------------------------------------------------------
 proc  calc_BOT05 {obj args} {
 
-  #set obj [SELF]
   
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set task            [dict_parse $args "-task" [GET $obj task]] 
   set max_generations [dict_parse $args "-steps"] 
   
-  set pops [$obj GET_pops]
+  set pops [GET $obj pops]
   
   set num_pops [llength $pops]
   
@@ -1059,34 +1050,28 @@ proc  calc_BOT05 {obj args} {
   return $ret
 }
 #---------------------------------------------------------
-class_method  BOT05  calc {args} {
+proc  final_BOT05 {obj args} {
+
+
+  set pops [GET $obj pops]    
+  set pop0 [lindex $pops 0]
   
-  set obj [SELF]
+  set num_generations [GET $pop0 "generation"] ;# сколько было генераций
+  set ch_form         [GET $pop0 "ch_form"]
   
-  return [calc_BOT05 $obj {*}$args]
+  set num_pops [llength $pops]
+  
+  for {set i 0} {$i < $num_pops} {incr i} {
+    
+    set pop [lindex $pops $i] 
+    set best_entity     [ga_get_entity_from_rank $pop 0]
+  }
+  
+  return [list $num_generations $best_entity $ch_form]
+
+
 }
 #---------------------------------------------------------
-class_method BOT05  final {} {
-    
-    set obj [SELF]
-
-    set pops [$obj GET_pops]    
-    set pop0 [lindex $pops 0]
-    
-    set num_generations [GET $pop0 "generation"] ;# сколько было генераций
-    set ch_form         [GET $pop0 "ch_form"]
-    
-    set num_pops [llength $pops]
-    
-    for {set i 0} {$i < $num_pops} {incr i} {
-      
-      set pop [lindex $pops $i] 
-      set best_entity     [ga_get_entity_from_rank $pop 0]
-    }
-
-    return [list $num_generations $best_entity $ch_form]
-  }
-  #---------------------------------------------------------
 
 # //------------------------------------------------------------------------------
 # //
@@ -1140,9 +1125,9 @@ proc _05_test {} \
   set obj \
     [BOT05 new  "-lpop $population_size -lgen $len_chromo -task $task -num_pops $num_pops" ] 
 
-  set pops [$obj GET_pops]
+  set pops [GET $obj pops]
 
-  CALC $obj -steps $max_generations -task $task
+  RUN1 "calc_" $obj -steps $max_generations -task $task
 
   #----------------------------------------------------------------------
 
@@ -1158,19 +1143,26 @@ proc _05_test {} \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT06 {BOT} {
+class_create $::NEWMODE  BOT06 {BOT} {
 
   ;# _это_перечисление_переменных
 
 } {
   #---------------------------------------------------------
-  set args [lindex $args 0]
+
+  if {$::NEWMODE} {
+    set args {*}$args
+  } else {
+    set args [lindex $args 0]
+  }
 
   SUPER constructor {*}$args
   
+  set obj [SELF]
+
   # если нет в args, то берем значение здесь
   # 
-  set task   [[SELF] GET_task]
+  set task   [GET $obj task]
   
   set len_chromo      [dict_parse $args "-lgen" ] 
   set population_size [dict_parse $args "-lpop" ] 
@@ -1213,26 +1205,19 @@ class_create 0 BOT06 {BOT} {
     "ga_compare_char_hamming"
   
 
-  [SELF] SET_pop  $pop
+  SET $obj "pop"  $pop
 }
 
 #---------------------------------------------------------
 proc calc_BOT06 {obj args} {
 
   
-  set task            [dict_parse $args "-task" [$obj GET_task]] 
+  set task            [dict_parse $args "-task" [GET $obj task]] 
   set max_generations [dict_parse $args "-steps"] 
   
-  set pop  [$obj GET_pop]
+  set pop  [GET $obj pop]
   
   ga_deterministiccrowding  $task $pop $max_generations
-}
-#---------------------------------------------------------
-class_method  BOT06 calc {args} {
-  
-  set obj [SELF]
-  
-  return [calc_BOT06 $obj {*}$args]
 }
 #---------------------------------------------------------
 
@@ -1273,9 +1258,9 @@ proc _dc_test {} \
     set obj \
       [BOT06 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
 
-    set pop [$obj GET_pop]
+    set pop [GET $obj pop]
 
-    CALC $obj -steps $max_generations -task $task
+    RUN1 "calc_" $obj -steps $max_generations -task $task
 
     #----------------------------------------------------------
 
@@ -1377,7 +1362,7 @@ set ::_OLD_ [expr (! $::_NEW_)]
 
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT79 {BOT} {
+class_create $::NEWMODE  BOT79 {BOT} {
 
   ;# _это_перечисление_переменных
 
@@ -1398,27 +1383,20 @@ class_create 0 BOT79 {BOT} {
   
   set pop [make_pop_DARWIN  $task $population_size $len_chromo] 
   
-  [SELF] SET_pop   $pop
+  SET [SELF] "pop"   $pop
 
 }
 #---------------------------------------------------------
 proc calc_BOT79 {obj args} {
   
   
-  set task             [dict_parse $args "-task" [$obj GET_task]] 
+  set task             [dict_parse $args "-task" [GET $obj task]] 
   set max_generations1 [dict_parse $args "-steps"] 
   
-  set popd [$obj GET_pop]
-  set name [$obj GET_name]
+  set popd [GET $obj pop]
+  set name [GET $obj name]
   
   do_evolution_and_print_best $task $popd $max_generations1 $name
-}
-#---------------------------------------------------------
-class_method  BOT79 calc {args} {
-  
-  set obj [SELF]
-  
-  return [calc_BOT79 $obj {*}$args]
 }
 # ------------------------------------------------------------------------------
 proc BOT07_new {arg_s} {
@@ -1496,13 +1474,13 @@ proc eschemes {} \
   #----------------------------------------------------------
 
   if {! $::is_print} {
-    CALC $obj7 -task $task -steps $max_generations1
+    RUN1 "calc_" $obj7 -task $task -steps $max_generations1
   }
   
-  CALC $obj8 -task $task -steps $max_generations2
+    RUN1 "calc_" $obj8 -task $task -steps $max_generations2
   
   if {! $::is_print} {
-    CALC $obj9 -task $task -steps $max_generations3
+    RUN1 "calc_" $obj9 -task $task -steps $max_generations3
   }
   
   
@@ -1646,12 +1624,15 @@ proc maintest_run {botobjs task
 
         #--------------------------------
 
-        CALC $obj -steps $max_generations  -task $task 
+        RUN1 "calc_" $obj -steps $max_generations  -task $task 
         
+        ##  [$obj final] 
+        ##  [FINAL $obj]
+
         # забираем результаты
         # 
         foreach {num_generations  best_entity  ch_form} \
-          [$obj final] \
+          [RUN1 "final_" $obj] \
           break
         
         #--------------------------------
@@ -1785,7 +1766,7 @@ proc maintest_531 {} {
 
     set task [task_create  "FS_fitness" -fit_target 53.1 -fit_error 8.0 ]
 
-    task_print $task
+    #task_print $task
 
     make_bots_standart  $bots $lpop $lgen $task
 
@@ -1821,18 +1802,13 @@ proc maintest_531 {} {
 
   set lpop 10
   set lgen 15 ;# длина хромосом (строк)
-  set max_generations -1 ;# 100 ; #-1 ;#2 ;# -1 ;# 30 ;# 15 - останов по достижению нужной точности
-
-
-  #set ch_form "%s"
+  set max_generations -1 ;# 100 - останов по достижению нужной точности
 
   set obj \
     [bot33_create  -lpop $lpop -lgen $lgen \
        -sort_driver $sort_driver  -task $task -is_print 0]
 
   dict_set $bots "bot33" $obj 
-
-  #set is_print 0
 
   #-------------------------------------------------------------
   } else {

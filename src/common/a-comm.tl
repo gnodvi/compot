@@ -4362,14 +4362,30 @@ proc SETGET {classname} {
 }
 #-------------------------------------------------------------------------------
 
-set ::NEWMODE 0
+#set ::NEWMODE 0
+# 
+# time g~.jm
+# real	0m22.811s
+# user	0m22.212s
+# sys	0m0.380s
+
+#---------------------------
+
+set ::NEWMODE 1 ;# моя объектная система быстрее !!!!
+# 
+# time g~.jm
+# real	0m14.324s
+# user	0m13.796s
+# sys	0m0.356s
+
+
 
 #-------------------------------------------------------------------------------
 proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 
   if {$mode} {
 
-    return [dclass_create $classname $baseclasses $classvars $constructorbody]
+    return [dict_class_create $classname $baseclasses $classvars $constructorbody]
   }
 
   #---------------------------------------------------------
@@ -4475,6 +4491,15 @@ proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 }
 #--------------------------------------------------------
 proc SUPER {method args} {
+
+  if {$::NEWMODE} {
+
+    # вроде все вызываются для constructor - нам не надо!
+    # 
+    return
+  }
+
+  #----------------------------------------------------
 
   if {$::__JIM__} {
     uplevel 1 super $method {*}$args

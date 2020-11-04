@@ -480,7 +480,7 @@ proc item_print {item} {
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-class_create $::NEWMODE  POP {} {
+dict_class_create POP {} {
 
   ;# _это_перечисление_переменных
   
@@ -502,21 +502,36 @@ class_create $::NEWMODE  POP {} {
   #-----------------------------------------------
   # 
   
-  if {$::__JIM__ && $::NEWPOP}  {
-    set args [lindex $args 0] 
-  }
+  #puts stderr "class_create: POP .... 01_!!!, args = $args"
+
+  #if {$::__JIM__ && $::NEWPOP}  {
+  #  set args [lindex $args 0] 
+  #}
  
+
+  if {[llength $args] == 1} {
+    set args {*}$args
+  } 
+
+  #puts stderr "class_create: POP .... 01_???, args = $args"
+  #puts stderr ""
+
   # 
   #-----------------------------------------------
 
-  set  stable_size    [dict_parse $args "-lpop"] 
-  set len_chromosomes [dict_parse $args "-lgen"] 
+  set obj [SELF]
+
+  #puts stderr "class_create: POP .... 02, args = $args"
+
+  SET $obj "stable_size"  [dict_parse $args "-lpop"] 
+
+  SET $obj "len_chromosomes" [dict_parse $args "-lgen"] 
   
-  set  "ch_form"  "% 6.3f " ;#  " %02d"   
-  set generation_hook NULL
+  SET $obj "ch_form"  "% 6.3f " ;#  " %02d"   
+  SET $obj "generation_hook" NULL
   
-  set generation      {}  
-  set best            {}     
+  SET $obj generation      {}  
+  SET $obj best            {}     
 }
 
 #-------------------------------------------------------------------------------
@@ -533,11 +548,7 @@ class_create $::NEWMODE  POP {} {
 #-------------------------------------------------------------------------------
 
 
-#--------------------------------
-if {1} {
-#--------------------------------
-
-class_create $::NEWMODE  GAUL {POP} {
+dict_class_create GAUL {POP} {
 
   # это перечисление переменных
   
@@ -613,118 +624,74 @@ class_create $::NEWMODE  GAUL {POP} {
   gr_params         ""
 
 
-
 } {
   # а это конструктор класса 
 
-  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+#   if {$::NEWMODE} {
+#     set args {*}$args
+#   } else {
+#     set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+#   }
   
+
+  if {[llength $args] == 1} {
+    set args {*}$args
+  } 
+
+
   # --> POP
   # 
   #SUPER constructor $args
 
-  SUPER constructor {*}$args
+  #SUPER constructor {*}$args
   
+  set obj [SELF]
+
   #-------------------------------------------------
 
-    set  max_size       {}
-    set  size           {}
-
-    set iteration_hook  NULL
+  SET $obj  iteration_hook  NULL
+  SET $obj  adapt           NULL
     
-    set seed            {}
-    set select_state    {}
-    set selectdata      {}
+  #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
     
-    set select_one      {}
-    set select_two      {}
-    
-    set mutate          {}
-    set crossover       {}
-    set adapt           NULL
-    
-    set allele_min_integer {}
-    set allele_max_integer {}
-    set allele_min_double  {}
-    set allele_max_double  {}
-    
-    set crossover_ratio    {}
-    set mutation_ratio     {}
-    set migration_ratio    {}
-    
-    set scheme             {}
-    set elitism            {}
-    set algo_params {}
-    
-    set replace     {}
-    set rank        {}
-    
-    set island      {}
-    set step        {}
-    
-    set de_params   {}
-    set sa_params   {}
-    set dc_params_compare {}
-    set gr_params         {}
-
-    #---------------------------------------
-
-    #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-    
-    #---------------------------------------
-    
-    #$newpop.selectdata = [selectdata_create]
-    # 
-    set  "selectdata" [selectdata_create]
-    
-    #[$newpop.selectdata].offset1 = 555
-    #puts "offset1 = [[$newpop.selectdata].offset1]"
-    
-    #   newpop->data = NULL;
-    #   newpop->free_index = newpop->max_size-1;
-    
-    #   newpop->fitness_dimensions = 0;
-    #SET $newpop "fitness_dimensions" 0
-
-    #   newpop->crossover_ratio = GA_DEFAULT_CROSSOVER_RATIO;
-    #   newpop->mutation_ratio = GA_DEFAULT_MUTATION_RATIO;
-    #   newpop->migration_ratio = GA_DEFAULT_MIGRATION_RATIO;
-    set "scheme" GA_SCHEME_DARWIN;
-    
-    #   newpop->elitism = GA_ELITISM_PARENTS_SURVIVE;  
-    #   newpop->allele_mutation_prob = GA_DEFAULT_ALLELE_MUTATION_PROB;
-    
-    #   newpop->allele_max_integer = RAND_MAX-1;
-    set "allele_min_integer" 0
-
-    set "allele_max_integer" [expr {$::RANDOM_RAND_MAX - 1}] ;# попробуем так
-    
-    set "allele_min_double" $::DBL_MIN
-    set "allele_max_double" $::DBL_MAX
-    
-    set "rank" "ga_rank_fitness"
-
-    #---------------------------------------
-
-    #set generation      {}  
-    #set best            {}     
-    set itemslist       {}
-    
-    set  "island"    -1
-    set "generation"  0    
-    set "best"       -1 ;# для хранения лучшего номера (пока нет)
-    
+  #$newpop.selectdata = [selectdata_create]
+  # 
+  SET $obj  "selectdata" [selectdata_create]
+  
+  #[$newpop.selectdata].offset1 = 555
+  #puts "offset1 = [[$newpop.selectdata].offset1]"
+  
+  #   newpop->data = NULL;
+  #   newpop->free_index = newpop->max_size-1;
+  
+  #   newpop->fitness_dimensions = 0;
+  #SET $newpop "fitness_dimensions" 0
+  
+  #   newpop->crossover_ratio = GA_DEFAULT_CROSSOVER_RATIO;
+  #   newpop->mutation_ratio = GA_DEFAULT_MUTATION_RATIO;
+  #   newpop->migration_ratio = GA_DEFAULT_MIGRATION_RATIO;
+  SET $obj  "scheme" GA_SCHEME_DARWIN;
+  
+  #   newpop->elitism = GA_ELITISM_PARENTS_SURVIVE;  
+  #   newpop->allele_mutation_prob = GA_DEFAULT_ALLELE_MUTATION_PROB;
+  
+  #   newpop->allele_max_integer = RAND_MAX-1;
+  SET $obj  "allele_min_integer" 0
+  
+  SET $obj  "allele_max_integer" [expr {$::RANDOM_RAND_MAX - 1}] ;# попробуем так
+  
+  SET $obj  "allele_min_double" $::DBL_MIN
+  SET $obj  "allele_max_double" $::DBL_MAX
+  
+  SET $obj  "rank" "ga_rank_fitness"
+  
+  #---------------------------------------
+  
+  SET $obj  "island"     -1
+  SET $obj  "generation"  0    
+  SET $obj  "best"       -1 ;# для хранения лучшего номера (пока нет)
+  
 }
-
-#--------------------------------
-} else {
-#--------------------------------
-
-#--------------------------------
-}
-#--------------------------------
-
-
 
 #-------------------------------------------------------------------------------
 proc pop_set_entity_fitness_ {p i fi} {

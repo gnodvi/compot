@@ -2067,7 +2067,7 @@ proc dict_parse {d key {defaultval NULL}} {
 # a~.tl DICT DICT_save
 
 #-------------------------------------------------------------------------------
-proc dclass_create {classname {baseclasses {}} classvars constructorbody} {
+proc dict_class_create {classname {baseclasses {}} classvars constructorbody} {
 
   set ret [dict_create]
 
@@ -2078,12 +2078,13 @@ proc dclass_create {classname {baseclasses {}} classvars constructorbody} {
 
   proc ${classname}_constructor {obj args} $constructorbody
 
+  #--------------------------------------------------
   set newbody {
 
     set classname $classname
     set dclass \$::DCLASSES($classname)
 
-    return [dclass_newobj \$dclass]
+    return [dclass_newobj \$dclass {*}\$args]
   }
   # 
   # подкоректировать тело процедуры: заменить по значению $classname
@@ -2091,6 +2092,21 @@ proc dclass_create {classname {baseclasses {}} classvars constructorbody} {
   set newbody [subst -nocommand $newbody]
 
   proc ${classname}_new {args} $newbody
+
+  #--------------------------------------------------
+
+  set cmdbody {
+
+    set classname $classname
+
+    tailcall "\${classname}_\$cmd" {*}\$args
+  }
+
+  set cmdbody [subst -nocommand $cmdbody]
+
+  proc $classname {{cmd new} args} $cmdbody
+  
+  #--------------------------------------------------
 
   set ::DCLASSES($classname) $ret
 
@@ -2109,7 +2125,7 @@ proc set_variables {d classname args} {
     
     if {$var == ";\#"} {continue} ;# пропускаем "комментарии"
 
-    puts "var = $var, val = $val"
+    #puts stderr "var = $var, val = $val"
     SET $d $var $val
   }
 
@@ -2121,23 +2137,28 @@ proc set_variables {d classname args} {
 #-------------------------------------------------------------------------------
 proc dclass_newobj {dclass args} {
 
+  #puts stderr "dclass_newobj: args = $args"
+
   set d [dict_create]
 
   set classname       [GET $dclass "classname" ]
-  #set classvars       [GET $dclass "classvars"]
   set baseclasses     [GET $dclass "baseclasses"]
 
   # сначала установим все переменные базовых классов
   # 
   foreach c $baseclasses {
 
-    puts "c = $c"
+    #puts stderr "c = $c"
     set_variables $d $c {*}$args
   }
 
   # и после уже переменные своего основного класса
   # 
   set_variables $d $classname {*}$args
+
+  # и, наверное, имя класса записать в объект !!
+  # 
+  SET $d "classname" $classname
 
   return $d
 }
@@ -2150,7 +2171,7 @@ proc TEST_class {} {
 
   #-----------------------------------------------
 
-  set c1 [dclass_create C1 {} {
+  set c1 [dict_class_create C1 {} {
 
     ;# _это_перечисление_переменных
     
@@ -2162,7 +2183,7 @@ proc TEST_class {} {
   }]
 
   puts "c1 = $c1"
-  dict_print $c1
+  dict_print $c1 ;# "class c1"
   puts ""
 
   #-----------------------------------------------
@@ -2172,8 +2193,10 @@ proc TEST_class {} {
     name1  "C2-name"    
     name2  "C2-name"    
   } {
+
     puts "C2 constructor ......."
     puts "name = [GET $obj name2]"
+    puts "args = $args"
   }]
 
   puts "c2 = $c2"
@@ -2185,7 +2208,7 @@ proc TEST_class {} {
   puts "-----------------------"
   set c1_obj1 [dclass_newobj $c1]
 
-  dict_print $c1_obj1
+  dict_print $c1_obj1 
   puts "-----------------------"
 
 
@@ -2198,14 +2221,14 @@ proc TEST_class {} {
   #-----------------------------------------------
 
   puts "-----------------------"
-  set c2_obj1 [dclass_newobj $c2]
+  set c2_obj1 [dclass_newobj $c2   -param1 par1]
 
   dict_print $c2_obj1
   puts "-----------------------"
 
 
   puts "-----------------------"
-  set c2_obj2 [C2_new]
+  set c2_obj2 [C2 new   -param2 par2]
 
   dict_print $c2_obj2
   puts "-----------------------"

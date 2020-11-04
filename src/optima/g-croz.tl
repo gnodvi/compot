@@ -601,7 +601,7 @@ proc gp_evolution_main {task  pop max_generations
 }
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE BOT {} {
+dict_class_create BOT {} {
 
   ;# _это_перечисление_переменных
   
@@ -612,6 +612,23 @@ class_create $::NEWMODE BOT {} {
 } {
   # а это конструктор класса 
 
+  #if {$::NEWMODE} {
+  #  set args {*}$args
+  #}
+
+  if {0} {
+
+    puts "dict_class_create BOT: args = $args"
+    puts ""
+    exit
+  }
+
+  if {[llength $args] == 1} {
+    set args {*}$args
+  } 
+
+  #puts stderr "class_create $::NEWMODE BOT:  args = $args"
+
   #     if {! [info exists task]} {
   #       set task [dict_parse $args "-task" ] 
   #     }
@@ -621,18 +638,12 @@ class_create $::NEWMODE BOT {} {
   
   set obj [SELF]
   
-  $obj SET_task $task
-  $obj SET_name [dict_parse  $args  "-name" "BotName"]
-  $obj SET_pop  [dict_parse  $args  "-pop"  ""] 
+  SET $obj "task" $task
+  SET $obj "name" [dict_parse  $args  "-name" "BotName"]
+  SET $obj "pop"  [dict_parse  $args  "-pop"  ""] 
   
 }
 
-#---------------------------------------------------------
-# class_method  BOT  init {args} {
-  
-#   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-
-# }
 #---------------------------------------------------------
 proc calc_BOT {obj args} {
   
@@ -640,11 +651,11 @@ proc calc_BOT {obj args} {
   #---------------------------
   
   #variable task
-  set task            [dict_parse $args "-task"  [$obj GET_task]] 
+  set task            [dict_parse $args "-task"  [GET $obj "task"]] 
   set max_generations [dict_parse $args "-steps"] 
   
   #variable pop
-  set  pop [$obj GET_pop]
+  set  pop [GET $obj "pop"]
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
   #$obj init
@@ -654,18 +665,10 @@ proc calc_BOT {obj args} {
   #set ret [ga_evolution  $task $pop $max_generations]  
 }
 #---------------------------------------------------------
-# class_method BOT  calc {args} {
+proc final_BOT {obj args} {
   
-#   set obj [SELF]
-  
-#   calc_BOT $obj {*}$args
-# }
-#---------------------------------------------------------
-class_method BOT final {} {
-    
-  set obj [SELF]
-  
-  set pop [$obj GET_pop]
+
+  set pop [GET $obj "pop"]
   
   #puts ""
   #puts "BOT final: pop = [pop_print $pop]"
@@ -679,22 +682,33 @@ class_method BOT final {} {
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create 0 BOT33 {BOT} {
+dict_class_create BOT33 {BOT} {
 
   # это перечисление переменных
   
 } {
   # а это конструктор класса 
 
-  #puts stderr "BOT33: args = |$args|"
-  #puts stderr ""
+  set obj [SELF]
 
-  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
+  if {0} {
+    puts stderr "class_create BOT33: args = |$args|"
+    puts stderr ""
+    #exit
+  }
 
-  #puts stderr "BOT33: args = |$args|"
-  #puts stderr ""
+  #set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
 
-  SUPER constructor {*}$args
+  #if {[llength $args] == 1} {
+  #  set args {*}$args
+  #} 
+  if {0} {
+    puts stderr "BOT33: args = |$args|"
+    puts stderr ""
+    exit
+  }
+
+  #SUPER constructor {*}$args
   
   # если нет в args, то берем значение здесь
   # 
@@ -704,19 +718,37 @@ class_create 0 BOT33 {BOT} {
   #set len_chromosomes [dict_parse $args "-lgen" ] 
   #set population_size [dict_parse $args "-lpop" ] 
   
-  [SELF] SET_task $task
+  SET $obj "task" $task
   
   #-----------------------------------------------
   # 
-  if {$::__JIM__} {
+  #if {$::NEWMODE} {
 
-    set ::NEWPOP 1
-    set pop [POP new     $args]
-
-  } else {
+    #puts stderr "class_create  BOT33 "
     set pop [POP new  {*}$args]
-  }
+
+#     if {0} {
+#       puts ""
+#       puts stderr "class_create BOT33: pop = $pop"
+#       dict_print $pop 
+#       exit
+#     }
+
+#   } else {
+
+#   if {$::__JIM__} {
+
+#     puts stderr "class_create OT33: __JIM__ , args = $args"
+#     set ::NEWPOP 1
+#     set pop [POP new     $args]
+
+#   } else {
+#     puts stderr "class_create OT33:  .... 01, args = $args"
+
+#     set pop [POP new  {*}$args]
+#   }
   
+#   }
   #-----------------------------------------------
 
   set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
@@ -733,23 +765,29 @@ class_create 0 BOT33 {BOT} {
   SET $pop  "generation_hook" NULL ;# $generation_hook
   
   #-----------------------------------------------
+#   if {0} {
+#     puts ""
+#     puts stderr "class_create BOT33: pop = $pop"
+#     dict_print $pop
+#     exit
+#   }
+
   
-  [SELF] SET_pop  $pop
-  #my SET_pop  $pop
+  SET $obj "pop"  $pop
 }
 
 #-----------------------------------------------------------
 proc calc_BOT33  {obj args} {
   
-  #set obj [SELF]
+  puts stderr "calc_BOT33: args = $args"
   
-  set task [dict_parse $args "-task" [$obj GET_task]] 
+  set task [dict_parse $args "-task" [GET $obj "task"]] 
   
   if {! [info exists max_generations]} {
     set max_generations [dict_parse $args "-steps" ] 
   }
   
-  set  pop [$obj GET_pop]
+  set  pop [GET $obj "pop"]
   
   set is_print         [dict_parse $args "-is_print"        1]
   #puts "is_print = $is_print"
@@ -764,6 +802,16 @@ proc calc_BOT33  {obj args} {
   set population_size [GET $pop "stable_size"]
   set len_chromosomes [GET $pop "len_chromosomes"]
   
+  if {0} {
+  puts stderr ""
+  puts stderr "calc_BOT33: randpop_proc    = $randpop_proc"
+  puts stderr "calc_BOT33: population_size = $population_size"
+  puts stderr "calc_BOT33: len_chromosomes = $len_chromosomes"
+  puts stderr "calc_BOT33:             pop = $pop"
+  dict_print $pop
+  exit
+  }
+
   set itemslist [make_itemslist  \
                    $randpop_proc \
                    $population_size $len_chromosomes   $is_print]
@@ -779,18 +827,10 @@ proc calc_BOT33  {obj args} {
   return
 }
 #---------------------------------------------------------
-# class_method BOT33  calc {args} {
+proc final_BOT33 {obj args} {
   
-#   set obj [SELF]
-  
-#   calc_BOT33 $obj {*}$args
-# }
-#-----------------------------------------------------------
-class_method BOT33  final {} {
-  
-  set obj [SELF]
-  
-  set  pop [$obj GET_pop]
+
+  set  pop [GET $obj "pop"]
   
   #puts "BOT33 final: pop = [pop_print $pop]"
 
@@ -802,31 +842,18 @@ class_method BOT33  final {} {
   set ch_form         [GET $pop "ch_form"]
   
   return [list $num_generations $best_entity $ch_form]
+
 }
 #-----------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc bot33_create {args} {
 
-  set obj [BOT33 new $args]
+  puts stderr "bot33_create: args = $args"
+
+  set obj [BOT33 new {*}$args]
 
   return $obj
 }
-# ------------------------------------------------------------------------------
-proc CALC {obj args} {
-
-  return [ONEMETHOD $obj {*}$args]
-}
-# ------------------------------------------------------------------------------
-proc FINAL {obj args} {
-
-  return [ONEMETHOD $obj {*}$args]
-}
-# ------------------------------------------------------------------------------
-# proc bot33_final {obj} {
-
-
-#   return [$obj final {*}$args]
-# }
 #-------------------------------------------------------------------------------
 proc run_gp_evolution {randpop_proc 
                        population_size  len_chromosomes 
@@ -853,9 +880,7 @@ proc run_gp_evolution {randpop_proc
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
-  ##CALC $obj 
-
-  CALC $obj \
+  RUN1 "calc_" $obj \
     -steps           $max_generations \
     -task            $task \
     -is_print        $is_print        \
@@ -1017,10 +1042,6 @@ proc _gp_test {} {
   puts "steps  = $steps"  ;# шагов эволюции  
   puts ""
 
-
-  #----------------------------
-  #set ::NEWMODE 1
-  #----------------------------
 
 
   set is_print 1
