@@ -1,15 +1,15 @@
 
 ga_population_set_parameters ... 
 
-GA EVOLUTION   0  ...  f0 =  50.040  i0 =  68698512125125512647725179486956
-GA EVOLUTION   1  ...  f0 =  50.060  i0 =  68698512126125512647725179486956
-GA EVOLUTION   2  ...  f0 =  50.100  i0 =  68698512125126512647726179486957
-GA EVOLUTION   3  ...  f0 =  50.140  i0 =  68698512126125513647736179486957
-GA EVOLUTION   4  ...  f0 =  50.180  i0 =  686:8521125126502647726179486957
-GA EVOLUTION   5  ...  f0 =  50.240  i0 =  68698512126126503647736189486:67
-GA EVOLUTION   6  ...  f0 =  50.280  i0 =  686:851112612650374772618:486967
-GA EVOLUTION   7  ...  f0 =  50.340  i0 =  686:852112612650373773617;486967
-GA EVOLUTION   8  ...  f0 =  50.360  i0 =  6869862113612650373773617;486967
+GA EVOLUTION   0  ...  f0 =  42.255  i0 =  686985121251255
+GA EVOLUTION   1  ...  f0 =  42.426  i0 =  129477651713517
+GA EVOLUTION   2  ...  f0 =  45.511  i0 =  129785641751255
+GA EVOLUTION   3  ...  f0 =  44.574  i0 =  129477151753557
+GA EVOLUTION   4  ...  f0 =  46.617  i0 =  129775141351555
+GA EVOLUTION   5  ...  f0 =  47.702  i0 =  129377151453555
+GA EVOLUTION   6  ...  f0 =  48.745  i0 =  129377142453555
+GA EVOLUTION   7  ...  f0 =  48.766  i0 =  129377142454555
+GA EVOLUTION   8  ...  f0 =  49.809  i0 =  129367142455555
 
 
 FINAL RESULT: 
@@ -18,21 +18,21 @@ FINAL RESULT:
 
 Generation = 8
 
-   i =   0   fitness=    50.360   ch=  6869862113612650373773617;486967
-   i =   1   fitness=    50.360   ch=  686:872212612650373773617;486967
-   i =   2   fitness=    50.340   ch=  686:853212612650373773617;486967
+   i =   0   fitness=    49.809   ch=  129367142455555
+   i =   1   fitness=    48.787   ch=  129367142454555
+   i =   2   fitness=    48.787   ch=  129367143453555
 
 STABLE_SIZE = 3 
 SIZE        = 3 
 BEST        = 0 
 
-BEST = 0  (fitness = 50.360000) 
+BEST = 0  (fitness = 49.808511) 
  
 -----------------------------------------------------------------------
 
 The evolution was stopped because the maximum number of generations were performed.
 
-Best solution , score = 50.36 : 6869862113612650373773617;486967
+Best solution , score = 49.81 : 129367142455555
 
-Total number of fitness evaluations: 137
+Total number of fitness evaluations: 177
 

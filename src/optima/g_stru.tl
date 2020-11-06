@@ -21,17 +21,6 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
 
 #-------------------------------------------------------------------------------
-# 
-
-# if [info exists tcl_version] {
-#   set ::__TCL__ 1
-#   set ::__JIM__ 0
-# } else {
-#   set ::__TCL__ 0
-#   set ::__JIM__ 1
-# }
-
-#------------------------------------------
 
 package require compot::common 
 
@@ -46,15 +35,6 @@ if {$::__JIM__} {
 
 #------------------------------------------
 
-# TODO: надо убрать !!
-
-# source "b-com0.tl"
-# source "b-com1.tl"
-
-#------------------------------------------
-
-#source "f-rand.tl"
-
 source "g-corA.tl"
 source "g-corB.tl" 
 
@@ -64,7 +44,6 @@ source "g-croz.tl"
 source "g-diff.tl"
 source "g-detw.tl"
 
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -86,7 +65,6 @@ proc maintest_seed_proc {pop adam} {
     
     set char_sym [randinstr_NEXT  $::gp_list]
     
-    #puts stderr "maintest_seed_proc: char_sym = $char_sym, ::gp_list = $::gp_list"
 
     set ch [scan $char_sym "%c"]  ;# десятичные коды символьных цифр
     #
@@ -103,10 +81,6 @@ proc maintest_seed_proc {pop adam} {
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
-
-# /* char_min = 32 (' ')  */
-# /* char_max = 126 ('~')  */
-# /* size_all = 94  */
 
 # /*   ! " # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~  */
 
@@ -206,11 +180,14 @@ proc maintest_seed_proc {pop adam} {
 # /* i= 125  ch= }  */
 # /* i= 126  ch= ~  */
 
+
+set ::allele_min_integer  32 ;# (' ') 
+set ::allele_max_integer 126 ;# ('~') 
+
 # //------------------------------------------------------------------------------
 #   struggle_ALL.c
 
 #   Synopsis:	Test/example program.
-
 
 # This program aims to generate the final sentence from
 # Chapter 3 of Darwin's "The Origin of Species",
@@ -222,26 +199,50 @@ proc maintest_seed_proc {pop adam} {
 
 # set ::target_text_full  "When we reflect on this struggle, we may console ourselves with the full belief, that the war of nature is not incessant, that no fear is felt, that death is generally prompt, and that the vigorous, the healthy, and the happy survive and multiply."
 
+#set ::target_text  "When we reflect on this struggle"
 
-set ::target_text  "When we reflect on this struggle"
+set ::target_text  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
 
-#set ::target_text  $::target_text_full
 
+#set ::NEWTEXT 0
+
+#set ::NEWMODE 0
+
+# ------------------------------------------------------------------------------
+proc LTARGET {} {
+
+  set len [llength $::target_text]
+
+  return $len
+}
 #------------------------------------------------------------------------------
 # TODO: упростить
 #------------------------------------------------------------------------------
-proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm}  {
+proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
 
+  set abs [expr {abs ($char_calc_decm - $char_true_decm)}]
 
-  if {$char_calc_decm == $char_true_decm} {
+  ##if {$char_calc_decm == $char_true_decm} {}
+  if {$abs == 0} {
 
     set fit [expr {$fit + 1.0}]
     # если   совпадают, просто увеличиваем на 1
+
+    #puts "FS_fitness_one_calc_add: abs == 0"
+    #exit
   }
   
-  set abs [expr {abs ($char_calc_decm - $char_true_decm)}]
+  set char_min $::allele_min_integer 
+  set char_max $::allele_max_integer 
 
-  set fit [expr {$fit + (127.0 - $abs) / 50.0}] ;# ??
+  set size_all   [- $char_max $char_min] 
+  set size_all_half [/ $size_all 2.0] 
+
+
+  set fit_add [expr {1.0 * ($char_max - $abs) / $size_all_half}]
+
+  set fit [+ $fit $fit_add] 
+
 
   # подсчет идет в пространстве кодовых значений символов
   # 
@@ -249,7 +250,8 @@ proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm}  {
   
   return $fit
 }
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------if
+
 proc FS_fitness {text_calc task} {
 
   set fit 0.0
@@ -258,12 +260,22 @@ proc FS_fitness {text_calc task} {
 
   set text_true $::target_text
 
+
   # Loop over alleles in chromosome.
   
   for {set k 0} {$k < $len} {incr k} {
   
-    set char_true       [string index $text_true  $k]
+    set char_true  [lindex  $text_true  $k]
+
     set char_true_decm  [scan   $char_true "%c"] ;# по символу берем его номер
+
+    if {0} {
+      puts "char_true      = $char_true"
+      puts "char_true_decm = $char_true_decm"
+      puts "char_true_decm2= [scan $char_true "%Ld"]"
+
+      exit
+    }
 
     set char_calc_decm  [ent_get_chromo_gen_ $text_calc  $k]
 
@@ -282,43 +294,6 @@ proc FS_fitness {text_calc task} {
   return $fit
 }
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
-# set ::ISNEW 0
-
-# ------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-proc parse_opts_4 {&par1    &par2    &par3    &par4 
-                def_par1 def_par2 def_par3 def_par4} {
-
-  USE_REFS
-
-  global argc argv argv0
-
-  set ::is_print 0
-
-  if  {$argc == 1} { 
-    # вызов без параметров, только с одним mode
-    
-    set par1  $def_par1
-    set par2  $def_par2
-    set par3  $def_par3
-    set par4  $def_par4
- 
-  } else {
-
-    set par1 [lindex $argv 1]
-    set par2 [lindex $argv 2]
-    set par3 [lindex $argv 3]
-    set par4 [lindex $argv 4]
-
-    if  {$argc == 6}    {
-      set ::is_print 1
-    }
-  }
-
-  return
-}
 # ------------------------------------------------------------------------------
 proc do_print_best {pop name} \
 {
@@ -341,79 +316,6 @@ proc do_print_best {pop name} \
 
 }
 # ------------------------------------------------------------------------------
-proc do_evolution_and_print_best {task pop max_generations name}  \
-{
-
-  ga_evolution  $task $pop $max_generations   
-
-  do_print_best $pop $name
-
-}
-# ------------------------------------------------------------------------------
-proc allele_incr {adult allele incr_val}  \
-{
-
-  set oldval [ent_get_chromo_gen_ $adult  $allele]
-
-  ent_set_chromo_gen_ $adult $allele [expr {$oldval + $incr_val}]
-
-}
-# ------------------------------------------------------------------------------
-# struggle_adaptation()
-
-# synopsis:	Adapt solution by making a single hill-climbing step
-# 		for a randomly selected allele.
-# ------------------------------------------------------------------------------
-proc _3_struggle_adaptation {task pop child} \
-{
-  
-  set eval_proc [GET $task "fitness_proc"]
-
-  # We must generate a new solution by copying the original solution.
-  # This function copys all genomic, and if appropriate, phenomic data.
-  # It is never safe to adapt the solution in place.
-  #
-
-  set adult [ga_entity_clone $pop $child] ;# for Adapted solution
-  
-  set allele [random_int [strlen $::target_text]] ;# Randomly selected allele
-
-  # ----------------------------------------------------
-  #
-  # Make point mutation.
-  
-  allele_incr $adult $allele +1
- 
-  pop_eval_item  $pop $adult $eval_proc $task
-    
-  if {[item_get_fitn $adult] > [item_get_fitn $child]} {
-    return $adult
-  }
-  
-  # ----------------------------------------------------
-  # 
-  #  Searching in that previous direction didn't help. 
-
-  allele_incr $adult $allele -2
-  
-  pop_eval_item  $pop $adult $eval_proc $task
-    
-  if {[item_get_fitn $adult] > [item_get_fitn $child]} {
-    return $adult
-  }
-  
-  # ----------------------------------------------------
-
-  #  We must already be at a maxima. 
-  
-  allele_incr $adult $allele +1
-
-  #ent_set_fitness $adult [item_get_fitn $child]
-  ga_entity_set_fitness  $adult [item_get_fitn $child]
-
-  return $adult
-}
-# ------------------------------------------------------------------------------
 
 #  struggle.c
 # 
@@ -422,24 +324,21 @@ proc _3_struggle_adaptation {task pop child} \
 #  This example is explained in docs/html/tutorial/simple.html
 # 
 # ------------------------------------------------------------------------------
-proc  strlen {str} {
+# proc  strlen {str} {
 
-  return [string length $str]
-}
+#   return [string length $str]
+# }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc pop1_create {args} {
 
-  #puts stderr "pop1_create: args = $args"
-
   set len_chromosomes [dict_parse $args "-lgen"] 
   set population_size [dict_parse $args "-lpop"] 
 
-  #puts stderr "pop1_create: P .... 01, args = $args"
 
   set pop [GAUL new  \
-                "-lpop $population_size -lgen $len_chromosomes"]
+                -lpop $population_size -lgen $len_chromosomes]
 
   
   SET $pop  generation_hook NULL ;# $generation_hook
@@ -447,6 +346,7 @@ proc pop1_create {args} {
   SET $pop  adapt       NULL ;# $adapt
   
   SET $pop  mutate      ga_mutate_printable_singlepoint_drift
+
   SET $pop  crossover   ga_crossover_char_allele_mixing
   SET $pop  replace     NULL ;# $replace   ;#
   
@@ -461,47 +361,29 @@ proc pop1_create {args} {
   
   SET $pop  seed   "maintest_seed_proc"   ;#   $seed_proc 
   
-  # ??
-  #
-#   if {$::__JIM__} {
-    
-#     puts "classvars = [$pop classvars]"
-#     puts ""
-
-#     puts "crossover_ratio = [GET $pop crossover_ratio]"
-
-#     puts ""
-#     exit
-#   }
-     
   return $pop
 }
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE  BOT01 {BOT} {
+dict_class_create BOT01 {BOT} {
 
   ;# _это_перечисление_переменных
   
 } {
   # а это конструктор класса 
 
-  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM??
-
-  SUPER constructor {*}$args
-  
   set pop [pop1_create  {*}$args]
   
   SET $pop  select_one   "ga_select_one_sus"
   SET $pop  select_two   "ga_select_two_sus"
 
-  SET [SELF] pop $pop
+  SET $obj pop $pop
 
 }
 # ------------------------------------------------------------------------------
 proc _01_test {} {
 
-
-  set ::target_text  "122333444455555"
+  set len_chromo [LTARGET] 
 
   global argc argv
 
@@ -516,21 +398,13 @@ proc _01_test {} {
     set max_generations  [lindex $argv 2] ;# 20  ;# шагов эволюции 
   }
 
-
-  set len_chromo [strlen $::target_text] 
-
   puts ""
   puts "bnums  = $population_size"  ;# колич-во ботов
   puts "bsize  = $len_chromo" 
   puts "maxgs  = $max_generations"  ;# шагов эволюции  
   puts ""
 
-  # Нужено понять, где гарантированный результат:
-  # 
-  #set        num_runs   1  ;# количество экспериментов. для повторов?
-
   set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
-
 
   set seed_proc     "maintest_seed_proc"
 
@@ -538,14 +412,17 @@ proc _01_test {} {
 
   test_random_seed 0 ;#$i
   
-  set task [task_create $fitness_func]    
+  if {$max_generations == -1} {
+    set task [task_create $fitness_func -fit_target $::fit_target -fit_error 0.01 ]  
+  } else {
+    set task [task_create $fitness_func]  
+  }
   
   set obj \
-    [BOT01 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
+    [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
   set pop [GET $obj pop]
   
-  #puts stderr "_01_test: obj = $obj ,, pop = $pop \n"
  
   SET $pop  seed $seed_proc   
   
@@ -556,28 +433,31 @@ proc _01_test {} {
   return
 }
 # ------------------------------------------------------------------------------
+proc _01_test_new {} {
+
+
+  set ::NEWMODE 1
+
+  _01_test 
+
+}
+# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE  BOT02 {BOT} {
+dict_class_create  BOT02 {BOT} {
 
   ;# _это_перечисление_переменных
   
 } {
   # а это конструктор класса 
 
-  set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
-
-  SUPER constructor {*}$args
-  
-  #variable pop
-  
   set pop1 [pop1_create  {*}$args]
   
   SET $pop1  elitism  GA_ELITISM_PARENTS_SURVIVE ;# всех оставдяем !
   SET $pop1  select_one  "ga_select_one_bestof2"
   SET $pop1  select_two  "ga_select_two_bestof2"  
   
-  SET [SELF] "pop" $pop1
+  SET $obj "pop" $pop1
 }
 
 # //------------------------------------------------------------------------------
@@ -658,24 +538,83 @@ proc parse_opts_2 {&par1    &par2
   return
 }
 # ------------------------------------------------------------------------------
+proc allele_incr {adult allele incr_val}  \
+{
 
-class_create $::NEWMODE  BOT03 {BOT} {
+  set oldval [ent_get_chromo_gen_ $adult  $allele]
+
+  ent_set_chromo_gen_ $adult $allele [expr {$oldval + $incr_val}]
+
+}
+# ------------------------------------------------------------------------------
+proc _3_struggle_adaptation {task pop child} \
+{
+  
+  set eval_proc [GET $task "fitness_proc"]
+
+  # We must generate a new solution by copying the original solution.
+  # This function copys all genomic, and if appropriate, phenomic data.
+  # It is never safe to adapt the solution in place.
+  #
+
+  set adult [ga_entity_clone $pop $child] ;# for Adapted solution
+  
+  set len [LTARGET]
+
+  set allele [random_int $len] ;# Randomly selected allele
+
+  # ----------------------------------------------------
+  #
+  # Make point mutation.
+  
+  allele_incr $adult $allele +1
+ 
+  pop_eval_item  $pop $adult $eval_proc $task
+    
+  if {[item_get_fitn $adult] > [item_get_fitn $child]} {
+    return $adult
+  }
+  
+  # ----------------------------------------------------
+  # 
+  #  Searching in that previous direction didn't help. 
+
+  allele_incr $adult $allele -2
+  
+  pop_eval_item  $pop $adult $eval_proc $task
+    
+  if {[item_get_fitn $adult] > [item_get_fitn $child]} {
+    return $adult
+  }
+  
+  # ----------------------------------------------------
+
+  #  We must already be at a maxima. 
+  
+  allele_incr $adult $allele +1
+
+  #ent_set_fitness $adult [item_get_fitn $child]
+  ga_entity_set_fitness  $adult [item_get_fitn $child]
+
+  return $adult
+}
+# ------------------------------------------------------------------------------
+
+dict_class_create  BOT03 {BOT} {
 
   ;# _это_перечисление_переменных
   
 } {
   # а это конструктор класса 
 
-  set args [lindex $args 0]
-
-  SUPER constructor {*}$args
-  
   set len_chromo      [dict_parse $args "-lgen" ] 
   set population_size [dict_parse $args "-lpop" ] 
   set task            [dict_parse $args "-task" ] 
     
   set seed_proc  "maintest_seed_proc"
   
+  set mutate [mutate_create -mutate_proc ga_mutate_printable_singlepoint_drift]
+
   set pop  [ga_genesis_main                          \
 	      $task \
               $population_size			     \
@@ -689,7 +628,7 @@ class_create $::NEWMODE  BOT03 {BOT} {
               _3_struggle_adaptation	             \
               ga_select_one_sus	                     \
               ga_select_two_sus	                     \
-              ga_mutate_printable_singlepoint_drift  \
+              $mutate  \
               ga_crossover_char_allele_mixing        \
               NULL			             \
               NULL			             \
@@ -705,7 +644,7 @@ class_create $::NEWMODE  BOT03 {BOT} {
       0.05		         \
       0.0      	          
 
-    SET [SELF] "pop"  $pop
+    SET $obj "pop"  $pop
 
 }
 #-------------------------------------------------------------------
@@ -734,14 +673,14 @@ proc _03_test {} \
   
   #----------------------------------------------------------------------
 
-  set len_chromo [strlen $::target_text] 
+  set len_chromo [LTARGET] 
   
   set task [task_create "FS_fitness"]
 
   #----------------------------------------------------------------------
 
   set obj \
-    [BOT03 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
+    [BOT03 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
 
   set pop [GET $obj pop]
@@ -768,14 +707,14 @@ proc _03_test {} \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc _4_struggle_seed {pop adam} \
-{
+# proc _4_struggle_seed {pop adam} \
+# {
 
-  ga_seed_printable_random $pop $adam
+#   ga_seed_printable_random $pop $adam
 
 
-  return $::true
-}
+#   return $::true
+# }
 # ------------------------------------------------------------------------------
 proc _4_struggle_mutate {pop father son} \
 {
@@ -814,14 +753,11 @@ proc _4_struggle_crossover {pop father mother son daughter} \
 # //------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE  BOT04 {BOT} {
+dict_class_create  BOT04 {BOT} {
 
   ;# _это_перечисление_переменных
 
 } {
-  set args [lindex $args 0]
-  
-  SUPER constructor  {*}$args
 
   # если нет в args, то берем значение здесь
   # 
@@ -829,7 +765,7 @@ class_create $::NEWMODE  BOT04 {BOT} {
   set population_size [dict_parse $args "-lpop" ] 
   
   set pop [GAUL new  \
-             "-lpop $population_size -lgen $len_chromo"]
+             -lpop $population_size -lgen $len_chromo]
   
   SET $pop ch_form "%c" ;# 
     
@@ -896,14 +832,13 @@ class_create $::NEWMODE  BOT04 {BOT} {
     0.0      	          
   
   
-  SET [SELF] "pop"  $pop
+  SET $obj "pop"  $pop
   
 }
 
 #---------------------------------------------------------
 proc  calc_BOT04  {obj args} {
   
-  #set obj [SELF]
   
   set task            [dict_parse $args "-task" [GET $obj task]] 
   set max_generations [dict_parse $args "-steps"] 
@@ -940,14 +875,14 @@ proc _04_test {} \
   parse_opts_2  population_size max_generations \
                 100 500
   
-  set len_chromo [strlen $::target_text] 
+  set len_chromo [LTARGET] 
 
   #-----------------------------------------------------------------
 
   set task [task_create "FS_fitness"]
   
   set obj \
-    [BOT04 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
+    [BOT04 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
   set pop [GET $obj pop]
 
@@ -962,7 +897,7 @@ proc _04_test {} \
 }
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE  BOT05 {BOT} {
+dict_class_create  BOT05 {BOT} {
 
   ;# _это_перечисление_переменных
 
@@ -971,15 +906,7 @@ class_create $::NEWMODE  BOT05 {BOT} {
 } {
   #---------------------------------------------------------
 
-  if {$::NEWMODE} {
-    set args {*}$args
-  } else {
-    set args [lindex $args 0]
-  }
-
-  SUPER constructor  {*}$args
-  
-  set obj [SELF]
+  #set obj [SELF]
 
   # если нет в args, то берем значение здесь
   # 
@@ -992,6 +919,8 @@ class_create $::NEWMODE  BOT05 {BOT} {
   
   set seed_proc  "maintest_seed_proc"
   
+  set mutate [mutate_create -mutate_proc ga_mutate_printable_singlepoint_drift]
+
   # все попы одинаковы?
   set pops ""
   
@@ -1010,7 +939,7 @@ class_create $::NEWMODE  BOT05 {BOT} {
                 NULL	                              \
                 ga_select_one_sus	              \
                 ga_select_two_sus	              \
-                ga_mutate_printable_singlepoint_drift \
+                $mutate \
                 ga_crossover_char_allele_mixing       \
                 NULL			              \
                 NULL			              \
@@ -1116,14 +1045,14 @@ proc _05_test {} \
 
   #----------------------------------------------------------------------
 
-  set len_chromo [strlen $::target_text] 
+  set len_chromo [LTARGET] 
   
   set task [task_create "FS_fitness"]
   
   #----------------------------------------------------------------------
 
   set obj \
-    [BOT05 new  "-lpop $population_size -lgen $len_chromo -task $task -num_pops $num_pops" ] 
+    [BOT05 new  -lpop $population_size -lgen $len_chromo -task $task -num_pops $num_pops ] 
 
   set pops [GET $obj pops]
 
@@ -1143,22 +1072,14 @@ proc _05_test {} \
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE  BOT06 {BOT} {
+dict_class_create  BOT06 {BOT} {
 
   ;# _это_перечисление_переменных
 
 } {
   #---------------------------------------------------------
 
-  if {$::NEWMODE} {
-    set args {*}$args
-  } else {
-    set args [lindex $args 0]
-  }
-
-  SUPER constructor {*}$args
-  
-  set obj [SELF]
+  #set obj [SELF]
 
   # если нет в args, то берем значение здесь
   # 
@@ -1170,6 +1091,8 @@ class_create $::NEWMODE  BOT06 {BOT} {
 
   set seed_proc  "maintest_seed_proc"
         
+  set mutate [mutate_create -mutate_proc ga_mutate_printable_singlepoint_drift]
+
   set pop  [ga_genesis_main                         \
               $task                                 \
               $population_size	                    \
@@ -1183,7 +1106,7 @@ class_create $::NEWMODE  BOT06 {BOT} {
               NULL	                            \
               ga_select_one_sus	                    \
               ga_select_two_sus	                    \
-              ga_mutate_printable_singlepoint_drift \
+              $mutate \
               ga_crossover_char_allele_mixing       \
               NULL			            \
               NULL			            \
@@ -1248,7 +1171,7 @@ proc _dc_test {} \
   
     test_random_seed  $i
     
-    set len_chromo [strlen $::target_text] 
+    set len_chromo [LTARGET] 
   
     set task [task_create "FS_fitness"]
 
@@ -1256,7 +1179,7 @@ proc _dc_test {} \
     #----------------------------------------------------------
 
     set obj \
-      [BOT06 new  "-lpop $population_size -lgen $len_chromo -task $task"] 
+      [BOT06 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
     set pop [GET $obj pop]
 
@@ -1288,32 +1211,15 @@ proc _dc_test {} \
 proc make_pop_DARWIN {task population_size len_chromo} {
 
 
-  set len_chromo [strlen $::target_text] 
+  set len_chromo [LTARGET] 
   
   test_random_seed 23091975
 
   set seed_proc  "maintest_seed_proc"
 
 
-  #   popd = ga_genesis_char (
-  #      population_size,		/* const int              population_size */
-  #      1,				/* const int              num_chromo      */
-  #      (int) strlen(target_text),	/* const int              len_chromo      */
-  #      NULL,		 	/* GAgeneration_hook      generation_hook      */
-  #      NULL,			/* GAiteration_hook       iteration_hook       */
-  #      NULL,			/* GAdata_destructor      data_destructor      */
-  #      NULL,			/* GAdata_ref_incrementor data_ref_incrementor */
-  #      struggle_score,		/* GAevaluate             evaluate        */
-  #      ga_seed_printable_random,	/* GAseed                 seed            */
-  #      struggle_adaptation,	        /* GAadapt                adapt           */
-  #      ga_select_one_sus,		/* GAselect_one           select_one      */
-  #      ga_select_two_sus,		/* GAselect_two           select_two      */
-  #      ga_mutate_printable_singlepoint_drift,	/* GAmutate     mutate    */
-  #      ga_crossover_char_allele_mixing,    	/* GAcrossover  crossover */
-  #      NULL,			/* GAreplace		          replace */
-  #      NULL			/* vpointer		        User data */
-  #      );
-  
+  set mutate [mutate_create -mutate_proc ga_mutate_printable_singlepoint_drift]
+
   set popd [ga_genesis_main                          \
 	      $task \
               $population_size			     \
@@ -1327,7 +1233,7 @@ proc make_pop_DARWIN {task population_size len_chromo} {
               _3_struggle_adaptation	             \
               ga_select_one_sus	                     \
               ga_select_two_sus	                     \
-              ga_mutate_printable_singlepoint_drift  \
+              $mutate  \
               ga_crossover_char_allele_mixing        \
               NULL			             \
               NULL			             \
@@ -1362,28 +1268,29 @@ set ::_OLD_ [expr (! $::_NEW_)]
 
 # ------------------------------------------------------------------------------
 
-class_create $::NEWMODE  BOT79 {BOT} {
+dict_class_create  BOT79 {BOT} {
 
   ;# _это_перечисление_переменных
 
 } {
   #---------------------------------------------------------
 
-  if {$::__JIM__} {
-    set args [lindex $args 0]
-
-    SUPER constructor    $args
-  } else {
-    SUPER constructor {*}$args
-  }
-  
   set len_chromo      [dict_parse $args "-lgen"] 
   set population_size [dict_parse $args "-lpop"] 
   set task            [dict_parse $args "-task"] 
   
   set pop [make_pop_DARWIN  $task $population_size $len_chromo] 
   
-  SET [SELF] "pop"   $pop
+  SET $obj "pop"   $pop
+
+}
+# ------------------------------------------------------------------------------
+proc do_evolution_and_print_best {task pop max_generations name}  \
+{
+
+  ga_evolution  $task $pop $max_generations   
+
+  do_print_best $pop $name
 
 }
 #---------------------------------------------------------
@@ -1399,26 +1306,18 @@ proc calc_BOT79 {obj args} {
   do_evolution_and_print_best $task $popd $max_generations1 $name
 }
 # ------------------------------------------------------------------------------
-proc BOT07_new {arg_s} {
+proc BOT07_new {args} {
 
 
-  if {$::__JIM__} {
-    set obj  [BOT79 new     $arg_s] 
-  } else {
-    set obj  [BOT79 new  {*}$arg_s] 
-  }
+  set obj  [BOT79 new  {*}$args] 
 
   return $obj
 }
 # ------------------------------------------------------------------------------
-proc BOT08_new {arg_s} {
+proc BOT08_new {args} {
 
 
-  if {$::__JIM__} {
-    set obj  [BOT79 new     $arg_s] 
-  } else {
-    set obj  [BOT79 new  {*}$arg_s] 
-  }
+  set obj  [BOT79 new  {*}$args] 
 
   set pop [GET $obj pop]
 
@@ -1427,21 +1326,48 @@ proc BOT08_new {arg_s} {
   return $obj
 }
 # ------------------------------------------------------------------------------
-proc BOT09_new {arg_s} {
+proc BOT09_new {args} {
 
 
-  if {$::__JIM__} {
-    set obj  [BOT79 new     $arg_s] 
-  } else {
-    set obj  [BOT79 new  {*}$arg_s] 
-  }
-
+  set obj  [BOT79 new  {*}$args] 
 
   set pop [GET $obj pop]
 
   ga_population_set_scheme  $pop "GA_SCHEME_LAMARCK_CHILDREN"
 
   return $obj
+}
+#-------------------------------------------------------------------------------
+proc parse_opts_4 {&par1    &par2    &par3    &par4 
+                def_par1 def_par2 def_par3 def_par4} {
+
+  USE_REFS
+
+  global argc argv argv0
+
+  set ::is_print 0
+
+  if  {$argc == 1} { 
+    # вызов без параметров, только с одним mode
+    
+    set par1  $def_par1
+    set par2  $def_par2
+    set par3  $def_par3
+    set par4  $def_par4
+ 
+  } else {
+
+    set par1 [lindex $argv 1]
+    set par2 [lindex $argv 2]
+    set par3 [lindex $argv 3]
+    set par4 [lindex $argv 4]
+
+    if  {$argc == 6}    {
+      set ::is_print 1
+    }
+  }
+
+  return
 }
 # ------------------------------------------------------------------------------
 proc eschemes {} \
@@ -1458,18 +1384,18 @@ proc eschemes {} \
 
   set task [task_create "FS_fitness"]
 
-  set len_chromo [strlen $::target_text] 
+  set len_chromo [LTARGET] 
   
   #----------------------------------------------------------------------
 
   set obj7 \
-    [BOT07_new  "-lpop $population_size -lgen $len_chromo -task $task -name Darwinian "] 
+    [BOT07_new  -lpop $population_size -lgen $len_chromo -task $task -name Darwinian ] 
  
   set obj8  \
-    [BOT08_new  "-lpop $population_size -lgen $len_chromo -task $task -name Baldwinian"] 
+    [BOT08_new  -lpop $population_size -lgen $len_chromo -task $task -name Baldwinian] 
 
   set obj9 \
-    [BOT09_new  "-lpop $population_size -lgen $len_chromo -task $task -name Lamarckian"] 
+    [BOT09_new  -lpop $population_size -lgen $len_chromo -task $task -name Lamarckian] 
 
   #----------------------------------------------------------
 
@@ -1503,7 +1429,7 @@ proc make_random_list_member {source_list} {
 # ------------------------------------------------------------------------------
 proc make_random_target_text {source_list  size pmin pmax} {
 
-  set ret ""
+  set ret {}
 
   for {set i 0} {$i < $size} {} {
 
@@ -1512,7 +1438,9 @@ proc make_random_target_text {source_list  size pmin pmax} {
     set povtor [YRAND_new  $pmin $pmax]
 
     dotimes p $povtor {
-      append ret $l
+
+      lappend ret $l
+
       incr i
       if {$i == $size} {break} ;# вышли из цикла dotimes
     }
@@ -1573,6 +1501,29 @@ proc print_result_maintest {botobjs sum_name} {
 
   return
 }
+#-------------------------------------------------------------------------------
+proc ent_as_string_list {e ch_form} {
+
+
+  if {$ch_form == ""} {
+    set ch_form [GET $e ch_form] ;# локальная переменная
+  }
+
+  set ch  [ent_get_chromosome_ $e]
+  
+  #puts -nonewline $out $name
+  
+  set buf {}
+
+  foreach c $ch {
+
+    #append buf [format $ch_form $c]
+    lappend buf [format $ch_form $c]
+
+  } 
+  
+  return $buf
+}
 # ------------------------------------------------------------------------------
 proc maintest_run {botobjs task 
                      max_generations 
@@ -1624,11 +1575,8 @@ proc maintest_run {botobjs task
 
         #--------------------------------
 
-        RUN1 "calc_" $obj -steps $max_generations  -task $task 
+        RUN1 "calc_" $obj -steps $max_generations -task $task -is_print 0
         
-        ##  [$obj final] 
-        ##  [FINAL $obj]
-
         # забираем результаты
         # 
         foreach {num_generations  best_entity  ch_form} \
@@ -1639,8 +1587,7 @@ proc maintest_run {botobjs task
 
         set best_fitnes    [item_get_fitn $best_entity] 
 
-        #set ch_form "%s"
-        set best_as_string [ent_as_string  $best_entity $ch_form]
+        set best_as_string [ent_as_string_list  $best_entity $ch_form]
 
         if {0} {
           puts ""
@@ -1695,14 +1642,11 @@ proc maintest_run {botobjs task
 proc make_bots_standart {bots lpop lgen task} {
 
 
-  dict_set $bots "bot01" [BOT01 new "-lpop $lpop -lgen $lgen -task $task"]
-  dict_set $bots "bot02" [BOT02 new "-lpop $lpop -lgen $lgen -task $task"]
-  dict_set $bots "bot03" [BOT03 new "-lpop $lpop -lgen $lgen -task $task"]
-  dict_set $bots "bot04" [BOT04 new "-lpop $lpop -lgen $lgen -task $task"]
+  dict_set $bots "bot01" [BOT01 new  -lpop $lpop -lgen $lgen -task $task]
+  dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lgen $lgen -task $task]
+  dict_set $bots "bot03" [BOT03 new  -lpop $lpop -lgen $lgen -task $task]
+  dict_set $bots "bot04" [BOT04 new  -lpop $lpop -lgen $lgen -task $task]
 
-  #dict_set $bots "bot05" [BOT05 new "-lpop $lpop -lgen $lgen -task $task"]
-  # bot05 :  00 gens, 0030 eval,   res = 569813999894348,  fit = 42.16   
-  
 }
 # ------------------------------------------------------------------------------
 proc maintest_531 {} {
@@ -1722,7 +1666,7 @@ proc maintest_531 {} {
   set pmin 1  ;# выбираем длину блоков повторов из этого интервала: от
   set pmax 4  ;# и до
 
-  set task [task_create  "FS_fitness" -fit_target 53.1]
+  set task [task_create  "FS_fitness" -fit_target $::fit_target]
 
   set lgen 15 ;# [strlen $::target_text] ;# длина хромосом (строк)
 
@@ -1764,7 +1708,7 @@ proc maintest_531 {} {
     # 
     # просто увеличив ошибку?
 
-    set task [task_create  "FS_fitness" -fit_target 53.1 -fit_error 8.0 ]
+    set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 8.0 ]
 
     #task_print $task
 
@@ -1785,18 +1729,19 @@ proc maintest_531 {} {
   elseif {$mode == "T"} {
   #-------------------------------------------------------------
 
-    set task [task_create  "FS_fitness" -fit_target 53.1 -fit_error 8.0 ]
+    set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.1 ]
 
-    dict_set $bots "bot02" [BOT02 new "-lpop $lpop -lgen $lgen -task $task"]
+    dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lgen $lgen -task $task]
 
   #-------------------------------------------------------------
   } \
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
-  set ::target_text "122333444455555"
+  #set ::target_text "122333444455555" она дальше все равно случайно выбирается
 
   set task [task_create "FS_fitness_list"]
+
   set sort_driver  "GT_lsort" 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
@@ -1816,6 +1761,8 @@ proc maintest_531 {} {
     puts "maintest_531: NOT mode"
   }
   #-------------------------------------------------------------
+
+
 
   maintest_run  $bots $task \
     $max_generations \

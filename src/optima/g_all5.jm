@@ -361,10 +361,6 @@ proc _2_main {} \
 
   set task [task_create "all5s_score"]
 
-  #SET $pop  allele_min_integer 0
-  #SET $pop  allele_max_integer 10
-  #set mutate_proc ""
-
   set pop [ga_genesis_main   \
 	     $task \
              $population_size   \
@@ -386,6 +382,7 @@ proc _2_main {} \
 
   SET $pop  allele_min_integer 0
   SET $pop  allele_max_integer 10
+
   SET $pop "ch_form" " %02d" ;# 
 
   set crossover 0.8

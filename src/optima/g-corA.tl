@@ -202,12 +202,8 @@ proc ent_as_string {e ch_form} {
   foreach c $ch {
 
     append buf [format $ch_form $c]
+    #lappend buf [format $ch_form $c]
 
-    #puts -nonewline $out [format $ch_form $c]
-
-    #if {[catch {puts -nonewline $out [format $ch_form $c]} err]} {
-      #puts -nonewline $out "$c "
-    #}
   } 
   
   return $buf
@@ -519,7 +515,7 @@ dict_class_create POP {} {
   # 
   #-----------------------------------------------
 
-  set obj [SELF]
+  #set obj [SELF]
 
   #puts stderr "class_create: POP .... 02, args = $args"
 
@@ -645,7 +641,7 @@ dict_class_create GAUL {POP} {
 
   #SUPER constructor {*}$args
   
-  set obj [SELF]
+  #set obj [SELF]
 
   #-------------------------------------------------
 
@@ -1626,72 +1622,38 @@ proc ga_chromosome_double_allocate {pop embryo} {
 # 		just random generation.
 
 #------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
-# char
-# get_random_wordchar ()
-
 # ------------------------------------------------------------------------------
-proc get_random_wordchar {} {
+# proc get_random_wordchar {char_min char_max} {
 
-  #   char ch;  
-  #   int randmax = '~' - ' ';
   
-  set char_min [scan " " "%c"]
-  set char_max [scan "~" "%c"] 
-  
-  set randmax [expr {$char_max - $char_min}]
+#   set randmax [expr {$char_max - $char_min}]
 
-  #   char_num = random_int (randmax) + ' ';
-  set char_num [expr {[random_int $randmax] + $char_min}]
+#   set char_num [expr {[random_int $randmax] + $char_min}]
   
-  #   ch = (char) char_num;
-  #return (ch);
-
-  # может лучше число просто возвращать? и формировать не строку, а список целых?
-  return $char_num
-}
+#   # может лучше число просто возвращать? и формировать не строку, а список целых?
+#   return $char_num
+# }
 # ------------------------------------------------------------------------------
-# boolean 
-# ga_seed_printable_random (population *pop, entity *adam)
-
-# ------------------------------------------------------------------------------
-proc ga_seed_printable_random {pop adam}  {
-
-  #   //int		chromo;		/* Index of chromosome to seed */
-  #   int		point;		/* Index of allele to seed */
-  
-  #   char ch;
-  
-  #   /* Checks. */
-  #   if (!pop)  die ("Null pointer to population structure passed.");
-  #   if (!adam) die ("Null pointer to entity structure passed.");
-  
-  #   /* Seeding. */
-  #   //chromo=0;
-  #   //for (chromo=0; chromo<pop->num_chromosomes; chromo++)
-  #   //{
+# proc ga_seed_printable_random {pop adam} {
 
 
-  #puts "ga_seed_printable_random : "
-  #puts ""
-  #$adam print
-  #puts ""
+#   SET $pop  allele_min [scan " " "%c"] 
+#   SET $pop  allele_max [scan "~" "%c"]
 
-  for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point}  \
-  {
-    # ch = get_random_wordchar (); 
-    set ch [get_random_wordchar]
+#   set char_min [GET $pop allele_min]
+#   set char_max [GET $pop allele_max]
 
-    # ((char *)adam->CH)[point] = ch ;
 
-    #$adam set_chromo_gen $point $ch
-    ent_set_chromo_gen_ $adam $point $ch
-  }
+#   for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point}  \
+#   {
+#     set ch [get_random_wordchar $char_min $char_max]
 
-  #   //}
+#     ent_set_chromo_gen_ $adam $point $ch
+#   }
 
-  return $::true
-}
+
+#   return $::true
+# }
 # //------------------------------------------------------------------------------
 # //******************************************************************************
 
@@ -2669,6 +2631,26 @@ proc task_print {t} {
   return $t
 }
 #-------------------------------------------------------------------------------
+set ::NEWMUTATE 0
+#-------------------------------------------------------------------------------
+proc mutate_create {args} {
+
+
+  set mutate_proc [dict_parse $args "-mutate_proc" ga_mutate_double_singlepoint_drift]
+
+  if {$::NEWMUTATE} {
+
+    set m [dict_create]
+
+    SET $m "mutate_proc" $mutate_proc
+  } else {
+    
+    set m $mutate_proc
+  }
+
+  return $m
+}
+#-------------------------------------------------------------------------------
 proc ga_genesis_main {
 			task 
 			population_size      
@@ -2726,7 +2708,8 @@ proc ga_genesis_main {
   SET $pop  select_one  $select_one 
   SET $pop  select_two  $select_two 
 
-  SET $pop  mutate    $mutate    ;#
+  SET $pop  mutate  [mutate_create -mutate_proc $mutate]
+
   SET $pop  crossover $crossover ;#
   SET $pop  replace   $replace   ;#
   

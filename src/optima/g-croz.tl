@@ -80,7 +80,7 @@ proc randinstr_NEXT {gp_list} {
 # двухэлементный список.
 
 #-------------------------------------------------------------------------------
-proc ga_crossover {a b} {
+proc gp_crossover {a b} {
 
   # получить четыре точки скрещивания
   # поменять две точки если необходимо, чтобы a0>=a1 и b0>=b1
@@ -120,7 +120,7 @@ proc ga_crossover {a b} {
   # puts "acenter: $acenter"
   # puts "aright : $aright"
 
-  #puts stderr "ga_crossover:  $a  +  $b  = $x0  +  $x1"
+  #puts stderr "gp_crossover:  $a  +  $b  = $x0  +  $x1"
 
   list $x0 $x1
 }
@@ -246,7 +246,7 @@ proc make_offsprings_from_leaders {leaders l} {
     # трюк получения двух значений от функции списком: (здесь чистые prg?)
     # 
     foreach {offspring0 offspring1} \
-      [ga_crossover $parent0_prg $parent1_prg] break
+      [gp_crossover $parent0_prg $parent1_prg] break
     
 
     # добавляем отпрысков и смотрим превышение лимита:
@@ -599,6 +599,13 @@ proc gp_evolution_main {task  pop max_generations
 
   return
 }
+#-------------------------------------------------------------------------------
+
+set ::NEWFITN 0
+
+#set ::fit_target 53.1
+set ::fit_target 55.213
+
 # ------------------------------------------------------------------------------
 
 dict_class_create BOT {} {
@@ -612,10 +619,6 @@ dict_class_create BOT {} {
 } {
   # а это конструктор класса 
 
-  #if {$::NEWMODE} {
-  #  set args {*}$args
-  #}
-
   if {0} {
 
     puts "dict_class_create BOT: args = $args"
@@ -623,20 +626,10 @@ dict_class_create BOT {} {
     exit
   }
 
-  if {[llength $args] == 1} {
-    set args {*}$args
-  } 
-
-  #puts stderr "class_create $::NEWMODE BOT:  args = $args"
-
-  #     if {! [info exists task]} {
-  #       set task [dict_parse $args "-task" ] 
-  #     }
-  
   set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target 53.1]] 
+              [task_create  "FS_fitness" -fit_target $::fit_target]] 
   
-  set obj [SELF]
+  #set obj [SELF]
   
   SET $obj "task" $task
   SET $obj "name" [dict_parse  $args  "-name" "BotName"]
@@ -647,8 +640,6 @@ dict_class_create BOT {} {
 #---------------------------------------------------------
 proc calc_BOT {obj args} {
   
-  #set obj [SELF]
-  #---------------------------
   
   #variable task
   set task            [dict_parse $args "-task"  [GET $obj "task"]] 
@@ -689,7 +680,7 @@ dict_class_create BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
-  set obj [SELF]
+  #set obj [SELF]
 
   if {0} {
     puts stderr "class_create BOT33: args = |$args|"
@@ -697,59 +688,14 @@ dict_class_create BOT33 {BOT} {
     #exit
   }
 
-  #set args [lindex $args 0] ;# передаем аргументы целым списком, как в JIM
-
-  #if {[llength $args] == 1} {
-  #  set args {*}$args
-  #} 
-  if {0} {
-    puts stderr "BOT33: args = |$args|"
-    puts stderr ""
-    exit
-  }
-
-  #SUPER constructor {*}$args
-  
   # если нет в args, то берем значение здесь
   # 
   set task [dict_parse $args "-task" \
               [task_create  "FS_fitness_list"]] 
   
-  #set len_chromosomes [dict_parse $args "-lgen" ] 
-  #set population_size [dict_parse $args "-lpop" ] 
-  
   SET $obj "task" $task
   
-  #-----------------------------------------------
-  # 
-  #if {$::NEWMODE} {
-
-    #puts stderr "class_create  BOT33 "
-    set pop [POP new  {*}$args]
-
-#     if {0} {
-#       puts ""
-#       puts stderr "class_create BOT33: pop = $pop"
-#       dict_print $pop 
-#       exit
-#     }
-
-#   } else {
-
-#   if {$::__JIM__} {
-
-#     puts stderr "class_create OT33: __JIM__ , args = $args"
-#     set ::NEWPOP 1
-#     set pop [POP new     $args]
-
-#   } else {
-#     puts stderr "class_create OT33:  .... 01, args = $args"
-
-#     set pop [POP new  {*}$args]
-#   }
-  
-#   }
-  #-----------------------------------------------
+  set pop [POP new  {*}$args]
 
   set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
   # 
@@ -758,28 +704,15 @@ dict_class_create BOT33 {BOT} {
   set      ::sort_driver $sort_driver
   SET $pop "sort_driver" $sort_driver
   
-  
-  #SET $pop  ch_form "%c" 
   SET $pop  ch_form "%s" 
 
-  SET $pop  "generation_hook" NULL ;# $generation_hook
-  
-  #-----------------------------------------------
-#   if {0} {
-#     puts ""
-#     puts stderr "class_create BOT33: pop = $pop"
-#     dict_print $pop
-#     exit
-#   }
-
-  
   SET $obj "pop"  $pop
 }
 
 #-----------------------------------------------------------
 proc calc_BOT33  {obj args} {
   
-  puts stderr "calc_BOT33: args = $args"
+  #puts stderr "calc_BOT33: args = $args"
   
   set task [dict_parse $args "-task" [GET $obj "task"]] 
   
@@ -848,7 +781,7 @@ proc final_BOT33 {obj args} {
 # ------------------------------------------------------------------------------
 proc bot33_create {args} {
 
-  puts stderr "bot33_create: args = $args"
+  #puts stderr "bot33_create: args = $args"
 
   set obj [BOT33 new {*}$args]
 
@@ -895,18 +828,14 @@ proc run_gp_evolution {randpop_proc
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-
-set ::NEW 0
-
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #proc FS_fitness_list {list_calc {prog @}} {}
 proc FS_fitness_list {list_calc} {
 
   # list_calc - 
   # 
 
-  set list_true [split $::target_text ""]
+  #set list_true [split $::target_text ""]
+  set list_true $::target_text 
 
   set len_true [llength $list_true]
   set len_calc [llength $list_calc]
@@ -919,7 +848,7 @@ proc FS_fitness_list {list_calc} {
     set char_true [lindex $list_true $i]
     set char_calc [lindex $list_calc $i]
     
-    if {$::NEW} {
+    if {$::NEWFITN} {
       set char_true_decm  [scan   $char_true "%c"] ;# по символу берем его номер
       set char_calc_decm  [scan   $char_calc "%c"] ;# по символу берем его номер
       
@@ -935,7 +864,7 @@ proc FS_fitness_list {list_calc} {
 
   }
 
-  if {$::NEW} {
+  if {$::NEWFITN} {
   } else {
 
     # и еще добавляем разницу в длинах
@@ -956,7 +885,7 @@ proc FS_fitness_list {list_calc} {
 #-------------------------------------------------------------------------------
 proc FS_fitness_list_NEW {list_calc} {
 
-  set ::NEW 1
+  set ::NEWFITN 1
 
   #return [FS_fitness_list  $list_calc $prog]
   return [FS_fitness_list  $list_calc]
@@ -977,7 +906,9 @@ proc _gp_test {} {
 
   # FINS STRUCT - ищем пока простто структуру
 
-  set ::target_text "122333444455555"
+  #set ::target_text "122333444455555"
+
+  set ::target_text "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
 
   global argc
 

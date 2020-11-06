@@ -2,19 +2,19 @@
 argc = 2   argv = maintest_531 S
 mode = S
 
-target_text = 111111999444999 
+target_text = 1 1 1 1 1 1 9 9 9 4 4 4 9 9 9 
 
 r= 0   
 
-bot01 :  04 gens,  0282 eval,  str = 499413999444964,  fit = 45.46 
-bot02 :  04 gens,  0270 eval,  str = 111118799674938,  fit = 46.68 
-bot03 :  04 gens,  0595 eval,  str = 117416999644929,  fit = 47.64 
-bot04 :  02 gens,  0345 eval,  str = 627113999439996,  fit = 45.64 
+bot01 :  04 gens,  0282 eval,  str = 8 9 9 1 1 3 9 9 9 9 4 4 9 6 9,  fit = 48.51 
+bot02 :  04 gens,  0270 eval,  str = 5 1 1 1 1 8 9 9 9 8 9 4 9 4 8,  fit = 48.66 
+bot03 :  03 gens,  0449 eval,  str = 1 1 7 7 6 8 9 5 1 1 4 4 9 9 9,  fit = 47.38 
+bot04 :  02 gens,  0340 eval,  str = 6 2 7 1 1 3 9 9 9 4 3 9 9 9 6,  fit = 47.72 
 
 ------------------------------------------------
 
 1 mesto :    bot02,    270 eval
 2 mesto :    bot01,    282 eval
-3 mesto :    bot04,    345 eval
-4 mesto :    bot03,    595 eval
+3 mesto :    bot04,    340 eval
+4 mesto :    bot03,    449 eval
 

@@ -4371,7 +4371,7 @@ proc SETGET {classname} {
 
 #---------------------------
 
-set ::NEWMODE 1 ;# моя объектная система быстрее !!!!
+#set ::NEWMODE 1 ;# моя объектная система быстрее !!!!
 # 
 # time g~.jm
 # real	0m14.324s
@@ -4492,12 +4492,12 @@ proc class_create {mode classname {baseclasses {}} classvars constructorbody} {
 #--------------------------------------------------------
 proc SUPER {method args} {
 
-  if {$::NEWMODE} {
-
-    # вроде все вызываются для constructor - нам не надо!
-    # 
-    return
-  }
+  #   if {$::NEWMODE} {
+  
+  #     # вроде все вызываются для constructor - нам не надо!
+  #     # 
+  #     return
+  #   }
 
   #----------------------------------------------------
 

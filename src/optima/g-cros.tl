@@ -425,8 +425,6 @@ proc ga_seed_integer_random {pop adam}  {
   set amin [GET $pop allele_min_integer]
   set amax [GET $pop allele_max_integer]
 
-  #set amin $::allele_min_integer
-  #set amax $::allele_min_integer
 
   for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point} \
   {
@@ -492,12 +490,13 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
     #puts ""
   }
 
+  set chromosome [ent_get_chromosome_ $father]
 
-  ent_set_chromosome_ $son [ent_get_chromosome_ $father]
+  ent_set_chromosome_ $son $chromosome
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #set len_chromo [GET $pop len_chromosomes]
 
-  set len_chromo [GET $pop len_chromosomes]
+  set len_chromo [llength chromosome]
 
   set point [random_int  $len_chromo] ;# Index of allele to mutate 
   
@@ -555,13 +554,17 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
 proc ga_mutate_printable_singlepoint_drift {pop father son}  {
 
 
+  set chromosome [ent_get_chromosome_ $father]
 
-  ent_set_chromosome_ $son [ent_get_chromosome_ $father] ;# ????
+  ent_set_chromosome_ $son $chromosome ;# ????
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set len_chromo [GET $pop len_chromosomes]
+  #set len_chromo [GET $pop len_chromosomes]
 
+  set len_chromo [llength $chromosome]
+
+  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
+  # 
   set point [random_int  $len_chromo]
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -581,19 +584,18 @@ proc ga_mutate_printable_singlepoint_drift {pop father son}  {
   set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
 
 
-  set char_min_num [scan " " "%c"]
-  set char_max_num [scan "~" "%c"] 
+#   set char_min_num $::allele_min_integer
+#   set char_max_num $::allele_max_integer
 
-  #puts "char_min_num = $char_min_num"
-  #puts "char_max_num = $char_max_num"
-    
-  if {$point_gen > $char_max_num} {
-    set point_gen $char_min_num ;# скорректировали
-  }
+#   if {$point_gen > $char_max_num} {
+#     puts "mutate 1..............."
+#     set point_gen $char_min_num ;# скорректировали
+#   }
 
-  if {$point_gen < $char_min_num} {
-    set point_gen $char_max_num ;# скорректировали
-  }
+#   if {$point_gen < $char_min_num} {
+#     puts "mutate 2..............."
+#     set point_gen $char_max_num ;# скорректировали
+#   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -692,25 +694,21 @@ proc ga_mutate_double_singlepoint_drift {pop father son}  {
 #   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #if (((double *)son->CH)[point] > allele_max_double)
-  #  ((double *)son->CH)[point] -= (allele_max_double - allele_min_double);
 
-  if {$point_gen > $allele_max_double} {
-    if {$::is_print} {
-      puts "  > allele_max_double"
-    }
-    set point_gen [expr {$point_gen - $allele_correct}] ;# скорректировали
-  }
+#   if {$point_gen > $allele_max_double} {
+#     #if {$::is_print} {
+#       puts "  > allele_max_double .............. "
+#     #}
+#     set point_gen [expr {$point_gen - $allele_correct}] ;# скорректировали
+#   }
 
-  #if (((double *)son->CH)[point] < allele_min_double)
-  #  ((double *)son->CH)[point] += (allele_max_double - allele_min_double);
   
-  if {$point_gen < $allele_min_double} {
-    if {$::is_print} {
-      puts "  < allele_min_double"
-    }
-    set point_gen [expr {$point_gen + $allele_correct}] ;# скорректировали
-  }
+#   if {$point_gen < $allele_min_double} {
+#     #if {$::is_print} {
+#       puts "  < allele_min_double .............. "
+#     #}
+#     set point_gen [expr {$point_gen + $allele_correct}] ;# скорректировали
+#   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   

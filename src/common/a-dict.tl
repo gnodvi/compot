@@ -2162,6 +2162,52 @@ proc dclass_newobj {dclass args} {
 
   return $d
 }
+# ------------------------------------------------------------------------------
+proc RUN1 {procname obj args} {
+
+  # вызываемая проц-ра в маленьких буквах, т.е. CALC -> calc
+  # 
+  #set procname  [string tolower [lindex [info level -1] 0]]
+  #set procname  "${procname}_"
+
+  #set classname [CLASSNAME $obj]
+  set classname [GET $obj "classname"]
+
+  # сделаем вызывемую процедуру-метод 
+  #
+  set procforclass "${procname}${classname}"
+
+  # сдалано не правильно, должны бы идти по всем базовым классам, иерархически
+  # и искать эту процедуру-метод?
+
+  while {1} {
+    
+    if {! [exists_command $procforclass]} {
+      
+      #-------------------------------------------------
+      #set classname    [BASECLASS $classname]
+
+      set dclass $::DCLASSES($classname)
+      
+      set baseclasses  [GET $dclass "baseclasses"]
+      
+      set classname  [lindex $baseclasses 0] ;# пока предполагаем не более одного
+      #-------------------------------------------------
+
+
+      set procforclass "${procname}$classname" 
+
+      #puts "new classname = $classname"
+      #puts "procforclass = $procforclass"
+
+    } else {
+      break
+    }
+    
+  }
+
+  return [$procforclass $obj {*}$args]
+}
 #-------------------------------------------------------------------------------
 proc TEST_class {} {
 
