@@ -25,7 +25,9 @@ proc is x {set x} ;# identity
 
 #Just for fun, we'll mark procs which use only LisPlay functions with "defun":
 
-interp alias {} defun {} proc
+#interp alias {} defun {} proc
+
+alias defun proc
 
 #-------------------------------------------------------------------------------
 

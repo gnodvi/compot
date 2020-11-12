@@ -368,7 +368,7 @@ proc itemslist_sorted_evolution_3parts {sorted_items mutprob} {
 #   return $p
 # }
 #-------------------------------------------------------------------------------
-proc print_best {task  best_item is_print game_print_proc} {
+proc print_best {i task  best_item is_print game_print_proc} {
 
   set fitnessfunc [GET $task "fitness_proc"]  
 
@@ -378,15 +378,19 @@ proc print_best {task  best_item is_print game_print_proc} {
   set prg [item_get_main_src  $best_item]
   set ftn [item_get_fitn      $best_item]
 
-  if {$is_print} {  
+  if {$is_print > 1} {  
 
-    #puts "  BEST: '$prg' with fitness $ftn"
+    puts ""
     puts "================================================"
     puts ""
-    puts "PRINT BEST: '$prg' with fitness $ftn"
+  }
+
+  if {$is_print} {  
+
+    puts [format "% 3d) BEST: '$prg' with fitness $ftn" $i]
 
     #puts stderr "game_print_proc = $game_print_proc"
-    puts ""
+    #puts ""
 
     # здксь печатаем пользовательскую картинку, типа поля игрового
     # 
@@ -558,12 +562,12 @@ proc gp_evolution_main {task  pop max_generations
 
     }
 
-    if {$is_print} {
-      gp_pop_all_print        $pop ;# $itemslist 
+    if {$is_print > 1} {
+      gp_pop_all_print     $pop ;# $itemslist 
     }
     #exit
 
-    print_best  $task $best_item  $is_print $game_print_proc ;# $fitnessfunc 
+    print_best $i  $task $best_item  $is_print $game_print_proc ;# $fitnessfunc 
 
     #----------------------------------------------
 
@@ -588,7 +592,7 @@ proc gp_evolution_main {task  pop max_generations
     SET $pop "itemslist" $itemslist
 
 
-    if {$is_print} {
+    if {$is_print > 1} {
       puts ""
     }
 
@@ -601,7 +605,7 @@ proc gp_evolution_main {task  pop max_generations
 }
 #-------------------------------------------------------------------------------
 
-set ::NEWFITN 0
+#set ::NEWFITN 0
 
 #set ::fit_target 53.1
 set ::fit_target 55.213
@@ -826,71 +830,93 @@ proc run_gp_evolution {randpop_proc
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+set ::ITEMS_LIST 0
+
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #proc FS_fitness_list {list_calc {prog @}} {}
-proc FS_fitness_list {list_calc} {
+proc FS_fitness_list {list_calc task} {
 
-  # list_calc - 
-  # 
+
+  if {$::ITEMS_LIST} {
+    set list_calc  [ent_get_chromosome_ $list_calc]
+  }
 
   #set list_true [split $::target_text ""]
-  set list_true $::target_text 
+  set list_true $::target_text  ;# это список
 
   set len_true [llength $list_true]
   set len_calc [llength $list_calc]
 
+  #puts stderr "FS_fitness_list: true = $list_true, calc = $list_calc"
 
   set fit 0 ;# начальное значение фитнес 
 
-  for {set i 0} {$i < $len_true} {incr i} {
+  # идем циклом по целевому списку? но ведь он может быть как больше так и меньше?
+  # а надо бы идти по максимальному?
+  # 
+
+  if {$len_true > $len_calc} {
+    set len_max $len_true
+  } else {
+    set len_max $len_calc
+  }
+
+
+  for {set i 0} {$i < $len_max} {incr i} {
     
     set char_true [lindex $list_true $i]
     set char_calc [lindex $list_calc $i]
     
-    if {$::NEWFITN} {
-      set char_true_decm  [scan   $char_true "%c"] ;# по символу берем его номер
-      set char_calc_decm  [scan   $char_calc "%c"] ;# по символу берем его номер
+    # -----------------------------------------------------------
+    if {$char_true != $char_calc} {
       
-      #puts stderr "FS_fitness_list_NEW: char_true_decm = $char_true_decm  char_calc_decm = $char_calc_decm "
+      set is_true_integer [string is integer -strict  $char_true]
+      set is_calc_integer [string is integer -strict  $char_calc]
       
-      set fit [FS_fitness_one_calc_add  $fit  $char_calc_decm $char_true_decm]
-    } else {
-
-      if {$char_true != $char_calc} {
-        incr fit ;# если не совпадают, просто увеличиваем на 1
+      # если для конкретных типов отдельных генов возможна более 
+      # точная метрика, то :
+      
+      if {$is_true_integer && $is_calc_integer} {
+        incr fit [expr {abs ($char_calc - $char_true)}]
+        
+      } else {
+        incr fit ;# а иначе просто увеличиваем на 1
       }
+      
     }
-
+    # -----------------------------------------------------------
   }
-
-  if {$::NEWFITN} {
-  } else {
-
-    # и еще добавляем разницу в длинах
-    # 
-    incr fit [expr {abs ($len_calc - $len_true)}] 
-    
-    # но попробуем возвращать отрицательное значение, чтоб удовлетворять
-    # стандарту : лучшие слева, с  большим фитнесом (пусть и отрицательым )
-    
-    set fit [expr - $fit]
-    
-    #puts "fit = $fit"   
-    #  return [expr - $fit]
-  }
+  
+  # и еще добавляем разницу в длинах
+  # 
+  incr fit [expr {abs ($len_calc - $len_true)}] 
+  
+  # но попробуем возвращать отрицательное значение, чтоб удовлетворять
+  # стандарту : лучшие слева, с  большим фитнесом (пусть и отрицательым )
+  
+  set fit [expr - $fit]
+  
 
   return $fit
 }
 #-------------------------------------------------------------------------------
-proc FS_fitness_list_NEW {list_calc} {
 
-  set ::NEWFITN 1
+# g_stru.jm _gp_test 2013  20 5 -1
+# 
+#  561) BEST: '1 2 2 3 3 1 4 4 4 4 5 5 5 5 5' with fitness -1
+#  562) BEST: '1 2 2 3 3 1 4 4 4 4 5 5 5 5 5' with fitness -1
+#  563) BEST: '1 2 2 3 3 3 4 4 4 4 5 5 5 5 5' with fitness 0
 
-  #return [FS_fitness_list  $list_calc $prog]
-  return [FS_fitness_list  $list_calc]
+#-------------------------------------------------------------------------------
+# proc FS_fitness_list_NEW {list_calc} {
 
-}
+#   set ::NEWFITN 1
+
+#   #return [FS_fitness_list  $list_calc $prog]
+#   return [FS_fitness_list  $list_calc]
+
+# }
 #-------------------------------------------------------------------------------
 # ищем пока простто структуру
 #-------------------------------------------------------------------------------
@@ -898,7 +924,9 @@ proc FS_fitness_list_NEW {list_calc} {
 #-------------------------------------------------------------------------------
 proc gp_fitness_test {item} {
 
-  puts "item = $item,  ret = [FS_fitness_list $item] "
+  set task NULL
+
+  puts "item = $item,  ret = [FS_fitness_list  $item $task] "
 
 }
 #-------------------------------------------------------------------------------
@@ -912,25 +940,32 @@ proc _gp_test {} {
 
   global argc
 
+  #set ::NEWFITN 1 ;# даже немного замедляет ?! 
+
   #----------------------------------------------------------------
   if {$argc == 1} {
+
+    #set ::NEWFITN 1
 
     gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
     gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 4"
     gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 4 4"
     gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 0 0"
     gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+    gp_fitness_test  "0 0 "
+    gp_fitness_test  "0 "
+    gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
 
     puts ""
 
     exit
 
-    set bnums 10 ;# population_size
-    set bsize 15
-    set steps  1 ;# 1 ;# max_generations 
+#     set bnums 10 ;# population_size
+#     set bsize 15
+#     set steps  1 ;# 1 ;# max_generations 
     
-    set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
-    set ::is_fitn_first   1 ;# 0 ;# g-corA.tl -> item_print_fitness
+#     set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
+#     set ::is_fitn_first   1 ;# 0 ;# g-corA.tl -> item_print_fitness
     
   #----------------------------------------------------------------
   } else {

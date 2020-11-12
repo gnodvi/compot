@@ -1,7 +1,7 @@
 
 ga_population_set_parameters ... 
 
-GA EVOLUTION   0  ...  f0 =  42.255  i0 =  186999526956517
+  step   0  ...  f0 =  42.255  i0 =  1 8 6 9 9 9 5 2 6 9 5 6 5 1 7 
 ordered     = 0 1 2 3 4
 permutation = 3 2 1 0 4
 i= 0  dist1=   76.00  dist2=   26.00
@@ -9,7 +9,7 @@ i= 1  dist1=    9.00  dist2=   65.00
 i= 2  dist1=   48.00  dist2=   18.00
 i= 3  dist1=   37.00  dist2=   41.00
 i= 4  dist1=    0.00  dist2=    0.00
-GA EVOLUTION   1  ...  f0 =  42.255  i0 =  186999526956517
+  step   1  ...  f0 =  42.255  i0 =  1 8 6 9 9 9 5 2 6 9 5 6 5 1 7 
 ordered     = 4 4 4 4 4
 permutation = 4 4 4 4 4
 i= 0  dist1=   31.00  dist2=   45.00
@@ -17,9 +17,9 @@ i= 1  dist1=   54.00  dist2=   24.00
 i= 2  dist1=   46.00  dist2=   52.00
 i= 3  dist1=   17.00  dist2=   67.00
 i= 4  dist1=    0.00  dist2=    0.00
-GA EVOLUTION   2  ...  f0 =  40.298  i0 =  166919526896417
+  step   2  ...  f0 =  40.298  i0 =  1 6 6 9 1 9 5 2 6 8 9 6 4 1 7 
 The final solution with seed = 0 was:
-166919526896417
+1 6 6 9 1 9 5 2 6 8 9 6 4 1 7 
 
 With score = 40.297872 
 

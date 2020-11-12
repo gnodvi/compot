@@ -464,7 +464,11 @@ proc TEST_pp {} {
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
 #-------------------------------------------------------------------------------
-proc squareFitness {prg_11 {prog_11 @}} {
+#proc squareFitness {prg_11 {prog_11 @}} {}
+proc squareFitness {prg_11 args} {
+
+  set prog_11 @
+
 
   set fitness 0
 

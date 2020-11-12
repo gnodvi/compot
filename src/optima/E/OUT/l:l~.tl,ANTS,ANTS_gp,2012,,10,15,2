@@ -19,51 +19,7 @@ make_prgpop: INIT POPULATION =
 
 
 
-   1)  fitn =  88 :   IF_FOOD_AHEAD MOVE i RIGHT
-   2)  fitn =  88 :   i MOVE nop RIGHT
-   3)  fitn =  89 :   IF_FOOD_AHEAD nop RIGHT RIGHT
-   4)  fitn =  89 :   IF_FOOD_AHEAD nop RIGHT MOVE IF_FOOD_AHEAD MOVE MOVE RIGHT nop MOVE i nop nop i
-   5)  fitn =  89 :   IF_FOOD_AHEAD RIGHT MOVE
-   6)  fitn =  89 :   IF_FOOD_AHEAD RIGHT RIGHT IF_FOOD_AHEAD MOVE i MOVE nop
-   7)  fitn =  89 :   RIGHT IF_FOOD_AHEAD MOVE i IF_FOOD_AHEAD IF_FOOD_AHEAD MOVE RIGHT
-   8)  fitn =  89 :   i RIGHT RIGHT MOVE nop {RIGHT MOVE IF_FOOD_AHEAD} MOVE
-   9)  fitn =  89 :   nop i
-  10)  fitn =  89 :   {nop MOVE MOVE} IF_FOOD_AHEAD {nop RIGHT i} i MOVE RIGHT
-
-================================================
-
-PRINT BEST: 'IF_FOOD_AHEAD MOVE i RIGHT' with fitness 88
-
-
-   1)  fitn =  88 :   IF_FOOD_AHEAD MOVE i RIGHT
-   2)  fitn =  88 :   i MOVE nop RIGHT
-   3)  fitn =  88 :   IF_FOOD_AHEAD MOVE nop RIGHT
-   4)  fitn =  88 :   i MOVE i RIGHT
-   5)  fitn =  88 :   i MOVE nop RIGHT
-   6)  fitn =  88 :   i MOVE nop RIGHT
-   7)  fitn =  88 :   IF_FOOD_AHEAD MOVE nop RIGHT MOVE IF_FOOD_AHEAD MOVE MOVE RIGHT nop MOVE i IF_FOOD_AHEAD nop i
-   8)  fitn =  89 :   IF_FOOD_AHEAD nop RIGHT RIGHT
-   9)  fitn =  89 :   IF_FOOD_AHEAD IF_FOOD_AHEAD i RIGHT
-  10)  fitn =  89 :   IF_FOOD_AHEAD IF_FOOD_AHEAD nop IF_FOOD_AHEAD RIGHT
-
-================================================
-
-PRINT BEST: 'IF_FOOD_AHEAD MOVE i RIGHT' with fitness 88
-
-
-   1)  fitn =  88 :   IF_FOOD_AHEAD MOVE i RIGHT
-   2)  fitn =  88 :   i MOVE nop RIGHT
-   3)  fitn =  88 :   IF_FOOD_AHEAD MOVE nop RIGHT
-   4)  fitn =  88 :   i MOVE nop RIGHT
-   5)  fitn =  88 :   i MOVE nop RIGHT
-   6)  fitn =  88 :   IF_FOOD_AHEAD MOVE RIGHT
-   7)  fitn =  88 :   MOVE RIGHT MOVE i RIGHT
-   8)  fitn =  88 :   i MOVE i RIGHT
-   9)  fitn =  89 :   IF_FOOD_AHEAD i RIGHT nop RIGHT
-  10)  fitn =  89 :   IF_FOOD_AHEAD i nop RIGHT
-
-================================================
-
-PRINT BEST: 'IF_FOOD_AHEAD MOVE i RIGHT' with fitness 88
-
+  0) BEST: 'IF_FOOD_AHEAD MOVE i RIGHT' with fitness 88
+  1) BEST: 'IF_FOOD_AHEAD MOVE i RIGHT' with fitness 88
+  2) BEST: 'IF_FOOD_AHEAD MOVE i RIGHT' with fitness 88
 

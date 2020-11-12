@@ -584,19 +584,19 @@ proc ga_mutate_printable_singlepoint_drift {pop father son}  {
   set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
 
 
-#   set char_min_num $::allele_min_integer
-#   set char_max_num $::allele_max_integer
-
-#   if {$point_gen > $char_max_num} {
-#     puts "mutate 1..............."
-#     set point_gen $char_min_num ;# скорректировали
-#   }
-
-#   if {$point_gen < $char_min_num} {
-#     puts "mutate 2..............."
-#     set point_gen $char_max_num ;# скорректировали
-#   }
-
+  #   set char_min_num $::allele_min_integer
+  #   set char_max_num $::allele_max_integer
+  
+  #   if {$point_gen > $char_max_num} {
+  #     puts "mutate 1..............."
+  #     set point_gen $char_min_num ;# скорректировали
+  #   }
+  
+  #   if {$point_gen < $char_min_num} {
+  #     puts "mutate 2..............."
+  #     set point_gen $char_max_num ;# скорректировали
+  #   }
+  
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   ent_set_chromo_gen_ $son  $point $point_gen ;# записали новое значение
@@ -787,13 +787,13 @@ proc pop_entities_swap {pop  id1 id2} \
 proc gaul_crossover {pop task} {
   
 
-  if {$::is_print == 2.2} {
-    puts "gaul_crossover : (select_two_proc = [GET $pop select_two])"
+  set select_two_proc [GET $pop select_two]
+
+  if {$::is_print > 2} {
+    puts "gaul_crossover : (select_two_proc = $select_two_proc)"
     puts ""
   }
   
-  set select_two_proc [GET $pop select_two]
-
   if {[GET $pop crossover_ratio] <= 0.0}  { 
     puts "!!!!!!!!!!!!!!!!!!!!"
     return 
@@ -857,7 +857,7 @@ proc gaul_crossover {pop task} {
 proc gaul_mutation {pop task} {
 
 
-  if {$::is_print == 2.2} {
+  if {$::is_print > 2} {
     puts "gaul_mutation  : (select_one_proc = [GET $pop select_one])"
     puts ""
   }
@@ -1004,7 +1004,7 @@ proc gaul_adapt_and_evaluate {pop task} \
   
   set scheme [GET $pop scheme]  ;# Evolutionary scheme
   
-  if {$::is_print == 2.2} {
+  if {$::is_print > 2} {
     puts "gaul_adapt_and_evaluate : (scheme = [GET $pop scheme])"
     puts ""
   }
@@ -1099,7 +1099,7 @@ proc ga_elitism_parents_die_exept {pop num_parents_survives} \
   pop_del_entities $pop $imin $imax
 
 
-  if {$::is_print == 2.2} {
+  if {$::is_print > 2} {
     puts "after  delete_parents_exept_some !"
     puts ""
     pop_print $pop "stderr"
@@ -1126,7 +1126,7 @@ proc gaul_survival {pop} \
 
   set elitism [GET $pop elitism]
 
-  if {$::is_print == 2.2} {
+  if {$::is_print > 2} {
     puts "gaul_survival : (elitism = $elitism)"
     puts ""
   }
@@ -1150,7 +1150,7 @@ proc gaul_survival {pop} \
 # ------------------------------------------------------------------------------
 proc crossover_mutation_adapt_survival {pop task} {
 
-  if {$::is_print == 2.2} {
+  if {$::is_print > 2} {
 
     puts stderr "crossover_mutation_adapt_survival ... "
     puts ""
@@ -1163,7 +1163,7 @@ proc crossover_mutation_adapt_survival {pop task} {
   gaul_crossover $pop $task ;# выбираются мама и папа и затем скрещиваются 
                        # в новых (созданных) членов общества !!
   
-  if {$::is_print == 2.2} {pop_print $pop "stderr" ; puts ""}
+  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
   #-----------------------------------------------------------------
   # Mutation step
@@ -1171,7 +1171,7 @@ proc crossover_mutation_adapt_survival {pop task} {
 
   gaul_mutation $pop $task ;# муитруем в новых членов общества !!
   
-  if {$::is_print == 2.2} {pop_print $pop "stderr" ; puts ""}
+  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
   #-----------------------------------------------------------------
   # Apply environmental adaptations, score entities, sort entities, etc.
@@ -1179,7 +1179,7 @@ proc crossover_mutation_adapt_survival {pop task} {
  
   gaul_adapt_and_evaluate $pop $task ;# а где же сортировка?
   
-  if {$::is_print == 2.2} {pop_print $pop "stderr" ; puts ""}
+  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
   #-----------------------------------------------------------------
   # Survival of the fittest (выживание наиболее приспособленных)
@@ -1191,7 +1191,7 @@ proc crossover_mutation_adapt_survival {pop task} {
   gaul_survival $pop ;# что-то делаем с получившемся набором старых и новых 
     
 
-  if {$::is_print == 2.2} {pop_print $pop "stderr" ; puts ""}
+  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
   #-----------------------------------------------------------------
   # сортируем всех челнов популяции по фитнесу
@@ -1339,10 +1339,10 @@ proc ga_evolution_main {task pop max_generations} {
   } ;# /* Generation loop. */
   #--------------------------------------------------------------------
   
-  
-  if ($::is_print) {
+  puts ""
 
-    puts ""
+  if {$::is_print > 1} {
+
     puts ""
     puts "FINAL RESULT: "
     puts ""

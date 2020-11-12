@@ -10,6 +10,8 @@ set COMPOT "./COMPOT"
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
+
 
 package require compot::common 
 

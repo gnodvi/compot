@@ -25,83 +25,9 @@ make_prgpop: INIT POPULATION =
 
 
 
-   1)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
-   6)  fitn =  16 :   p1 p1 p1 p1
-   7)  fitn =  17 :   p1 p1 p1
-   8)  fitn =  19 :   p1
-   9)  fitn =  19 :   p1
-  10)  fitn =  19 :   p1
-
-================================================
-
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 10
-
-
-   1)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   6)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  12 :   p1 p1 p1 p1 p1 p1 p1 p1
-
-================================================
-
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 8
-
-
-   1)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =   8 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   6)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   9 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =  11 :   p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
-
-================================================
-
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 6
-
-
-   1)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   6)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   7 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =  10 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =  13 :   p1 p1 p1 p1 p1 p1 p1
-
-================================================
-
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 2
-
-
-   1)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   2)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   3)  fitn =   2 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   4)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   5)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   6)  fitn =   3 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   7)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   8)  fitn =   4 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-   9)  fitn =   5 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-  10)  fitn =   6 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1
-
-================================================
-
-PRINT BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 2
-
+  0) BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 10
+  1) BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 8
+  2) BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 6
+  3) BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 2
+  4) BEST: 'p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1' with fitness 2
 

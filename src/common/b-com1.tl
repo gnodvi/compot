@@ -298,6 +298,10 @@ proc ::struct::record::Define {defn_ vars_ args} {
   # 
   uplevel \#0 [list interp alias {} $defn_ {} ::struct::record::Create $defn_]
   
+  # чего-то не пошел такой вариант
+  # 
+  #uplevel \#0 [list alias $defn_ ::struct::record::Create $defn_]
+  
   set _count($defn_) 0
   
   

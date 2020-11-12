@@ -1,38 +1,26 @@
 
+
+bnums  = 3
+bsize  = 15
+maxgs  = 8
+
 ga_population_set_parameters ... 
 
-GA EVOLUTION   0  ...  f0 =  42.255  i0 =  686985121251255
-GA EVOLUTION   1  ...  f0 =  42.426  i0 =  129477651713517
-GA EVOLUTION   2  ...  f0 =  45.511  i0 =  129785641751255
-GA EVOLUTION   3  ...  f0 =  44.574  i0 =  129477151753557
-GA EVOLUTION   4  ...  f0 =  46.617  i0 =  129775141351555
-GA EVOLUTION   5  ...  f0 =  47.702  i0 =  129377151453555
-GA EVOLUTION   6  ...  f0 =  48.745  i0 =  129377142453555
-GA EVOLUTION   7  ...  f0 =  48.766  i0 =  129377142454555
-GA EVOLUTION   8  ...  f0 =  49.809  i0 =  129367142455555
+  step   0  ...  f0 =  42.255  i0 =  1 8 6 9 9 9 5 2 6 9 5 6 5 1 7 
+  step   1  ...  f0 =  42.532  i0 =  4 7 2 5 5 9 5 5 6 10 5 6 5 1 7 
+  step   2  ...  f0 =  43.553  i0 =  4 7 2 5 5 9 4 5 6 10 5 6 5 1 7 
+  step   3  ...  f0 =  44.723  i0 =  1 7 2 5 5 10 4 5 6 6 5 6 5 1 7 
+  step   4  ...  f0 =  45.723  i0 =  1 7 2 5 5 10 4 5 6 10 5 5 5 1 7 
+  step   5  ...  f0 =  46.745  i0 =  1 7 2 5 5 10 4 4 6 10 5 5 5 1 7 
+  step   6  ...  f0 =  46.787  i0 =  1 6 2 4 5 10 4 4 6 10 5 5 5 1 7 
+  step   7  ...  f0 =  46.830  i0 =  1 5 2 4 5 10 4 4 6 10 5 5 5 2 7 
+  step   8  ...  f0 =  46.830  i0 =  1 5 2 4 5 10 4 4 6 10 5 5 5 1 6 
 
+do_print_stop_criteria: ret = 8, max_generations = 8
+The evolution was stopped: maximum number of generations
 
-FINAL RESULT: 
+Best solution , score = 46.83 : 1 5 2 4 5 10 4 4 6 10 5 5 5 1 6 
+generation = 8
+Total number of fitness evaluations: 187
 
----------------------- POPULATION PRINT -------------------------------
-
-Generation = 8
-
-   i =   0   fitness=    49.809   ch=  129367142455555
-   i =   1   fitness=    48.787   ch=  129367142454555
-   i =   2   fitness=    48.787   ch=  129367143453555
-
-STABLE_SIZE = 3 
-SIZE        = 3 
-BEST        = 0 
-
-BEST = 0  (fitness = 49.808511) 
- 
------------------------------------------------------------------------
-
-The evolution was stopped because the maximum number of generations were performed.
-
-Best solution , score = 49.81 : 129367142455555
-
-Total number of fitness evaluations: 177
 

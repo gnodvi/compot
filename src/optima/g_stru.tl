@@ -46,41 +46,6 @@ source "g-detw.tl"
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-
-set ::gp_list "1 2 3 4 5 6 7 8 9"
-
-random_seed 0
-
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-proc maintest_seed_proc {pop adam} {
-
-  set len [GET $pop len_chromosomes]
-
-
-  for {set point 0} {$point < $len} {incr point} {
-    
-    set char_sym [randinstr_NEXT  $::gp_list]
-    
-
-    set ch [scan $char_sym "%c"]  ;# десятичные коды символьных цифр
-    #
-    # а зачем в цифру переводить? нам нужны здесь симыолы, а точнее - строки !!!
-
-
-    ent_set_chromo_gen_ $adam $point $ch 
-    #
-    # записывем ген в хромосому в виде эдемента списка
-  }
-
-  return $::true
-}
-# ------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
 
 # /*   ! " # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~  */
 
@@ -180,10 +145,6 @@ proc maintest_seed_proc {pop adam} {
 # /* i= 125  ch= }  */
 # /* i= 126  ch= ~  */
 
-
-set ::allele_min_integer  32 ;# (' ') 
-set ::allele_max_integer 126 ;# ('~') 
-
 # //------------------------------------------------------------------------------
 #   struggle_ALL.c
 
@@ -200,14 +161,53 @@ set ::allele_max_integer 126 ;# ('~')
 # set ::target_text_full  "When we reflect on this struggle, we may console ourselves with the full belief, that the war of nature is not incessant, that no fear is felt, that death is generally prompt, and that the vigorous, the healthy, and the happy survive and multiply."
 
 #set ::target_text  "When we reflect on this struggle"
+# //------------------------------------------------------------------------------
+
+#if {$::NEWTEST} {
+#set ::allele_min_integer  48 ;# ('1') 
+#set ::allele_max_integer 126 ;# ('~') 
+#} else {
+#set ::allele_min_integer__  32 ;# (' ') 
+#set ::allele_max_integer__ 126 ;# ('~') 
+
+#}
 
 set ::target_text  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
 
+set ::gp_list      "1 2 3 4 5 6 7 8 9"
 
-#set ::NEWTEXT 0
+random_seed 0
 
-#set ::NEWMODE 0
 
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc maintest_seed_proc {pop adam} {
+
+  set len [GET $pop len_chromosomes]
+
+
+  for {set point 0} {$point < $len} {incr point} {
+    
+    set char_sym [randinstr_NEXT  $::gp_list]
+    
+    #if {$::CHROMOLIST} {
+
+    # а зачем в цифру переводить? нам нужны здесь симыолы, а точнее - строки !!!
+    #
+    set ch $char_sym 
+
+    #} else {
+    #  set ch [scan $char_sym "%c"]  ;# десятичные коды символьных цифр
+    #}
+
+
+    ent_set_chromo_gen_ $adam $point $ch 
+    #
+    # записывем ген в хромосому в виде эдемента списка
+  }
+
+  return $::true
+}
 # ------------------------------------------------------------------------------
 proc LTARGET {} {
 
@@ -217,6 +217,10 @@ proc LTARGET {} {
 }
 #------------------------------------------------------------------------------
 # TODO: упростить
+
+set ::FS_fitness_min_integer  32 ;# (' ') 
+set ::FS_fitness_max_integer 126 ;# ('~') 
+
 #------------------------------------------------------------------------------
 proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
 
@@ -232,8 +236,8 @@ proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
     #exit
   }
   
-  set char_min $::allele_min_integer 
-  set char_max $::allele_max_integer 
+  set char_min $::FS_fitness_min_integer
+  set char_max $::FS_fitness_max_integer
 
   set size_all   [- $char_max $char_min] 
   set size_all_half [/ $size_all 2.0] 
@@ -279,6 +283,11 @@ proc FS_fitness {text_calc task} {
 
     set char_calc_decm  [ent_get_chromo_gen_ $text_calc  $k]
 
+    #if {$::CHROMOLIST} { 
+    set char_calc_decm [scan $char_calc_decm "%c"]  ;# десятичные коды символьных цифр
+    #}
+
+
     set fit [FS_fitness_one_calc_add  $fit  $char_calc_decm $char_true_decm]
   }
 
@@ -310,8 +319,13 @@ proc do_print_best {pop name} \
   #   printf ("\n");
 
   ent_print_ch_ $best_entity ""
-
   puts ""
+
+  set generation [GET $pop "generation"] ;# сколько было генераций
+  puts "generation = $generation"
+
+  puts [format "Total number of fitness evaluations: %ld" $::eval_count]
+
   puts ""
 
 }
@@ -328,8 +342,6 @@ proc do_print_best {pop name} \
 
 #   return [string length $str]
 # }
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc pop1_create {args} {
 
@@ -350,7 +362,8 @@ proc pop1_create {args} {
   SET $pop  crossover   ga_crossover_char_allele_mixing
   SET $pop  replace     NULL ;# $replace   ;#
   
-  SET $pop  ch_form "%c" 
+  #SET $pop  ch_form "%c" 
+  SET $pop  ch_form "%s " 
   
   SET $pop  scheme           GA_SCHEME_DARWIN
   SET $pop  elitism          GA_ELITISM_PARENTS_DIE
@@ -383,63 +396,87 @@ dict_class_create BOT01 {BOT} {
 # ------------------------------------------------------------------------------
 proc _01_test {} {
 
-  set len_chromo [LTARGET] 
+  global argc argv argv0
+  set argv [lrange $argv 1 end]
 
-  global argc argv
-
-  if {$argc != 3} {
-
-    puts "!!!!!!!!! g_stru.tl GA 20 20 !!!!!!!!!!!!"
-    exit
-
-  } else {
-    
-    set population_size  [lindex $argv 1] ;# 20  ;# колич-во ботов  
-    set max_generations  [lindex $argv 2] ;# 20  ;# шагов эволюции 
-  }
-
+  set test            [dict_parse $argv "-test"  0]
+  set population_size [dict_parse $argv "-lpop" 10]
+  set max_generations [dict_parse $argv "-nums" 10]
+  set len_chromo      [dict_parse $argv "-size" [LTARGET]] 
+ 
   puts ""
-  puts "bnums  = $population_size"  ;# колич-во ботов
-  puts "bsize  = $len_chromo" 
-  puts "maxgs  = $max_generations"  ;# шагов эволюции  
+  puts "lpop  = $population_size"  ;# колич-во ботов
+  puts "size  = $len_chromo" 
+  puts "nums  = $max_generations"  ;# шагов эволюции  
   puts ""
 
   set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
 
   set seed_proc     "maintest_seed_proc"
 
-  set fitness_func  "FS_fitness"
+  if {$test == 0} {
+    
+    set fitness_func  "FS_fitness"
+    set fit_target    $::fit_target
+  }
+  if {$test == 1} {
+
+    set ::ITEMS_LIST 1
+    set fitness_func   "FS_fitness_list"
+    #set ::sort_driver  "GT_lsort" ;## большие влево?
+    set fit_target     0
+
+  } 
 
   test_random_seed 0 ;#$i
   
-  if {$max_generations == -1} {
-    set task [task_create $fitness_func -fit_target $::fit_target -fit_error 0.01 ]  
-  } else {
-    set task [task_create $fitness_func]  
-  }
+  set task [task_create $fitness_func -fit_target $fit_target -fit_error 0.01 ]  
   
   set obj \
     [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
   set pop [GET $obj pop]
-  
- 
+   
   SET $pop  seed $seed_proc   
   
-  ga_evolution  $task $pop $max_generations   
+  #-------------------------------------------------------------------
+  #ga_evolution  $task $pop $max_generations   
+  
+
+  # Score and sort the initial population members.
+  #  
+  pop_initial_score_and_sort  $pop $task
+
+  if {$test == 1} { 
+
+    # нулевая цель
+
+    set ::sort_driver  "GT_lsort" ;## большие влево (из минуса к 0)
+    SET $pop "sort_driver" $::sort_driver
+    #set ::is_print 2.2
+
+    # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
+    # 
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+  }
+
+  pop_print $pop
+  puts ""
+  #exit
+
+  set ret [ga_evolution_main  $task $pop $max_generations]
+  # 
+  #-------------------------------------------------------------------
+
+  do_print_stop_criteria  $ret $max_generations
+
+  puts ""
   
   do_print_best $pop ""
   
+
   return
-}
-# ------------------------------------------------------------------------------
-proc _01_test_new {} {
-
-
-  set ::NEWMODE 1
-
-  _01_test 
-
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -460,7 +497,7 @@ dict_class_create  BOT02 {BOT} {
   SET $obj "pop" $pop1
 }
 
-# //------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # //  struggle_generation_hook()
 # //  synopsis:	This function is called by the main GA routine at the
 # //		beginning of every generation.
@@ -468,7 +505,9 @@ dict_class_create  BOT02 {BOT} {
   set ::sum_best_fitnesses 0.0  
 
 
-# //------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 proc _3_struggle_generation_hook {generation pop} \
 {
 
@@ -634,7 +673,8 @@ dict_class_create  BOT03 {BOT} {
               NULL			             \
              ]
 
-    SET $pop ch_form "%c" ;# 
+    #SET $pop ch_form "%c" ;# 
+    SET $pop ch_form "%s " 
     
     ga_population_set_parameters \
       $pop	                 \
@@ -660,10 +700,24 @@ proc calc_BOT03 {obj args} {
   return $ret  
 }
 # //------------------------------------------------------------------------------
+proc do_print_stop_criteria {ret max_generations} {
+
+
+  puts "do_print_stop_criteria: ret = $ret, max_generations = $max_generations"
+ 
+  if {$max_generations == -1 || $ret < $max_generations} {
+    
+    puts "The evolution was stopped: termination criteria "
+  } else {
+    puts "The evolution was stopped: maximum number of generations"
+  }
+
+}
+# //------------------------------------------------------------------------------
 proc _03_test {} \
 {
   
-  test_random_seed 23091975
+  test_random_seed 0 ;# 23091975
   
   set population_size 120
   set max_generations 1000
@@ -675,7 +729,16 @@ proc _03_test {} \
 
   set len_chromo [LTARGET] 
   
-  set task [task_create "FS_fitness"]
+  #set task [task_create "FS_fitness"]
+  set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
+
+  puts ""
+  puts "bnums  = $population_size"  ;# колич-во ботов
+  puts "bsize  = $len_chromo" 
+  puts "maxgs  = $max_generations"  ;# шагов эволюции  
+  puts ""
+
+  set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
 
   #----------------------------------------------------------------------
 
@@ -688,19 +751,12 @@ proc _03_test {} \
   set ret [ga_evolution  $task $pop $max_generations]  
 
 
-  if {$ret < $max_generations} {
-
-    puts "The evolution was stopped because the termination criteria were met. "
-  } else {
-    puts "The evolution was stopped because the maximum number of generations were performed."
-  }
+  do_print_stop_criteria  $ret $max_generations
 
   puts ""
   
   do_print_best $pop ""
 
-  puts [format "Total number of fitness evaluations: %ld" $::eval_count]
-  
 
   return 1
 }
@@ -767,7 +823,8 @@ dict_class_create  BOT04 {BOT} {
   set pop [GAUL new  \
              -lpop $population_size -lgen $len_chromo]
   
-  SET $pop ch_form "%c" ;# 
+  #SET $pop ch_form "%c" ;# 
+  SET $pop ch_form "%s " ;# 
     
   #   /*
   #     * Define chromosome handling functions.
@@ -786,13 +843,12 @@ dict_class_create  BOT04 {BOT} {
   SET $pop generation_hook NULL
   #$pop configure -iteration_hook  NULL
   #   pop->data_destructor = NULL;
-  #   pop->data_ref_incrementor = NULL;
-  
+  #   pop->data_ref_incrementor = NULL;  
   
   set seed_proc  "maintest_seed_proc"
   
   
-  SET $pop seed       $seed_proc      ;# /* Individual initialisation    */
+  SET $pop seed        $seed_proc      ;# /* Individual initialisation    */
   
   SET $pop adapt      _3_struggle_adaptation ;# /* Environmental adaptation operator */
   SET $pop select_one  ga_select_one_sus     ;# /* Mutation selection operator  */
@@ -866,7 +922,7 @@ proc  calc_BOT04  {obj args} {
 proc _04_test {} \
 {
   
-  test_random_seed 23091975
+  test_random_seed 0 ;# 23091975
   
 
   set population_size ""
@@ -879,15 +935,26 @@ proc _04_test {} \
 
   #-----------------------------------------------------------------
 
-  set task [task_create "FS_fitness"]
+  #set task [task_create "FS_fitness"]
   
+  set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
+
+  puts ""
+  puts "bnums  = $population_size"  ;# колич-во ботов
+  puts "bsize  = $len_chromo" 
+  puts "maxgs  = $max_generations"  ;# шагов эволюции  
+  puts ""
+
+  set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
+
+  #----------------------------------------------------------------------
+
   set obj \
     [BOT04 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
   set pop [GET $obj pop]
 
   RUN1 "calc_" $obj -steps $max_generations -task $task 
-
 
   #-----------------------------------------------------------------
 
@@ -1040,7 +1107,7 @@ proc _05_test {} \
 
   parse_opts_3   num_pops population_size max_generations  5 80 250
 
-  test_random_seed 42
+  test_random_seed 0 ;# 42
   
 
   #----------------------------------------------------------------------
@@ -1213,7 +1280,7 @@ proc make_pop_DARWIN {task population_size len_chromo} {
 
   set len_chromo [LTARGET] 
   
-  test_random_seed 23091975
+  test_random_seed 0 ;# 23091975
 
   set seed_proc  "maintest_seed_proc"
 
@@ -1472,16 +1539,9 @@ proc print_result_maintest {botobjs sum_name} {
   dict for {botname obj} [set $botobjs] {
 
     lappend  resultlist [list $botname $sum($botname)]
-    #puts "SUM  $botname =  $sum($botname)   eval_counts"
   }
 
-  #puts "resultlist = $resultlist"
-
   set sortresult [lsort -command "sort_proc" $resultlist] 
-
-  #puts "sortresult = $sortresult"
-  puts "------------------------------------------------"
-  puts ""
 
   set n 1
 
@@ -1494,10 +1554,8 @@ proc print_result_maintest {botobjs sum_name} {
     incr n
   }
 
-  #set mid [expr {1.0 * $sum_generations / ($num_runs * $num_text)}]
-  #
-  #puts "mid_generations = $mid  \[$min ... $max\]"
-  #puts ""
+  puts ""
+  puts "------------------------------------------------"
 
   return
 }
@@ -1547,17 +1605,21 @@ proc maintest_run {botobjs task
   # -----------------------------------------------------------------
   for {set t 0} {$t < $num_text} {incr t} {
 
-    set ::target_text  [make_random_target_text   $::gp_list \
-                          $len_chromosomes  $pmin $pmax]
     
-    puts "target_text = $::target_text \n"
+    if {$t == 0} { 
+      # берем задачу-строку  по умолчанию
+    } else {
+      set ::target_text  [make_random_target_text   $::gp_list $len_chromosomes  $pmin $pmax]
+    }
     
+    puts "target_text = $::target_text"
     # ----------------------------------------------------------------- 
     for {set r 0} {$r < $num_runs} {incr r} {
       
       #puts -nonewline [format "r= $r   "]
-      puts "r= $r   "
-       
+      #puts "run = $r   "
+      puts ""
+      
       # или здесь создавать какждый цикл новые боты-объекты?? 
       # 
 
@@ -1583,58 +1645,46 @@ proc maintest_run {botobjs task
           [RUN1 "final_" $obj] \
           break
         
-        #--------------------------------
 
         set best_fitnes    [item_get_fitn $best_entity] 
 
-        set best_as_string [ent_as_string_list  $best_entity $ch_form]
+        set best_as_string [ent_as_string  $best_entity $ch_form]
 
-        if {0} {
-          puts ""
-          puts "---------------------------------"
-          puts "num_generations = $num_generations"
-          puts "best_entity     = [set $best_entity]"
-          puts "ch_form         = $ch_form"
-          puts "---------------------------------"
-          puts "" 
-        }
-
-        #--------------------------------       
         # теперь напечатаем результаты по этому испытанию       
 
-        puts ""
         
+        puts -nonewline [format "t=$t, r=$r, "]
         puts -nonewline [format "$botname :  "]
         puts -nonewline [format "%02d gens,  " $num_generations]
         puts -nonewline [format "%04d eval,  " $::eval_count]
         puts -nonewline [format "str = %s,  " $best_as_string]
-        puts -nonewline [format "fit = %5.2f " $best_fitnes]
-        
+        puts -nonewline [format "fit = %5.2f " $best_fitnes]        
+        puts ""
+        puts "----------------------------------------------------------------------------------"
+        puts ""
         flush stdout  ;# все данные должны быть выведены
-        #--------------------------------       
 
         # и еще нам нужна общая сумма по всем испытаниям (?)
         # 
         incr sum($botname) $::eval_count
+
       }
-      # 
+      # закончили цикл по всем ботам
       # ------------------------------------------------------------  
       
       puts ""
       
-    } ;# num_runs
+    } 
+    # num_runs (закончили цикл по всем повторам выполнения)
     # -----------------------------------------------------------------  
     
     puts ""
     
-  } ;# num_text 
-  
+  } 
+  # num_text (закончили цикл по всем задачам) 
   # ----------------------------------------------------------------- 
   
-  #if {$max_generations == -1} {
-    
-    print_result_maintest  $botobjs sum
-  #}
+  print_result_maintest  $botobjs sum
   
   return
 }
@@ -1652,31 +1702,35 @@ proc make_bots_standart {bots lpop lgen task} {
 proc maintest_531 {} {
 
   global argc argv
-
   puts "argc = $argc   argv = $argv"
+ 
+  # надо оставить только словарные параметры
+  # 
+  set argv [lrange $argv 1 end]
 
-  set mode [lindex $argv 1]
-
+  set mode [dict_parse  $argv "-mode" "S"]
   puts "mode = $mode"
   puts ""
   
+  set lpop [dict_parse  $argv "-lpop"  30] ;# 30 ;# 30 ;# 140    
+ 
+  set ::is_print [dict_parse $argv "-is_print" 1]
 
-  set ::is_print 0 ;# TODO: здесь уж слишком много печати, надо гибче?
+  #-------------------------------------------------------------
 
   set pmin 1  ;# выбираем длину блоков повторов из этого интервала: от
   set pmax 4  ;# и до
 
-  set task [task_create  "FS_fitness" -fit_target $::fit_target]
+  set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
 
   set lgen 15 ;# [strlen $::target_text] ;# длина хромосом (строк)
+  # но мы здесь еще не знаем длину тагет-строки?
 
   set num_text 1 ;# 1 ;# 2
   set num_runs 1 ;# 2 ;# 5 ;# количество экспериментов. для повторов
 
   set max_generations -1 ;# 30 ;# 15 - останов по достижению нужной точности
-  set lpop 30 ;# 140
-    
-  
+
   #-------------------------------------------------------------
 
   set bots [dict_create] 
@@ -1685,10 +1739,10 @@ proc maintest_531 {} {
 
   if {$mode == "@"} {
 
-    # фиксированный тест
     srandom_set 2019 ;# постоянный выбор текстовой строки
 
-    #set lgen 15 ;# [strlen $::target_text] ;# длина хромосом (строк)
+    #set lpop 30 ;# 30 ;# 30 ;# 140
+    #set ::is_print 1
 
     make_bots_standart  $bots $lpop $lgen $task
 
@@ -1758,15 +1812,24 @@ proc maintest_531 {} {
   #-------------------------------------------------------------
   } else {
 
-    puts "maintest_531: NOT mode"
+    set lpop 20 ;# 30 ;# 30 ;# 140
+
+    set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.1 ]
+
+    dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lgen $lgen -task $task]
+
+    #set ::is_print 1
+
+    puts "lpop = $lpop"
+    puts "lgen = $lgen"
+    puts ""
   }
   #-------------------------------------------------------------
 
 
-
   maintest_run  $bots $task \
     $max_generations \
-    $num_text $num_runs $pmin $pmax \
+    $num_text $num_runs  $pmin $pmax \
     $lgen 
 
 

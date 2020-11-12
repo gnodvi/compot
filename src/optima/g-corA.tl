@@ -16,7 +16,10 @@ set ::GA_BOLTZMANN_FACTOR	1.38066e-23
 
 
 set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-set ::ISREVERSE 0
+
+set ::ISREVERSE 0 
+
+set ::ISPRINT 0
 
 
 # #define GA_TINY_DOUBLE		(1.0e-9)
@@ -132,7 +135,8 @@ proc ent_create_ {len_chromosome} {
   ent_set_chromosome_ $e $tmp
           
 
-  SET $e ch_form    "% 6.3f " ;#  " %02d" 
+  #SET $e ch_form    "% 6.3f " ;#  " %02d" 
+  SET $e ch_form    "%s " ;#  " %02d" 
  
   return $e
 }
@@ -185,9 +189,16 @@ proc ent_get_chromo_len_ {e} {
 #-------------------------------------------------------------------------------
 # TODO: выводить в строку сначала !!
 # 
+
+#set ::CHROMOLIST 0
+#set ::CHROMOLIST 1
+
 #-------------------------------------------------------------------------------
 proc ent_as_string {e ch_form} {
 
+  #if {$::CHROMOLIST} { 
+  #  set ch_form "%s "
+  #}
 
   if {$ch_form == ""} {
     set ch_form [GET $e ch_form] ;# локальная переменная
@@ -195,6 +206,9 @@ proc ent_as_string {e ch_form} {
 
   set ch  [ent_get_chromosome_ $e]
   
+  #puts "ent_as_string: ch = $ch, ch_form = $ch_form"
+  #puts $ch
+
   #puts -nonewline $out $name
   
   set buf {}
@@ -203,14 +217,19 @@ proc ent_as_string {e ch_form} {
 
     append buf [format $ch_form $c]
     #lappend buf [format $ch_form $c]
-
   } 
   
+
   return $buf
 }
 #-------------------------------------------------------------------------------
-proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form ""}} {
+#proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form ""}} {}
+proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form "%s "}} {
 
+
+  #if {$::CHROMOLIST} { 
+  #set ch_form "%s "
+  #}
 
   puts -nonewline $out $name
   
@@ -221,11 +240,9 @@ proc ent_print_ch_ {e {name "ch=   "} {out "stdout"} {ch_form ""}} {
   flush $out  ;# все данные должны быть выведены
 }
 #-------------------------------------------------------------------------------
-proc ent_print_oneline_ {e {out "stdout"} {ch_form ""}} {
+proc ent_print_oneline_ {e {out "stdout"} {ch_form "%s "}} {
 
 
-  #ent_print_ch_ $e "ch=  " $out $ch_form
-  
   set fi [item_get_fitn $e]
   
   if {[string equal $fi $::GA_MIN_FITNESS]} {
@@ -274,6 +291,7 @@ proc item_get_fitn {item} {
 #-------------------------------------------------------------------------------
 proc item_get_prog {item} {
 
+  # item - это prog через указатель !!
 
   return [set $item]
 
@@ -331,7 +349,7 @@ proc is_check_generation_break {pop generation max_generations
     
     if {$is_print >= 2} {puts ""}
     
-    puts -nonewline "GA EVOLUTION $index  ...  f0 = $fitn0  "
+    puts -nonewline [format "  step %3d  ...  f0 = $fitn0  " $index]
     ent_print_ch_     $item0 "i0 =  "
     puts ""
     
@@ -386,7 +404,8 @@ proc item_calc_fitness {item_ptr fitnessfunc task} {
   #-------------------------------------
 
   #set fitn  [$fitnessfunc  $src $prog] ;# запускаем тест 
-  set fitn  [$fitnessfunc  $src]  
+  #set fitn  [$fitnessfunc  $src]  
+  set fitn  [$fitnessfunc  $src $task]  
 
   incr ::eval_count
 
@@ -483,7 +502,7 @@ dict_class_create POP {} {
   stable_size      ""  ;# _требуемый_размер_популяции
   len_chromosomes  ""  ;# _int_:_Maximum_length_of_each_chromosome
   
-  ch_form          ""  ;# _"%02d"     
+  ch_form          "%s "  ;# _"%02d"     
   generation_hook  ""  ;# _GAgeneration_hook_generation_hook 
 
   sort_driver      ""  ;# _
@@ -797,6 +816,8 @@ proc pop_print_lite_ {p {out "stdout"}} {
   
   set ch_form [GET $p "ch_form"]
 
+  #puts "pop_print_lite_: ch_form = $ch_form"
+
   foreach e $tmp {
     
     puts -nonewline $out [format "   i = %3d   " $i]
@@ -1078,16 +1099,16 @@ proc pop_check_all_eval {pop task} \
 
     set entity [pop_get_entity_ $pop  $i]
 
-
     if {[string equal [item_get_fitn  $entity]  $::GA_MIN_FITNESS]} {
 
       set ret [pop_eval_item  $pop $entity $eval_proc $task] 
 
       if {$ret == 0} {
-        puts "ERROR ............. !!!!!!!!!!!!!!!!!!!!!!"
+        puts "ERROR ............. !!!!!!!!!!!!!!!!!!!! 111"
         exit ;# пока сделаем просто ошибку..
       }
     }
+
   }
 
   return
@@ -1150,12 +1171,12 @@ proc pop_eval_item {pop item eval_proc  task} \
   ga_entity_set_fitness $item $ret
 
   #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
- 
-  if {$ret == 0} {
-    puts "ERROR ............. !!!!!!!!!!!!!!!!!!!!!!"
-    exit ;# пока сделаем просто ошибку..
-  }
+  # а если 0 - это наша цель ??
+
+  #if {$ret == 0} {
+  #  puts "ERROR ............. !!!!!!!!!!!!!!!!!!!! 22"
+  #  exit ;# пока сделаем просто ошибку..
+  #}
 
   incr ::eval_count
 
@@ -1518,44 +1539,32 @@ proc ga_fitness_mean_stddev {pop &p_mean &p_stddev} \
 
   USE_REFS
 
-  #   int           i;                      /* Loop over all entities. */
   #   double        sum=0.0, sumsq=0.0;     /* Sum and sum squared. */
   #   double	deviation;		/* Distance to mean. */
   
   set sum   0.0
   set sumsq 0.0
 
-  #   if (!pop) die("Null pointer to population structure passed.");
-  #   if (pop->size < 1) die("Pointer to empty population structure passed.");
-  #   if (!stddev || !mean) die("Null pointer to double passed.");
-  
   set size [get_pop_size $pop]
 
   for {set i 0} {$i < $size} {incr i} \
   {
-    #sum += pop->entity_iarray[i]->fitness;
-
-    #set fi  [$pop get_entity_fitness $i]
     set fi  [pop_get_entity_fitness_ $pop  $i]
     set sum [expr {$sum + $fi}]
   }
   
-  #   *mean = sum / pop->size;
   set mean [expr {$sum / $size}]
   
   for {set i 0} {$i < $size} {incr i} \
   {
-    #     deviation = pop->entity_iarray[i]->fitness - *mean;
-    #     sumsq += deviation * deviation;
     
-    #set fi  [$pop get_entity_fitness $i]
     set fi  [pop_get_entity_fitness_ $pop  $i]
     set deviation  [expr {$fi - $mean}]
 
     set sumsq [expr {$sumsq + ($deviation * $deviation)}]
   }
   
-  #   *stddev = sqrt (sumsq/pop->size);
+  #   *stddev = sqrt (sumsq/pop->size); ???? return ??
 
   set p_mean   $mean
   set p_stddev [expr {sqrt ($sumsq / $size)}]
@@ -2039,7 +2048,7 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  if {$::is_print > 2.2} {
+  if {$::is_print > 2} {
   #if {$::is_print} {}
     puts "  ga_select_two_bestof2 :"
     print_entit  $mother "mother = ($moth_i) ="
@@ -2057,7 +2066,7 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   # 
   set ret [expr {$s_state > 1.0 * $orig_size * $c_ratio} ]
   
-  if {$::is_print > 2.2} {
+  if {$::is_print > 2} {
   #if {$::is_print} {}
     puts "  s_state= $s_state  orig_size= $orig_size  c_ratio= $c_ratio   ret = $ret" 
     puts ""
@@ -2273,6 +2282,7 @@ proc ga_select_one_sus {pop &mother}  {
 # 		This version is for fitness values where 0.0 is bad and
 # 		large positive values are good.  Negative values will
 # 		severely mess-up the algorithm.
+
 #  **********************************************************************/
 # boolean 
 # ga_select_two_sus (population *pop, entity **mother, entity **father)
@@ -2287,7 +2297,7 @@ proc ga_select_one_sus {pop &mother}  {
 # 
 proc ga_select_two_sus {pop &mother &father}  {
 
-  if {$::ISREVERSE} {puts stderr ".................................. 005_1_1"}
+  if {$::ISPRINT} {puts stderr ".................................. 005_1_1"}
 
   USE_REFS
 
@@ -2323,12 +2333,12 @@ proc ga_select_two_sus {pop &mother &father}  {
     puts stderr "ga_select_two_sus ........ "
   }
 
-  if {$::ISREVERSE} {puts stderr ".................................. 005_1_2"}
+  if {$::ISPRINT} {puts stderr ".................................. 005_1_2"}
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   if {$select_state == 0} {
  
-    if {$::ISREVERSE} {puts stderr ".................................. 005_1_3"}
+    if {$::ISPRINT} {puts stderr ".................................. 005_1_3"}
 
     if {$::is_print > 1} {puts stderr "1 ... "}
 
@@ -2420,7 +2430,7 @@ proc ga_select_two_sus {pop &mother &father}  {
   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  if {$::ISREVERSE} {puts stderr ".................................. 005_1_5"}
+  if {$::ISPRINT} {puts stderr ".................................. 005_1_5"}
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   while {1} \
@@ -2451,7 +2461,7 @@ proc ga_select_two_sus {pop &mother &father}  {
   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  
-  if {$::ISREVERSE} {puts stderr ".................................. 005_1_6"}
+  if {$::ISPRINT} {puts stderr ".................................. 005_1_6"}
   
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2464,7 +2474,7 @@ proc ga_select_two_sus {pop &mother &father}  {
 
     set fit2 [pop_get_entity_fitness_ $pop  [lindex $perm $cur2]]
 
-    #if {$::ISREVERSE} {puts stderr "....... off2 = $off2   fit2 = $fit2"}
+    #if {$::ISPRINT} {puts stderr "....... off2 = $off2   fit2 = $fit2"}
 
     if {$off2 <= $fit2} {break}
 
@@ -2479,14 +2489,14 @@ proc ga_select_two_sus {pop &mother &father}  {
       set cur2 [expr {$cur2 - $orig_size}]
     }    
 
-    if {$::ISREVERSE} {puts stderr "....... off2 = $off2  fit2 = $fit2  cur2 = $cur2"}
+    if {$::ISPRINT} {puts stderr "....... off2 = $off2  fit2 = $fit2  cur2 = $cur2"}
 
     SET $sd "current2" $cur2
 
   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  if {$::ISREVERSE} {puts stderr ".................................. 005_1_7"}
+  if {$::ISPRINT} {puts stderr ".................................. 005_1_7"}
 
   set cur1 [GET $sd "current1"]
   set cur2 [GET $sd "current2"]
@@ -2613,7 +2623,7 @@ proc task_create {fitness_proc  args} {
 
   SET $t "fitness_proc" $fitness_proc
 
-  SET $t "fit_target"   [dict_parse $args "-fit_target" 0] 
+  SET $t "fit_target"   [dict_parse $args "-fit_target" 0]   ;# ???
   SET $t "fit_error"    [dict_parse $args "-fit_error"  0.01] 
 
   return $t

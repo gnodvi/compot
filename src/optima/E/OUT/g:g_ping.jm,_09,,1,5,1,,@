@@ -2,14 +2,14 @@ ga_population_set_parameters ...
 
 
 
-GA EVOLUTION   0  ...  f0 = -52.490  i0 =  01 04 02 05 06 07 08 00 03 
+  step   0  ...  f0 = -52.490  i0 =  1 4 2 5 6 7 8 0 3 
 
 ga_select_two_randomrank: 
 orig_size = 5   select_state = 1
 ga_select_two_randomrank: 
 orig_size = 5   select_state = 2
 
-GA EVOLUTION   1  ...  f0 = -52.490  i0 =  01 04 02 05 06 07 08 00 03 
+  step   1  ...  f0 = -52.490  i0 =  1 4 2 5 6 7 8 0 3 
 
 
 
