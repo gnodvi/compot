@@ -38,10 +38,7 @@ package require compot::common
 
 #source "f-rand.tl"
 
-source "g-corA.tl"
-#source "g-corB.tl"  ;# unknown namespace in import pat
-
-source "g-cros.tl"
+source "g-corE.tl"
 
 #source "ga_de.tl"
 
@@ -52,17 +49,10 @@ source "g-cros.tl"
 # static boolean 
 # all5s_score (population *pop, entity *entity)
 # //------------------------------------------------------------------------------
-proc all5s_score {entity task}  {
+proc all5s_score {item task}  {
 
-  #   int		allele;
-  #   int		k;
-  
-  #set len [GET $pop len_chromosomes]
-  set len [ent_get_chromo_len_ $entity] 
+  set len [item_get_chromo_len $item] 
 
-
-  #   entity->fitness = 0.0;
-  #set fitness 0.0
   set fitness 0
   
   #   // Loop over alleles in chromosome
@@ -70,26 +60,20 @@ proc all5s_score {entity task}  {
   
   for {set k 0} {$k < $len} {incr k} \
   {
-    # allele = ((int *) entity->CH)[k];
-    # entity->fitness += ((5-allele) * (5-allele));
 
-    set   allele [ent_get_chromo_gen_ $entity  $k]
+    set   allele [item_get_chromo_gen $item  $k]
     incr fitness [expr {(5 - $allele) * (5 - $allele)}]
   }
   
-  #   entity->fitness = sqrt (entity->fitness);
   set fitness [expr {sqrt ($fitness)}]
   
   #   // Normalize fitness so larger positive values are better
   #   //
-  #   entity->fitness = 1.0 / (1.0 + entity->fitness);
 
   set fitness [expr  {1.0 / (1.0 + $fitness)}]
-  #puts "all5s_score : fitness = $fitness"
 
-  ga_entity_set_fitness $entity $fitness 
+  item_set_fitn  $item $fitness 
 
-  #return true
   return $fitness
 }
 # //------------------------------------------------------------------------------
@@ -108,7 +92,7 @@ proc all5s_seed {pop entity} \
 
   for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point} \
   {
-    ent_set_chromo_gen_ $entity  $point [random_int $maxint]
+    item_set_chromo_gen $entity  $point [random_int $maxint]
 
     #$entity configure -ch_form " %02d"
     # БУДЕМ ЗАДАВАТЬ ЭТОТ параметр при создании, т.е. ga_entity_setup
@@ -154,7 +138,7 @@ proc all5s_mutate {pop father son}  {
   #     ((int *)son->CH)[i] = ((int *)father->CH)[i];
   
   #set son_CH [$father get_chromosome]
-  set son_CH [ent_get_chromosome_ $father]
+  set son_CH [item_get_chromosome $father]
 
   #   //
   #   // Mutate by tweaking a single allele.
@@ -180,7 +164,7 @@ proc all5s_mutate {pop father son}  {
 
   lset son_CH $point $gen ;# смутировали хромосому-список
 
-  ent_set_chromosome_ $son $son_CH ;# и записали ее в сына
+  item_set_chromosome $son $son_CH ;# и записали ее в сына
 
   return
 }
@@ -310,7 +294,7 @@ proc _1_main {} \
 
   set best_entity [ga_get_entity_from_rank $pop 0]
   #set beststring [$best_entity get_chromosome]
-  set beststring [ent_get_chromosome_ $best_entity]
+  set beststring [item_get_chromosome $best_entity]
 
   #   printf ("%s\n", beststring);
   puts $beststring
@@ -402,7 +386,7 @@ proc _2_main {} \
   puts "The final solution was:"
 
   set best_entity [ga_get_entity_from_rank $pop 0]
-  set beststring [ent_get_chromosome_ $best_entity]
+  set beststring [item_get_chromosome $best_entity]
 
   puts $beststring
 

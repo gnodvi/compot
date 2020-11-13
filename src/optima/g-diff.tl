@@ -166,14 +166,14 @@ proc calc_tmpentity_11 {pop tmpentity n  i0 perm  weighting_factor} {
   set p2 [lindex $perm 1]
 
   set e1 [pop_get_entity_     $pop  $p1]
-  set g1 [ent_get_chromo_gen_ $e1   $n]
+  set g1 [item_get_chromo_gen $e1   $n]
 
   set e2 [pop_get_entity_     $pop  $p2]
-  set g2 [ent_get_chromo_gen_ $e2   $n]
+  set g2 [item_get_chromo_gen $e2   $n]
 
 
   set e0    [pop_get_entity_  $pop  $i0]
-  set g0 [ent_get_chromo_gen_ $e0   $n]
+  set g0 [item_get_chromo_gen $e0   $n]
 
 
   #   double diff = ((double *) pop->entity_iarray[perm[0]]->CH)[n]
@@ -196,7 +196,7 @@ proc calc_tmpentity_11 {pop tmpentity n  i0 perm  weighting_factor} {
 #    }
 
   #$tmpentity set_chromo_gen  $n $gen
-  ent_set_chromo_gen_ $tmpentity  $n $gen
+  item_set_chromo_gen $tmpentity  $n $gen
 
    return
 }
@@ -249,10 +249,10 @@ proc calc_tmpentity_22 {pop tmpentity n i0 perm weighting_factor} {
   set e3 [pop_get_entity_ $pop [lindex $perm 2]]
   set e4 [pop_get_entity_ $pop [lindex $perm 3]]
 
-  set g1 [ent_get_chromo_gen_ $e1 $n]
-  set g2 [ent_get_chromo_gen_ $e2 $n]
-  set g3 [ent_get_chromo_gen_ $e3 $n]
-  set g4 [ent_get_chromo_gen_ $e4 $n]
+  set g1 [item_get_chromo_gen $e1 $n]
+  set g2 [item_get_chromo_gen $e2 $n]
+  set g3 [item_get_chromo_gen $e3 $n]
+  set g4 [item_get_chromo_gen $e4 $n]
 
   set diff [expr {$g1 + $g2 - $g3 - $g4}]
 
@@ -262,10 +262,10 @@ proc calc_tmpentity_22 {pop tmpentity n i0 perm weighting_factor} {
   #set i0_entity   [$pop get_entity $i0]
   set i0_entity   [pop_get_entity_ $pop  $i0]
 
-  set i0_entity_n_gen [ent_get_chromo_gen_ $i0_entity $n]
+  set i0_entity_n_gen [item_get_chromo_gen $i0_entity $n]
 
   #$tmpentity set_chromo_gen $n [expr {$i0_entity_n_gen + $weighting_factor * $diff}]
-  ent_set_chromo_gen_ $tmpentity $n [expr {$i0_entity_n_gen + $weighting_factor * $diff}]
+  item_set_chromo_gen $tmpentity $n [expr {$i0_entity_n_gen + $weighting_factor * $diff}]
 
   return
 }
@@ -313,12 +313,12 @@ proc calc_tmpentity_33 {pop tmpentity n i0 perm weighting_factor} {
   set e5 [pop_get_entity_ $pop [lindex $perm 4]]
   set e6 [pop_get_entity_ $pop [lindex $perm 5]]
 
-  set g1 [ent_get_chromo_gen_ $e1 $n]
-  set g2 [ent_get_chromo_gen_ $e2 $n]
-  set g3 [ent_get_chromo_gen_ $e3 $n]
-  set g4 [ent_get_chromo_gen_ $e4 $n]
-  set g5 [ent_get_chromo_gen_ $e5 $n]
-  set g6 [ent_get_chromo_gen_ $e6 $n]
+  set g1 [item_get_chromo_gen $e1 $n]
+  set g2 [item_get_chromo_gen $e2 $n]
+  set g3 [item_get_chromo_gen $e3 $n]
+  set g4 [item_get_chromo_gen $e4 $n]
+  set g5 [item_get_chromo_gen $e5 $n]
+  set g6 [item_get_chromo_gen $e6 $n]
 
 #   double diff = (((double *) pop->entity_iarray [perm[0]]->CH)[n]
 #                + ((double *) pop->entity_iarray [perm[1]]->CH)[n]
@@ -335,10 +335,10 @@ proc calc_tmpentity_33 {pop tmpentity n i0 perm weighting_factor} {
   #set i0_entity   [$pop get_entity $i0]
   set i0_entity   [pop_get_entity_ $pop  $i0]
 
-  set i0_entity_n_gen [ent_get_chromo_gen_ $i0_entity $n]
+  set i0_entity_n_gen [item_get_chromo_gen $i0_entity $n]
 
   #$tmpentity set_chromo_gen $n [expr {$i0_entity_n_gen + $weighting_factor * $diff}]
-  ent_set_chromo_gen_ $tmpentity $n [expr {$i0_entity_n_gen + $weighting_factor * $diff}]
+  item_set_chromo_gen $tmpentity $n [expr {$i0_entity_n_gen + $weighting_factor * $diff}]
 
   return
 }
@@ -390,16 +390,16 @@ proc  calc_tmpentity_1bin {pop n best tmpentity permutation weighting_factor} {
   set e3 [pop_get_entity_ $pop [lindex $permutation 0]]
   set e4 [pop_get_entity_ $pop [lindex $permutation 1]]
 
-  set g1 [ent_get_chromo_gen_ $e1 $n]
-  set g2 [ent_get_chromo_gen_ $e2 $n]
-  set g3 [ent_get_chromo_gen_ $e3 $n]
-  set g4 [ent_get_chromo_gen_ $e4 $n]
+  set g1 [item_get_chromo_gen $e1 $n]
+  set g2 [item_get_chromo_gen $e2 $n]
+  set g3 [item_get_chromo_gen $e3 $n]
+  set g4 [item_get_chromo_gen $e4 $n]
 
   set diff [expr {$g1 - $g2 + $g3  - $g4}]
 
 
   #$tmpentity set_chromo_gen $n  [expr {$g2 + $weighting_factor * $diff}]
-  ent_set_chromo_gen_ $tmpentity $n  [expr {$g2 + $weighting_factor * $diff}]
+  item_set_chromo_gen $tmpentity $n  [expr {$g2 + $weighting_factor * $diff}]
 
   return
 }
@@ -432,18 +432,18 @@ proc  calc_tmpentity_2bin {pop n best tmpentity permutation weighting_factor} {
   set e5 [pop_get_entity_ $pop [lindex $permutation 2]]
   set e6 [pop_get_entity_ $pop [lindex $permutation 3]]
 
-  set g1 [ent_get_chromo_gen_ $e1 $n]
-  set g2 [ent_get_chromo_gen_ $e2 $n]
-  set g3 [ent_get_chromo_gen_ $e3 $n]
-  set g4 [ent_get_chromo_gen_ $e4 $n]
-  set g5 [ent_get_chromo_gen_ $e5 $n]
-  set g6 [ent_get_chromo_gen_ $e6 $n]
+  set g1 [item_get_chromo_gen $e1 $n]
+  set g2 [item_get_chromo_gen $e2 $n]
+  set g3 [item_get_chromo_gen $e3 $n]
+  set g4 [item_get_chromo_gen $e4 $n]
+  set g5 [item_get_chromo_gen $e5 $n]
+  set g6 [item_get_chromo_gen $e6 $n]
 
   set diff [expr {$g1 - $g2 + $g3 + $g4 - $g5 - $g6}]
 
 
   #$tmpentity set_chromo_gen $n  [expr {$g2 + $weighting_factor * $diff}]
-  ent_set_chromo_gen_ $tmpentity $n  [expr {$g2 + $weighting_factor * $diff}]
+  item_set_chromo_gen $tmpentity $n  [expr {$g2 + $weighting_factor * $diff}]
 
   return
 }

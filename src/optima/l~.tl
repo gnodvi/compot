@@ -68,9 +68,7 @@ proc ANTS {} {
 
   source "k-3333.tl"  ;
 
-  source "g-corA.tl"
-  source "g-corB.tl" 
-  source "g-croz.tl"
+  source "g-corE.tl"
  
   source "l-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
 
@@ -88,10 +86,7 @@ proc TEST {} {
   source "k-0000.tl"  ;# общие части
   source "k-1111.tl"  ;# простой jOY 
 
-  source "g-corA.tl"
-  source "g-corB.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
-
-  source "g-croz.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
+  source "g-corE.tl"
 
   source "l-proJ.tl"  ; # тесты на JOY
   
@@ -105,10 +100,7 @@ proc TEST {} {
 #-------------------------------------------------------------------------------
 proc COMM {} {
 
-  source "g-corA.tl"
-  source "g-corB.tl" 
-
-  source "g-croz.tl" 
+  source "g-corE.tl"
   
   global argc argv
 

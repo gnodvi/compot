@@ -176,10 +176,10 @@ proc make_putative {pop current step_size current_g putative} \
     #  ((double *) putative->CH)[i] = ((double *) current->CH)[i] + 
     #                                step_size * current_g[i];
 
-    set ci [ent_get_chromo_gen_ $current $i]
+    set ci [item_get_chromo_gen $current $i]
    
     #$putative set_chromo_gen $i [expr $ci + ($step_size * [lindex $current_g $i])]
-    ent_set_chromo_gen_ $putative $i [expr {$ci + ($step_size * [lindex $current_g $i])}]
+    item_set_chromo_gen $putative $i [expr {$ci + ($step_size * [lindex $current_g $i])}]
   }
  
   return
@@ -240,7 +240,7 @@ proc ga_steepestascent_double {task pop current max_iterations} \
   
   pop_eval_item $pop $current $eval_proc $task
  
-  set current_CH [ent_CH_ $current]
+  set current_CH [item_CH $current]
 
   set current_g ""
 
@@ -322,7 +322,7 @@ proc ga_steepestascent_double {task pop current max_iterations} \
     set putative  $tmpentity
     
     #     grms = gradient_proc (pop, current, (double *)current->CH, current_g);
-    set grms [$gradient_proc  $pop $current [ent_CH_ $current] current_g]
+    set grms [$gradient_proc  $pop $current [item_CH $current] current_g]
     
     #     //
     #     // Use the iteration callback.

@@ -25,10 +25,7 @@ package require compot::common
 
 #source "f-rand.tl"
 
-source "g-corA.tl"
-#source "g-corB.tl" 
-
-source "g-cros.tl"
+source "g-corE.tl"
 
 source "g-diff.tl"
 source "g-detw.tl"
@@ -133,7 +130,7 @@ proc pingpong_score {entity task} {
   #puts ""
   #puts "entity = [set $entity]"
   #puts ""
-  set len_chromo [ent_get_chromo_len_ $entity] 
+  set len_chromo [item_get_chromo_len $entity] 
  
   set is_score_print 0 ;# 0
  
@@ -147,7 +144,7 @@ proc pingpong_score {entity task} {
   
   for {set i 0} {$i < $len_chromo} {incr i} {
 
-    set j [ent_get_chromo_gen_ $entity  $i] ;# соперник для игрока i ????
+    set j [item_get_chromo_gen $entity  $i] ;# соперник для игрока i ????
     
     
     if {$is_score_print} {
@@ -202,8 +199,6 @@ proc pingpong_score {entity task} {
   }
   
 
-  #ga_entity_set_fitness  $entity $fitness 
-
   if {$is_score_print} {
     puts "::: entity->fitness = $fitness"
     puts "::: ~~~~~ pingpong_score FINAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -223,7 +218,7 @@ proc pingpong_seed {pop adam} {
  
   for {set i 0} {$i < $len_chromo} {incr i} \
   {
-    ent_set_chromo_gen_ $adam  $i -1 ;# забили пустышками
+    item_set_chromo_gen $adam  $i -1 ;# забили пустышками
   }
 
 
@@ -231,7 +226,7 @@ proc pingpong_seed {pop adam} {
   {
     set j [random_int $len_chromo] ;# выбрали второй случайный индекс
     
-    while {[ent_get_chromo_gen_ $adam  $j] > -1}  {
+    while {[item_get_chromo_gen $adam  $j] > -1}  {
 
       if {$j == [expr {$len_chromo - 1}]} {
         set j 0
@@ -240,7 +235,7 @@ proc pingpong_seed {pop adam} {
       }
     }
     
-    ent_set_chromo_gen_ $adam  $j  $i
+    item_set_chromo_gen $adam  $j  $i
   }
   
   return true
@@ -268,7 +263,7 @@ proc pingpong_mutate_swap {pop mother son} {
   #           mother->CH,
   #           pop->len_chromosomes * sizeof(int));
 
-  ent_set_chromosome_ $son [ent_get_chromosome_ $mother]
+  item_set_chromosome $son [item_get_chromosome $mother]
 
   #   i = random_int (len_chromo);
   #   j = random_int (len_chromo);
@@ -288,13 +283,13 @@ proc pingpong_mutate_swap {pop mother son} {
   #puts "pingpong_mutate_swap: i = $i  j = $j"
 
   #   tmp = ((int *)son->CH)[i];
-  set tmp [ent_get_chromo_gen_ $son  $i]
+  set tmp [item_get_chromo_gen $son  $i]
   
   #   ((int *)son->CH)[i] = ((int *)son->chromosome[0])[j];
-  ent_set_chromo_gen_ $son $i [ent_get_chromo_gen_ $son $j]
+  item_set_chromo_gen $son $i [item_get_chromo_gen $son $j]
 
   #   ((int *)son->CH)[j] = tmp;
-  ent_set_chromo_gen_ $son $j $tmp
+  item_set_chromo_gen $son $j $tmp
   
   #   return;
 }
@@ -321,16 +316,16 @@ proc pingpong_crossover {pop mother father dau son} {
         {
           #       ((int *)     son->CH)[i] = ((int *)father->CH)[i];
           #       ((int *)daughter->CH)[i] = ((int *)mother->CH)[i];
-          ent_set_chromo_gen_ $son $i [ent_get_chromo_gen_ $father $i]
-          ent_set_chromo_gen_ $dau $i [ent_get_chromo_gen_ $mother $i]
+          item_set_chromo_gen $son $i [item_get_chromo_gen $father $i]
+          item_set_chromo_gen $dau $i [item_get_chromo_gen $mother $i]
 
         } else {
           # !!!!!!!!! то же самое ??
           #
           #       ((int *)     son->CH)[i] = ((int *)father->CH)[i];
           #       ((int *)daughter->CH)[i] = ((int *)mother->CH)[i];
-          ent_set_chromo_gen_ $son $i [ent_get_chromo_gen_ $father  $i] 
-          ent_set_chromo_gen_ $dau $i [ent_get_chromo_gen_ $mother  $i]
+          item_set_chromo_gen $son $i [item_get_chromo_gen $father  $i] 
+          item_set_chromo_gen $dau $i [item_get_chromo_gen $mother  $i]
       }
     }
   
@@ -339,8 +334,8 @@ proc pingpong_crossover {pop mother father dau son} {
       for {set j 0} {$j < $i} {incr j} \
         {
 
-          set son_i [ent_get_chromo_gen_ $son  $i]
-          set son_j [ent_get_chromo_gen_ $son  $j]
+          set son_i [item_get_chromo_gen $son  $i]
+          set son_j [item_get_chromo_gen $son  $j]
 
           #       if (((int *)son->CH)[j] == ((int *)son->CH)[i])
           if {$son_j == $son_i} \
@@ -348,10 +343,10 @@ proc pingpong_crossover {pop mother father dau son} {
             #  if (((int *)son->CH)[i] == len_chromo-1)
             if {$son_i == [expr  {$len_chromo - 1}]} {
               # ((int *)son->CH)[i] = 0;
-               ent_set_chromo_gen_ $son $i 0 
+               item_set_chromo_gen $son $i 0 
             } else {
               # ((int *)son->CH)[i]++;
-              ent_set_chromo_gen_ $son $i [expr {$son_i + 1}] 
+              item_set_chromo_gen $son $i [expr {$son_i + 1}] 
             }
 
             set j 0
@@ -362,8 +357,8 @@ proc pingpong_crossover {pop mother father dau son} {
       # 
       for {set j 0} {$j < $i} {incr j} \
         {
-          set dau_i [ent_get_chromo_gen_ $dau  $i]
-          set dau_j [ent_get_chromo_gen_ $dau  $j]
+          set dau_i [item_get_chromo_gen $dau  $i]
+          set dau_j [item_get_chromo_gen $dau  $j]
 
           #  if (((int *)daughter->CH)[j] == ((int *)daughter->CH)[i])
           if {$dau_j == $dau_i} \
@@ -371,10 +366,10 @@ proc pingpong_crossover {pop mother father dau son} {
           # if (((int *)daughter->CH)[i] == len_chromo-1)
             if {$dau_i == [expr  {$len_chromo - 1}]} {
              #   ((int *)daughter->CH)[i] = 0;
-             ent_set_chromo_gen_ $dau $i 0 
+             item_set_chromo_gen $dau $i 0 
            } else {
              #   ((int *)daughter->CH)[i]++;
-             ent_set_chromo_gen_ $dau $i [expr {$dau_i + 1}] 
+             item_set_chromo_gen $dau $i [expr {$dau_i + 1}] 
            }
 
            set j 0
@@ -407,7 +402,7 @@ proc pingpong_mutate_shift {pop mother son}  {
   #           mother->CH,
   #           pop->len_chromosomes * sizeof (int));
 
-  ent_set_chromosome_ $son [ent_get_chromosome_ $mother]
+  item_set_chromosome $son [item_get_chromosome $mother]
   
   #   i = random_int (len_chromo);
   set i [random_int $len_chromo]
@@ -426,28 +421,28 @@ proc pingpong_mutate_shift {pop mother son}  {
   if {$i > $j} \
   {
     #     tmp = ((int *)son->CH)[j];
-    set tmp [ent_get_chromo_gen_ $son  $j] 
+    set tmp [item_get_chromo_gen $son  $j] 
    
     for {set k $j} {$k < $i} {incr k} \
     {
       #       ((int *)son->CH)[k] = ((int *)son->CH)[k+1];
-      ent_set_chromo_gen_ $son $k [ent_get_chromo_gen_ $son [expr {$k + 1}]] 
+      item_set_chromo_gen $son $k [item_get_chromo_gen $son [expr {$k + 1}]] 
     }
     #     ((int *)son->CH)[i] = tmp;  #       не надо ???????!!!!!
-    ent_set_chromo_gen_ $son $i $tmp
+    item_set_chromo_gen $son $i $tmp
     
   } else {
     
     #     tmp = ((int *)son->CH)[j];
-    set tmp [ent_get_chromo_gen_ $son  $j] ;# ??? одно и тоже ??
+    set tmp [item_get_chromo_gen $son  $j] ;# ??? одно и тоже ??
     
     for {set k $j} {$k > $i} {incr k -1} \
     {
       #       ((int *)son->CH)[k] = ((int *)son->CH)[k-1];
-      ent_set_chromo_gen_ $son $k [ent_get_chromo_gen_ $son [expr {$k - 1}]] 
+      item_set_chromo_gen $son $k [item_get_chromo_gen $son [expr {$k - 1}]] 
     }
     #     ((int *)son->CH)[i] = tmp; #       не надо ???????!!!!!
-    ent_set_chromo_gen_ $son $i $tmp
+    item_set_chromo_gen $son $i $tmp
   }
   
   #   return;
@@ -606,7 +601,7 @@ proc main_ga {len_chromo} {
     
     #set beststring [ga_chromosome_integer_to_string  $pop bestentity beststring &beststrlen]
     #set beststring [$bestentity get_chromosome]
-    set beststring [ent_get_chromosome_ $bestentity]
+    set beststring [item_get_chromosome $bestentity]
     
     #   printf ("%s\n", beststring);
     #   printf ("With score = %f\n", ga_entity_get_fitness (bestentity));
@@ -736,7 +731,7 @@ proc main_t1 {len_chromo} {
 #            [ent_get_fitness $bestentity]]
     
 
-    ent_print_ch_ $bestentity ""
+    item_print_ch $bestentity ""
     puts ""
     puts ""
     
@@ -873,7 +868,7 @@ proc main_sa {} {
       puts "solution = $solution"
       puts ""
 
-      #ent_print_ch_ $solution
+      #item_print_ch  $solution
     }
     
     ga_sa  $task $pop      \
@@ -893,7 +888,7 @@ proc main_sa {} {
     puts [format "Final best: i = %d, seed = %d  fitness %f, beststring = " $i $seed \
             [item_get_fitn $bestentity]]
 
-    ent_print_ch_ $bestentity ""
+    item_print_ch $bestentity ""
     puts ""
 
     # ошибка в ch_form: надо {%s }, а у нас в JIM почему-то просто %s

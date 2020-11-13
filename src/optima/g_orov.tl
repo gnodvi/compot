@@ -24,8 +24,7 @@ package require compot::common
 
 # source "f-rand.tl"
 
-source "g-corA.tl"
-#source "g-corB.tl" 
+source "g-corE.tl"
 
 source "g-diff.tl"
 
@@ -218,7 +217,7 @@ proc test_generation_callback {generation pop} {
     
     #     ;(format t "pop_get_entity_: r = ~s   ~%" r)
     
-    set best_chromo  [ent_get_chromosome_  $best]
+    set best_chromo  [item_get_chromosome  $best]
     #set best_fit     [ENT_FITNESS          $best] ;# [$best cget -fitness] 
     #set best_fit     [ent_get_fitness $best]
     set best_fit     [item_get_fitn $best]
@@ -418,7 +417,7 @@ proc _test_score {this_entity task} {
   #   ; можно считать их в общей схеме полагаю фложок - фикс,
   #   ; а можно - как дополнительное условие, алгоритм расчета фитнеса.
   
-  set chromosome [ent_get_chromosome_  $this_entity]
+  set chromosome [item_get_chromosome  $this_entity]
   
 
 
@@ -461,10 +460,6 @@ proc _test_score {this_entity task} {
   
   set fitness [calc_fitness_from_points  $points $::edges]
   
-  
-  #ga_entity_set_fitness  $this_entity  $fitness 
-  
-  #return true
   return $fitness 
   
 }
@@ -486,7 +481,7 @@ proc point_init_by_random {&point} {
   
     #puts "d = $d"
     #  (setf (aref point d)  (random_double  (aref *max_val_arr* d)))
-    #ent_set_chromo_gen_ $point $d  [random_double [lindex $::max_val_arr $d]]
+    #item_set_chromo_gen $point $d  [random_double [lindex $::max_val_arr $d]]
 
     lset point $d  [random_double [lindex $::max_val_arr $d]]
   }
@@ -499,8 +494,8 @@ proc point_to_entity {point ent i} {
   #   (loop for d :from 0 :below *dim* :do
   for {set d 0} {$d < $::dim} {incr d} {
   
-  #     (ent_set_chromo_gen_  ent (+ (* *dim* i) d)  (elt point d))
-    ent_set_chromo_gen_  $ent [expr {($::dim * $i) + $d}]  [lindex $point $d]
+  #     (item_set_chromo_gen  ent (+ (* *dim* i) d)  (elt point d))
+    item_set_chromo_gen  $ent [expr {($::dim * $i) + $d}]  [lindex $point $d]
   }
 
 }
@@ -543,7 +538,7 @@ proc draw_entity {pop id name} {
 
 
   set entity  [pop_get_entity_      $pop $id]
-  set chromo  [ent_get_chromosome_  $entity]
+  set chromo  [item_get_chromosome  $entity]
   
   puts ""  
   puts [format "%s : fitness = %.6f "  $name [pop_get_entity_fitness_  $pop $id]]

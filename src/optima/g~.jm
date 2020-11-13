@@ -27,16 +27,9 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
 package require compot::common 
 
-#package require compot
-
 #-------------------------------------------
 
-#source "f-rand.tl"
-
-source "g-corA.tl"
-source "g-corB.tl"  ;# unknown namespace in import pattern "tcltest::*"
-
-source "g-cros.tl"
+source "g-corE.tl"
 
 source "g-diff.tl"
 source "g-detw.tl"

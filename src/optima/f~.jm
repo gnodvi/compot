@@ -6,12 +6,7 @@ exec jimsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 
-#source "f~.tl"
-
-#-------------------------------------------------------------------------------
-
 set auto_path [linsert $auto_path 0 "./COMPOT"]
-
 set auto_path [linsert $auto_path 0 "./COMPOT/src/common"] ;# for JIM
 
 #------------------------------------------
@@ -108,8 +103,7 @@ package require tcltest
 #-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "g-corA.tl"
-  source "g-corB.tl"  ;#
+  source "g-corE.tl"
 
   global argc argv
 

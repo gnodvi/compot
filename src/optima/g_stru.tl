@@ -35,11 +35,7 @@ if {$::__JIM__} {
 
 #------------------------------------------
 
-source "g-corA.tl"
-source "g-corB.tl" 
-
-source "g-cros.tl"
-source "g-croz.tl"
+source "g-corE.tl"
 
 source "g-diff.tl"
 source "g-detw.tl"
@@ -201,7 +197,7 @@ proc maintest_seed_proc {pop adam} {
     #}
 
 
-    ent_set_chromo_gen_ $adam $point $ch 
+    item_set_chromo_gen $adam $point $ch 
     #
     # записывем ген в хромосому в виде эдемента списка
   }
@@ -260,7 +256,7 @@ proc FS_fitness {text_calc task} {
 
   set fit 0.0
   
-  set len [ent_get_chromo_len_ $text_calc] 
+  set len [item_get_chromo_len $text_calc] 
 
   set text_true $::target_text
 
@@ -281,7 +277,7 @@ proc FS_fitness {text_calc task} {
       exit
     }
 
-    set char_calc_decm  [ent_get_chromo_gen_ $text_calc  $k]
+    set char_calc_decm  [item_get_chromo_gen $text_calc  $k]
 
     #if {$::CHROMOLIST} { 
     set char_calc_decm [scan $char_calc_decm "%c"]  ;# десятичные коды символьных цифр
@@ -318,7 +314,7 @@ proc do_print_best {pop name} \
   #   printf ("%s\n", beststring);
   #   printf ("\n");
 
-  ent_print_ch_ $best_entity ""
+  item_print_ch $best_entity ""
   puts ""
 
   set generation [GET $pop "generation"] ;# сколько было генераций
@@ -580,9 +576,9 @@ proc parse_opts_2 {&par1    &par2
 proc allele_incr {adult allele incr_val}  \
 {
 
-  set oldval [ent_get_chromo_gen_ $adult  $allele]
+  set oldval [item_get_chromo_gen $adult  $allele]
 
-  ent_set_chromo_gen_ $adult $allele [expr {$oldval + $incr_val}]
+  item_set_chromo_gen $adult $allele [expr {$oldval + $incr_val}]
 
 }
 # ------------------------------------------------------------------------------
@@ -633,7 +629,7 @@ proc _3_struggle_adaptation {task pop child} \
   allele_incr $adult $allele +1
 
   #ent_set_fitness $adult [item_get_fitn $child]
-  ga_entity_set_fitness  $adult [item_get_fitn $child]
+  item_set_fitn  $adult [item_get_fitn $child]
 
   return $adult
 }
@@ -1259,7 +1255,7 @@ proc _dc_test {} \
     set best_fitnes [item_get_fitn $best_entity] 
 
     puts "The final solution with seed = $i was:"
-    ent_print_ch_ $best_entity ""
+    item_print_ch $best_entity ""
 
     puts ""
 
@@ -1567,7 +1563,7 @@ proc ent_as_string_list {e ch_form} {
     set ch_form [GET $e ch_form] ;# локальная переменная
   }
 
-  set ch  [ent_get_chromosome_ $e]
+  set ch  [item_get_chromosome $e]
   
   #puts -nonewline $out $name
   
@@ -1583,11 +1579,17 @@ proc ent_as_string_list {e ch_form} {
   return $buf
 }
 # ------------------------------------------------------------------------------
-proc maintest_run {botobjs task 
-                     max_generations 
-                   num_text num_runs pmin pmax len_chromosomes 
-                 } {
+proc maintest_run {make_bots_proc argv} {
 
+
+  set size [dict_parse $argv "-size" [LTARGET]] 
+
+  set pmin 1  ;# 2 выбираем длину блоков повторов из этого интервала: от
+  set pmax 4  ;# 3 и до 
+
+  set num_text        [dict_parse $argv "-text"  1] ;# 1 ;# 2
+  set num_runs        [dict_parse $argv "-runs"  1] ;# 2 ;# 5 ;# количество экспериментов
+  set max_generations [dict_parse $argv "-nums" -1] ;# 30 ;# 15 - останов 
 
   set ::gp_list "1 2 3 4 5 6 7 8 9"
 
@@ -1595,12 +1597,6 @@ proc maintest_run {botobjs task
   set min +99999
   set max -99999
 
-  #--------------------------------
-
-  dict for {botname obj} [set $botobjs] {
-
-    set sum($botname) 0
-  }
 
   # -----------------------------------------------------------------
   for {set t 0} {$t < $num_text} {incr t} {
@@ -1609,10 +1605,11 @@ proc maintest_run {botobjs task
     if {$t == 0} { 
       # берем задачу-строку  по умолчанию
     } else {
-      set ::target_text  [make_random_target_text   $::gp_list $len_chromosomes  $pmin $pmax]
+      set ::target_text  [make_random_target_text   $::gp_list $size  $pmin $pmax]
     }
     
     puts "target_text = $::target_text"
+
     # ----------------------------------------------------------------- 
     for {set r 0} {$r < $num_runs} {incr r} {
       
@@ -1623,10 +1620,21 @@ proc maintest_run {botobjs task
       # или здесь создавать какждый цикл новые боты-объекты?? 
       # 
 
+      set botobjs [make_bots_list $argv]
+
+      # должен уже быть готов список ботов
+      # и к каждому боту свое описание задачи 
+
       # ------------------------------------------------------------
       #       
       dict for {botname obj} [set $botobjs] {
         
+        # надо для самого первого прохода, инициировать накоптельную сумму
+        if {$t == 0 && $r == 0} {
+          set sum($botname) 0
+        }
+
+
         set ::eval_count 0 ;# Number of fitness evaluations performed
         
         test_random_seed $r      
@@ -1635,9 +1643,13 @@ proc maintest_run {botobjs task
         # 
         # $obj null or init ????? !!!!! TODO !!!
 
-        #--------------------------------
+        #---------------------------------------
+        # set task [GET $obj "task"] 
+        # RUN1 "calc_" $obj -steps $max_generations -task $task -is_print 0
+        #
+        # task уже должен быть задан для этого конкретного бота !!
 
-        RUN1 "calc_" $obj -steps $max_generations -task $task -is_print 0
+        RUN1 "calc_" $obj -steps $max_generations is_print 0
         
         # забираем результаты
         # 
@@ -1648,11 +1660,10 @@ proc maintest_run {botobjs task
 
         set best_fitnes    [item_get_fitn $best_entity] 
 
-        set best_as_string [ent_as_string  $best_entity $ch_form]
+        set best_as_string [item_as_string  $best_entity $ch_form]
 
         # теперь напечатаем результаты по этому испытанию       
-
-        
+       
         puts -nonewline [format "t=$t, r=$r, "]
         puts -nonewline [format "$botname :  "]
         puts -nonewline [format "%02d gens,  " $num_generations]
@@ -1689,62 +1700,45 @@ proc maintest_run {botobjs task
   return
 }
 # ------------------------------------------------------------------------------
-proc make_bots_standart {bots lpop lgen task} {
+proc make_bots_standart {bots lpop size task} {
 
 
-  dict_set $bots "bot01" [BOT01 new  -lpop $lpop -lgen $lgen -task $task]
-  dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lgen $lgen -task $task]
-  dict_set $bots "bot03" [BOT03 new  -lpop $lpop -lgen $lgen -task $task]
-  dict_set $bots "bot04" [BOT04 new  -lpop $lpop -lgen $lgen -task $task]
+  dict_set $bots "bot01" [BOT01 new  -lpop $lpop -lgen $size -task $task]
+  dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lgen $size -task $task]
+  dict_set $bots "bot03" [BOT03 new  -lpop $lpop -lgen $size -task $task]
+  dict_set $bots "bot04" [BOT04 new  -lpop $lpop -lgen $size -task $task]
 
 }
 # ------------------------------------------------------------------------------
-proc maintest_531 {} {
+proc make_bots_list {argv} {
 
-  global argc argv
-  puts "argc = $argc   argv = $argv"
- 
-  # надо оставить только словарные параметры
-  # 
-  set argv [lrange $argv 1 end]
+  set mode       [dict_parse  $argv "-mode"     S] 
 
-  set mode [dict_parse  $argv "-mode" "S"]
   puts "mode = $mode"
   puts ""
-  
-  set lpop [dict_parse  $argv "-lpop"  30] ;# 30 ;# 30 ;# 140    
- 
-  set ::is_print [dict_parse $argv "-is_print" 1]
+
+  set lpop       [dict_parse  $argv "-lpop"    30]    
+  set ::is_print [dict_parse  $argv "-is_print" 1]
+
+  set size       [dict_parse  $argv "-size" [LTARGET]] 
 
   #-------------------------------------------------------------
-
-  set pmin 1  ;# выбираем длину блоков повторов из этого интервала: от
-  set pmax 4  ;# и до
 
   set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
-
-  set lgen 15 ;# [strlen $::target_text] ;# длина хромосом (строк)
-  # но мы здесь еще не знаем длину тагет-строки?
-
-  set num_text 1 ;# 1 ;# 2
-  set num_runs 1 ;# 2 ;# 5 ;# количество экспериментов. для повторов
-
-  set max_generations -1 ;# 30 ;# 15 - останов по достижению нужной точности
-
-  #-------------------------------------------------------------
 
   set bots [dict_create] 
   
   #-------------------------------------------------------------
 
   if {$mode == "@"} {
+  #-------------------------------------------------------------
 
     srandom_set 2019 ;# постоянный выбор текстовой строки
 
     #set lpop 30 ;# 30 ;# 30 ;# 140
     #set ::is_print 1
 
-    make_bots_standart  $bots $lpop $lgen $task
+    make_bots_standart  $bots $lpop $size $task
 
   #-------------------------------------------------------------
   } \
@@ -1752,88 +1746,68 @@ proc maintest_531 {} {
   #-------------------------------------------------------------
 
     # фиксированный тест
-    srandom_set 2019 ;# постоянный выбор текстовой строки
+    #srandom_set 2019 ;# постоянный выбор текстовой строки
+    #srandom_set 0;# постоянный выбор текстовой строки
 
-    #set lgen 9  ;# длина хромосом (строк)
-    #set pmin 2  ;# выбираем длину блоков повторов из этого интервала: от
-    #set pmax 3  ;# и до
-    #
-    # хочу сделать задачу поменьше (быстрее), а ее переклинивает!?
-    # 
+    # хочу сделать задачу поменьше (быстрее),
     # просто увеличив ошибку?
 
     set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 8.0 ]
 
     #task_print $task
 
-    make_bots_standart  $bots $lpop $lgen $task
-
-  #-------------------------------------------------------------
-  } \
-  elseif {$mode == "A"} {
-  #-------------------------------------------------------------
-
-    set num_text 2 ;# 1 ;# 2
-    set num_runs 2 ;# 2 ;# 5 ;# количество экспериментов. для повторов
-
-    make_bots_standart  $bots $lpop $lgen $task
-
-  #-------------------------------------------------------------
-  } \
-  elseif {$mode == "T"} {
-  #-------------------------------------------------------------
-
-    set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.1 ]
-
-    dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lgen $lgen -task $task]
+    make_bots_standart $bots  $lpop $size $task
 
   #-------------------------------------------------------------
   } \
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
-  #set ::target_text "122333444455555" она дальше все равно случайно выбирается
-
   set task [task_create "FS_fitness_list"]
 
   set sort_driver  "GT_lsort" 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
-  set lpop 10
-  set lgen 15 ;# длина хромосом (строк)
-  set max_generations -1 ;# 100 - останов по достижению нужной точности
-
   set obj \
-    [bot33_create  -lpop $lpop -lgen $lgen \
+    [bot33_create  -lpop $lpop -lgen $size \
        -sort_driver $sort_driver  -task $task -is_print 0]
 
   dict_set $bots "bot33" $obj 
 
   #-------------------------------------------------------------
-  } else {
 
-    set lpop 20 ;# 30 ;# 30 ;# 140
+  } else {
+  #-------------------------------------------------------------
 
     set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.1 ]
 
-    dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lgen $lgen -task $task]
+    dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lgen $size -task $task]
 
-    #set ::is_print 1
-
-    puts "lpop = $lpop"
-    puts "lgen = $lgen"
-    puts ""
   }
   #-------------------------------------------------------------
 
 
-  maintest_run  $bots $task \
-    $max_generations \
-    $num_text $num_runs  $pmin $pmax \
-    $lgen 
+  puts "lpop = $lpop"
+  puts "size = $size"
+  puts ""
+
+return $bots
+}
+# ------------------------------------------------------------------------------
+proc maintest_531 {} {
+
+  global argc argv
+
+  puts "argc = $argc   argv = $argv"
+ 
+  # надо оставить только словарные параметры
+  # 
+  set argv [lrange $argv 1 end]
 
 
-return
+  maintest_run "make_bots_list" $argv
+
+  return
 }
 #-------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
