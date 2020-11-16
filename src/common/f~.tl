@@ -16,34 +16,69 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
 #-----------------------------------------------------------------
 
+# сюда уже входит f-sort.tl !!
+# 
 package require compot::common 
 
-# ;-------------------------------------------------------------------------------
-proc COMM {} {
+#-------------------------------------------------------------------------------
+proc sort_test {} {
 
+  set my_list "2 1 5 4 6"
+  
+  #   (print (sort my-list #'<))  ;(1 2 4 5 6)
+  #   (print (sort my-list #'>))  ;(6 5 4 2 1)
+  #   (print (k-sort my-list ))   ; 
+  
+  puts ""
 
-  global argc argv
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+  puts [lsort -increasing $my_list]  ;# (1 2 4 5 6) by default
+  puts [lsort -decreasing $my_list]  ;# (6 5 4 2 1)
+  
+  puts ""
 
-  #   (run_cdr_argus (first argus) argus "COMM ..")
-
+  return
 }
 #-------------------------------------------------------------------------------
-# proc SORT-TEST {} {
+proc sort_main {} {
 
-#   # (my_load "l-sort.cl" CUR_DIR) (use-package :a_sort)
-#   #source "f-sort.tl"
+  set Orign {44 55 12 42 94 18  6 67}
+  set Sorts { 6 12 18 42 44 55 67 94}
+  
+  puts ""
 
-#   global argc argv
-#   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+  ai_print $Orign     
+  ai_print $Sorts  
+   
+  puts ""
+  
+  # функция признак-сортировки возвращает TRUE, если положение двух элементов
+  # нас устраивает (сдева меньше или слева больше)
 
-#   # (run_cdr_argus (first argus) argus "SORT ..")
-# }
+  set LT [qsort_AF $Orign "LT"] ;# меньшие налево
+  ai_print $LT 
+    
+  set GT [qsort_AF $Orign "GT"] ;# большие налево
+  ai_print $GT 
+    
+  puts ""
+
+  # обратные функции драйвра сортировки
+  
+  set ret [lsort -command "LT_lsort" $Orign] 
+  ai_print $ret 
+    
+  set ret [lsort -command "GT_lsort" $Orign] 
+  ai_print $ret 
+    
+
+  puts ""
+  
+  return
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc  SORT-TABS {} {
 
-  #source "f-tabs.tl"
   source "f_sort.tl"
 
   global argc argv
@@ -53,26 +88,17 @@ proc  SORT-TABS {} {
 
 }
 #-------------------------------------------------------------------------------
+# f~.tl,TOUR,tour_main
+#-------------------------------------------------------------------------------
 proc TOUR {} {
 
-  #source "f-tabs.tl"
+  #source "f-tabs.tl" 
   #source "f-tour.tl"
+  # эти файлы включаются через package require
   
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
-}
-#-------------------------------------------------------------------------------
-proc SORT-TEST {} {
-
-  # (my_load "l-sort.cl" CUR_DIR) (use-package :a_sort)
-
-  source "f-sort.tl"
-
-  global argc argv
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
-
-  # (run_cdr_argus (first argus) argus "SORT ..")
 }
 #-------------------------------------------------------------------------------
 
@@ -96,10 +122,11 @@ READ_AND_CALL_ARGUS  $CUR_DIR
 
 #-------------------------------------------------------------------------------
 
-# l~.tl TOUR tour_main
 
 # l~.tl SORT-TEST sort_main
+# l~.tl SORT-TEST sort_test
 
+# l~.tl TOUR tour_main
 # l~.tl SORT-TABS sort_main_03
 
 #-------------------------------------------------------------------------------

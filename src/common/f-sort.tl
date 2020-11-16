@@ -8,11 +8,6 @@ if [info exists ::F_SORT_TL] {
   set  ::F_SORT_TL ""
 }
 
-#===============================================================================
-#
-# l~.tl SORT-TEST sort_main
-# l~.tl SORT-TABS sort_main_03
-#
 #-------------------------------------------------------------------------------
 
 # *  Имя этого файла: d_sort.c                                                 *
@@ -622,70 +617,6 @@ proc qsort_AF {array {sort_proc "LT"}} {
 # ;}
 
 #-------------------------------------------------------------------------------
-proc sort_main {} {
-
-  set Orign {44 55 12 42 94 18  6 67}
-  set Sorts { 6 12 18 42 44 55 67 94}
-  
-  puts ""
-
-  ai_print $Orign     
-  ai_print $Sorts  
-   
-  puts ""
-  
-  # функция признак-сортировки возвращает TRUE, если положение двух элементов
-  # нас устраивает (сдева меньше или слева больше)
-
-  set LT [qsort_AF $Orign "LT"] ;# меньшие налево
-  ai_print $LT 
-    
-  set GT [qsort_AF $Orign "GT"] ;# большие налево
-  ai_print $GT 
-    
-  puts ""
-
-  # обратные функции драйвра сортировки
-  
-  set ret [lsort -command "LT_lsort" $Orign] 
-  ai_print $ret 
-    
-  set ret [lsort -command "GT_lsort" $Orign] 
-  ai_print $ret 
-    
-
-  puts ""
-  
-  return
-}
-#-------------------------------------------------------------------------------
-
-#a~.tl SORT-TEST sort_main
-
-#-------------------------------------------------------------------------------
-proc sort_test {} {
-
-  puts ""
-
-  # (let (
-  #   (my-list '(2 1 5 4 6))
-  set my_list "2 1 5 4 6"
-  #   )
-  
-  #   (print (sort my-list #'<))  ;(1 2 4 5 6)
-  #   (print (sort my-list #'>))  ;(6 5 4 2 1)
-  #   (print (k-sort my-list ))   ; 
-  
-  puts [lsort -increasing $my_list]  ;# (1 2 4 5 6) by default
-  puts [lsort -decreasing $my_list]  ;# (6 5 4 2 1)
-  
-  #   (format t "~%")
-  #   (format t "~%")
-  
-  puts ""
-
-  return
-}
 #-------------------------------------------------------------------------------
 
 # ;LISP provides two primitives for sorting: sort and stable-sort.

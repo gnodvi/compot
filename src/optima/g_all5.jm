@@ -220,8 +220,6 @@ proc _1_main {} \
   
   set task [task_create "all5s_score"]
 
-  #puts stderr ".... 1"
-
   set pop [ga_genesis_main   \
 	     $task \
              $population_size    \
@@ -241,8 +239,6 @@ proc _1_main {} \
              NULL               \
           ]
   
-
-  #puts stderr ".... 2"
 
   SET $pop "ch_form" " %02d" ;# 
 
@@ -273,15 +269,9 @@ proc _1_main {} \
     ga_population_seed $pop  
     #
     $pop print
-    #exit
   }
 
 
-  #   ga_evolution(
-  #      pop,			/* population                 *pop */
-  #      max_generations	/* const int       max_generations */
-  #      );
-  
   ga_evolution  $task $pop $max_generations   
 
   #$pop print
@@ -293,19 +283,11 @@ proc _1_main {} \
   #                                                 beststring, &beststrlen);
 
   set best_entity [ga_get_entity_from_rank $pop 0]
-  #set beststring [$best_entity get_chromosome]
   set beststring [item_get_chromosome $best_entity]
 
-  #   printf ("%s\n", beststring);
   puts $beststring
 
-  #puts [format "With score = %f" [ent_get_fitness $best_entity]]
   puts [format "With score = %f" [item_get_fitn $best_entity]]
-  
-  #   // Free memory
-  #   //
-  #   ga_extinction (pop);
-  #   s_free (beststring);
   
   return 1
 }

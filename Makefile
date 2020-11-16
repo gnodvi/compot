@@ -4,7 +4,7 @@
 all:  
 	(cd ext/r; make)
 	(cd src/h; make)
-	touch MAKE
+#	touch MAKE
 
 test:  
 	(cd ext/r; M)
@@ -15,7 +15,7 @@ test:
 clean:  
 	(cd ext/r; make clean)
 	(cd src/h; make clean)
-	(rm -f MAKE)
+#	(rm -f MAKE)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

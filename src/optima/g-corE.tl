@@ -15,7 +15,7 @@ set ::NEWPOP 0
 set ::GA_BOLTZMANN_FACTOR	1.38066e-23
 
 
-set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
+set ::sort_driver "item_MAX_to_LEFT" ;# функция признак-сортировки
 
 set ::ISREVERSE 0 
 
@@ -404,7 +404,6 @@ proc item_print {item} {
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 
 dict_class_create POP {} {
 
@@ -416,7 +415,8 @@ dict_class_create POP {} {
   ch_form          "%s "  ;# _"%02d"     
   generation_hook  ""  ;# _GAgeneration_hook_generation_hook 
 
-  sort_driver      ""  ;# _
+  sort_driver "" 
+
   itemslist        ""  ;# _ 
   generation       ""  ;# _ 
 
@@ -430,13 +430,15 @@ dict_class_create POP {} {
   SET $obj "stable_size"     [dict_parse $args "-lpop"] 
   SET $obj "len_chromosomes" [dict_parse $args "-lgen"] 
   
-  SET $obj "ch_form"  "% 6.3f " ;#  " %02d"   
+  SET $obj "ch_form"         "% 6.3f " ;#  " %02d"   
   SET $obj "generation_hook" NULL
   
   SET $obj generation      {}  
   SET $obj best            {}     
 }
 
+  #set ::sort_driver "item_MAX_to_LEFT" ;# функция признак-сортировки
+    
 #-------------------------------------------------------------------------------
 #   Population handling functions.
 
@@ -532,8 +534,6 @@ dict_class_create GAUL {POP} {
 
   SET $obj  iteration_hook  NULL
   SET $obj  adapt           NULL
-    
-  #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
     
   #$newpop.selectdata = [selectdata_create]
   # 
@@ -726,10 +726,8 @@ proc pop_print_ {p {out "stdout"}} {
 
 }
 #-------------------------------------------------------------------------------
-proc MAX_to_LEFT {a b} {
+proc item_MAX_to_LEFT {a b} {
 
-  #set a_fit [ent_get_fitness $a]
-  #set b_fit [ent_get_fitness $b]
 
   set a_fit [item_get_fitn $a]
   set b_fit [item_get_fitn $b]
@@ -740,10 +738,8 @@ proc MAX_to_LEFT {a b} {
   return [GT $a_fit $b_fit]
 }
 #-------------------------------------------------------------------------------
-proc MIN_to_LEFT {a b} {
+proc item_MIN_to_LEFT {a b} {
 
-  #set a_fit [ent_get_fitness $a]
-  #set b_fit [ent_get_fitness $b]
 
   set a_fit [item_get_fitn $a]
   set b_fit [item_get_fitn $b]
@@ -894,13 +890,6 @@ proc ga_entity_seed {pop adam} \
 #-------------------------------------------------------------------------------
 proc  gaul_population_fill {pop num} {
 
-  # ------------------------
-  #
-  #if {$::__JIM__} {
-  #set ::is_print 3
-  #}
-  #
-  # ------------------------
 
   set proc_seed [GET $pop seed]
 
@@ -995,7 +984,7 @@ proc pop_initial_score_and_sort {pop task} {
   
   pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
 
-  pop_sorting     $pop
+  pop_sorting  $pop
   
   return
 }
@@ -2373,13 +2362,15 @@ proc ga_select_two_sus {pop &mother &father}  {
 # 		it works.
 
 #-------------------------------------------------------------------------------
-proc pop_sorting {p {sort_driver ""}} {
+proc pop_sorting {pop {sort_driver ""}} {
 
   if {$sort_driver == ""} {
     set sort_driver $::sort_driver
+    #set sort_driver [GET $pop sort_driver]
   }
 
-  if {[get_pop_size $p] == 0} {
+
+  if {[get_pop_size $pop] == 0} {
     return ;# если в популяции ничего еще нет !!
   }
   
@@ -2391,23 +2382,13 @@ proc pop_sorting {p {sort_driver ""}} {
   #  die "NOT ..... ga_rank_fitness"
   #}
   
-  #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-  # будем определять при создании популяции
+  set itemslist [GET $pop itemslist]
 
-  set itemslist [GET $p itemslist]
+  SET $pop itemslist  [qsort_AF $itemslist $sort_driver]
 
-  SET $p itemslist  [qsort_AF $itemslist $sort_driver]
-
-
-  SET $p best 0 ;# после сортировки это должно быть так
+  SET $pop best 0 ;# после сортировки это должно быть так
 
 }
-#-------------------------------------------------------------------------------
-# proc sort_population {pop} {
-
-#   pop_sorting $pop
-
-# }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #   ga_utility.c
@@ -2444,14 +2425,30 @@ proc pop_sorting {p {sort_driver ""}} {
 #                       vpointer		userdata )
 
 #-------------------------------------------------------------------------------
+proc dict_parse_all {d args} {
+
+  dict for {key value} $args {
+
+    set key [string trimleft $key "-"]
+
+    SET $d  $key $value
+  }
+
+}
+#-------------------------------------------------------------------------------
 proc task_create {fitness_proc  args} {
 
   set t [dict_create]
 
   SET $t "fitness_proc" $fitness_proc
 
-  SET $t "fit_target"   [dict_parse $args "-fit_target" 0]   ;# ???
-  SET $t "fit_error"    [dict_parse $args "-fit_error"  0.01] 
+  SET $t "fit_target" 0
+  SET $t "fit_error"  0.01
+
+  #SET $t "fit_target"   [dict_parse $args "-fit_target"] 
+  #SET $t "fit_error"    [dict_parse $args "-fit_error" ] 
+
+  dict_parse_all $t {*}$args
 
   return $t
 }
@@ -2472,8 +2469,12 @@ set ::NEWMUTATE 0
 #-------------------------------------------------------------------------------
 proc mutate_create {args} {
 
+  #set mutate_proc "ga_mutate_double_singlepoint_drift"
 
   set mutate_proc [dict_parse $args "-mutate_proc" ga_mutate_double_singlepoint_drift]
+
+  #dict_parse_all $t {*}$args
+
 
   if {$::NEWMUTATE} {
 
@@ -5204,22 +5205,6 @@ proc gaul_adapt_and_evaluate {pop task} \
   return
 }
 # //------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
-# proc sort_and_genocide {pop} \
-# {
-
-#   # сортируем всех челнов популяции по фитнесу
-#   #  
-#   pop_sorting $pop
-
-#   # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
-#   # численность до ее стабильного первоначального размера.
-#   #
-
-#   ga_genocide  $pop [GET $pop stable_size]
-
-#   return
-# }
 #-------------------------------------------------------------------------------
 proc pop_del_entities {p imin imax} {
 
@@ -6005,8 +5990,6 @@ proc popu_sort_command {a b} {
   set a_fit [item_get_fitn  $a]
   set b_fit [item_get_fitn  $b]
 
-  #set ::sort_driver "LT_lsort"
-
   return [$::sort_driver $a_fit $b_fit] ; # т.е МЕНЬШИЕ будут слева в списке 
 }
 #-------------------------------------------------------------------------------
@@ -6192,40 +6175,36 @@ dict_class_create BOT {} {
 
   ;# _это_перечисление_переменных
   
-  name  ""
+  name  "BotName"
   task  ""
   pop   ""
 
 } {
   # а это конструктор класса 
 
-  set task [dict_parse $args "-task" \
-              [task_create  "FS_fitness" -fit_target $::fit_target]] 
-    
-  SET $obj "task" $task
-
-  SET $obj "name" [dict_parse  $args  "-name" "BotName"]
-  SET $obj "pop"  [dict_parse  $args  "-pop"  ""] 
+  #   set task [dict_parse $args "-task" \
+     #               [task_create  "FS_fitness" -fit_target $::fit_target]] 
   
+  #   SET $obj "task" $task
+  
+  #   SET $obj "name" [dict_parse  $args  "-name" ]
+  #   SET $obj "pop"  [dict_parse  $args  "-pop"  ] 
+  
+  dict_parse_all $obj {*}$args 
 }
 
 #---------------------------------------------------------
 proc calc_BOT {obj args} {
-  
-  
-  #variable task
+    
   set task            [dict_parse $args "-task"  [GET $obj "task"]] 
   set max_generations [dict_parse $args "-steps"] 
   
-  #variable pop
   set  pop [GET $obj "pop"]
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-  #$obj init
   
   ga_evolution_main           $task $pop $max_generations ;# 0.01
   
-  #set ret [ga_evolution  $task $pop $max_generations]  
 }
 #---------------------------------------------------------
 proc final_BOT {obj args} {
@@ -6252,20 +6231,23 @@ dict_class_create BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
-  set task [dict_parse $args "-task" [task_create  "FS_fitness_list"]] 
+  set task [task_create "FS_fitness_list"]
+
+  #set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+
+  #-------------------------
+
+  #set task [dict_parse $args "-task" [task_create  "FS_fitness_list"]] 
   
   SET $obj "task" $task  
 
   set pop [POP new  {*}$args]
 
-  set sort_driver [dict_parse $args "-sort_driver" "LT_lsort"] 
-  # 
-  # "LT_lsort" ;# с меньшим фитнесом - влево. т.е. в лучшие!
-  #
+  set sort_driver [dict_parse $args "-sort_driver"] 
   set      ::sort_driver $sort_driver
   SET $pop "sort_driver" $sort_driver
   
-  SET $pop  ch_form "%s" 
+  #SET $pop  ch_form "%s" 
 
   SET $obj "pop"  $pop
 }
@@ -6365,7 +6347,7 @@ proc run_gp_evolution {randpop_proc
   #-------------------------------------
 
   set obj \
-    [bot33_create  -lpop $population_size -lgen $len_chromosomes \
+    [BOT33 new  -lpop $population_size -lgen $len_chromosomes \
        -sort_driver $sort_driver  -task $task]
 
     

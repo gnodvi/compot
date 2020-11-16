@@ -2036,12 +2036,12 @@ proc DICT_save {} {
 #-------------------------------------------------------------------------------
 proc dict_parse {d key {defaultval NULL}} {
 
-  if {0} {
-    puts stderr ""
-    puts stderr "dict_parse :   d = $d  "
-    puts stderr "           : key = $key. defaultval = $defaultval"
-    puts stderr ""
-  }
+  #if {0} {
+  #  puts stderr ""
+  #  puts stderr "dict_parse :   d = $d  "
+  #  puts stderr "           : key = $key. defaultval = $defaultval"
+  #  puts stderr ""
+  #}
 
   if [dict exists     $d $key] {
 
@@ -2051,9 +2051,11 @@ proc dict_parse {d key {defaultval NULL}} {
 
     if {$defaultval == "NULL"} {
       
-      puts stderr "d = $d"
-      puts stderr ""
-      ERROR "dict_parse, key = $key"
+      # а зачем так себя ограничивать, ошибку выдавать?
+
+      #puts stderr "d = $d"
+      #puts stderr ""
+      #ERROR "dict_parse, key = $key"
       
     } else {
       return $defaultval

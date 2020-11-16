@@ -1625,6 +1625,8 @@ proc maintest_run {make_bots_proc argv} {
       # должен уже быть готов список ботов
       # и к каждому боту свое описание задачи 
 
+      test_random_seed $r      
+        
       # ------------------------------------------------------------
       #       
       dict for {botname obj} [set $botobjs] {
@@ -1634,18 +1636,13 @@ proc maintest_run {make_bots_proc argv} {
           set sum($botname) 0
         }
 
-
         set ::eval_count 0 ;# Number of fitness evaluations performed
-        
-        test_random_seed $r      
         
         # или здесь обнновдять (инициировать) уже готовые объекты
         # 
         # $obj null or init ????? !!!!! TODO !!!
 
         #---------------------------------------
-        # set task [GET $obj "task"] 
-        # RUN1 "calc_" $obj -steps $max_generations -task $task -is_print 0
         #
         # task уже должен быть задан для этого конкретного бота !!
 
@@ -1769,8 +1766,9 @@ proc make_bots_list {argv} {
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   set obj \
-    [bot33_create  -lpop $lpop -lgen $size \
+    [BOT33 new   -lpop $lpop -lgen $size \
        -sort_driver $sort_driver  -task $task -is_print 0]
+
 
   dict_set $bots "bot33" $obj 
 
@@ -1806,6 +1804,13 @@ proc maintest_531 {} {
 
 
   maintest_run "make_bots_list" $argv
+
+  # g_stru.tl maintest_531 -mode @ -text 3 -runs 3
+  # 
+  # 1 mesto :    bot01,   8838 eval
+  # 2 mesto :    bot02,  13830 eval
+  # 3 mesto :    bot03,  15453 eval
+  # 4 mesto :    bot04,  17274 eval
 
   return
 }

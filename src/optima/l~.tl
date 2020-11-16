@@ -87,7 +87,6 @@ proc TEST {} {
   source "k-1111.tl"  ;# простой jOY 
 
   source "g-corE.tl"
-
   source "l-proJ.tl"  ; # тесты на JOY
   
   global argc argv
