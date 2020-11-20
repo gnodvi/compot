@@ -1,0 +1,76 @@
+# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+#
+#-----------------------------------------------------------------------
+
+CUR_DIR=$PWD
+
+#cd $CUR_DIR/xdotool-2.20110530.1 
+cd $CUR_DIR/xdotool-3.20160805.1
+
+#-----------------------------------------------------------------------
+
+# README:
+#
+# xdotool: Fake input from the mouse and keyboard very easily.
+#   Also supports window manager actions such as moving, activating, and other
+#   actions on windows.
+# libxdo: C library for doing the same.
+
+# See the website for more up-to-date documentation
+#   http://www.semicomplete.com/projects/xdotool/
+#   or the manpage listed below.
+
+# Compile: make
+# Install: make install
+# Remove: make uninstall
+
+# You may have to set 'PREFIX' to the location you want to install to. 
+# The default PREFIX is /usr/local
+
+# For packagers, there's also support for DESTDIR for staged install.
+
+# Also, see the manpage, which you can generate by running:
+#   make showman
+# Note: the manpage will be installed during 'make install'
+
+#-----------------------------------------------------------------------
+
+#   PREFIX=/usr \
+#   INSTALLLIB=/usr/lib64 \
+#   DESTDIR=/tmp/package-xdotool \
+#   make install
+
+# I also used 'install -D' here so that directories are made
+# automatically.
+
+#-----------------------------------------------------------------------
+
+# pod2man -c "" -r "" xdotool.pod > xdotool.1
+# cc -pipe -O2 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wb
+# ad-function-cast -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototy
+# pes -Wnested-externs -Winline -Wdisabled-optimization -Wno-missing-field-initialize
+# rs -g  -std=c99 -I/usr/X11R6/include -I/usr/local/include -fPIC -c xdo.c
+# xdo.c:28:34: fatal error: X11/extensions/XTest.h: No such file or directory
+# compilation terminated.
+# make: *** [xdo.o] Error 1
+
+# добавил:
+# 
+# INC+=-L/home/pilot/.MSOFT/xrobotics/libxtst/1.2.2/R/include
+# LIBS+=-L/home/pilot/.MSOFT/xrobotics/libxtst/1.2.2/R/lib
+
+#-----------------------------------------------------------------------
+
+# но проще нормально установить пакет "libxtst"
+# 
+# 
+
+PREFIX=$CUR_DIR/R  make 2>&1 |tee  $CUR_DIR/make 
+
+make showman            2>&1 |tee  $CUR_DIR/make_showman 
+
+PREFIX=$CUR_DIR/R  make install  2>&1 |tee  $CUR_DIR/make_install 
+
+#-----------------------------------------------------------------------
