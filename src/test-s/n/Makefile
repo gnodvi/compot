@@ -2,7 +2,7 @@
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-#ORIGIN_DIR = ../origin
+ORIGIN_DIR = ../origin
 
 RECOGN_DIR = ../recogn
 
@@ -11,12 +11,12 @@ SROBOT_DIR = ../srobot
 #-------------------------------------------------------------------------------
 
 
-all:  RECOGN__ SROBOT__ #ORIGIN__ 
+all:  RECOGN__ SROBOT__ ORIGIN__ 
 
 #-------------------------------------------------------------------------------
 
-#ORIGIN__ :
-#	(cd $(ORIGIN_DIR); make)
+ORIGIN__ :
+	(cd $(ORIGIN_DIR); make)
 
 RECOGN__ :
 	(cd $(RECOGN_DIR); make)
@@ -27,7 +27,7 @@ SROBOT__ :
 #-------------------------------------------------------------------------------
 
 clean : 
-#	(cd $(ORIGIN_DIR); make clean)
+	(cd $(ORIGIN_DIR); make clean)
 	(cd $(RECOGN_DIR); make clean)
 	(cd $(SROBOT_DIR); make clean)
 

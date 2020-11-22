@@ -161,14 +161,11 @@ proc ai_initialize_new {Num} {
 # ;void
 # ;ai_print (int *Array, int Num)
 # ;-------------------------------------------------------------------------------
-proc ai_print {Array} {
+proc ai_print {Array {name Array}} {
 
-  # ;  for (i = 0; i < Num; i++) 
-  # ;    printf ("%2d ", Array[i]); 
-  # ;  printf ("\n");
-  
-  #   (format t "~s ~%" Array)
-  puts "Array = $Array"
+  #puts "Array = $Array"
+
+  puts "$name = $Array"
 
 }
 # ;-------------------------------------------------------------------------------
@@ -312,7 +309,8 @@ proc bsort_swap {array i j} {
   return $array
 }
 #-------------------------------------------------------------------------------
-proc LT_lsort {a b} {
+#proc LT_lsort {a b} {}
+proc lsort_MIN_to_LEFT {a b} {
 
   # возвращаемое значение определяет "желаемый" знак разности левого и правого 
   # 
@@ -323,7 +321,8 @@ proc LT_lsort {a b} {
 
 }
 #-------------------------------------------------------------------------------
-proc GT_lsort {a b} {
+#proc GT_lsort {a b} {
+proc lsort_MAX_to_LEFT {a b} {
 
   # возвращаемое значение определяет "желаемый" знак разности левого и правого 
   # 
@@ -334,7 +333,8 @@ proc GT_lsort {a b} {
 
 }
 #-------------------------------------------------------------------------------
-proc  LT {left right} {
+#proc  LT {left right} {}
+proc  qsort_MIN_to_LEFT {left right} {
 
   incr ::comp_count
    
@@ -344,7 +344,8 @@ proc  LT {left right} {
   return [expr {($left < $right)}]
 }                 
 #-------------------------------------------------------------------------------
-proc  GT {left right} {
+#proc  GT {left right} {}
+proc  qsort_MAX_to_LEFT {left right} {
 
   incr ::comp_count
    
@@ -418,7 +419,6 @@ proc  GT {left right} {
 #-------------------------------------------------------------------------------
 proc quicksort {array lower upper  sort_proc} {
 
-  #set sort_proc "LT"
   
   if {$lower < $upper} {
   
@@ -446,7 +446,8 @@ proc quicksort {array lower upper  sort_proc} {
   return $array
 }
 #-------------------------------------------------------------------------------
-proc qsort_AF {array {sort_proc "LT"}} {
+#proc qsort_AF {array {sort_proc "LT"}} {}
+proc qsort_AF {array {sort_proc "qsort_MIN_to_LEFT"}} {
 
   
   set lower 0

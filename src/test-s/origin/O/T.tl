@@ -7,26 +7,17 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 #
 
-set auto_path [linsert $auto_path 0 "../.."]
+set auto_path [linsert $auto_path 0 "../COMPOT/src"]
 
 package require compot::common 
 
 #-------------------------------------------------------------------------------
 
 puts ""
-#puts ""
 
 #-------------------------------------------------------------------------------
 
 run_numer_tests  e . E/OUT 
-
-puts ""
-
-run_numer_tests  g . E/OUT 
-
-puts ""
-
-run_numer_tests  t . E/OUT 
 
 puts ""
 

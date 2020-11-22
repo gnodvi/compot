@@ -15,7 +15,8 @@ set ::NEWPOP 0
 set ::GA_BOLTZMANN_FACTOR	1.38066e-23
 
 
-set ::sort_driver "item_MAX_to_LEFT" ;# функция признак-сортировки
+#set ::sort_driver "item_MAX_to_LEFT" ;# функция признак-сортировки
+set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
 
 set ::ISREVERSE 0 
 
@@ -724,30 +725,6 @@ proc pop_print_ {p {out "stdout"}} {
   puts $out " "
   puts $out "-----------------------------------------------------------------------"
 
-}
-#-------------------------------------------------------------------------------
-proc item_MAX_to_LEFT {a b} {
-
-
-  set a_fit [item_get_fitn $a]
-  set b_fit [item_get_fitn $b]
-
-  # налево, т.е. в лучшие отправим с БОЛЬШИМ фитенсом 
-  #                     (это должно быть по умолчанию)
-
-  return [GT $a_fit $b_fit]
-}
-#-------------------------------------------------------------------------------
-proc item_MIN_to_LEFT {a b} {
-
-
-  set a_fit [item_get_fitn $a]
-  set b_fit [item_get_fitn $b]
-
-  # налево, т.е. в лучшие отправим с МЕНЬШИМ фитенсом 
-  #                      (вариант для особых случаев)
-
-  return [LT $a_fit $b_fit]
 }
 #-------------------------------------------------------------------------------
 proc pop_print {pop {out "stdout"}} {
@@ -2339,8 +2316,35 @@ proc ga_select_two_sus {pop &mother &father}  {
 }
 #-------------------------------------------------------------------------------
 # //******************************************************************************
+#-------------------------------------------------------------------------------
+proc item_qsort_MAX_to_LEFT {a b} {
 
 
+  set a_fit [item_get_fitn $a]
+  set b_fit [item_get_fitn $b]
+
+  # налево, т.е. в лучшие отправим с БОЛЬШИМ фитенсом 
+  #                     (это должно быть по умолчанию)
+
+  #return [GT $a_fit $b_fit]
+  return [qsort_MAX_to_LEFT $a_fit $b_fit]
+}
+#-------------------------------------------------------------------------------
+proc item_qsort_MIN_to_LEFT {a b} {
+
+
+  set a_fit [item_get_fitn $a]
+  set b_fit [item_get_fitn $b]
+
+  # налево, т.е. в лучшие отправим с МЕНЬШИМ фитенсом 
+  #                      (вариант для особых случаев)
+
+  #
+  # т.е. здесь уже просто фитнесы
+
+  #return [LT $a_fit $b_fit]
+  return [qsort_MIN_to_LEFT $a_fit $b_fit]
+}
 #-------------------------------------------------------------------------------
 #   ga_qsort.c
 
@@ -2376,7 +2380,7 @@ proc pop_sorting {pop {sort_driver ""}} {
   
   # в случае, если специально определена функция сравнения (а не просто по фитнесу)
   # т.е. if (pop->rank != ga_rank_fitness) то надл использовать эту функцию!
-  #
+  #                ??? нафига, если все можно в вфитнес вынести ???
   #set rank_proc [$self cget -rank]
   #if {$rank_proc != "ga_rank_fitness"} {
   #  die "NOT ..... ga_rank_fitness"
@@ -2384,7 +2388,12 @@ proc pop_sorting {pop {sort_driver ""}} {
   
   set itemslist [GET $pop itemslist]
 
-  SET $pop itemslist  [qsort_AF $itemslist $sort_driver]
+  # если ы списке реальные итемы (словари), то делаем типа
+  # item_MIN_to_LEFT или item_MAX_to_LEFT
+
+  set sortcmd "item_qsort_${sort_driver}"
+
+  SET $pop itemslist  [qsort_AF $itemslist $sortcmd]
 
   SET $pop best 0 ;# после сортировки это должно быть так
 
@@ -5985,12 +5994,16 @@ proc print_best {i task  best_item is_print game_print_proc} {
   #return $best_item
 }
 #-------------------------------------------------------------------------------
-proc popu_sort_command {a b} {
+proc lsort_pop_command {a b} {
 
   set a_fit [item_get_fitn  $a]
   set b_fit [item_get_fitn  $b]
 
-  return [$::sort_driver $a_fit $b_fit] ; # т.е МЕНЬШИЕ будут слева в списке 
+  # аоскольку используем функцияю lsort, присоединяем к ней типв "MIN_to_LEFT"
+  # 
+  set sort_driver lsort_$::sort_driver
+
+  return [$sort_driver $a_fit $b_fit] ; # т.е МЕНЬШИЕ будут слева в списке 
 }
 #-------------------------------------------------------------------------------
 proc item_print_fitness {item i} {
@@ -6110,7 +6123,7 @@ proc gp_evolution_main {task  pop max_generations
     #  
 
     if {1} {
-      set itemslist_sorted [lsort -command "popu_sort_command" $itemslist]
+      set itemslist_sorted [lsort -command "lsort_pop_command" $itemslist]
     
       set best_item [lindex $itemslist_sorted 0]
     
@@ -6118,7 +6131,7 @@ proc gp_evolution_main {task  pop max_generations
 
     } else {
       
-      pop_sorting $pop "popu_sort_command"
+      pop_sorting $pop "lsort_pop_command"
       set best_item [GET $pop best]
 
     }
@@ -6531,7 +6544,8 @@ proc _gp_test {} {
   set  fitnessfunc  "FS_fitness_list"
   #set  fitnessfunc  "FS_fitness_list_NEW"
 
-  set  sort_driver  "GT_lsort" ;## большие влево?
+  #set  sort_driver  "GT_lsort" ;## большие влево?
+  set  sort_driver  "MAX_to_LEFT" ;## большие влево?
 
   # ------------------------------------------------
 

@@ -386,7 +386,8 @@ proc test_ga {} {
 proc test_ga_REV {} {
 
   set ::ISREVERSE 1
-  set ::sort_driver "item_MIN_to_LEFT"
+  set ::sort_driver "MIN_to_LEFT"
+  #set ::sort_driver "item_MIN_to_LEFT"
 
   test_ga 
 

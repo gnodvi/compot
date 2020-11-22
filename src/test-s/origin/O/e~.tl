@@ -6,20 +6,19 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 
 
-#set auto_path [linsert $auto_path 0 "COMPOT/src"]
+set auto_path [linsert $auto_path 0 "../COMPOT/src"]
 
 set auto_path [linsert $auto_path 0 "."]
 
-#package require compot::common 1.0
 package require compot::common
 
 
 # ;-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "g-graf.tl"
+  source "../g-graf.tl"
 
-  source "t_meta.tl"
+  source "e_meta.tl"
 
   global argc argv
 
@@ -38,7 +37,7 @@ proc TEST {} {
 }
 #-------------------------------------------------------------------------------
 
-set CUR_DIR "t"
+set CUR_DIR "h"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 

@@ -849,8 +849,9 @@ proc NEXT_01 {} {
 
   #DebugOn
   run_gp_evolution  $rand_prgpop_proc \
-                       $individuals $len \
-                       fitness_01 "LT_lsort" 0.1  $nums $is_print 0 ;# not game print
+    $individuals $len \
+    fitness_01 "MIN_to_LEFT" 0.1  $nums $is_print 0 ;# not game print
+  #                       fitness_01 "LT_lsort" 0.1  $nums $is_print 0 ;# not game print
   
   return
 }
@@ -961,7 +962,8 @@ proc TEST_xx {} {
 
   run_gp_evolution  $rand_prgpop_proc \
                        $individuals $len \
-                       squareFitness "LT_lsort" 0.1  $nums $is_print
+                       squareFitness "MIN_to_LEFT" 0.1  $nums $is_print
+#                       squareFitness "LT_lsort" 0.1  $nums $is_print
   
   return
 }

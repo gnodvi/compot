@@ -46,30 +46,47 @@ proc sort_main {} {
   
   puts ""
 
-  ai_print $Orign     
-  ai_print $Sorts  
+  ai_print $Orign  "Orign"    
+  ai_print $Sorts  "Sorts"
    
   puts ""
+  puts "------------------------------------------------"
+  puts ""
+
+  #----------------------------------------------------------------------
+  # обратные функции драйвра сортировки
   
+  set sortcmd "lsort_MIN_to_LEFT"
+
+  set ret [lsort -command $sortcmd $Orign] 
+  ai_print $ret $sortcmd
+    
+
+  set sortcmd "lsort_MAX_to_LEFT"
+
+  set ret [lsort -command $sortcmd $Orign] 
+  ai_print $ret $sortcmd
+    
+  #----------------------------------------------------------------------
+  puts ""
+  #----------------------------------------------------------------------
+
   # функция признак-сортировки возвращает TRUE, если положение двух элементов
   # нас устраивает (сдева меньше или слева больше)
 
-  set LT [qsort_AF $Orign "LT"] ;# меньшие налево
-  ai_print $LT 
-    
-  set GT [qsort_AF $Orign "GT"] ;# большие налево
-  ai_print $GT 
-    
-  puts ""
+  #set sortcmd "LT"
+  set sortcmd "qsort_MIN_to_LEFT"
 
-  # обратные функции драйвра сортировки
-  
-  set ret [lsort -command "LT_lsort" $Orign] 
-  ai_print $ret 
+  set ret [qsort_AF $Orign $sortcmd] ;# меньшие налево
+  ai_print $ret $sortcmd
     
-  set ret [lsort -command "GT_lsort" $Orign] 
-  ai_print $ret 
+  #set sortcmd "GT"
+  set sortcmd "qsort_MAX_to_LEFT"
+
+  set ret [qsort_AF $Orign $sortcmd] ;# большие налево
+  ai_print $ret $sortcmd 
     
+  #----------------------------------------------------------------------
 
   puts ""
   
@@ -77,16 +94,16 @@ proc sort_main {} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc  SORT-TABS {} {
+# proc  SORT-TABS {} {
 
-  source "f_sort.tl"
+#   #source "f_sort.tl"
 
-  global argc argv
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+#   global argc argv
+#   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
-  #   (run_cdr_argus (first argus) argus "TEST ..")
+#   #   (run_cdr_argus (first argus) argus "TEST ..")
 
-}
+# }
 #-------------------------------------------------------------------------------
 # f~.tl,TOUR,tour_main
 #-------------------------------------------------------------------------------

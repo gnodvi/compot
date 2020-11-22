@@ -25,8 +25,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-//#include "gnuplot_i.h"
-//#include "b_gnup.h"
+
 #include "p_gnup.h"
 
 /*-----------------------------------------------------------------------------*/

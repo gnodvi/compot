@@ -398,6 +398,8 @@ proc _01_test {} {
   set test            [dict_parse $argv "-test"  0]
   set population_size [dict_parse $argv "-lpop" 10]
   set max_generations [dict_parse $argv "-nums" 10]
+
+  set ::target_text   [dict_parse $argv "-list" $::target_text]
   set len_chromo      [dict_parse $argv "-size" [LTARGET]] 
  
   puts ""
@@ -417,9 +419,11 @@ proc _01_test {} {
   }
   if {$test == 1} {
 
-    set ::ITEMS_LIST 1
+    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
     set fitness_func   "FS_fitness_list"
-    #set ::sort_driver  "GT_lsort" ;## большие влево?
+
+    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево?? 
+    # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
     set fit_target     0
 
   } 
@@ -447,8 +451,8 @@ proc _01_test {} {
 
     # нулевая цель
 
-    set ::sort_driver  "GT_lsort" ;## большие влево (из минуса к 0)
-    SET $pop "sort_driver" $::sort_driver
+    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
+    #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
     #set ::is_print 2.2
 
     # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
@@ -1762,7 +1766,7 @@ proc make_bots_list {argv} {
 
   set task [task_create "FS_fitness_list"]
 
-  set sort_driver  "GT_lsort" 
+  set sort_driver  "MAX_to_LEFT" 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   set obj \

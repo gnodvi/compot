@@ -1502,10 +1502,10 @@ proc ANTS_gp {} {
     quotes_proc  $quotes_proc
 
 
-
   run_gp_evolution  "make_rand_prgpop_unikum" \
                         $individuals $len \
-                        antsFitness "LT_lsort"  0.1  $nums   1  0 ;# not game print
+                        antsFitness "MIN_to_LEFT"  0.1  $nums   1  0 ;# not game print
+#                        antsFitness "LT_lsort"  0.1  $nums   1  0 ;# not game print
 
   return
 }
@@ -1544,7 +1544,8 @@ proc ANTS_gp_new {} {
 
   run_gp_evolution  "make_rand_prgpop_unikum" \
                         $individuals $len \
-                        antsFitness20 "LT_lsort" 0.1  $nums 1  game_print
+                        antsFitness20 "MIN_to_LEFT" 0.1  $nums 1  game_print
+#                        antsFitness20 "LT_lsort" 0.1  $nums 1  game_print
   
 }
 # ------------------------------------------------------------------------------
