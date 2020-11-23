@@ -458,57 +458,6 @@ proc TEST_pp {} {
 # 
 # 
 #-------------------------------------------------------------------------------
-#
-# Типичный пример. Выявлем (раскручиваем) программу, вычисляющую квадрат числа.
-# Лучшая програма :  "DUP *"
-# Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
-#
-#-------------------------------------------------------------------------------
-#proc squareFitness {prg_11 {prog_11 @}} {}
-proc squareFitness {prg_11 args} {
-
-  set prog_11 @
-
-
-  set fitness 0
-
-  foreach i {1 2 3 4 5} o {1 4 9 16 25} {
-
-    set result [getresult_prg_val_11  $prg_11 $i $prog_11]
-
-
-    if {$result eq {}}  {
-
-      # здесь может быть просто списко или символ-строка, а не число!
-      # 
-      #puts "NOT run? NOT result !!"
-      #exit
-      incr fitness 50 ;# при каждой ошибке добавляем дельту
-
-    } elseif {![string is integer $result]} {
-
-      incr fitness 50 ;# при каждой ошибке добавляем дельту
-
-    } else {
-
-      set delta [expr {abs($o-$result)}] ;# !!!!!!!!! o {1 4 9 16 25}
-
-      if {$delta > 1000} {
-        # anti overflow ???
-        set delta 1000
-      }
-      incr fitness $delta
-    }
-  }
-    
-  #return [expr {$fitness + [llength $prg_11]}]
-  #
-  # давай пока длину не учитывать ?!
-  # 
-  return $fitness
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc v1_get_result_from_not_arg {prg_11 {prog @}} {
 
@@ -677,8 +626,6 @@ proc fitness_00 {joy_prg} {
   return $fitness
 
 }
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -856,62 +803,55 @@ proc NEXT_01 {} {
   return
 }
 #-------------------------------------------------------------------------------
-proc TEST_NEW {} {
+#-------------------------------------------------------------------------------
+#
+# Типичный пример. Выявлем (раскручиваем) программу, вычисляющую квадрат числа.
+# Лучшая програма :  "DUP *"
+# Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
+#
+#-------------------------------------------------------------------------------
+#proc squareFitness {prg_11 {prog_11 @}} {}
+proc squareFitness {prg_11 args} {
+
+  set prog_11 @
 
 
-  # ищем функцию возведения в квадрат 
+  set fitness 0
+
+  foreach i {1 2 3 4 5} o {1 4 9 16 25} {
+
+    set result [getresult_prg_val_11  $prg_11 $i $prog_11]
+
+
+    if {$result eq {}}  {
+
+      # здесь может быть просто списко или символ-строка, а не число!
+      # 
+      #puts "NOT run? NOT result !!"
+      #exit
+      incr fitness 50 ;# при каждой ошибке добавляем дельту
+
+    } elseif {![string is integer $result]} {
+
+      incr fitness 50 ;# при каждой ошибке добавляем дельту
+
+    } else {
+
+      set delta [expr {abs($o-$result)}] ;# !!!!!!!!! o {1 4 9 16 25}
+
+      if {$delta > 1000} {
+        # anti overflow ???
+        set delta 1000
+      }
+      incr fitness $delta
+    }
+  }
+    
+  #return [expr {$fitness + [llength $prg_11]}]
+  #
+  # давай пока длину не учитывать ?!
   # 
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  incr ::ind0
-
-  # берем данные из командной строки 
-  # 
-  set individuals 10 ;# колич-во ботов
-  set len          6 ;# макс. длина ботов (при начальном старте?)
-  set nums        10 ;# шагов эволюции  
-
-  #parse_opt_seed_3_new  individuals len nums
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-  set is_print 1
-  
-  # из чего и как делаем проги (надо бы сделать отдельным "классом" в JOY)
-  # 
-
-  #set ::gp_list     "+ - * / dup"  
-  set ::gp_list     "+ - * dup i nop" 
-
-  #set randpop_proc "make_rand_prgpop_unikum"
-  set randpop_proc "make_rand_prgpop"
-  
-  #------------------------------------------
-  #set ::randinstr   randinstr_SIMP 
-
-  #set ::quotes_proc "make_quotes_BE"
-  #set ::quotes_proc "make_quotes_TCL"
-  #set ::quotes_proc  "quotes_proc_NULL" 
-  #------------------------------------------
-
-
-  set pb [mp_create]
-
-  mp_init $pb \
-    randinstr    "randinstr_SIMP" \
-    quotes_proc  "make_quotes_TCL"
-
-
-  set itemspop_NEW [make_itemspop  $randpop_proc \
-                      $individuals $len \
-                      $is_print]
-
-  puts ""
-  itemspop_print $itemspop_NEW
-  puts ""
-
-  return
+  return $fitness
 }
 #-------------------------------------------------------------------------------
 proc TEST_xx {} {
@@ -921,32 +861,50 @@ proc TEST_xx {} {
   # 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  incr ::ind0
 
-  # берем данные из командной строки 
-  # 
-  #set individuals ;# колич-во ботов
-  #set len         ;# макс. длина ботов (при начальном старте?)
-  #set nums        ;# шагов эволюции  
+  global argc argv argv0
+  set argv [lrange $argv 2 end]
 
-  parse_opt_seed_3_new  individuals len nums
+  puts stderr "argv = $argv"
+  #exit
+
+  set seedflag    [dict_parse $argv "-seed" 2013]
+  set individuals [dict_parse $argv "-lpop" 10]  ;# колич-во ботов 
+  set len         [dict_parse $argv "-size"  6]  ;# макс. длина ботов (при начальном старте?)
+  set nums        [dict_parse $argv "-nums" 10]  ;# шагов эволюции 
+
+  set test        [dict_parse $argv "-test"  0]
+
+  if {$seedflag == "@"} {
+    mysrand 111111 
+  } else {
+    mysrand $seedflag 
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-  set is_print 1
+  if {$test == 0} {
   
-  # из чего и как делаем проги (надо бы сделать отдельным "классом" в JOY)
-  # 
+    set is_print 1
+    
+    # из чего и как делаем проги (надо бы сделать отдельным "классом" в JOY)
+    # 
+    
+    #set ::gp_list     "+ - * / dup"  
+    set ::gp_list     "+ - * dup i nop" 
+    
+  } 
+  if {$test == 1} {
 
-  #set ::gp_list     "+ - * / dup"  
-  set ::gp_list     "+ - * dup i nop" 
+    set is_print   3
+    set ::gp_list  "dup * nop" 
 
+  }
   #------------------------------------------
   #set ::randinstr   randinstr_SIMP 
 
+  #set ::quotes_proc "make_quotes_BE"
   #set ::quotes_proc "make_quotes_TCL"
-  #------------------------------------------
+  #set ::quotes_proc  "quotes_proc_NULL" 
 
   #set randpop_proc "make_rand_prgpop_unikum"
   set rand_prgpop_proc "make_rand_prgpop"
@@ -963,7 +921,6 @@ proc TEST_xx {} {
   run_gp_evolution  $rand_prgpop_proc \
                        $individuals $len \
                        squareFitness "MIN_to_LEFT" 0.1  $nums $is_print
-#                       squareFitness "LT_lsort" 0.1  $nums $is_print
   
   return
 }

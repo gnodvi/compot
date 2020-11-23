@@ -6210,7 +6210,7 @@ dict_class_create BOT {} {
 proc calc_BOT {obj args} {
     
   set task            [dict_parse $args "-task"  [GET $obj "task"]] 
-  set max_generations [dict_parse $args "-steps"] 
+  set max_generations [dict_parse $args "-nums"] 
   
   set  pop [GET $obj "pop"]
   
@@ -6273,7 +6273,7 @@ proc calc_BOT33  {obj args} {
   set task [dict_parse $args "-task" [GET $obj "task"]] 
   
   if {! [info exists max_generations]} {
-    set max_generations [dict_parse $args "-steps" ] 
+    set max_generations [dict_parse $args "-nums" ] 
   }
   
   set  pop [GET $obj "pop"]
@@ -6368,7 +6368,7 @@ proc run_gp_evolution {randpop_proc
   # и  выпоняем эволюционный поиск 
 
   RUN1 "calc_" $obj \
-    -steps           $max_generations \
+    -nums           $max_generations \
     -task            $task \
     -is_print        $is_print        \
     -game_print_proc $game_print_proc \

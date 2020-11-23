@@ -388,18 +388,31 @@ dict_class_create BOT01 {BOT} {
 
   SET $obj pop $pop
 
+  SET $obj "test" [dict_parse $args "-test" 0]
 }
 #---------------------------------------------------------
 proc calc_BOT01 {obj args} {
     
+  set pop [GET $obj pop]
+   
+  SET $pop  seed "maintest_seed_proc" ;# ??
+  
+  #------------------
+
   set task            [dict_parse $args "-task"  [GET $obj "task"]] 
-  set max_generations [dict_parse $args "-steps"] 
+  set max_generations [dict_parse $args "-nums"  10] 
+  set test            [dict_parse $args "-test"  [GET $obj "test"]]
+
+  puts stderr ""
+  puts stderr "calc_BOT01: args = $args" 
+  puts stderr "calc_BOT01: nums  = $max_generations"  ;# шагов эволюции  
+  puts stderr "calc_BOT01: test  = $test"  
+  #task_print $task  
+  puts stderr ""
   
   set  pop [GET $obj "pop"]
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-
-  set test 0 
 
   if {$test == 1} { 
 
@@ -425,10 +438,36 @@ proc calc_BOT01 {obj args} {
   return $ret
 }
 # ------------------------------------------------------------------------------
+proc make_task_for_BOT01 {test} {
+
+
+  if {$test == 0} {
+    
+    set fitness_func  "FS_fitness"
+    set fit_target    $::fit_target
+  }
+  if {$test == 1} {
+    
+    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
+    set fitness_func   "FS_fitness_list"
+    
+    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево?? 
+    # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
+    set fit_target     0
+    
+  } 
+  
+  set task [task_create $fitness_func -fit_target $fit_target -fit_error 0.01 ]  
+  
+  return $task
+}
+# ------------------------------------------------------------------------------
 proc _01_test {} {
 
   global argc argv argv0
   set argv [lrange $argv 1 end]
+
+  puts stderr "argv = $argv"
 
   set test            [dict_parse $argv "-test"  0]
   set population_size [dict_parse $argv "-lpop" 10]
@@ -446,82 +485,23 @@ proc _01_test {} {
   set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
   test_random_seed 0 ;#$i
   
+  #---------------------------------------------------------------------
 
-  set seed_proc     "maintest_seed_proc"
-
-  if {$test == 0} {
-    
-    set fitness_func  "FS_fitness"
-    set fit_target    $::fit_target
-  }
-  if {$test == 1} {
-
-    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
-    set fitness_func   "FS_fitness_list"
-
-    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево?? 
-    # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
-    set fit_target     0
-
-  } 
-
-  set task [task_create $fitness_func -fit_target $fit_target -fit_error 0.01 ]  
+  set task [make_task_for_BOT01 $test]
   
   set obj \
-    [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task] 
+    [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task -test $test] 
 
+  set ret [calc_BOT01 $obj {*}$argv]
 
-
-  set pop [GET $obj pop]
-   
-  SET $pop  seed $seed_proc   
-  
-  #---------------------------------------------------------------------
-  if {1} {
-
-    # ga_evolution  $task $pop $max_generations   
-    #
-    # раскроем подробнее
-    #-------------------------------------------------------------------
-    
-    # Score and sort the initial population members.
-    #  
-    pop_initial_score_and_sort  $pop $task
-    
-    if {$test == 1} { 
-      
-      # нулевая цель
-      
-      #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
-      #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
-      #set ::is_print 2.2
-      
-      # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
-      # 
-      SET $pop  select_one   "ga_select_one_bestof2"
-      SET $pop  select_two   "ga_select_two_bestof2"
-    }
-    
-    if {$::is_print > 1} {
-      pop_print $pop
-      puts ""
-    }
-    
-    set ret [ga_evolution_main  $task $pop $max_generations]
-     
-  #---------------------------------------------------------------------
-  } else {
-  #---------------------------------------------------------------------
-
-
-    set ret [calc_BOT01 $obj {*}$argv]
-  }
   #---------------------------------------------------------------------
   
   do_print_stop_criteria  $ret $max_generations
 
   puts ""
   
+  set pop [GET $obj pop]
+   
   do_print_best $pop ""
   
 
@@ -740,7 +720,7 @@ dict_class_create  BOT03 {BOT} {
 proc calc_BOT03 {obj args} {
 
   set task            [dict_parse $args "-task" [GET $obj task]] 
-  set max_generations [dict_parse $args "-steps"] 
+  set max_generations [dict_parse $args "-nums"] 
   
   set  pop [GET $obj pop]
   
@@ -946,7 +926,7 @@ proc  calc_BOT04  {obj args} {
   
   
   set task            [dict_parse $args "-task" [GET $obj task]] 
-  set max_generations [dict_parse $args "-steps"] 
+  set max_generations [dict_parse $args "-nums"] 
   
   set  pop [GET $obj pop]
   
@@ -1003,7 +983,7 @@ proc _04_test {} \
 
   set pop [GET $obj pop]
 
-  RUN1 "calc_" $obj -steps $max_generations -task $task 
+  RUN1 "calc_" $obj -nums $max_generations -task $task 
 
   #-----------------------------------------------------------------
 
@@ -1084,7 +1064,7 @@ proc  calc_BOT05 {obj args} {
 
   
   set task            [dict_parse $args "-task" [GET $obj task]] 
-  set max_generations [dict_parse $args "-steps"] 
+  set max_generations [dict_parse $args "-nums"] 
   
   set pops [GET $obj pops]
   
@@ -1172,7 +1152,7 @@ proc _05_test {} \
 
   set pops [GET $obj pops]
 
-  RUN1 "calc_" $obj -steps $max_generations -task $task
+  RUN1 "calc_" $obj -nums $max_generations -task $task
 
   #----------------------------------------------------------------------
 
@@ -1252,7 +1232,7 @@ proc calc_BOT06 {obj args} {
 
   
   set task            [dict_parse $args "-task" [GET $obj task]] 
-  set max_generations [dict_parse $args "-steps"] 
+  set max_generations [dict_parse $args "-nums"] 
   
   set pop  [GET $obj pop]
   
@@ -1299,7 +1279,7 @@ proc _dc_test {} \
 
     set pop [GET $obj pop]
 
-    RUN1 "calc_" $obj -steps $max_generations -task $task
+    RUN1 "calc_" $obj -nums $max_generations -task $task
 
     #----------------------------------------------------------
 
@@ -1414,7 +1394,7 @@ proc calc_BOT79 {obj args} {
   
   
   set task             [dict_parse $args "-task" [GET $obj task]] 
-  set max_generations1 [dict_parse $args "-steps"] 
+  set max_generations1 [dict_parse $args "-nums"] 
   
   set popd [GET $obj pop]
   set name [GET $obj name]
@@ -1516,13 +1496,13 @@ proc eschemes {} \
   #----------------------------------------------------------
 
   if {! $::is_print} {
-    RUN1 "calc_" $obj7 -task $task -steps $max_generations1
+    RUN1 "calc_" $obj7 -task $task -nums $max_generations1
   }
   
-    RUN1 "calc_" $obj8 -task $task -steps $max_generations2
+    RUN1 "calc_" $obj8 -task $task -nums $max_generations2
   
   if {! $::is_print} {
-    RUN1 "calc_" $obj9 -task $task -steps $max_generations3
+    RUN1 "calc_" $obj9 -task $task -nums $max_generations3
   }
   
   
@@ -1699,7 +1679,7 @@ proc maintest_run {make_bots_proc argv} {
         #
         # task уже должен быть задан для этого конкретного бота !!
 
-        RUN1 "calc_" $obj -steps $max_generations is_print 0
+        RUN1 "calc_" $obj -nums $max_generations is_print 0
         
         # забираем результаты
         # 
@@ -1789,6 +1769,21 @@ proc make_bots_list {argv} {
     #set ::is_print 1
 
     make_bots_standart  $bots $lpop $size $task
+
+  #-------------------------------------------------------------
+  } \
+  elseif {$mode == "T"} {
+  #-------------------------------------------------------------
+
+    srandom_set 2019 ;# постоянный выбор текстовой строки
+    
+    set test 0
+    set task [make_task_for_BOT01 $test]
+    dict_set $bots "bot01_test0" [BOT01 new  -lpop $lpop -lgen $size -task $task -test $test]
+
+    set test 1
+    set task [make_task_for_BOT01 $test]
+    dict_set $bots "bot01_test1" [BOT01 new  -lpop $lpop -lgen $size -task $task -test $test]
 
   #-------------------------------------------------------------
   } \
