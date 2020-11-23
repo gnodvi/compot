@@ -389,6 +389,41 @@ dict_class_create BOT01 {BOT} {
   SET $obj pop $pop
 
 }
+#---------------------------------------------------------
+proc calc_BOT01 {obj args} {
+    
+  set task            [dict_parse $args "-task"  [GET $obj "task"]] 
+  set max_generations [dict_parse $args "-steps"] 
+  
+  set  pop [GET $obj "pop"]
+  
+  pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+
+  set test 0 
+
+  if {$test == 1} { 
+
+    # нулевая цель
+
+    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
+    #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
+    #set ::is_print 2.2
+
+    # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
+    # 
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+  }
+  
+  if {$::is_print > 1} {
+    pop_print $pop
+    puts ""
+  }
+
+  set ret [ga_evolution_main  $task $pop $max_generations]
+  
+  return $ret
+}
 # ------------------------------------------------------------------------------
 proc _01_test {} {
 
@@ -409,6 +444,8 @@ proc _01_test {} {
   puts ""
 
   set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
+  test_random_seed 0 ;#$i
+  
 
   set seed_proc     "maintest_seed_proc"
 
@@ -428,47 +465,59 @@ proc _01_test {} {
 
   } 
 
-  test_random_seed 0 ;#$i
-  
   set task [task_create $fitness_func -fit_target $fit_target -fit_error 0.01 ]  
   
   set obj \
     [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task] 
 
+
+
   set pop [GET $obj pop]
    
   SET $pop  seed $seed_proc   
   
-  #-------------------------------------------------------------------
-  #ga_evolution  $task $pop $max_generations   
-  
+  #---------------------------------------------------------------------
+  if {1} {
 
-  # Score and sort the initial population members.
-  #  
-  pop_initial_score_and_sort  $pop $task
+    # ga_evolution  $task $pop $max_generations   
+    #
+    # раскроем подробнее
+    #-------------------------------------------------------------------
+    
+    # Score and sort the initial population members.
+    #  
+    pop_initial_score_and_sort  $pop $task
+    
+    if {$test == 1} { 
+      
+      # нулевая цель
+      
+      #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
+      #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
+      #set ::is_print 2.2
+      
+      # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
+      # 
+      SET $pop  select_one   "ga_select_one_bestof2"
+      SET $pop  select_two   "ga_select_two_bestof2"
+    }
+    
+    if {$::is_print > 1} {
+      pop_print $pop
+      puts ""
+    }
+    
+    set ret [ga_evolution_main  $task $pop $max_generations]
+     
+  #---------------------------------------------------------------------
+  } else {
+  #---------------------------------------------------------------------
 
-  if {$test == 1} { 
 
-    # нулевая цель
-
-    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
-    #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
-    #set ::is_print 2.2
-
-    # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
-    # 
-    SET $pop  select_one   "ga_select_one_bestof2"
-    SET $pop  select_two   "ga_select_two_bestof2"
+    set ret [calc_BOT01 $obj {*}$argv]
   }
-
-  pop_print $pop
-  puts ""
-  #exit
-
-  set ret [ga_evolution_main  $task $pop $max_generations]
-  # 
-  #-------------------------------------------------------------------
-
+  #---------------------------------------------------------------------
+  
   do_print_stop_criteria  $ret $max_generations
 
   puts ""

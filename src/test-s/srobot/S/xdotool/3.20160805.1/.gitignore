@@ -1,5 +1,9 @@
 
 /A
 /R
-
+make*
+*.so.*
+xdo_version.h
+xdotool
+xdotool.1
 
