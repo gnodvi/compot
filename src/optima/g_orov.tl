@@ -362,9 +362,12 @@ proc calc_fitness_from_points {points edges} {
     #    ;(incf mult_err (* err err)) ; квадратичная, с послед. корнем?
   }
   
-  #  ;;-----------------------------------------------------
-  
+  #  -----------------------------------------------------
+  # т.е. чем больше тем хуже или "чем меньше тем лучше"
+  # 
   set fitness [expr {- $summ_err}]
+  #
+  # а теперь, "чем больше тем лучше" , стремясь к нулю !
 
   #   ;;
   #   ;(setf fitness (- (sqrt mult_err))) ;- какая лучше, вроде особо нет разницы
@@ -586,7 +589,7 @@ proc pntssolver_do {population_size max_generations
   
   
   set  gen_hook_proc  "test_generation_callback"
-  set  evaluate_proc  "_test_score"
+  #set  evaluate_proc  "_test_score"
   set  initseed_proc  "_test_seed"
   
   #   (setf pop (ga_genesis_double         
@@ -609,7 +612,7 @@ proc pntssolver_do {population_size max_generations
   #              ))
   
   
-  set task [task_create  $evaluate_proc]
+  set task [task_create  "_test_score" -fit_tobest "MAX"]
 
   set pop [ga_genesis_main   \
 	   $task \

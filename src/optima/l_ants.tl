@@ -1388,8 +1388,11 @@ proc antsFitness {src  {prog @}} {
   # это можно, вот только как всю прогу пееркодировать из 22 в 11 ?
   # 
  
-  set fitness [run_ants_game  $src  "arr_make_2" $prog]
- 
+  set fitness [run_ants_game  $src  "arr_make_2" $prog] 
+
+  # fit_tobest = MIN 
+  # fit_target = 0
+
   return $fitness
 }
 #---------------------------------------------------------------------------
@@ -1501,11 +1504,11 @@ proc ANTS_gp {} {
     randinstr    "randinstr_SIMP" \
     quotes_proc  $quotes_proc
 
+  set ::sort_driver "MIN_to_LEFT"    
 
-  run_gp_evolution  "make_rand_prgpop_unikum" \
+  run_gp_evolution  0 "make_rand_prgpop_unikum" \
                         $individuals $len \
-                        antsFitness "MIN_to_LEFT"  0.1  $nums   1  0 ;# not game print
-#                        antsFitness "LT_lsort"  0.1  $nums   1  0 ;# not game print
+                        antsFitness "MIN"  0.1  $nums   1  0 ;# not game print
 
   return
 }
@@ -1519,6 +1522,8 @@ proc antsFitness20 {src  {prog @}} {
 
   set fitness [run_ants_game  $src  "arr_make_20" $prog $n]
  
+  # fit_tobest = MIN 
+  # fit_target = 0
 
   return $fitness
 }
@@ -1542,10 +1547,11 @@ proc ANTS_gp_new {} {
     quotes_proc  "quotes_proc_NULL"
 
 
-  run_gp_evolution  "make_rand_prgpop_unikum" \
+  set ::sort_driver "MIN_to_LEFT"    
+
+  run_gp_evolution  0 "make_rand_prgpop_unikum" \
                         $individuals $len \
-                        antsFitness20 "MIN_to_LEFT" 0.1  $nums 1  game_print
-#                        antsFitness20 "LT_lsort" 0.1  $nums 1  game_print
+                        antsFitness20 "MIN" 0.1  $nums 1  game_print
   
 }
 # ------------------------------------------------------------------------------

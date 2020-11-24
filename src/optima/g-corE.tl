@@ -15,10 +15,7 @@ set ::NEWPOP 0
 set ::GA_BOLTZMANN_FACTOR	1.38066e-23
 
 
-#set ::sort_driver "item_MAX_to_LEFT" ;# функция признак-сортировки
-set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-
-set ::ISREVERSE 0 
+#set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
 
 set ::ISPRINT 0
 
@@ -416,7 +413,7 @@ dict_class_create POP {} {
   ch_form          "%s "  ;# _"%02d"     
   generation_hook  ""  ;# _GAgeneration_hook_generation_hook 
 
-  sort_driver "" 
+  #sort_driver "" 
 
   itemslist        ""  ;# _ 
   generation       ""  ;# _ 
@@ -438,8 +435,6 @@ dict_class_create POP {} {
   SET $obj best            {}     
 }
 
-  #set ::sort_driver "item_MAX_to_LEFT" ;# функция признак-сортировки
-    
 #-------------------------------------------------------------------------------
 #   Population handling functions.
 
@@ -961,7 +956,7 @@ proc pop_initial_score_and_sort {pop task} {
   
   pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
 
-  pop_sorting  $pop
+  pop_sorting  $pop [make_sortdriver_fromtask $task]
   
   return
 }
@@ -1036,7 +1031,7 @@ proc ga_population_score_and_sort {pop task} \
   # а теперь сортируем !!! !!! !!! !!!
   # 
 
-  pop_sorting  $pop
+  pop_sorting  $pop [make_sortdriver_fromtask $task]
   
   return $::true
 }
@@ -2366,12 +2361,12 @@ proc item_qsort_MIN_to_LEFT {a b} {
 # 		it works.
 
 #-------------------------------------------------------------------------------
-proc pop_sorting {pop {sort_driver ""}} {
+proc pop_sorting {pop sort_driver} {
 
-  if {$sort_driver == ""} {
-    set sort_driver $::sort_driver
-    #set sort_driver [GET $pop sort_driver]
-  }
+#   if {$sort_driver == ""} {
+#     set sort_driver $::sort_driver
+#     #set sort_driver [GET $pop sort_driver]
+#   }
 
 
   if {[get_pop_size $pop] == 0} {
@@ -2451,6 +2446,7 @@ proc task_create {fitness_proc  args} {
 
   SET $t "fitness_proc" $fitness_proc
 
+  SET $t "fit_tobest" "MIN" ;# т.е. чем меьше, тем лучше 
   SET $t "fit_target" 0
   SET $t "fit_error"  0.01
 
@@ -5337,7 +5333,7 @@ proc crossover_mutation_adapt_survival {pop task} {
   # сортируем всех челнов популяции по фитнесу
   # 
  
-  pop_sorting $pop
+  pop_sorting $pop [make_sortdriver_fromtask $task]
 
   #-----------------------------------------------------------------
   # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
@@ -5399,9 +5395,10 @@ proc gaul_migration_by_pairs {num_pops pops} {
 #   parameters:	population *pop
 #   return:	none
 # ------------------------------------------------------------------------------
-proc gaul_migration {num_pops pops} {
+proc gaul_migration {task num_pops pops} {
 
-  
+  set sort_driver [make_sortdriver_fromtask $task]
+
   if {$::is_print} {
     puts "gaul_migration : "
     puts ""
@@ -5417,7 +5414,7 @@ proc gaul_migration {num_pops pops} {
   
   for {set i 0} {$i < $num_pops} {incr i} \
   {
-    pop_sorting [lindex $pops $i];
+    pop_sorting [lindex $pops $i] $sort_driver
   }
 
   return
@@ -5551,7 +5548,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
     # // Migration step.
     # //
-    gaul_migration  $num_pops $pops
+    gaul_migration $task  $num_pops $pops
     
     
     for {set i 0} {$i < $num_pops} {incr i} {
@@ -5994,14 +5991,19 @@ proc print_best {i task  best_item is_print game_print_proc} {
   #return $best_item
 }
 #-------------------------------------------------------------------------------
-proc lsort_pop_command {a b} {
+proc lsort_pop_command {sort_driver a b} {
+
+  #puts "lsort_pop_command: sort_driver= $sort_driver"
 
   set a_fit [item_get_fitn  $a]
   set b_fit [item_get_fitn  $b]
 
   # аоскольку используем функцияю lsort, присоединяем к ней типв "MIN_to_LEFT"
   # 
-  set sort_driver lsort_$::sort_driver
+  set sort_driver lsort_$sort_driver
+
+  #set sort_driver lsort_$::sort_driver
+  # как отказаться от глобальной переменной? а вот так !! передали доп. параметр!!
 
   return [$sort_driver $a_fit $b_fit] ; # т.е МЕНЬШИЕ будут слева в списке 
 }
@@ -6119,22 +6121,20 @@ proc gp_evolution_main {task  pop max_generations
     set itemslist   [GET $pop  "itemslist"] 
     #----------------------------------------------
 
-    # сортируем особей по фитнесу (низкий фитнес идет влево == лучше)
-    #  
+    # сортируем особей по фитнесу - лучший  фитнес идет куда ранее задано 
+    #                               в ::sort_driver ?
+    # как отказаться от этой глобальной переменной ?
 
-    if {1} {
-      set itemslist_sorted [lsort -command "lsort_pop_command" $itemslist]
+    set sort_driver [make_sortdriver_fromtask $task]
+    #set sort_driver $::sort_driver
+
+    set sortcmd [list lsort_pop_command $sort_driver]
+
+    set itemslist_sorted [lsort -command $sortcmd $itemslist]
     
-      set best_item [lindex $itemslist_sorted 0]
+    set best_item [lindex $itemslist_sorted 0]
     
-      SET $pop "itemslist" $itemslist_sorted
-
-    } else {
-      
-      pop_sorting $pop "lsort_pop_command"
-      set best_item [GET $pop best]
-
-    }
+    SET $pop "itemslist" $itemslist_sorted
 
     if {$is_print > 1} {
       gp_pop_all_print     $pop ;# $itemslist 
@@ -6244,21 +6244,20 @@ dict_class_create BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
-  set task [task_create "FS_fitness_list"]
+  set task [task_create "FS_fitness_list" -fit_tobest "MAX" ]
 
   #set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   #-------------------------
-
-  #set task [dict_parse $args "-task" [task_create  "FS_fitness_list"]] 
   
   SET $obj "task" $task  
 
   set pop [POP new  {*}$args]
 
-  set sort_driver [dict_parse $args "-sort_driver"] 
-  set      ::sort_driver $sort_driver
-  SET $pop "sort_driver" $sort_driver
+  #set sort_driver [dict_parse $args "-sort_driver"] 
+
+  #set      ::sort_driver $sort_driver
+  #SET $pop "sort_driver" $sort_driver
   
   #SET $pop  ch_form "%s" 
 
@@ -6342,26 +6341,45 @@ proc bot33_create {args} {
   return $obj
 }
 #-------------------------------------------------------------------------------
-proc run_gp_evolution {randpop_proc 
+proc make_sortdriver_fromtask {task} {
+
+  set tobest [GET $task "fit_tobest"]
+
+  set sort_driver "${tobest}_to_LEFT" ;# лучшие в популяции жмем влево
+
+  return $sort_driver
+}
+#-------------------------------------------------------------------------------
+proc run_gp_evolution {seed randpop_proc 
                        population_size  len_chromosomes 
-                       fitnessfunc  sort_driver
+                       fitnessfunc  fit_tobest 
                        mutprob 
                        max_generations   is_print 
                        {game_print_proc 0} 
                      } {
 
 
-  random_seed 0 ;# ?? mysrand 2013
+  #-------------------------------------
+  if {$seed == "@"} {
 
+    set seed [clock seconds]
+    #exit
+  }
   #-------------------------------------
 
-  set task [task_create $fitnessfunc]
+  random_seed $seed ;# 
+
+  set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
+
+  #set sort_driver [make_sortdriver_fromtask $task]
+
+  #set ::sort_driver $sort_driver    
 
   #-------------------------------------
 
   set obj \
     [BOT33 new  -lpop $population_size -lgen $len_chromosomes \
-       -sort_driver $sort_driver  -task $task]
+       -task $task]
 
     
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
@@ -6441,12 +6459,16 @@ proc FS_fitness_list {list_calc task} {
   # и еще добавляем разницу в длинах
   # 
   incr fit [expr {abs ($len_calc - $len_true)}] 
-  
-  # но попробуем возвращать отрицательное значение, чтоб удовлетворять
-  # стандарту : лучшие слева, с  большим фитнесом (пусть и отрицательым )
+
+  # т.е. чем больше - тем хуже!  
+  # но если возвращать отрицательное значение
   
   set fit [expr - $fit]
   
+  # и тогда, чем меньше - тем хуже, т.е. чем больше, тем лучше:
+
+  # fit_tobest = MAX 
+  # fit_target = 0
 
   return $fit
 }
@@ -6544,8 +6566,8 @@ proc _gp_test {} {
   set  fitnessfunc  "FS_fitness_list"
   #set  fitnessfunc  "FS_fitness_list_NEW"
 
-  #set  sort_driver  "GT_lsort" ;## большие влево?
-  set  sort_driver  "MAX_to_LEFT" ;## большие влево?
+  #set  sort_driver  "MAX_to_LEFT" ;## большие влево?
+  #set ::sort_driver "MAX_to_LEFT"    
 
   # ------------------------------------------------
 
@@ -6564,9 +6586,9 @@ proc _gp_test {} {
   set is_print 1
   set ::gp_list   "1 2 3 4 5 6 7 8 9" ;#   
 
-  run_gp_evolution  $randpop_proc \
+  run_gp_evolution  0 $randpop_proc \
                     $bnums $bsize \
-    $fitnessfunc $sort_driver \
+    $fitnessfunc "MAX" \
     0.1  $steps  $is_print 0 ;# not game print
 
   # ------------------------------------------------

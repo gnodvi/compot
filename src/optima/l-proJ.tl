@@ -794,11 +794,9 @@ proc NEXT_01 {} {
   mp_init $pb 
 
 
-  #DebugOn
-  run_gp_evolution  $rand_prgpop_proc \
+  run_gp_evolution  0 $rand_prgpop_proc \
     $individuals $len \
-    fitness_01 "MIN_to_LEFT" 0.1  $nums $is_print 0 ;# not game print
-  #                       fitness_01 "LT_lsort" 0.1  $nums $is_print 0 ;# not game print
+    fitness_01 "MIN"  0.1  $nums $is_print 0 ;# not game print
   
   return
 }
@@ -868,18 +866,18 @@ proc TEST_xx {} {
   puts stderr "argv = $argv"
   #exit
 
-  set seedflag    [dict_parse $argv "-seed" 2013]
+  set seed        [dict_parse $argv "-seed" 2013]
   set individuals [dict_parse $argv "-lpop" 10]  ;# колич-во ботов 
   set len         [dict_parse $argv "-size"  6]  ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums" 10]  ;# шагов эволюции 
 
   set test        [dict_parse $argv "-test"  0]
 
-  if {$seedflag == "@"} {
-    mysrand 111111 
-  } else {
-    mysrand $seedflag 
-  }
+#   if {$seedflag == "@"} {
+#     mysrand 111111 
+#   } else {
+#     mysrand $seedflag 
+#   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   if {$test == 0} {
@@ -918,13 +916,14 @@ proc TEST_xx {} {
 
 
 
-  run_gp_evolution  $rand_prgpop_proc \
+  run_gp_evolution  $seed $rand_prgpop_proc \
                        $individuals $len \
-                       squareFitness "MIN_to_LEFT" 0.1  $nums $is_print
+                       squareFitness "MIN"  0.1  $nums $is_print
   
   return
 }
 #-------------------------------------------------------------------------------
+# l~.tl TEST TEST_xx  -seed @  -lpop 10 -size 6 -nums -1 -test 1
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 

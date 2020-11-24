@@ -100,6 +100,8 @@ proc FOURTH_POW {x} {
 #-------------------------------------------------------------------------------
 proc _test_score {this_entity  task} {
 
+  set isreverse [GET $task "isreverse"]
+
   #  double  A, B, C, D     /* Parameters. */
   
   set A [item_get_chromo_gen $this_entity  0] 
@@ -114,12 +116,17 @@ proc _test_score {this_entity  task} {
   set f4 [FOURTH_POW [expr      {0.71 - $D}]]
 
   set fitness [expr {abs($f1) + $f2 + abs($f3) + $f4 }]
+
+  # т.е чем больше - тем хуже !
+  # fit_tobest = MIN
  
-  if {! $::ISREVERSE} {
+  if {$isreverse} {
     set fitness [expr {-  $fitness}] 
+    #
+    # а теперь наоборот должно быть 
+    # fit_tobest = MAX
   }
  
-
   return $fitness
 }
 #-------------------------------------------------------------------------------
@@ -301,7 +308,8 @@ proc _test_analytical_gradient {pop this_entity params &grad} \
 # //		(0.75-A) + (0.95-B)^2 + (0.23-C)^3 + (0.71-D)^4 = 0
 # //------------------------------------------------------------------------------
 # void 
-proc test_ga {} {
+proc test_ga {task} {
+
 
   set population_size ""
   set max_generations ""
@@ -330,8 +338,6 @@ proc test_ga {} {
   #        NULL,			       /* GAreplace              replace     */
   #        NULL			               /* vpointer               User data   */
   #        );
-
-  set task [task_create "_test_score"]
 
   set pop [ga_genesis_main                  \
 	   $task \
@@ -383,18 +389,7 @@ proc test_ga {} {
   return
 }
 # ------------------------------------------------------------------------------
-proc test_ga_REV {} {
-
-  set ::ISREVERSE 1
-  set ::sort_driver "MIN_to_LEFT"
-  #set ::sort_driver "item_MIN_to_LEFT"
-
-  test_ga 
-
-}
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-proc main_sd2 {} \
+proc main_sd2 {task} \
 {
 
   #   population	*pop;			/* Population of solutions. */
@@ -431,8 +426,6 @@ proc main_sd2 {} \
   #        NULL		             /* vpointer	       User data            */
   #        );
   
-  set task [task_create "_test_score"]
-
   set pop [ga_genesis_main                  \
 	   $task \
            $population_size		      \
@@ -691,7 +684,7 @@ proc strategy_parse_and_print {s
 #-------------------------------------------------------------------------------
 #proc test_de {population_size max_generations} {}
 #-------------------------------------------------------------------------------
-proc test_de {strategy_list} {
+proc test_de {task strategy_list} {
 
   #   population	*pop;	/* Population of solutions.       */
   #   entity		*best;	/* Fittest entity.                */
@@ -738,8 +731,6 @@ proc test_de {strategy_list} {
     #     NULL,			   /* GAreplace              replace              */
     #     NULL			   /* vpointer               User data            */
     #     );
-
-    set task [task_create "_test_score"]
 
     set pop [ga_genesis_main         \
 	     $task \
@@ -858,11 +849,26 @@ proc main {} {
 
   #set ::is_my_random 0  ;# 1 - это было мое ..
 
-  if     {$mode == "ga"}       { test_ga } \
-  elseif {$mode == "ga_REV"}   { test_ga_REV } \
-  elseif {$mode == "de"}       { test_de  $strategy_full_origin } \
-  elseif {$mode == "de_test"}  { test_de  $strategy_test        } \
-  elseif {$mode == "sd2"}      { main_sd2 } \
+  set task [task_create "_test_score" -fit_tobest "MIN" -isreverse 0 -fit_error 0.001 ]
+  set ::sort_driver "MIN_to_LEFT"   
+
+  #-------------------------------------------------------
+
+  if     {$mode == "ga"}       { 
+    test_ga $task
+  } \
+  elseif {$mode == "ga_REV"}   { 
+    #
+    # а почему реверсивный дает лучше (другой) результат ???
+
+    set task [task_create "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
+    set ::sort_driver "MAX_to_LEFT"    
+    
+    test_ga $task
+  } \
+  elseif {$mode == "de"}       { test_de  $task $strategy_full_origin } \
+  elseif {$mode == "de_test"}  { test_de  $task $strategy_test        } \
+  elseif {$mode == "sd2"}      { main_sd2 $task } \
   else {
     puts ""
     puts "ERROR mode = $mode"

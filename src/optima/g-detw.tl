@@ -127,7 +127,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
   
     set generation [GET $pop "generation"]
     
-    pop_sorting  $pop
+    pop_sorting  $pop [make_sortdriver_fromtask $task]
     
     # --------------------------------------------------
 
@@ -223,7 +223,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
   
   #   // Ensure final ordering of population is correct.
   #   //
-  pop_sorting  $pop
+  pop_sorting  $pop [make_sortdriver_fromtask $task]
   
   
   return $generation

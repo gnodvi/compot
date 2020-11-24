@@ -220,6 +220,7 @@ set ::FS_fitness_max_integer 126 ;# ('~')
 #------------------------------------------------------------------------------
 proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
 
+
   set abs [expr {abs ($char_calc_decm - $char_true_decm)}]
 
   ##if {$char_calc_decm == $char_true_decm} {}
@@ -247,6 +248,9 @@ proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
   # подсчет идет в пространстве кодовых значений символов
   # 
   # добавляем признак, что уже ближе? холодно-теплее-горячо ?
+
+  # чем больше, тем лучше (приближаясь к некому значению)
+  # fit_tobest = MAX ?
   
   return $fit
 }
@@ -445,19 +449,21 @@ proc make_task_for_BOT01 {test} {
     
     set fitness_func  "FS_fitness"
     set fit_target    $::fit_target
+    #set ::sort_driver "MAX_to_LEFT"    
   }
+
   if {$test == 1} {
     
     set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
     set fitness_func   "FS_fitness_list"
+    #set ::sort_driver "MAX_to_LEFT"    
     
     #set ::sort_driver  "MAX_to_LEFT" ;## большие влево?? 
     # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
-    set fit_target     0
-    
+    set fit_target     0    
   } 
   
-  set task [task_create $fitness_func -fit_target $fit_target -fit_error 0.01 ]  
+  set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target -fit_error 0.01 ]  
   
   return $task
 }
@@ -758,8 +764,8 @@ proc _03_test {} \
 
   set len_chromo [LTARGET] 
   
-  #set task [task_create "FS_fitness"]
-  set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
+  set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.01 ]  
+  #set ::sort_driver "MAX_to_LEFT"    
 
   puts ""
   puts "bnums  = $population_size"  ;# колич-во ботов
@@ -964,9 +970,8 @@ proc _04_test {} \
 
   #-----------------------------------------------------------------
 
-  #set task [task_create "FS_fitness"]
-  
-  set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
+  set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.01 ]  
+  #set ::sort_driver "MAX_to_LEFT"    
 
   puts ""
   puts "bnums  = $population_size"  ;# колич-во ботов
@@ -1143,7 +1148,8 @@ proc _05_test {} \
 
   set len_chromo [LTARGET] 
   
-  set task [task_create "FS_fitness"]
+  set task [task_create "FS_fitness" -fit_tobest "MAX" ]
+  #set ::sort_driver "MAX_to_LEFT"    
   
   #----------------------------------------------------------------------
 
@@ -1269,7 +1275,8 @@ proc _dc_test {} \
     
     set len_chromo [LTARGET] 
   
-    set task [task_create "FS_fitness"]
+    set task [task_create "FS_fitness" -fit_tobest "MAX" ]
+    # set ::sort_driver "MAX_to_LEFT"    
 
  
     #----------------------------------------------------------
@@ -1478,7 +1485,8 @@ proc eschemes {} \
                 150 600 300 300
   
 
-  set task [task_create "FS_fitness"]
+  set task [task_create "FS_fitness" -fit_tobest "MAX" ]
+  #set ::sort_driver "MAX_to_LEFT"    
 
   set len_chromo [LTARGET] 
   
@@ -1754,7 +1762,8 @@ proc make_bots_list {argv} {
 
   #-------------------------------------------------------------
 
-  set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.01 ]  
+  set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.01 ]  
+  #set ::sort_driver "MAX_to_LEFT"    
 
   set bots [dict_create] 
   
@@ -1797,7 +1806,8 @@ proc make_bots_list {argv} {
     # хочу сделать задачу поменьше (быстрее),
     # просто увеличив ошибку?
 
-    set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 8.0 ]
+    set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 8.0 ]
+    #set ::sort_driver "MAX_to_LEFT"    
 
     #task_print $task
 
@@ -1808,7 +1818,8 @@ proc make_bots_list {argv} {
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
-  set task [task_create "FS_fitness_list"]
+  set task [task_create "FS_fitness_list" -fit_tobest "MAX" ]
+  #set ::sort_driver "MAX_to_LEFT"    
 
   set sort_driver  "MAX_to_LEFT" 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
@@ -1825,7 +1836,8 @@ proc make_bots_list {argv} {
   } else {
   #-------------------------------------------------------------
 
-    set task [task_create  "FS_fitness" -fit_target $::fit_target -fit_error 0.1 ]
+    set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.1 ]
+    #set ::sort_driver "MAX_to_LEFT"    
 
     dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lgen $size -task $task]
 

@@ -488,7 +488,7 @@ proc pingpong_genesis {population_size len_chromo
   #   //int population_size = 50;  
   #   population *pop = NULL;   /* Population of solutions. */
   
-  set task [task_create "pingpong_score"]
+  set task [task_create "pingpong_score" -fit_tobest "MAX"]
 
   set pop [ga_genesis_main      \
 	     $task \
@@ -778,7 +778,7 @@ proc main_sa {} {
     
     set len_chromo 25
    
-    set task [task_create "pingpong_score"]
+    set task [task_create "pingpong_score" -fit_tobest "MAX"]
 
     set pop [ga_genesis_main   \
 	       $task \

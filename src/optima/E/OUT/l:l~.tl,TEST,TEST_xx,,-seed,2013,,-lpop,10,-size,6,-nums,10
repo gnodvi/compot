@@ -1,33 +1,32 @@
 
-
 make_prgpop: INIT POPULATION = 
 
-{dup - - -} {dup nop nop dup} {dup nop} {- * dup * dup i} {i nop} {- + dup} {* i i *} {dup + dup} {+ -} - 
+{- -} {dup dup nop dup - -} {- - dup -} {+ dup} {- * dup} {i -} {nop * -} {i + * * *} {nop * - * -} {+ dup nop -} 
 
 
-   1)  dup - - -
-   2)  dup nop nop dup
-   3)  dup nop
-   4)  - * dup * dup i
-   5)  i nop
-   6)  - + dup
-   7)  * i i *
-   8)  dup + dup
-   9)  + -
-  10)  -
+   1)  - -
+   2)  dup dup nop dup - -
+   3)  - - dup -
+   4)  + dup
+   5)  - * dup
+   6)  i -
+   7)  nop * -
+   8)  i + * * *
+   9)  nop * - * -
+  10)  + dup nop -
 
 
 
 
-  0) BEST: 'dup + dup' with fitness 27
-  1) BEST: 'dup + dup' with fitness 27
-  2) BEST: 'dup + dup' with fitness 27
-  3) BEST: 'dup + dup' with fitness 27
-  4) BEST: 'dup + dup' with fitness 27
-  5) BEST: 'dup + dup' with fitness 27
-  6) BEST: 'dup + dup + dup' with fitness 15
-  7) BEST: 'dup + dup + dup' with fitness 15
-  8) BEST: 'dup + dup + dup' with fitness 15
-  9) BEST: 'dup + dup + dup' with fitness 15
- 10) BEST: 'dup + dup + dup' with fitness 15
+  0) BEST: 'dup dup nop dup - -' with fitness 40
+  1) BEST: 'dup dup nop dup - -' with fitness 40
+  2) BEST: 'dup dup nop dup - -' with fitness 40
+  3) BEST: 'dup dup nop dup - -' with fitness 40
+  4) BEST: 'dup dup + dup' with fitness 27
+  5) BEST: 'dup * dup nop dup' with fitness 0
+  6) BEST: 'dup * dup nop dup' with fitness 0
+  7) BEST: 'dup * dup nop dup' with fitness 0
+  8) BEST: 'dup * dup nop dup' with fitness 0
+  9) BEST: 'dup * dup nop dup' with fitness 0
+ 10) BEST: 'dup * dup nop dup' with fitness 0
 
