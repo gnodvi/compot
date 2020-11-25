@@ -2,29 +2,9 @@
 
 make_prgpop: INIT POPULATION = 
 
-{M R R R} {R R M M M L L M} {R L L R M L L L} {R L M} {M R M R L L L L R} {L L R L R M M M M L M L R R} {L R M R L M M M L L L R M R M} {M R M R L L M L M M M R M L L} {M R L R M L L M M L L R L M L} {L M L L L M L} {M M M L} {L R R R R R M M L L R M} {M L M R} {R M M M R R M} {M R R M} 
+{M R R R} {R R M M M L L M} {R L L R M L L L} {R L M} {M R M R L L L L R} {L L R L R M M M M L M L R R} {L R M R L M M M L L L R M R M} {M R M R L L M L M M M R M L L} {M R L R M L L M M L L R L M L} {L M L L L M L} {M M M L} {L R R R R R M M L L R M} {M L M R} {R M M M R R M} {M R R M}
 
-
-   1)  M R R R
-   2)  R R M M M L L M
-   3)  R L L R M L L L
-   4)  R L M
-   5)  M R M R L L L L R
-   6)  L L R L R M M M M L M L R R
-   7)  L R M R L M M M L L L R M R M
-   8)  M R M R L L M L M M M R M L L
-   9)  M R L R M L L M M L L R L M L
-  10)  L M L L L M L
-  11)  M M M L
-  12)  L R R R R R M M L L R M
-  13)  M L M R
-  14)  R M M M R R M
-  15)  M R R M
-
-
-
-
-  0) BEST: 'M R R R' with fitness 5
+000)   best =     5 :   M R R R 
 
 ================================================ 
 - ^ . . . x x x x x . . . . . . . . . . 
@@ -51,7 +31,7 @@ make_prgpop: INIT POPULATION =
 EAT = 0 / 5
 NUM = 4
 ================================================ 
-  1) BEST: 'M R R R' with fitness 5
+001)   best =     5 :   M R R R 
 
 ================================================ 
 - ^ . . . x x x x x . . . . . . . . . . 
@@ -78,7 +58,7 @@ NUM = 4
 EAT = 0 / 5
 NUM = 4
 ================================================ 
-  2) BEST: 'M R R R' with fitness 5
+002)   best =     5 :   M R R R 
 
 ================================================ 
 - ^ . . . x x x x x . . . . . . . . . . 

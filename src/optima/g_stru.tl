@@ -392,7 +392,7 @@ dict_class_create BOT01 {BOT} {
 
   SET $obj pop $pop
 
-  SET $obj "test" [dict_parse $args "-test" 0]
+  SET $obj "vers" [dict_parse $args "-vers" 0]
 }
 #---------------------------------------------------------
 proc calc_BOT01 {obj args} {
@@ -405,12 +405,12 @@ proc calc_BOT01 {obj args} {
 
   set task            [dict_parse $args "-task"  [GET $obj "task"]] 
   set max_generations [dict_parse $args "-nums"  10] 
-  set test            [dict_parse $args "-test"  [GET $obj "test"]]
+  set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
 
   puts stderr ""
   puts stderr "calc_BOT01: args = $args" 
-  puts stderr "calc_BOT01: nums  = $max_generations"  ;# шагов эволюции  
-  puts stderr "calc_BOT01: test  = $test"  
+  puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
+  puts stderr "calc_BOT01: vers = $vers"  
   #task_print $task  
   puts stderr ""
   
@@ -418,7 +418,7 @@ proc calc_BOT01 {obj args} {
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 
-  if {$test == 1} { 
+  if {$vers == 1} { 
 
     # нулевая цель
 
@@ -442,28 +442,25 @@ proc calc_BOT01 {obj args} {
   return $ret
 }
 # ------------------------------------------------------------------------------
-proc make_task_for_BOT01 {test} {
+proc make_task_for_BOT01 {vers} {
 
 
-  if {$test == 0} {
+  if {$vers == 0} {
     
     set fitness_func  "FS_fitness"
     set fit_target    $::fit_target
-    #set ::sort_driver "MAX_to_LEFT"    
   }
 
-  if {$test == 1} {
+  if {$vers == 1} {
     
     set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
     set fitness_func   "FS_fitness_list"
-    #set ::sort_driver "MAX_to_LEFT"    
-    
-    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево?? 
     # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
     set fit_target     0    
   } 
   
-  set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target -fit_error 0.01 ]  
+  set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target \
+              -fit_error 0.01 ]  
   
   return $task
 }
@@ -475,12 +472,12 @@ proc _01_test {} {
 
   puts stderr "argv = $argv"
 
-  set test            [dict_parse $argv "-test"  0]
   set population_size [dict_parse $argv "-lpop" 10]
+  set len_chromo      [dict_parse $argv "-size" [LTARGET]] 
   set max_generations [dict_parse $argv "-nums" 10]
 
+  set vers            [dict_parse $argv "-vers"  0]
   set ::target_text   [dict_parse $argv "-list" $::target_text]
-  set len_chromo      [dict_parse $argv "-size" [LTARGET]] 
  
   puts ""
   puts "lpop  = $population_size"  ;# колич-во ботов
@@ -493,10 +490,10 @@ proc _01_test {} {
   
   #---------------------------------------------------------------------
 
-  set task [make_task_for_BOT01 $test]
+  set task [make_task_for_BOT01 $vers]
   
   set obj \
-    [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task -test $test] 
+    [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task -vers $vers] 
 
   set ret [calc_BOT01 $obj {*}$argv]
 
@@ -1786,13 +1783,13 @@ proc make_bots_list {argv} {
 
     srandom_set 2019 ;# постоянный выбор текстовой строки
     
-    set test 0
-    set task [make_task_for_BOT01 $test]
-    dict_set $bots "bot01_test0" [BOT01 new  -lpop $lpop -lgen $size -task $task -test $test]
+    set vers 0
+    set task [make_task_for_BOT01 $vers]
+    dict_set $bots "bot01_vers0" [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
 
-    set test 1
-    set task [make_task_for_BOT01 $test]
-    dict_set $bots "bot01_test1" [BOT01 new  -lpop $lpop -lgen $size -task $task -test $test]
+    set vers 1
+    set task [make_task_for_BOT01 $vers]
+    dict_set $bots "bot01_vers1" [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
 
   #-------------------------------------------------------------
   } \

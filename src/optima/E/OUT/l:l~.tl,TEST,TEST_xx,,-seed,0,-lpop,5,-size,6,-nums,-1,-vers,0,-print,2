@@ -1,0 +1,27 @@
+
+
+make_prgpop: INIT POPULATION = 
+
+{dup - - -} {dup nop nop dup} {dup nop} {- * dup * dup i} {i nop}
+
+
+-------------------------------------------------------------------
+
+   1)  fitn =    40 :   dup nop nop dup
+   2)  fitn =    40 :   dup nop
+   3)  fitn =    40 :   i nop
+   4)  fitn =   250 :   dup - - -
+   5)  fitn =   250 :   - * dup * dup i
+
+000)   best =    40 :   dup nop nop dup 
+
+-------------------------------------------------------------------
+
+   1)  fitn =     0 :   dup nop * dup
+   2)  fitn =    40 :   dup nop nop dup
+   3)  fitn =    40 :   dup nop nop dup
+   4)  fitn =    40 :   dup nop
+   5)  fitn =    40 :   i nop
+
+001)   best =     0 :   dup nop * dup 
+

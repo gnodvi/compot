@@ -401,16 +401,8 @@ proc TEST_pp {} {
 
   incr ::ind0
 
-  #set ind 1 ;# один параметр у нас уже есть - имя "TEST_randprog"
   set ind $::ind0 
 
-  #
-  # лучше бы как-то неявно выражать, через кол-во параметров!
-  #global argc
-  #puts "argc = $argc"
-  ##
-  #set ind $argc
-  #
   read_seedflag  ind 
 
 
@@ -431,9 +423,6 @@ proc TEST_pp {} {
   puts "SIZETRUEPROG = [llength $prg]"
 
   # а теперь проверяем, что именно она выполняет:
-  # 
-  # v1_init_all  
-  #DebugOn
 
   set x 3 
   set result [getresult_prg_val_11  $prg $x]
@@ -451,7 +440,6 @@ proc TEST_pp {} {
   
 
 }
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -808,16 +796,37 @@ proc NEXT_01 {} {
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
 #-------------------------------------------------------------------------------
-#proc squareFitness {prg_11 {prog_11 @}} {}
-proc squareFitness {prg_11 args} {
+proc squareFitness {prg_11 task} {
 
-  set prog_11 @
+  set prog_11 @ ;# это заглушка на будущее ?
 
+  set vers [GET $task "vers"]
 
   set fitness 0
 
-  foreach i {1 2 3 4 5} o {1 4 9 16 25} {
+  set i_list {1 2 3 4 5}
 
+  #set o_list {1 4 9 16 25}
+  #foreach i $i_list  o $o_list {}
+  #
+  # наверное для скорости надо будет заранее составить выходную таблицу, но пока
+  # честно считаем по формуле в цикле
+
+  foreach i $i_list {
+
+    if {$vers == 0} {
+      set o [* $i $i]
+    } else {
+      #set o [* $i $i $i]
+      #set o [+ [*  $i $i $i] [*  $i $i]]  ;# dup dup dup * + *  ?? (x^2 + x) * x = x^3 + x^2 ??
+      #set o [* $i $i $i $i]
+      #puts stderr "squareFitness: i = $i, o = $o"
+      set o [+ [*  $i $i $i] [*  $i $i]  $i]
+    }
+    
+
+    # выполним программку и возьмем результат
+    # 
     set result [getresult_prg_val_11  $prg_11 $i $prog_11]
 
 
@@ -841,6 +850,7 @@ proc squareFitness {prg_11 args} {
         # anti overflow ???
         set delta 1000
       }
+
       incr fitness $delta
     }
   }
@@ -848,12 +858,12 @@ proc squareFitness {prg_11 args} {
   #return [expr {$fitness + [llength $prg_11]}]
   #
   # давай пока длину не учитывать ?!
-  # 
+
+
   return $fitness
 }
 #-------------------------------------------------------------------------------
 proc TEST_xx {} {
-
 
   # ищем функцию возведения в квадрат 
   # 
@@ -863,39 +873,29 @@ proc TEST_xx {} {
   global argc argv argv0
   set argv [lrange $argv 2 end]
 
+  puts ""
   puts stderr "argv = $argv"
   #exit
 
-  set seed        [dict_parse $argv "-seed" 2013]
-  set individuals [dict_parse $argv "-lpop" 10]  ;# колич-во ботов 
-  set len         [dict_parse $argv "-size"  6]  ;# макс. длина ботов (при начальном старте?)
-  set nums        [dict_parse $argv "-nums" 10]  ;# шагов эволюции 
+  set seed        [dict_parse $argv "-seed"  2013]
+  set individuals [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
+  set len         [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
+  set nums        [dict_parse $argv "-nums"  10]  ;# шагов эволюции 
+  set vers        [dict_parse $argv "-vers"   0]
 
-  set test        [dict_parse $argv "-test"  0]
-
-#   if {$seedflag == "@"} {
-#     mysrand 111111 
-#   } else {
-#     mysrand $seedflag 
-#   }
+  set is_print    [dict_parse $argv "-print"  1]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  if {$test == 0} {
+  if {$vers == 0} {
   
-    set is_print 1
-    
-    # из чего и как делаем проги (надо бы сделать отдельным "классом" в JOY)
-    # 
-    
     #set ::gp_list     "+ - * / dup"  
     set ::gp_list     "+ - * dup i nop" 
     
   } 
-  if {$test == 1} {
+  if {$vers == 1} {
 
-    set is_print   3
-    set ::gp_list  "dup * nop" 
-
+    #set ::gp_list  "dup * nop" 
+    set ::gp_list  "dup * nop +" 
   }
   #------------------------------------------
   #set ::randinstr   randinstr_SIMP 
@@ -907,7 +907,6 @@ proc TEST_xx {} {
   #set randpop_proc "make_rand_prgpop_unikum"
   set rand_prgpop_proc "make_rand_prgpop"
   
-
   set pb [mp_create]
 
   mp_init $pb \
@@ -915,53 +914,41 @@ proc TEST_xx {} {
     quotes_proc  "make_quotes_TCL"
 
 
+  set task [task_create "squareFitness"  -fit_tobest "MIN" -vers $vers]
 
-  run_gp_evolution  $seed $rand_prgpop_proc \
-                       $individuals $len \
-                       squareFitness "MIN"  0.1  $nums $is_print
-  
+  run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
+                       $individuals $len  \
+                       0.1                \
+                       $nums  $is_print 0 \
+
   return
 }
 #-------------------------------------------------------------------------------
+
+# ищем строку 1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
+
+# g_stru.jm _01_test -lpop 10 -nums -1 -test 0  ;# ga_evolution FS_fitness
+# g_stru.jm _01_test -lpop 10 -nums -1 -test 1  ;# ga_evolution FS_fitness_list
+
+# g_stru.jm _gp_test 2013 10 6 -1     ;# gp_evolution FS_fitness_list
+
+#-------------------------------------------------------------------------------
+
+# ищем простую функцию x^2:
+#
 # l~.tl TEST TEST_xx  -seed @  -lpop 10 -size 6 -nums -1 -test 1
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-# k~.tl TEST TEST_xx  2013  10 3 6
-
-# k~.tl TEST TEST_xx  @     10 6 10
-# k~.tl TEST TEST_xx  2013  10 6 10
 
 
-# k~.tl ANTS ANTS_gp  2012  10 15 2
+# ищем простую функцию x^3 + x^2:      dup dup dup * + * 
+#
+# l~.tl TEST TEST_xx  -seed 0 -lpop 50 -size 6 -nums -1 -vers 1 -print 1
 
 
-# k~.tl TEST ALL_TESTS
-
-#   +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
-#   +) слияние нескольких программ с локальными библиотеками : commit
-#   -) слияние и рtфакторинг с использованием общей библиотеки.
-
-
-# k~.tl TEST NEXT_01 @  10 5 2
-
-#   -) перевод всех алгоритмов : prg --> prog ;
-#   -) запуск joy_run с использованием сторонних библиотек;
-#   -) поиск лучшего решения путем рефакторинга;
+# ищем простую функцию x^3 + x^2 + x:  dup dup dup dup * nop + * + 
+#
+# l~.tl TEST TEST_xx  -seed @ -lpop 100 -size 6 -nums -1 -vers 1 -print 2
 
 #-------------------------------------------------------------------------------
-
-# k~.tl TEST TEST_pp 2014
-
-# k~.tl TEST TEST_makeparas
-# k~.tl TEST TEST_randprog @
-# k~.tl TEST TEST_randprog 2014
-
-# k~.tl TEST TEST_xx  @ 10 6 10
-
-# - почему уменьшается кол-во ботов в популяции?
-# - куда то из популяции пропадают правильные решения
-# - ошибочные операнды надо просто удалять (так подбирать прогу)
 
 # Основные идеи:
 
@@ -972,5 +959,26 @@ proc TEST_xx {} {
 #   их окружении; эта инфа используется как "описание типов" для адекватной
 #   подстройки программ в эволюции;
 
+
+# l~.tl TEST NEXT_01 @  10 5 2
+
+#   +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
+#   +) слияние нескольких программ с локальными библиотеками : commit
+#   -) слияние и рtфакторинг с использованием общей библиотеки.
+
+#   -) перевод всех алгоритмов : prg --> prog ;
+#   -) запуск joy_run с использованием сторонних библиотек;
+#   -) поиск лучшего решения путем рефакторинга;
+
 #-------------------------------------------------------------------------------
+
+# Вспомогательные тесты:
+
+# l~.tl ANTS ANTS_gp 2012  10 15 2
+# l~.tl TEST TEST_pp 2014
+
+# l~.tl TEST TEST_makeparas
+# l~.tl TEST TEST_randprog @
+# l~.tl TEST TEST_randprog 2014
+
 ################################################################################

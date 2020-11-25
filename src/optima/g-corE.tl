@@ -2730,10 +2730,10 @@ proc make_prgpop {randpop_proc
   if {$is_print} {
     puts ""
     puts "make_prgpop: INIT POPULATION = \n"
-    puts "$prgpop \n"
+    puts "$prgpop"
     puts ""
-    pop_print_B  $prgpop 
-    puts ""
+    #pop_print_B  $prgpop 
+    #puts ""
   }
 
   return $prgpop
@@ -2749,12 +2749,12 @@ proc make_itemslist {randpop_proc
                             $population_size $len \
                              $is_print]
 
-  if {$is_print} {
-    puts ""
-    puts stderr "randpop_proc = $randpop_proc"
-    puts stderr "prgpop       = $prgpop"
-    puts ""
-  }
+  #   if {$is_print} {
+  #     puts ""
+  #     puts stderr "randpop_proc = $randpop_proc"
+  #     puts stderr "prgpop       = $prgpop"
+  #     puts ""
+  #   }
 
   # TODO:
   # 
@@ -5955,16 +5955,16 @@ proc print_best {i task  best_item is_print game_print_proc} {
   set prg [item_get_main_src  $best_item]
   set ftn [item_get_fitn      $best_item]
 
-  if {$is_print > 1} {  
+#   if {$is_print > 1} {  
 
-    puts ""
-    puts "================================================"
-    puts ""
-  }
+#     puts ""
+#     puts "================================================"
+#     puts ""
+#   }
 
   if {$is_print} {  
 
-    puts [format "% 3d) BEST: '$prg' with fitness $ftn" $i]
+    puts [format "%03d)   best = %5s :   $prg " $i $ftn ]
 
     #puts stderr "game_print_proc = $game_print_proc"
     #puts ""
@@ -6024,7 +6024,7 @@ proc item_print_fitness {item i} {
     set src   [item_get_main_src   $item] 
     set fitn  [item_get_fitn       $item] 
     
-    puts [format "  fitn = % 3s :   %s" $fitn $src]
+    puts [format "  fitn = % 5s :   %s" $fitn $src]
     
   } else {
     
@@ -6137,6 +6137,9 @@ proc gp_evolution_main {task  pop max_generations
     SET $pop "itemslist" $itemslist_sorted
 
     if {$is_print > 1} {
+    puts ""
+    puts "-------------------------------------------------------------------"
+    puts ""
       gp_pop_all_print     $pop ;# $itemslist 
     }
     #exit
@@ -6164,9 +6167,9 @@ proc gp_evolution_main {task  pop max_generations
 
     SET $pop "itemslist" $itemslist
 
-    if {$is_print > 1} {
-      puts ""
-    }
+#     if {$is_print > 1} {
+#       puts ""
+#     }
 
     incr i
     SET $pop "generation" $i ;# $generation
@@ -6350,6 +6353,45 @@ proc make_sortdriver_fromtask {task} {
   return $sort_driver
 }
 #-------------------------------------------------------------------------------
+proc run_gp_evolution_for_task {task seed randpop_proc 
+                       population_size  len_chromosomes 
+                       mutprob 
+                       max_generations   is_print 
+                       game_print_proc 
+                     } {
+
+
+  #set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
+
+  #-------------------------------------
+  if {$seed == "@"} {
+
+    set seed [clock seconds]
+  }
+
+  random_seed $seed 
+  #-------------------------------------
+
+  set obj \
+    [BOT33 new  -lpop $population_size -lgen $len_chromosomes \
+       -task $task]
+
+    
+  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
+  # и  выпоняем эволюционный поиск 
+
+  RUN1 "calc_" $obj \
+    -nums           $max_generations \
+    -task            $task \
+    -is_print        $is_print        \
+    -game_print_proc $game_print_proc \
+    -mutprob         $mutprob \
+    -randpop_proc    $randpop_proc
+
+
+  return
+}
+#-------------------------------------------------------------------------------
 proc run_gp_evolution {seed randpop_proc 
                        population_size  len_chromosomes 
                        fitnessfunc  fit_tobest 
@@ -6359,22 +6401,35 @@ proc run_gp_evolution {seed randpop_proc
                      } {
 
 
+  set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
+
+  run_gp_evolution_for_task $task $seed $randpop_proc     \
+                       $population_size  $len_chromosomes \
+                       $mutprob                           \
+                       $max_generations  $is_print        \
+                       $game_print_proc                   \
+ 
+  return
+}
+#-------------------------------------------------------------------------------
+proc run_gp_evolution_old {seed randpop_proc 
+                       population_size  len_chromosomes 
+                       fitnessfunc  fit_tobest 
+                       mutprob 
+                       max_generations   is_print 
+                       {game_print_proc 0} 
+                     } {
+
+
+  set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
+
   #-------------------------------------
   if {$seed == "@"} {
 
     set seed [clock seconds]
-    #exit
   }
-  #-------------------------------------
 
-  random_seed $seed ;# 
-
-  set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
-
-  #set sort_driver [make_sortdriver_fromtask $task]
-
-  #set ::sort_driver $sort_driver    
-
+  random_seed $seed 
   #-------------------------------------
 
   set obj \
@@ -6543,17 +6598,29 @@ proc _gp_test {} {
   } else {
   #----------------------------------------------------------------
 
+
+
     # берем данные из командной строки: k~.tl TEST FS  @  20 15 100
     #                                   cd ../others ; h_stru.tl FS
-    incr ::ind0
+    #incr ::ind0
 
-    set bnums ""
-    set bsize ""
-    set steps ""
+    #set bnums ""
+    #set bsize ""
+    #set steps ""
 
-    parse_opt_seed_3_new  bnums bsize steps 
+    #parse_opt_seed_3_new  bnums bsize steps 
 
     # if ! @ -> mysrand var 
+
+
+    global argc argv argv0
+    set argv [lrange $argv 1 end]
+
+    set seed   [dict_parse $argv "-seed" 2013]
+    set bnums  [dict_parse $argv "-lpop" 10]
+    set bsize  [dict_parse $argv "-size"  6] 
+    set steps  [dict_parse $argv "-nums" 10]
+
   }
   #----------------------------------------------------------------
 
@@ -6586,7 +6653,7 @@ proc _gp_test {} {
   set is_print 1
   set ::gp_list   "1 2 3 4 5 6 7 8 9" ;#   
 
-  run_gp_evolution  0 $randpop_proc \
+  run_gp_evolution  $seed $randpop_proc \
                     $bnums $bsize \
     $fitnessfunc "MAX" \
     0.1  $steps  $is_print 0 ;# not game print
