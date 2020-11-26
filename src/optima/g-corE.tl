@@ -4545,11 +4545,6 @@ proc ga_crossover_double_doublepoints {pop father mother son daughter} {
 
 
 
-
-
-
-
-
 #------------------------------------------------------------------------------
 #   synopsis:	Seed genetic data for a single entity with an integer
 # 		chromosome by randomly setting each allele.
@@ -4699,9 +4694,6 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
 #-------------------------------------------------------------------------------
 #   synopsis:	Cause a single mutation event in which a single
 # 		allele is cycled.
-# void 
-# ga_mutate_printable_singlepoint_drift (population *pop,
-#                                        entity *father, entity *son)
 #-------------------------------------------------------------------------------
 proc ga_mutate_printable_singlepoint_drift {pop father son}  {
 
@@ -4724,16 +4716,30 @@ proc ga_mutate_printable_singlepoint_drift {pop father son}  {
   #     * Mutate by tweaking a single allele.
   #     */
 
-  # The direction of drift. 
-  
-  if {[random_boolean]} {
-    set dir -1
-  } else {
-    set dir  1
-  }
-
   set point_gen [item_get_chromo_gen $son  $point] ;# старое значение
-  set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
+
+
+  set is_digital [expr {[string is integer $point_gen] || [string is double $point_gen]}]
+
+  if {$is_digital} {
+
+    # The direction of drift. 
+    
+    if {[random_boolean]} {
+      set dir -1
+    } else {
+      set dir  1
+    }
+    
+    set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
+  } else {
+
+    #exit
+
+    set point_gen [randinstr_NEXT $::gp_list]
+
+    #puts "ga_mutate_printable_singlepoint_drift: NOT DIGITAL !! new gen = $point_gen"
+  }
 
 
   #   set char_min_num $::allele_min_integer
@@ -4881,8 +4887,6 @@ proc ga_mutate_double_singlepoint_drift {pop father son}  {
 #-------------------------------------------------------------------------------
 
 # //******************************************************************************
-
-
 
 
 
@@ -5284,68 +5288,6 @@ proc gaul_survival {pop} \
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc crossover_mutation_adapt_survival {pop task} {
-
-  if {$::is_print > 2} {
-
-    puts stderr "crossover_mutation_adapt_survival ... "
-    puts ""
-    pop_print $pop "stderr" ; puts ""
-  }
-
-  #-----------------------------------------------------------------
-  #  Crossover step 
-  #  
-  gaul_crossover $pop $task ;# выбираются мама и папа и затем скрещиваются 
-                       # в новых (созданных) членов общества !!
-  
-  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # Mutation step
-  #  
-
-  gaul_mutation $pop $task ;# муитруем в новых членов общества !!
-  
-  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # Apply environmental adaptations, score entities, sort entities, etc.
-  #  
- 
-  gaul_adapt_and_evaluate $pop $task ;# а где же сортировка?
-  
-  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # Survival of the fittest (выживание наиболее приспособленных)
-  # 
-  # GA_ELITISM_PARENTS_DIE     (FS)
-  # GA_ELITISM_PARENTS_SURVIVE (_2_main_ 
-  # 
-
-  gaul_survival $pop ;# что-то делаем с получившемся набором старых и новых 
-    
-
-  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # сортируем всех челнов популяции по фитнесу
-  # 
- 
-  pop_sorting $pop [make_sortdriver_fromtask $task]
-
-  #-----------------------------------------------------------------
-  # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
-  # численность до ее стабильного первоначального размера.
-  #
-
-  ga_genocide  $pop [GET $pop stable_size]
-
-
-  return
-}
-# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc migration_right_to_left {pop0 pop1} {
@@ -5434,8 +5376,65 @@ proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
   
   # основная часть !!!! делаем новое поколение!
   #
-  crossover_mutation_adapt_survival $pop $task
+
+  if {$::is_print > 2} {
+
+    puts stderr "ga_evolution_step .............................................. "
+    puts ""
+    #pop_print $pop "stderr" ; puts ""
+  }
+
+  #-----------------------------------------------------------------
+  #  Crossover step 
+  #  
+
+  gaul_crossover $pop $task ;# выбираются мама и папа и затем скрещиваются 
+                       # в новых (созданных) членов общества !!
   
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # Mutation step
+  #  
+
+  gaul_mutation $pop $task ;# муитруем в новых членов общества !!
+  
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # Apply environmental adaptations, score entities, sort entities, etc.
+  #  
+ 
+  gaul_adapt_and_evaluate $pop $task ;# а где же сортировка?
+  
+  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # Survival of the fittest (выживание наиболее приспособленных)
+  # 
+  # GA_ELITISM_PARENTS_DIE     (FS)
+  # GA_ELITISM_PARENTS_SURVIVE (_2_main_ 
+  # 
+
+  gaul_survival $pop ;# что-то делаем с получившемся набором старых и новых 
+    
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # сортируем всех челнов популяции по фитнесу
+  # 
+ 
+  pop_sorting $pop [make_sortdriver_fromtask $task]
+
+  #-----------------------------------------------------------------
+  # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
+  # численность до ее стабильного первоначального размера.
+  #
+
+  ga_genocide  $pop [GET $pop stable_size]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   incr generation
   SET $pop generation $generation
   
@@ -5964,7 +5963,11 @@ proc print_best {i task  best_item is_print game_print_proc} {
 
   if {$is_print} {  
 
-    puts [format "%03d)   best = %5s :   $prg " $i $ftn ]
+    #set fitstring [format "%.2f" $ftn]
+
+    #puts [format "%03d)   best = % 5s :   $prg " $i $ftn ]
+    puts [format "%03d)   best = % 7.2f :   $prg " $i $ftn ]
+    #puts [format "%03d)   best = % 5s :   $prg " $i $fitstring ]
 
     #puts stderr "game_print_proc = $game_print_proc"
     #puts ""
@@ -6011,7 +6014,7 @@ proc lsort_pop_command {sort_driver a b} {
 proc item_print_fitness {item i} {
 
 
-  puts -nonewline [format "  %2d)" $i]
+  puts -nonewline [format "  %3d)" $i]
   
   #set src   [item_get_main_src   $item] 
   #set fitn  [item_get_fitn       $item] 
@@ -6024,7 +6027,8 @@ proc item_print_fitness {item i} {
     set src   [item_get_main_src   $item] 
     set fitn  [item_get_fitn       $item] 
     
-    puts [format "  fitn = % 5s :   %s" $fitn $src]
+    #puts [format "  fitn = % 5s :   %s" $fitn $src]
+    puts [format "  fitn = % 7.2f :   %s" $fitn $src]
     
   } else {
     
@@ -6672,6 +6676,134 @@ proc _gp_test {} {
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc maintest_seed_proc {pop adam} {
+
+  set len [GET $pop len_chromosomes]
+
+
+  for {set point 0} {$point < $len} {incr point} {
+    
+    set char_sym [randinstr_NEXT  $::gp_list]
+    
+    #if {$::CHROMOLIST} {
+
+    # а зачем в цифру переводить? нам нужны здесь симыолы, а точнее - строки !!!
+    #
+    set ch $char_sym 
+
+    #} else {
+    #  set ch [scan $char_sym "%c"]  ;# десятичные коды символьных цифр
+    #}
+
+
+    item_set_chromo_gen $adam $point $ch 
+    #
+    # записывем ген в хромосому в виде эдемента списка
+  }
+
+  return $::true
+}
+# ------------------------------------------------------------------------------
+proc pop1_create {args} {
+
+  set len_chromosomes [dict_parse $args "-lgen"] 
+  set population_size [dict_parse $args "-lpop"] 
+
+
+  set pop [GAUL new  \
+                -lpop $population_size -lgen $len_chromosomes]
+
+  
+  SET $pop  generation_hook NULL ;# $generation_hook
+  
+  SET $pop  adapt       NULL ;# $adapt
+  
+  SET $pop  mutate      ga_mutate_printable_singlepoint_drift
+
+  SET $pop  crossover   ga_crossover_char_allele_mixing
+  SET $pop  replace     NULL ;# $replace   ;#
+  
+  #SET $pop  ch_form "%c" 
+  SET $pop  ch_form "%s " 
+  
+  SET $pop  scheme           GA_SCHEME_DARWIN
+  SET $pop  elitism          GA_ELITISM_PARENTS_DIE
+
+  SET $pop  crossover_ratio  0.9
+  SET $pop  mutation_ratio   0.2
+  SET $pop  migration_ratio  0.0
+  
+  SET $pop  seed   "maintest_seed_proc"   ;#   $seed_proc 
+  
+  return $pop
+}
+# ------------------------------------------------------------------------------
+
+dict_class_create BOT01 {BOT} {
+
+  ;# _это_перечисление_переменных
+  
+} {
+  # а это конструктор класса 
+
+  set pop [pop1_create  {*}$args]
+  
+  SET $pop  select_one   "ga_select_one_sus"
+  SET $pop  select_two   "ga_select_two_sus"
+
+  SET $obj pop $pop
+
+  SET $obj "vers" [dict_parse $args "-vers" 0]
+}
+#---------------------------------------------------------
+proc calc_BOT01 {obj args} {
+    
+  set pop [GET $obj pop]
+   
+  SET $pop  seed "maintest_seed_proc" ;# ??
+  
+  #------------------
+
+  set task            [dict_parse $args "-task"  [GET $obj "task"]] 
+  set max_generations [dict_parse $args "-nums"  10] 
+  set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
+
+  puts stderr ""
+  puts stderr "calc_BOT01: args = $args" 
+  puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
+  puts stderr "calc_BOT01: vers = $vers"  
+  #task_print $task  
+  puts stderr ""
+  
+  set  pop [GET $obj "pop"]
+  
+  pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+
+  if {$vers == 1} { 
+
+    # нулевая цель
+
+    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
+    #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
+    #set ::is_print 2.2
+
+    # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
+    # 
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+  }
+  
+  if {$::is_print > 1} {
+    pop_print $pop
+    puts ""
+  }
+
+  set ret [ga_evolution_main  $task $pop $max_generations]
+  
+  return $ret
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

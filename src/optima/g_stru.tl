@@ -177,34 +177,6 @@ random_seed 0
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc maintest_seed_proc {pop adam} {
-
-  set len [GET $pop len_chromosomes]
-
-
-  for {set point 0} {$point < $len} {incr point} {
-    
-    set char_sym [randinstr_NEXT  $::gp_list]
-    
-    #if {$::CHROMOLIST} {
-
-    # а зачем в цифру переводить? нам нужны здесь симыолы, а точнее - строки !!!
-    #
-    set ch $char_sym 
-
-    #} else {
-    #  set ch [scan $char_sym "%c"]  ;# десятичные коды символьных цифр
-    #}
-
-
-    item_set_chromo_gen $adam $point $ch 
-    #
-    # записывем ген в хромосому в виде эдемента списка
-  }
-
-  return $::true
-}
-# ------------------------------------------------------------------------------
 proc LTARGET {} {
 
   set len [llength $::target_text]
@@ -343,104 +315,7 @@ proc do_print_best {pop name} \
 #   return [string length $str]
 # }
 # ------------------------------------------------------------------------------
-proc pop1_create {args} {
-
-  set len_chromosomes [dict_parse $args "-lgen"] 
-  set population_size [dict_parse $args "-lpop"] 
-
-
-  set pop [GAUL new  \
-                -lpop $population_size -lgen $len_chromosomes]
-
-  
-  SET $pop  generation_hook NULL ;# $generation_hook
-  
-  SET $pop  adapt       NULL ;# $adapt
-  
-  SET $pop  mutate      ga_mutate_printable_singlepoint_drift
-
-  SET $pop  crossover   ga_crossover_char_allele_mixing
-  SET $pop  replace     NULL ;# $replace   ;#
-  
-  #SET $pop  ch_form "%c" 
-  SET $pop  ch_form "%s " 
-  
-  SET $pop  scheme           GA_SCHEME_DARWIN
-  SET $pop  elitism          GA_ELITISM_PARENTS_DIE
-
-  SET $pop  crossover_ratio  0.9
-  SET $pop  mutation_ratio   0.2
-  SET $pop  migration_ratio  0.0
-  
-  SET $pop  seed   "maintest_seed_proc"   ;#   $seed_proc 
-  
-  return $pop
-}
 # ------------------------------------------------------------------------------
-
-dict_class_create BOT01 {BOT} {
-
-  ;# _это_перечисление_переменных
-  
-} {
-  # а это конструктор класса 
-
-  set pop [pop1_create  {*}$args]
-  
-  SET $pop  select_one   "ga_select_one_sus"
-  SET $pop  select_two   "ga_select_two_sus"
-
-  SET $obj pop $pop
-
-  SET $obj "vers" [dict_parse $args "-vers" 0]
-}
-#---------------------------------------------------------
-proc calc_BOT01 {obj args} {
-    
-  set pop [GET $obj pop]
-   
-  SET $pop  seed "maintest_seed_proc" ;# ??
-  
-  #------------------
-
-  set task            [dict_parse $args "-task"  [GET $obj "task"]] 
-  set max_generations [dict_parse $args "-nums"  10] 
-  set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
-
-  puts stderr ""
-  puts stderr "calc_BOT01: args = $args" 
-  puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
-  puts stderr "calc_BOT01: vers = $vers"  
-  #task_print $task  
-  puts stderr ""
-  
-  set  pop [GET $obj "pop"]
-  
-  pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
-
-  if {$vers == 1} { 
-
-    # нулевая цель
-
-    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
-    #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
-    #set ::is_print 2.2
-
-    # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
-    # 
-    SET $pop  select_one   "ga_select_one_bestof2"
-    SET $pop  select_two   "ga_select_two_bestof2"
-  }
-  
-  if {$::is_print > 1} {
-    pop_print $pop
-    puts ""
-  }
-
-  set ret [ga_evolution_main  $task $pop $max_generations]
-  
-  return $ret
-}
 # ------------------------------------------------------------------------------
 proc make_task_for_BOT01 {vers} {
 

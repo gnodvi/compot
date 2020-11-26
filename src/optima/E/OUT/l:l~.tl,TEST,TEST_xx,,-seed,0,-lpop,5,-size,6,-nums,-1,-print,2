@@ -1,0 +1,357 @@
+
+
+make_prgpop: INIT POPULATION = 
+
+{* * * *} {* * * *} {* *} {* nop * nop * nop} {nop *}
+
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * *
+   4)  fitn =  500.00 :   * nop * nop * nop
+   5)  fitn =  500.00 :   nop *
+
+000)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * nop * * *
+   4)  fitn =  500.00 :   * * + + +
+   5)  fitn =  500.00 :   * + +
+
+001)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * * * *
+   4)  fitn =  500.00 :   * * dup dup + + dup dup
+   5)  fitn =  500.00 :   * nop dup * *
+
+002)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * dup * * *
+   4)  fitn =  500.00 :   * * * * *
+   5)  fitn =  500.00 :   * * * dup
+
+003)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * nop nop * *
+   4)  fitn =  500.00 :   nop nop * * *
+   5)  fitn =  500.00 :   * dup * * *
+
+004)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * * *
+   3)  fitn =  500.00 :   * * * *
+   4)  fitn =  500.00 :   * * * + +
+   5)  fitn =  500.00 :   + dup dup dup nop * *
+
+005)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * *
+   3)  fitn =  500.00 :   * * * * *
+   4)  fitn =  500.00 :   * + + * dup * *
+   5)  fitn =  500.00 :   dup * dup * * *
+
+006)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * *
+   3)  fitn =  500.00 :   * dup * *
+   4)  fitn =  500.00 :   * * * * *
+   5)  fitn =  500.00 :   * * nop * *
+
+007)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * * nop +
+   4)  fitn =  500.00 :   * * +
+   5)  fitn =  500.00 :   * dup * *
+
+008)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * * * * *
+   3)  fitn =  500.00 :   * * * *
+   4)  fitn =  500.00 :   * * * +
+   5)  fitn =  500.00 :   + * * nop dup
+
+009)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * * dup *
+   4)  fitn =  500.00 :   nop * * nop nop * * * *
+   5)  fitn =  500.00 :   * * * *
+
+010)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * *
+   3)  fitn =  500.00 :   * nop * * *
+   4)  fitn =  500.00 :   * * * *
+   5)  fitn =  500.00 :   nop * dup dup *
+
+011)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =  500.00 :   * * * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   dup * * *
+   4)  fitn =  500.00 :   * * * *
+   5)  fitn =  500.00 :   * nop nop * *
+
+012)   best =  500.00 :   * * * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    7.21 :   dup dup * *
+   2)  fitn =  500.00 :   * * * *
+   3)  fitn =  500.00 :   * * * * *
+   4)  fitn =  500.00 :   * * * nop
+   5)  fitn =  500.00 :   * * * *
+
+013)   best =    7.21 :   dup dup * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    7.21 :   dup dup * *
+   2)  fitn =   10.00 :   dup *
+   3)  fitn =  500.00 :   + + dup + nop *
+   4)  fitn =  500.00 :   * * * *
+   5)  fitn =  500.00 :   * * * * *
+
+014)   best =    7.21 :   dup dup * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    7.21 :   dup dup * *
+   2)  fitn =    7.21 :   dup dup * *
+   3)  fitn =   10.00 :   dup *
+   4)  fitn =  500.00 :   nop * * nop *
+   5)  fitn =  500.00 :   + nop + dup nop nop nop +
+
+015)   best =    7.21 :   dup dup * * 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup * dup +
+   2)  fitn =    7.21 :   dup dup * *
+   3)  fitn =    7.21 :   dup dup * *
+   4)  fitn =   20.64 :   dup dup dup dup * * *
+   5)  fitn =  500.00 :   dup + *
+
+016)   best =    5.56 :   dup * dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup * dup +
+   2)  fitn =    5.56 :   dup * dup +
+   3)  fitn =    5.56 :   dup * nop dup +
+   4)  fitn =    7.21 :   dup dup * *
+   5)  fitn =   10.00 :   nop dup * nop
+
+017)   best =    5.56 :   dup * dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup * dup +
+   3)  fitn =  500.00 :   dup + +
+   4)  fitn =  500.00 :   * * dup +
+   5)  fitn =  500.00 :   + dup * nop dup +
+
+018)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup dup dup dup +
+   3)  fitn =    5.56 :   dup * dup +
+   4)  fitn =   10.00 :   nop dup dup dup * dup nop
+   5)  fitn =  500.00 :   nop + +
+
+019)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup +
+   3)  fitn =    5.56 :   dup dup dup dup +
+   4)  fitn =    5.56 :   dup dup dup dup dup dup +
+   5)  fitn =    5.56 :   dup * dup +
+
+020)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup dup dup +
+   3)  fitn =   14.07 :   dup dup dup dup dup dup
+   4)  fitn =   15.93 :   dup dup dup + dup +
+   5)  fitn =  500.00 :   + dup dup dup * *
+
+021)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup +
+   3)  fitn =    5.56 :   dup dup dup dup dup +
+   4)  fitn =   10.00 :   dup dup nop * dup dup
+   5)  fitn =  500.00 :   * dup dup dup dup +
+
+022)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup +
+   3)  fitn =   14.07 :   dup dup dup dup
+   4)  fitn =   24.07 :   dup dup * + dup +
+   5)  fitn =  500.00 :   dup + + dup dup dup +
+
+023)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup +
+   3)  fitn =    5.56 :   dup dup * dup +
+   4)  fitn =   14.07 :   dup
+   5)  fitn =  500.00 :   * dup + nop + dup + + * dup
+
+024)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   nop dup dup dup +
+   3)  fitn =   14.07 :   nop nop nop dup nop
+   4)  fitn =   15.93 :   dup dup + dup +
+   5)  fitn =  500.00 :   +
+
+025)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup dup +
+   3)  fitn =   14.07 :   dup dup dup dup
+   4)  fitn =   14.07 :   nop nop nop nop nop dup nop
+   5)  fitn =  500.00 :   nop dup * dup * +
+
+026)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   nop dup dup dup +
+   3)  fitn =    5.56 :   nop dup dup + dup dup
+   4)  fitn =    5.93 :   dup dup dup + +
+   5)  fitn =    7.21 :   dup dup dup * * dup dup
+
+027)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =   14.07 :   dup dup dup dup nop
+   3)  fitn =   15.93 :   dup + dup dup dup +
+   4)  fitn =  500.00 :   nop + dup dup nop +
+   5)  fitn =  500.00 :   nop + dup nop + dup dup
+
+028)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =   14.07 :   dup dup dup dup dup nop
+   3)  fitn =   15.93 :   dup dup dup dup + dup +
+   4)  fitn =   15.93 :   dup + dup dup dup +
+   5)  fitn =  500.00 :   nop + + + + dup * dup +
+
+029)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup dup +
+   3)  fitn =   14.07 :   dup nop dup dup nop nop
+   4)  fitn =   14.07 :   nop dup dup dup dup nop
+   5)  fitn =   15.93 :   dup dup dup dup + dup +
+
+030)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   nop dup dup dup +
+   3)  fitn =    5.93 :   dup dup + +
+   4)  fitn =   10.00 :   dup dup nop dup dup * nop dup nop
+   5)  fitn =   14.07 :   dup dup dup dup dup nop
+
+031)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup dup dup dup +
+   3)  fitn =    5.56 :   dup nop nop dup dup dup dup +
+   4)  fitn =   14.07 :   nop dup nop dup nop nop nop
+   5)  fitn =  500.00 :   + * dup + +
+
+032)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    5.56 :   dup dup dup dup +
+   2)  fitn =    5.56 :   dup dup dup dup +
+   3)  fitn =    5.56 :   dup dup dup dup dup dup +
+   4)  fitn =    5.93 :   dup dup dup nop dup + +
+   5)  fitn =   20.64 :   nop dup nop nop dup dup * * * dup nop
+
+033)   best =    5.56 :   dup dup dup dup + 
+
+-------------------------------------------------------------------
+
+   1)  fitn =    0.00 :   dup dup dup dup nop dup dup * +
+   2)  fitn =    5.56 :   dup dup dup dup +
+   3)  fitn =    5.56 :   dup +
+   4)  fitn =    5.56 :   dup dup dup dup +
+   5)  fitn =  500.00 :   * nop dup dup dup dup +
+
+034)   best =    0.00 :   dup dup dup dup nop dup dup * + 
+

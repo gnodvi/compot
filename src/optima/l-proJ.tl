@@ -8,6 +8,8 @@
 proc v1_get_result_from_one_arg {prg_11 val {prog_11 @}} {
 
 
+  # кладем одно значение в стек
+
   push $val 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,6 +25,7 @@ proc v1_get_result_from_one_arg {prg_11 val {prog_11 @}} {
   #  puts "v1_get_result_from_one_arg: prog= |$prog|"
   #} 
 
+  # выполняем программку
 
   run_v1_src_or_prog $prg_11 $prog_11
 
@@ -31,10 +34,14 @@ proc v1_get_result_from_one_arg {prg_11 val {prog_11 @}} {
   #run_v2_src_old $prg 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # забираем одно значение из стека
+
   set result [pop]
 
   return $result
 }
+#-------------------------------------------------------------------------------
+# кладем один аргумент в стек и выполняем joy-программу
 #-------------------------------------------------------------------------------
 proc getresult_prg_val_11 {prg_11 val {prog_11 @}} {
 
@@ -789,6 +796,48 @@ proc NEXT_01 {} {
   return
 }
 #-------------------------------------------------------------------------------
+proc get_x_list {xmin xmax nums} {
+
+  set x_list {}
+
+  lappend x_list $xmin ;# 1-я точка обязательна
+
+
+  # делаем внутренни точки в таком количестве
+  set in_nums [- $nums 2] 
+
+  # с шагом
+  set step [/ [* 1.0 [- $xmax $xmin]] [- $nums 1]]
+
+  for {set i 1} {$i <= $in_nums} {incr i} {
+
+    set x [+ $xmin [* $i $step]]
+    lappend x_list $x
+  }
+
+
+  lappend x_list $xmax ;# последняяя точка обязательна
+
+  return $x_list
+}
+#-------------------------------------------------------------------------------
+proc x_subst {inp} {
+
+  set lis [split $inp]
+
+  set out {}
+
+  foreach l $lis {
+
+    if {$l == "x"} {
+      append out {$x}
+    } else {
+      append out $l
+    }
+  }
+
+  return $out
+}
 #-------------------------------------------------------------------------------
 #
 # Типичный пример. Выявлем (раскручиваем) программу, вычисляющую квадрат числа.
@@ -798,47 +847,49 @@ proc NEXT_01 {} {
 #-------------------------------------------------------------------------------
 proc squareFitness {prg_11 task} {
 
+  if {$::ITEMS_LIST} {
+    set prg_11  [item_get_chromosome $prg_11]
+  }
+
   set prog_11 @ ;# это заглушка на будущее ?
 
-  set vers [GET $task "vers"]
+  #set vers [GET $task "vers"]
+
+  #set x_list [get_x_list  1 5  5]
+  set x_list [get_x_list  0 2  10]
+
+  #puts "x_list = $x_list"
+  #exit
+
+  set func [GET $task "func"]
+
+  # начинаем в цикле подсчет фитнеса --------------------------
 
   set fitness 0
 
-  set i_list {1 2 3 4 5}
+  foreach x $x_list {
 
-  #set o_list {1 4 9 16 25}
-  #foreach i $i_list  o $o_list {}
-  #
-  # наверное для скорости надо будет заранее составить выходную таблицу, но пока
-  # честно считаем по формуле в цикле
+    set o [expr $func]
 
-  foreach i $i_list {
-
-    if {$vers == 0} {
-      set o [* $i $i]
-    } else {
-      #set o [* $i $i $i]
-      #set o [+ [*  $i $i $i] [*  $i $i]]  ;# dup dup dup * + *  ?? (x^2 + x) * x = x^3 + x^2 ??
-      #set o [* $i $i $i $i]
-      #puts stderr "squareFitness: i = $i, o = $o"
-      set o [+ [*  $i $i $i] [*  $i $i]  $i]
-    }
-    
-
-    # выполним программку и возьмем результат
+    # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
     # 
-    set result [getresult_prg_val_11  $prg_11 $i $prog_11]
+    set result [getresult_prg_val_11  $prg_11 $x $prog_11]
+ 
+    set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
 
+    #puts stderr "::joy_ST = $::joy_ST,  len = $len"
 
+    #---------------------------------------------------------------
     if {$result eq {}}  {
 
+      # сначала такая проверка !!
       # здесь может быть просто списко или символ-строка, а не число!
       # 
       #puts "NOT run? NOT result !!"
       #exit
       incr fitness 50 ;# при каждой ошибке добавляем дельту
 
-    } elseif {![string is integer $result]} {
+    } elseif {![string is integer $result] && ![string is double $result]} {
 
       incr fitness 50 ;# при каждой ошибке добавляем дельту
 
@@ -851,13 +902,21 @@ proc squareFitness {prg_11 task} {
         set delta 1000
       }
 
-      incr fitness $delta
+      #incr fitness $delta
+      set fitness [+ $fitness $delta]
     }
+    #---------------------------------------------------------------
+
   }
     
-  #return [expr {$fitness + [llength $prg_11]}]
+  # длину учитывать ? но тогда генетич. разнообразие ухудшается?
   #
-  # давай пока длину не учитывать ?!
+  #incr fitness [llength $prg_11] 
+
+
+  # нам не нужны лишние результаты в стеке ? тоже ухудшает? лучше потом преобразовать?
+  #
+  #incr fitness $len
 
 
   return $fitness
@@ -865,10 +924,6 @@ proc squareFitness {prg_11 task} {
 #-------------------------------------------------------------------------------
 proc TEST_xx {} {
 
-  # ищем функцию возведения в квадрат 
-  # 
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   global argc argv argv0
   set argv [lrange $argv 2 end]
@@ -878,26 +933,33 @@ proc TEST_xx {} {
   #exit
 
   set seed        [dict_parse $argv "-seed"  2013]
-  set individuals [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
-  set len         [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
+  set lpop        [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
+  set size        [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums"  10]  ;# шагов эволюции 
   set vers        [dict_parse $argv "-vers"   0]
-
   set is_print    [dict_parse $argv "-print"  1]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  if {$vers == 0} {
-  
-    #set ::gp_list     "+ - * / dup"  
-    set ::gp_list     "+ - * dup i nop" 
-    
-  } 
-  if {$vers == 1} {
+  set ::gp_list   [dict_parse $argv "-list"   "dup * nop +"]
 
-    #set ::gp_list  "dup * nop" 
-    set ::gp_list  "dup * nop +" 
-  }
+  #set func        [dict_parse $argv "-func"  {$x ** 2 + $x}]
+  set func        [dict_parse $argv "-func"  {x ** 2 + x}]
+
   #------------------------------------------
+  if {0} {
+
+    set prim {x**2 + x}
+
+    puts "prim = $prim"
+    set prim [x_subst $prim] 
+    puts "prim = $prim"
+
+    exit
+  } else {
+
+    set func [x_subst $func] 
+  }
+ 
+  #----------------------------------------------
   #set ::randinstr   randinstr_SIMP 
 
   #set ::quotes_proc "make_quotes_BE"
@@ -905,6 +967,7 @@ proc TEST_xx {} {
   #set ::quotes_proc  "quotes_proc_NULL" 
 
   #set randpop_proc "make_rand_prgpop_unikum"
+
   set rand_prgpop_proc "make_rand_prgpop"
   
   set pb [mp_create]
@@ -914,12 +977,30 @@ proc TEST_xx {} {
     quotes_proc  "make_quotes_TCL"
 
 
-  set task [task_create "squareFitness"  -fit_tobest "MIN" -vers $vers]
+  set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
 
-  run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
-                       $individuals $len  \
-                       0.1                \
-                       $nums  $is_print 0 \
+  #----------------------------------------------
+  if {$vers == 0} {
+
+    run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
+                              $lpop $size  \
+                              0.2                \
+                              $nums  $is_print 0 
+  } else {
+    
+    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
+
+    set ::is_print $is_print
+    #test_random_seed 0 ;#$i
+  
+    set obj \
+      [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers] 
+
+    set ret [calc_BOT01 $obj {*}$argv]
+
+  }
+  #----------------------------------------------
+
 
   return
 }
@@ -947,6 +1028,11 @@ proc TEST_xx {} {
 # ищем простую функцию x^3 + x^2 + x:  dup dup dup dup * nop + * + 
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 100 -size 6 -nums -1 -vers 1 -print 2
+
+
+# какой-то странный все же алгоритм, долго не сходится
+#
+# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 -func 'x ** 3 + x ** 2 + x'
 
 #-------------------------------------------------------------------------------
 
