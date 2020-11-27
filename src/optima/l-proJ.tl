@@ -875,40 +875,66 @@ proc squareFitness {prg_11 task} {
     # 
     set result [getresult_prg_val_11  $prg_11 $x $prog_11]
  
+    #---------------------------------------------------------------
+
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
 
     #puts stderr "::joy_ST = $::joy_ST,  len = $len"
+    #puts "result = $result"
+
+    set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
     #---------------------------------------------------------------
+    #
+
     if {$result eq {}}  {
 
-      # сначала такая проверка !!
-      # здесь может быть просто списко или символ-строка, а не число!
+      # ошибка программы (на первом ошибочном операторе) !!
       # 
-      #puts "NOT run? NOT result !!"
-      #exit
-      incr fitness 50 ;# при каждой ошибке добавляем дельту
+      # можно бы попробовать гибкую реакци. на "неверные" операторы программы, т.е.
+      # не вываливаться сразу в ошибку, а продолжать выпонять остальные операторы !
+      #
+      # но пока просто даим не слишком большой штраф, в пределах дельта-ошибок
+      
+      incr fitness 25 ;# 10 50 150
+      #
+      # может сразу выходить из цикла по точкам, они же все такие будут?
+      break
 
     } elseif {![string is integer $result] && ![string is double $result]} {
 
+      # здесь может быть просто списко или символ-строка, а не число!
+      # но пока кроме числе и {ошибки} в стеке ничего не предвидится
+      #
+      puts "NOT DIGITAL ???? !!!"
+      exit
+
       incr fitness 50 ;# при каждой ошибке добавляем дельту
+      # 
+      # может сразу выходить из цикла по точкам, они же все такие будут?
+      break
 
     } else {
 
-      set delta [expr {abs($o-$result)}] ;# !!!!!!!!! o {1 4 9 16 25}
+      #set delta [expr {abs($o-$result)}] ;# 
+      set delta [expr {($o-$result) ** 2 } ] ;# !! может корень из суммы квадратов?
 
-      if {$delta > 1000} {
-        # anti overflow ???
-        set delta 1000
-      }
+      #if {$delta > 1000} {
+      #  # anti overflow ???
+      #  set delta 1000
+      #}
 
-      #incr fitness $delta
-      set fitness [+ $fitness $delta]
+      set delta_sum [+ $delta_sum $delta]
+
+      #set fitness [+ $fitness $delta]
     }
     #---------------------------------------------------------------
 
   }
     
+  #set fitness [+ $fitness $delta_sum]
+  set fitness [expr {$fitness + sqrt ($delta_sum)}]
+
   # длину учитывать ? но тогда генетич. разнообразие ухудшается?
   #
   #incr fitness [llength $prg_11] 
@@ -920,6 +946,14 @@ proc squareFitness {prg_11 task} {
 
 
   return $fitness
+}
+#-------------------------------------------------------------------------------
+proc fitness_test {task item} {
+
+  #set task NULL
+
+  puts "item = $item,  ret = [squareFitness  $item $task] "
+
 }
 #-------------------------------------------------------------------------------
 proc TEST_xx {} {
@@ -959,6 +993,11 @@ proc TEST_xx {} {
     set func [x_subst $func] 
   }
  
+  puts "func = $func"
+
+  set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
+  fitness_test $task "dup dup + +" 
+
   #----------------------------------------------
   #set ::randinstr   randinstr_SIMP 
 
@@ -972,22 +1011,70 @@ proc TEST_xx {} {
   
   set pb [mp_create]
 
-  mp_init $pb \
-    randinstr    "randinstr_SIMP" \
-    quotes_proc  "make_quotes_TCL"
+  if {0} {
+    mp_init $pb \
+      randinstr    "randinstr_SIMP" \
+      quotes_proc  "make_quotes_TCL"
+  } else {
+    mp_init $pb \
+      randinstr    "randinstr_SIMP" \
+      quotes_proc  "quotes_proc_NULL"
+  }
 
-
-  set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
 
   #----------------------------------------------
   if {$vers == 0} {
+  #----------------------------------------------
+    #
+    # gp_evolution
+
+    set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
 
     run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
                               $lpop $size  \
                               0.2                \
                               $nums  $is_print 0 
-  } else {
+
+  #----------------------------------------------
+  } 
+  if {$vers == 1} {
+  #----------------------------------------------
+    #
+    # ga_evolution
     
+    set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
+
+    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
+
+    set ::is_print $is_print
+  
+    set obj \
+      [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers] 
+
+    set pop [GET $obj "pop"] ;# только эти функции выбора работают
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+
+    set ret [calc_BOT01 $obj {*}$argv]
+
+  #----------------------------------------------
+  } 
+  if {$vers == 2} {
+  #----------------------------------------------
+    #
+    # ga_evolution, ищем как обычную строку (но для FS_fitness_list)
+
+    set ::gp_list      "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
+    set ::target_text  "nop dup dup nop nop nop nop * nop + nop nop"
+    set size 12
+
+    set fitness_func   "FS_fitness_list"
+    # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
+    set fit_target     0    
+  
+    set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target \
+              -fit_error 0.01 ]  
+
     set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
 
     set ::is_print $is_print
@@ -996,8 +1083,13 @@ proc TEST_xx {} {
     set obj \
       [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers] 
 
+    set pop [GET $obj "pop"]
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+
     set ret [calc_BOT01 $obj {*}$argv]
 
+  #----------------------------------------------
   }
   #----------------------------------------------
 
@@ -1033,6 +1125,12 @@ proc TEST_xx {} {
 # какой-то странный все же алгоритм, долго не сходится
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 -func 'x ** 3 + x ** 2 + x'
+
+#-------------------------------------------------------------------------------
+
+#007)     best =    0.000 :   dup dup dup + nop + dup + + 
+
+#l~.tl TEST TEST_xx  -seed @ -lpop 200 -nums -1 -print 2 -vers 0 -func 'x ** 3 + x ** 2 + x'
 
 #-------------------------------------------------------------------------------
 

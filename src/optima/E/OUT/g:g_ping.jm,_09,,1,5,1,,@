@@ -12,28 +12,6 @@ orig_size = 5   select_state = 2
   step   1  ...  f0 = -52.490  i0 =  1 4 2 5 6 7 8 0 3 
 
 
-
-FINAL RESULT: 
-
----------------------- POPULATION PRINT -------------------------------
-
-Generation = 1
-
-   i =   0   fitness=   -52.490   ch=  01 04 02 05 06 07 08 00 03 
-   i =   1   fitness=   -52.490   ch=  01 04 02 05 06 07 08 00 03 
-   i =   2   fitness=  -222.880   ch=  03 06 00 01 07 05 08 02 04 
-   i =   3   fitness=  -222.880   ch=  03 06 00 01 07 05 08 02 04 
-   i =   4   fitness=  -265.333   ch=  08 05 02 04 06 07 00 01 03 
-
-STABLE_SIZE = 5 
-SIZE        = 5 
-BEST        = 0 
-
-BEST = 0  (fitness = -52.489796) 
- 
------------------------------------------------------------------------
-
-
 The final solution with found was: (seed = 0):
 1 4 2 5 6 7 8 0 3
 With score = -52.489796

@@ -370,6 +370,12 @@ proc _01_test {} {
   set obj \
     [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task -vers $vers] 
 
+  if {$vers == 1} {
+    set pop [GET $obj "pop"]
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+  }
+
   set ret [calc_BOT01 $obj {*}$argv]
 
   #---------------------------------------------------------------------
@@ -1660,11 +1666,20 @@ proc make_bots_list {argv} {
     
     set vers 0
     set task [make_task_for_BOT01 $vers]
-    dict_set $bots "bot01_vers0" [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
+    set obj [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
+    dict_set $bots "bot01_vers0" $obj
+
+    #--------------------------------------------
 
     set vers 1
     set task [make_task_for_BOT01 $vers]
-    dict_set $bots "bot01_vers1" [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
+    set obj [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
+
+    set pop [GET $obj "pop"]
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"
+
+    dict_set $bots "bot01_vers1" $obj
 
   #-------------------------------------------------------------
   } \

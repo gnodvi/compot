@@ -161,12 +161,14 @@ proc item_print_oneline {item {out "stdout"} {ch_form "%s "}} {
   
   if {[string equal $fi $::GA_MIN_FITNESS]} {
 
-    puts -nonewline $out "fitness= NOT_FITNESS"
+    puts -nonewline $out "fitn = NOT_FITNESS"
   } else {
-    puts -nonewline $out "fitness= [format "%9.3f"  $fi]"
+    #puts -nonewline $out "fitn = [format "%9.3f"  $fi]"
+    puts -nonewline $out "fitn = [format " %8.3f"  $fi]"
   }
   
-  item_print_ch $item "   ch=  " $out $ch_form
+  #item_print_ch $item "   ch=  " $out $ch_form
+  item_print_ch $item " :   " $out $ch_form
   
   puts $out ""
 }
@@ -681,7 +683,8 @@ proc pop_print_lite_ {p {out "stdout"}} {
 
   foreach e $tmp {
     
-    puts -nonewline $out [format "   i = %3d   " $i]
+    #puts -nonewline $out [format "   i = %3d   " $i]
+    puts -nonewline $out [format " %4d)   " $i]
     
     item_print_oneline $e $out $ch_form
 
@@ -5472,12 +5475,14 @@ proc ga_evolution_main {task pop max_generations} {
       break;
     }
 
+    if {$::is_print >= 2} {pop_print $pop "stderr"}
+
   } ;# /* Generation loop. */
   #--------------------------------------------------------------------
   
-  puts ""
+  #puts ""
 
-  if {$::is_print > 1} {
+  if {$::is_print > 2} {
 
     puts ""
     puts "FINAL RESULT: "
@@ -5966,7 +5971,7 @@ proc print_best {i task  best_item is_print game_print_proc} {
     #set fitstring [format "%.2f" $ftn]
 
     #puts [format "%03d)   best = % 5s :   $prg " $i $ftn ]
-    puts [format "%03d)   best = % 7.2f :   $prg " $i $ftn ]
+    puts [format "%03d)     best = % 8.3f :   $prg " $i $ftn ]
     #puts [format "%03d)   best = % 5s :   $prg " $i $fitstring ]
 
     #puts stderr "game_print_proc = $game_print_proc"
@@ -6014,7 +6019,7 @@ proc lsort_pop_command {sort_driver a b} {
 proc item_print_fitness {item i} {
 
 
-  puts -nonewline [format "  %3d)" $i]
+  puts -nonewline [format "  %3d) " $i]
   
   #set src   [item_get_main_src   $item] 
   #set fitn  [item_get_fitn       $item] 
@@ -6028,7 +6033,7 @@ proc item_print_fitness {item i} {
     set fitn  [item_get_fitn       $item] 
     
     #puts [format "  fitn = % 5s :   %s" $fitn $src]
-    puts [format "  fitn = % 7.2f :   %s" $fitn $src]
+    puts [format "  fitn = % 8.3f :   %s" $fitn $src]
     
   } else {
     
@@ -6781,23 +6786,9 @@ proc calc_BOT01 {obj args} {
   
   pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 
-  if {$vers == 1} { 
-
-    # нулевая цель
-
-    #set ::sort_driver  "MAX_to_LEFT" ;## большие влево (из минуса к 0)
-    #SET $pop "sort_driver" $::sort_driver так ведь по умолчанию !!
-    #set ::is_print 2.2
-
-    # и надо поменять алгоритм выбора !!! а то он (_sus) глючит !!!
-    # 
-    SET $pop  select_one   "ga_select_one_bestof2"
-    SET $pop  select_two   "ga_select_two_bestof2"
-  }
-  
   if {$::is_print > 1} {
     pop_print $pop
-    puts ""
+    #puts ""
   }
 
   set ret [ga_evolution_main  $task $pop $max_generations]
