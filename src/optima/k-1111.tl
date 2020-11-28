@@ -170,26 +170,18 @@ proc r args {
 
   foreach a $args {
 
-    if {0} {
-      set ret [r_one $a]
+    #puts stderr "r: a = $a, stack = $::joy_ST"
 
-      if {$ret == "continue"} {continue}
-    
+    if {[catch {set ret [r_one $a]} err]} {
+      
+      # перехвачена ошибка при выполнении опреатора $a
+      #puts stderr "r_one  .........  ERROR err = $err, ret = $ret"
+      #exit
+      
     } else {
-
-      #------------------------------------------------------
-      if {[catch {set ret [r_one $a]} err]} {
-
-        # перехвачена ошибка при выполнении опреатора $a
-        #exit
-
-      } else {
-        # все прошло нормально, без ошибок
-
-        if {$ret == "continue"} {continue}    
-      }
-      #------------------------------------------------------
-
+      # все прошло нормально, без ошибок
+      
+      if {$ret == "continue"} {continue}    
     }
     
   } ;# foreach a $args

@@ -845,7 +845,9 @@ proc x_subst {inp} {
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
 #-------------------------------------------------------------------------------
-proc squareFitness {prg_11 task} {
+proc squareFitness {prg_11 task args} {
+
+  set is_print [dict_parse $args "-is_print"   0]
 
   if {$::ITEMS_LIST} {
     set prg_11  [item_get_chromosome $prg_11]
@@ -865,7 +867,17 @@ proc squareFitness {prg_11 task} {
 
   # начинаем в цикле подсчет фитнеса --------------------------
 
+  #set is_print 0
+
+  if {$is_print} {
+    puts stderr ""
+    puts stderr "-------------------------------------------------------------------"
+    puts stderr "squareFitness, prg = $prg_11,  x_list = $x_list, func = $func"
+  }
+
   set fitness 0
+
+  set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
   foreach x $x_list {
 
@@ -882,13 +894,19 @@ proc squareFitness {prg_11 task} {
     #puts stderr "::joy_ST = $::joy_ST,  len = $len"
     #puts "result = $result"
 
-    set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
+    #set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
+    if {$is_print} {
+      puts stderr "x = $x, o = $o, len = $len"
+    }
     #---------------------------------------------------------------
     #
 
     if {$result eq {}}  {
 
+      if {$is_print} {
+        puts stderr "ERROR???"
+      }
       # ошибка программы (на первом ошибочном операторе) !!
       # 
       # можно бы попробовать гибкую реакци. на "неверные" операторы программы, т.е.
@@ -926,6 +944,10 @@ proc squareFitness {prg_11 task} {
 
       set delta_sum [+ $delta_sum $delta]
 
+      if {$is_print} {
+        puts stderr "x = $x, o = $o, result = $result, delta = $delta, delat_sum = $delta_sum"
+      }
+
       #set fitness [+ $fitness $delta]
     }
     #---------------------------------------------------------------
@@ -944,6 +966,7 @@ proc squareFitness {prg_11 task} {
   #
   #incr fitness $len
 
+  #puts stderr "squareFitness, prg = $prg_11, fitness = $fitness"
 
   return $fitness
 }
@@ -952,7 +975,7 @@ proc fitness_test {task item} {
 
   #set task NULL
 
-  puts "item = $item,  ret = [squareFitness  $item $task] "
+  puts "item = $item,  ret = [squareFitness  $item $task -is_print 1] "
 
 }
 #-------------------------------------------------------------------------------
@@ -978,26 +1001,6 @@ proc TEST_xx {} {
   #set func        [dict_parse $argv "-func"  {$x ** 2 + $x}]
   set func        [dict_parse $argv "-func"  {x ** 2 + x}]
 
-  #------------------------------------------
-  if {0} {
-
-    set prim {x**2 + x}
-
-    puts "prim = $prim"
-    set prim [x_subst $prim] 
-    puts "prim = $prim"
-
-    exit
-  } else {
-
-    set func [x_subst $func] 
-  }
- 
-  puts "func = $func"
-
-  set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
-  fitness_test $task "dup dup + +" 
-
   #----------------------------------------------
   #set ::randinstr   randinstr_SIMP 
 
@@ -1020,6 +1023,28 @@ proc TEST_xx {} {
       randinstr    "randinstr_SIMP" \
       quotes_proc  "quotes_proc_NULL"
   }
+  #----------------------------------------------
+
+  #------------------------------------------
+  if {$vers == "test"} {
+
+    #set prim {x**2 + x}
+    #puts "prim = $prim"
+    #set prim [x_subst $prim] 
+    #puts "prim = $prim"
+
+    set task [task_create "squareFitness"  -fit_tobest "MIN" -func {$x ** 2}]
+
+    fitness_test $task "+ dup * dup" 
+    puts ""
+
+    exit
+  } else {
+
+    set func [x_subst $func] 
+  }
+ 
+  puts "func = $func"
 
 
   #----------------------------------------------

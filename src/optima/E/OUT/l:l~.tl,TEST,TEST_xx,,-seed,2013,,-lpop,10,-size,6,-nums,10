@@ -1,6 +1,5 @@
 
 func = $x**2+$x
-item = dup dup + +,  ret = 25.0 
 
 make_prgpop: INIT POPULATION = 
 
@@ -9,12 +8,12 @@ make_prgpop: INIT POPULATION =
 000)     best =   25.000 :   * * 
 001)     best =   25.000 :   * * 
 002)     best =   25.000 :   * * 
-003)     best =    2.000 :   dup * 
-004)     best =    2.000 :   dup * 
-005)     best =    2.000 :   dup * 
-006)     best =    2.000 :   dup * 
-007)     best =    2.000 :   dup * 
-008)     best =    2.000 :   dup * 
-009)     best =    2.000 :   dup * 
-010)     best =    2.000 :   dup * 
+003)     best =    3.752 :   dup * 
+004)     best =    3.752 :   dup * 
+005)     best =    3.752 :   dup * 
+006)     best =    2.650 :   nop dup + 
+007)     best =    2.650 :   nop dup + 
+008)     best =    2.650 :   nop dup + 
+009)     best =    2.650 :   nop dup + 
+010)     best =    2.650 :   nop dup + 
 
