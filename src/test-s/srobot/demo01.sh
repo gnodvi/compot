@@ -1,8 +1,11 @@
+# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+
 #!/bin/sh
 #
 #---------------------------------------------------------------------
 
-WID=`xdotool search "Mozilla Firefox" | head -1`
+#WID=`xdotool search "Mozilla Firefox" | head -1`
+WID=`xdotool search "rxvt-unicode" | head -1`
 
 xdotool windowactivate --sync $WID
 xdotool key --clearmodifiers ctrl+l

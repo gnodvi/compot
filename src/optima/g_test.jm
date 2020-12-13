@@ -5,10 +5,6 @@
 exec jimsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
-
-#source "g_test.tl"
-
-#-------------------------------------------------------------------------------
 # Josef Knecht @ Copyright 
 #-------------------------------------------------------------------------------
 
@@ -22,12 +18,6 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 
 package require compot::common 
 
-#------------------------------------------
-
-# source "b-com0.tl"
-# source "b-com1.tl"
-
-#source "f-rand.tl"
 
 source "g-corE.tl"
 
@@ -35,7 +25,6 @@ source "g-diff.tl"
 source "g-grad.tl"
 
 
-# /*******************************************************************************
 #-------------------------------------------------------------------------------
 proc parse_opts {&population_size &max_generations  
                 def_population_size def_max_generations} {
@@ -187,7 +176,7 @@ proc _test_generation_callback {generation pop} {
   #           );
 
 
-  set best_chromo [item_get_chromosome $best]
+  set best_chromo [item_get_mainsrc $best]
   set best_fit    [item_get_fitn       $best]
   
   set A [lindex $best_chromo 0]
@@ -210,7 +199,7 @@ proc _test_generation_callback {generation pop} {
 proc _test_iteration_callback {iteration solution} \
 {
 
-  set ch [item_get_chromosome $solution]
+  set ch [item_get_mainsrc $solution]
   set fi [item_get_fitn $solution]
 
   #   printf ( "%d: A = %f B = %f C = %f D = %f (fitness = %f)\n",
@@ -799,7 +788,7 @@ proc test_de {task strategy_list} {
     #set best_fit    [$pop get_entity_fitness $best]
     set best_fit    [pop_get_entity_fitness_ $pop  $best]
 
-    set best_chromo [item_get_chromosome $best_entity]
+    set best_chromo [item_get_mainsrc $best_entity]
 
     set A [lindex $best_chromo 0]
     set B [lindex $best_chromo 1]

@@ -263,7 +263,7 @@ proc pingpong_mutate_swap {pop mother son} {
   #           mother->CH,
   #           pop->len_chromosomes * sizeof(int));
 
-  item_set_chromosome $son [item_get_chromosome $mother]
+  item_set_mainsrc $son [item_get_mainsrc $mother]
 
   #   i = random_int (len_chromo);
   #   j = random_int (len_chromo);
@@ -402,7 +402,7 @@ proc pingpong_mutate_shift {pop mother son}  {
   #           mother->CH,
   #           pop->len_chromosomes * sizeof (int));
 
-  item_set_chromosome $son [item_get_chromosome $mother]
+  item_set_mainsrc $son [item_get_mainsrc $mother]
   
   #   i = random_int (len_chromo);
   set i [random_int $len_chromo]
@@ -601,7 +601,7 @@ proc main_ga {len_chromo} {
     
     #set beststring [ga_chromosome_integer_to_string  $pop bestentity beststring &beststrlen]
     #set beststring [$bestentity get_chromosome]
-    set beststring [item_get_chromosome $bestentity]
+    set beststring [item_get_mainsrc $bestentity]
     
     #   printf ("%s\n", beststring);
     #   printf ("With score = %f\n", ga_entity_get_fitness (bestentity));

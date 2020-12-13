@@ -368,7 +368,7 @@ proc _01_test {} {
   set task [make_task_for_BOT01 $vers]
   
   set obj \
-    [BOT01 new  -lpop $population_size -lgen $len_chromo -task $task -vers $vers] 
+    [BOT01 new  -lpop $population_size -lsrc $len_chromo -task $task -vers $vers] 
 
   if {$vers == 1} {
     set pop [GET $obj "pop"]
@@ -559,7 +559,7 @@ dict_class_create  BOT03 {BOT} {
 } {
   # а это конструктор класса 
 
-  set len_chromo      [dict_parse $args "-lgen" ] 
+  set len_chromo      [dict_parse $args "-lsrc" ] 
   set population_size [dict_parse $args "-lpop" ] 
   set task            [dict_parse $args "-task" ] 
     
@@ -656,7 +656,7 @@ proc _03_test {} \
   #----------------------------------------------------------------------
 
   set obj \
-    [BOT03 new  -lpop $population_size -lgen $len_chromo -task $task] 
+    [BOT03 new  -lpop $population_size -lsrc $len_chromo -task $task] 
 
 
   set pop [GET $obj pop]
@@ -730,11 +730,11 @@ dict_class_create  BOT04 {BOT} {
 
   # если нет в args, то берем значение здесь
   # 
-  set len_chromo      [dict_parse $args "-lgen" ] 
+  set len_chromo      [dict_parse $args "-lsrc" ] 
   set population_size [dict_parse $args "-lpop" ] 
   
   set pop [GAUL new  \
-             -lpop $population_size -lgen $len_chromo]
+             -lpop $population_size -lsrc $len_chromo]
   
   #SET $pop ch_form "%c" ;# 
   SET $pop ch_form "%s " ;# 
@@ -862,7 +862,7 @@ proc _04_test {} \
   #----------------------------------------------------------------------
 
   set obj \
-    [BOT04 new  -lpop $population_size -lgen $len_chromo -task $task] 
+    [BOT04 new  -lpop $population_size -lsrc $len_chromo -task $task] 
 
   set pop [GET $obj pop]
 
@@ -891,7 +891,7 @@ dict_class_create  BOT05 {BOT} {
   # 
   set task  [GET $obj task]
 
-  set len_chromo      [dict_parse $args "-lgen" ] 
+  set len_chromo      [dict_parse $args "-lsrc" ] 
   set population_size [dict_parse $args "-lpop" ] 
   set num_pops        [dict_parse $args "-num_pops" 1]
   
@@ -1032,7 +1032,7 @@ proc _05_test {} \
   #----------------------------------------------------------------------
 
   set obj \
-    [BOT05 new  -lpop $population_size -lgen $len_chromo -task $task -num_pops $num_pops ] 
+    [BOT05 new  -lpop $population_size -lsrc $len_chromo -task $task -num_pops $num_pops ] 
 
   set pops [GET $obj pops]
 
@@ -1065,7 +1065,7 @@ dict_class_create  BOT06 {BOT} {
   # 
   set task   [GET $obj task]
   
-  set len_chromo      [dict_parse $args "-lgen" ] 
+  set len_chromo      [dict_parse $args "-lsrc" ] 
   set population_size [dict_parse $args "-lpop" ] 
   
 
@@ -1160,7 +1160,7 @@ proc _dc_test {} \
     #----------------------------------------------------------
 
     set obj \
-      [BOT06 new  -lpop $population_size -lgen $len_chromo -task $task] 
+      [BOT06 new  -lpop $population_size -lsrc $len_chromo -task $task] 
 
     set pop [GET $obj pop]
 
@@ -1256,7 +1256,7 @@ dict_class_create  BOT79 {BOT} {
 } {
   #---------------------------------------------------------
 
-  set len_chromo      [dict_parse $args "-lgen"] 
+  set len_chromo      [dict_parse $args "-lsrc"] 
   set population_size [dict_parse $args "-lpop"] 
   set task            [dict_parse $args "-task"] 
   
@@ -1371,13 +1371,13 @@ proc eschemes {} \
   #----------------------------------------------------------------------
 
   set obj7 \
-    [BOT07_new  -lpop $population_size -lgen $len_chromo -task $task -name Darwinian ] 
+    [BOT07_new  -lpop $population_size -lsrc $len_chromo -task $task -name Darwinian ] 
  
   set obj8  \
-    [BOT08_new  -lpop $population_size -lgen $len_chromo -task $task -name Baldwinian] 
+    [BOT08_new  -lpop $population_size -lsrc $len_chromo -task $task -name Baldwinian] 
 
   set obj9 \
-    [BOT09_new  -lpop $population_size -lgen $len_chromo -task $task -name Lamarckian] 
+    [BOT09_new  -lpop $population_size -lsrc $len_chromo -task $task -name Lamarckian] 
 
   #----------------------------------------------------------
 
@@ -1482,7 +1482,7 @@ proc ent_as_string_list {e ch_form} {
     set ch_form [GET $e ch_form] ;# локальная переменная
   }
 
-  set ch  [item_get_chromosome $e]
+  set ch  [item_get_mainsrc $e]
   
   #puts -nonewline $out $name
   
@@ -1619,10 +1619,10 @@ proc maintest_run {make_bots_proc argv} {
 proc make_bots_standart {bots lpop size task} {
 
 
-  dict_set $bots "bot01" [BOT01 new  -lpop $lpop -lgen $size -task $task]
-  dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lgen $size -task $task]
-  dict_set $bots "bot03" [BOT03 new  -lpop $lpop -lgen $size -task $task]
-  dict_set $bots "bot04" [BOT04 new  -lpop $lpop -lgen $size -task $task]
+  dict_set $bots "bot01" [BOT01 new  -lpop $lpop -lsrc $size -task $task]
+  dict_set $bots "bot02" [BOT02 new  -lpop $lpop -lsrc $size -task $task]
+  dict_set $bots "bot03" [BOT03 new  -lpop $lpop -lsrc $size -task $task]
+  dict_set $bots "bot04" [BOT04 new  -lpop $lpop -lsrc $size -task $task]
 
 }
 # ------------------------------------------------------------------------------
@@ -1666,14 +1666,14 @@ proc make_bots_list {argv} {
     
     set vers 0
     set task [make_task_for_BOT01 $vers]
-    set obj [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
+    set obj [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers]
     dict_set $bots "bot01_vers0" $obj
 
     #--------------------------------------------
 
     set vers 1
     set task [make_task_for_BOT01 $vers]
-    set obj [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers]
+    set obj [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers]
 
     set pop [GET $obj "pop"]
     SET $pop  select_one   "ga_select_one_bestof2"
@@ -1712,7 +1712,7 @@ proc make_bots_list {argv} {
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   set obj \
-    [BOT33 new   -lpop $lpop -lgen $size \
+    [BOT33 new   -lpop $lpop -lsrc $size \
        -sort_driver $sort_driver  -task $task -is_print 0]
 
 
@@ -1726,7 +1726,7 @@ proc make_bots_list {argv} {
     set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.1 ]
     #set ::sort_driver "MAX_to_LEFT"    
 
-    dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lgen $size -task $task]
+    dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lsrc $size -task $task]
 
   }
   #-------------------------------------------------------------

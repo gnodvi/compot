@@ -391,11 +391,16 @@ is replaced with replacement."
 
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       ;; тeпeрь надо сравнить два файла
-      (setf cmd (concatenate 'string "diff --ignore-all-space " CALC_FILE_SED " " 
 
-;                             TRUE_FILE_SED " 1>  2>&1 " DIFF_FILE ))
-                             TRUE_FILE_SED " 1> " DIFF_FILE " 2>&1 " ))
-;                      TRUE_FILE_SED " &> " DIFF_FILE)) ;- почему-то не работает в Убунту
+;      (setf cmd (concatenate 'string "diff --ignore-all-space " 
+;                             CALC_FILE_SED "      " 
+;                             TRUE_FILE_SED " 1>   " 
+;                             DIFF_FILE     " 2>&1 " ))
+
+      (setf cmd (concatenate 'string "diff --ignore-all-space " 
+                             TRUE_FILE_SED "      " 
+                             CALC_FILE_SED " 1>   " 
+                             DIFF_FILE     " 2>&1 " ))
 
 
 

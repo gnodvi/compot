@@ -130,6 +130,9 @@ proc r_one {a} {
     #puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     
     eval r $prg ;# рекурсивно выполняем
+    #
+    # TODO отслеживать глуибну рекурсии, чтобы при аварии откатываться
+    # на начало рекурсии ??
     
     return "continue"
   } 
@@ -151,40 +154,86 @@ proc r_one {a} {
   return ""
 }
 #-------------------------------------------------------------------------------
-#   if {[catch {set result [v1_get_result_from_one_arg  $prg_11 $val $prog_11]} err ]} {
 
-#     if {[IsDebug]} {
-#       puts stderr "ERROR = $err"
-#     }
+set ::error_saverestore 0
 
-#     return {}
-#   } else {
-#     return $result
-#   }
+set ::error_print1 0
+set ::error_print2 0
+set ::error_print3 0
+
+set ::r_one_level 0
+
+set ::ST_save ""
 
 #-------------------------------------------------------------------------------
 proc r args {
   
+
   # идем списком по элементам команды
   # 
 
   foreach a $args {
 
-    #puts stderr "r: a = $a, stack = $::joy_ST"
+    if {$::error_print3} {
+      puts stderr [format "r: stack = %25s  |  a = %25s | %10s " $::joy_ST $a $::ST_save]
+    }
 
-    if {[catch {set ret [r_one $a]} err]} {
-      
-      # перехвачена ошибка при выполнении опреатора $a
-      #puts stderr "r_one  .........  ERROR err = $err, ret = $ret"
-      #exit
-      
-    } else {
-      # все прошло нормально, без ошибок
-      
-      if {$ret == "continue"} {continue}    
+    # перед попыткой выполнить оператор, сохраним стек, чтобы
+    # в случае аварии - восстановить его и продолжить, как бы
+    # пропустив этот "ошибочный" оператор
+    
+    # операторы могут быть сложные и прилично испортить стек
+    # до того как дойдут до вложенного ошибочного оператора !!!
+    # рекурсия  при вызове r_one -> r
+    #
+    
+    if {$::r_one_level == 0} {
+      set ::ST_save $::joy_ST
     }
     
+    incr ::r_one_level +1
+    
+    #-------------------------------------------------
+    if {[catch {set ret [r_one $a]} err]} {
+    #-------------------------------------------------
+      
+      # перехвачена ошибка при выполнении опреатора $a
+      
+      if {$::error_print2} {
+        puts "r_error_print2: r: err = $err, ST = $::joy_ST, ST_save = $::ST_save"
+        puts ""
+      }
+      
+      if {$::error_saverestore} {
+        set ::joy_ST $::ST_save ;# ??
+      }
+      
+      incr ::r_one_level -1
+      
+    #-------------------------------------------------
+    } else {
+    #-------------------------------------------------
+      
+      # все прошло нормально, без ошибок
+      #puts "all ok, ret = $ret, r_one_level = $::r_one_level"
+      
+      incr ::r_one_level -1
+      
+      if {$ret == "continue"} {continue}  
+          
+      #incr ::r_one_level -1
+      
+    #-----------------------------------------------------------------
+    }
+    #-----------------------------------------------------------------
+    
+    
   } ;# foreach a $args
+
+
+  #if {$::error_print3} {
+  #  puts stderr [format "r: stack = %25s  |  " $::joy_ST]
+  #}
 
 
   set ::joy_ST  ;# ??
@@ -1263,14 +1312,23 @@ proc run_v1_prog {prog} {
 
 }
 #-------------------------------------------------------------------------------
-proc run_v1_src_or_prog {src prog} {
+# proga - обобщенное название программы, там могут быть разные варианты (типы) 
+#
+#-------------------------------------------------------------------------------
+#proc run_v1_src_or_prog {src prog} {}
+proc run_v1_src_or_prog {proga} {
 
   # для переходного периода лучше просто смотреть тип, словарь это или список !
   # 
 
-  if {[string equal $prog "@"]} {
+  #set prog @
+  #set src  $src_or_prog
+  #set src  $proga
 
-    run_v1_src   $src 
+  if {1} {
+
+    run_v1_src   $proga 
+    #run_v1_src   $src 
   } else {
 
     run_v1_prog  $prog

@@ -21,7 +21,7 @@ My variables are:
 ----------------- class CreditAccount ------------------------------
 
 CreditAccount vars      = balance limit name
-CreditAccount classvars = name Unknown balance 0 limit -1000
+CreditAccount classvars = balance 0 name Unknown limit -1000
 CreditAccount methods   = baseclass classname classvars constructor deposit describe destroy eval finalize get method methods new see vars withdraw
 
 ----------------- object CreditAccount -----------------------------
@@ -34,7 +34,7 @@ b.limit     = -1000
 b.limit     = -1000
 b.limit     = -1000
 
-CreditAccount classvars = name Unknown balance 0 limit -1000
+CreditAccount classvars = balance 0 name Unknown limit -1000
 
 initial balance -> 0
 deposit 100 -> 100

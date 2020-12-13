@@ -1,16 +1,6 @@
 # -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
 
 #-------------------------------------------------------------------------------
-# =============================================================================#
-
-# man tar
-#     -h, --dereference
-#           follow symlinks; archive and dump the files they point to
-#PROGS_JOY = b_find j_main j_main_d
-
-#PROGS_JOY = jm_main #m-main_d  #b_find 
-
-#SRC = b.scm  $(SRC)
 
 #CC    =  gcc -g -ansi -pedantic -Wall -D_C_SOURCE=1
 #CC    =  LANG=C  gcc -Wall 
@@ -20,107 +10,51 @@ CC    =  LANG=C  gcc -x c
 # 
 #-------------------------------------------------------------------------------
 
-#MAIN_SRC_DIR = ../common
-#MAIN_SRC_DIR = ../c-prog
-#MAIN_SRC_DIR = I
-
-#include $(MAIN_SRC_DIR)/Make.mak
-
-# =============================================================================#
-#
-#B  = ./Others
 B  = .
-
 G  = .
-#V  = ./Others
 V  = .
 
 #-------------------------------------------------------------------------------
-#V  = .
-
 
 V_RSB3_C = $(V)/p_rsb3.cc
 V_RSB3_N = $(A_COMM_H) $(V_RSB__H)
 V_RSB3_O = $(V)/T/p_rsb3.o
 V_RSB3_SO = $(V)/T/p-rsb-.so
 
-#-------------------------------------------------------------------------------
- 
-#PROGS =  $(V_RSB3_SO)    #T/a_test $(CAPTURE_LIB)  
-
-#all: $(PROGS)
-
 ##-------------------------------------------------------------------------------
 
-#GNUPLOTI_DIR =../../ploter
-#GNUPLOTI_DIR =../ext/PLOTER
-#GNUPLOTI_DIR =EXT/PLOTER
 GNUPLOTI_DIR =PLOTER/ploter
 
-#GNUPLOTI_DIR =../../fislab
 GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
-#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/b_gnup.o
 GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
- 
+
 
 S_INCS = $(XINC) $(GNUPLOTI_INC)  #$(GSL_INC) $(GINC) 
 S_LIBS = $(XLIB) $(GNUPLOTI_LIB)  #$(GSL_LIB) $(GLIB) 
 
 #-------------------------------------------------------------------------------
  
-LISPS = tao_loop0  # T/g-graf.fas T/g-nets.fas 
 
-PROGS = $(V_RSB3_SO)  $(G)/T/x_find.so  #t_graf $(V_RSB3_SO)    #$(LISPS)   # $(B)/T/b_scan.so b_scan  $(B)/T/ltk.fas $(B)/T/b_scan.so    $(B)/T/y_scan.so y_scan  
+PROGS = $(V_RSB3_SO)  $(G)/T/x_find.so
 
-all: $(PROGS)
+#---------------------------------------------------------------
 
-#-------------------------------------------------------------------------------
+all: ASDF $(PROGS)
 
-#t_graf : t_graf.c                                                               
-#	$(CC)  -o $@ $< $(S_INCS) $(S_LIBS) -lm               
-
-
-T/t_graf.o : t_graf.cc                                   
-	gcc -fPIC -x c -o $@ -c $< $(S_INCS)
-
-t_graf : T/t_graf.o                                  
-	gcc -o $@ $< $(S_INCS) $(S_LIBS) -lm
-
+ASDF:
+	(cd COMMSH/LISP; make)
 
 #-------------------------------------------------------------------------------
-
-tao_loop0:
-	cl t~.cl META tao_loop0 50 1 1 1706 0
-	sl t~.cl META tao_loop0 50 1 1 1706 0
-
-# =============================================================================#
-
-#$(B)/T/y_scan.o : $(B)/y_scan.cc                                   
-#	gcc -fPIC -x c -o $@ -c $< 
-
-#y_scan : $(B)/T/y_scan.o                                  
-#	gcc -o $@ $< -lm
-
-#$(B)/T/y_scan.so: $(B)/T/y_scan.o
-#	gcc -shared -o $@ $< -lm
-
 #-------------------------------------------------------------------------------
-#G  = .
-
-#G_FIND_B = $(G)/d~test
 G_FIND_C = $(G)/x_find.cc
 G_FIND_O = $(G)/T/x_find.o
 
 $(G_FIND_O): $(G_FIND_C) 
 	$(CC) $(FLAGS) -fpic  -x c -o $@ -c $^  
 
-#$(G_FIND_B): $(G_FIND_O) 
-#	$(CC) $(FLAGS) -o $@ $^ -lm  
-
 $(G)/T/x_find.so: $(G_FIND_O) 
 	gcc $(FLAGS) -shared -fpic  -o $@ $^
 
-#---------------------------------------------------------------
 #---------------------------------------------------------------
 
 $(B)/T/ltk.fas: $(B)/b-ltk+.cl
@@ -130,18 +64,14 @@ $(B)/T/ltk.fas: $(B)/b-ltk+.cl
 
 clean :
 	rm -f T/*.o T/*.so $(PROGS)
+	(cd COMMSH/LISP; make clean)
 
-#-------------------------------------------------------------------------------
+test:
+	T.sh
 
-save :
-	(cd ../m ; S.sh)
-
-#-------------------------------------------------------------------------------
-
-
-test: e-0000.cc
-	$(GCC) -o $@ $<  $(TCL_INCS) $(TCL_LIBS)
-
+tao_loop0:
+	cl t~.cl META tao_loop0 50 1 1 1706 0
+	sl t~.cl META tao_loop0 50 1 1 1706 0
 
 #---------------------------------------------------------------
 
@@ -162,16 +92,7 @@ $(V_RSB3_O): $(V_RSB3_C) $(V_RSB__H)
 $(V_RSB3_SO): $(V_RSB3_O) 
 	gcc $(FLAGS) -shared -fpic  -o $@ $^
 
-# =============================================================================#
-# Untracked files:
-#   (use "git add <file>..." to include in what will be committed)
-#
-#	src/TODO
-#	src/j--00.joy
 #-------------------------------------------------------------------------------
-# 
-# 
-#============================================================================*/
  
 # TODO:
  

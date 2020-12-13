@@ -63,6 +63,20 @@ proc make_list {num val} {
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
+proc item_set_mainsrc {item ch} {
+
+
+  SET $item "main" "src" $ch
+
+}
+#-------------------------------------------------------------------------------
+proc item_get_mainsrc {item} {
+
+
+  return [GET $item "main" "src"]
+
+}
+#-------------------------------------------------------------------------------
 proc item_create {len_chromosome} {
     
   set item [dict_create]
@@ -71,55 +85,41 @@ proc item_create {len_chromosome} {
   # 
   set tmp  [make_list $len_chromosome "@"]
 
-  item_set_chromosome $item $tmp
+  item_set_mainsrc $item $tmp
           
   SET $item ch_form    "%s " ;#  " %02d" "% 6.3f " 
  
   return $item
 }
 #-------------------------------------------------------------------------------
-proc item_set_chromosome {item ch} {
-
-
-  SET $item "main" "src" $ch
-
-}
-#-------------------------------------------------------------------------------
-proc item_get_chromosome {item} {
-
-
-  return [GET $item "main" "src"]
-
-}
-#-------------------------------------------------------------------------------
 proc item_CH {item} {
 
 
-  return [item_get_chromosome $item]
+  return [item_get_mainsrc $item]
 
 }
 #-------------------------------------------------------------------------------
 proc item_set_chromo_gen {item i val} {
   
-  set  tmp [item_get_chromosome $item]
+  set  tmp [item_get_mainsrc $item]
 
   lset tmp $i $val
 
-  item_set_chromosome  $item $tmp
+  item_set_mainsrc  $item $tmp
 
   return
 }
 #-------------------------------------------------------------------------------
 proc item_get_chromo_gen {item i} {
 
-  set  tmp [item_get_chromosome $item]
+  set  tmp [item_get_mainsrc $item]
   
   return [lindex $tmp $i]
 }
 #-------------------------------------------------------------------------------
 proc item_get_chromo_len {item} {
 
-  set  tmp [item_get_chromosome $item]
+  set  tmp [item_get_mainsrc $item]
   
   return [llength $tmp]
 }
@@ -130,7 +130,7 @@ proc item_as_string {item ch_form} {
     set ch_form [GET $e ch_form] ;# локальная переменная
   }
 
-  set ch  [item_get_chromosome $item]
+  set ch  [item_get_mainsrc $item]
   
   set buf {}
 
@@ -428,7 +428,7 @@ dict_class_create POP {} {
   #-----------------------------------------------
 
   SET $obj "stable_size"     [dict_parse $args "-lpop"] 
-  SET $obj "len_chromosomes" [dict_parse $args "-lgen"] 
+  SET $obj "len_chromosomes" [dict_parse $args "-lsrc"] 
   
   SET $obj "ch_form"         "% 6.3f " ;#  " %02d"   
   SET $obj "generation_hook" NULL
@@ -1144,7 +1144,7 @@ proc ga_entity_copy {pop dest src} {
 
   # у нас тут все просто:
   # 
-  item_set_chromosome $dest [item_get_chromosome $src]  
+  item_set_mainsrc $dest [item_get_mainsrc $src]  
 
   item_set_fitn $dest [item_get_fitn $src]
 
@@ -1153,7 +1153,7 @@ proc ga_entity_copy {pop dest src} {
 #-------------------------------------------------------------------------------
 proc ga_entity_clone_ {dolly parent} {
 
-  item_set_chromosome $dolly [item_get_chromosome $parent]
+  item_set_mainsrc $dolly [item_get_mainsrc $parent]
 
   item_set_fitn $dolly [item_get_fitn $parent]
 
@@ -1522,8 +1522,8 @@ proc ga_compare_char_hamming {pop alpha beta} \
   #   int	 dist = 0;	/* Genomic distance.        */
   set  dist 0
 
-  set a [item_get_chromosome $alpha]
-  set b [item_get_chromosome $beta]
+  set a [item_get_mainsrc $alpha]
+  set b [item_get_mainsrc $beta]
   
   for {set j 0} {$j < [GET $pop len_chromosomes]} {incr j} \
   {
@@ -1622,14 +1622,9 @@ proc ga_select_one_randomrank {pop &mother} {
 
   USE_REFS
 
-  #   if (!pop) die("Null pointer to population structure passed.");
-  
   #   pop->select_state++;
   SET $pop select_state [expr {[GET $pop select_state] + 1}]
   
-  #   *mother = NULL;
-  
-  #set orig_size    [GET $pop orig_size]
   set orig_size    [GET $pop stable_size]
   set select_state [GET $pop select_state]
 
@@ -1640,8 +1635,6 @@ proc ga_select_one_randomrank {pop &mother} {
   
   if {[random_boolean_prob [GET $pop mutation_ratio]]} \
   {
-     # *mother = pop->entity_iarray[random_int(pop->select_state)];
-    #set mother [$pop get_entity [random_int $select_state]]
     set mother [pop_get_entity_ $pop [random_int $select_state]]
 
     return 0 ;# false
@@ -1649,7 +1642,6 @@ proc ga_select_one_randomrank {pop &mother} {
     return 1 ;# true
   }
   
-  #return false
 }
 #-------------------------------------------------------------------------------
 #   synopsis:	Select a pair of entities by my rank-based method.
@@ -1664,16 +1656,10 @@ proc ga_select_two_randomrank {pop &mother &father} {
 
   USE_REFS
 
-  #   if (!pop) die("Null pointer to population structure passed.");
-  
   #   pop->select_state++;
   SET $pop select_state [expr {[GET $pop select_state] + 1}]
   
-  #set mother "NULL"
-  #set father "NULL"
-  
-  #set orig_size    [GET $pop orig_size]
-  set orig_size    [GET $pop stable_size]
+  set orig_size    [GET $pop  stable_size]
   set select_state [GET $pop select_state]
 
   if {$::is_print} {
@@ -1687,17 +1673,9 @@ proc ga_select_two_randomrank {pop &mother &father} {
     return $::true
   }
 
-  #   if ( random_boolean_prob (pop->crossover_ratio) )
-  #   {
-  #     *mother = pop->entity_iarray[random_int(pop->select_state)];
-  #     *father = pop->entity_iarray[pop->select_state];
-  #   }
   
   if {[random_boolean_prob [GET $pop crossover_ratio]]} \
   {
-    #set mother [$pop get_entity [random_int $select_state]]
-    #set father [$pop get_entity             $select_state]
-
     set mother [pop_get_entity_ $pop  [random_int $select_state]]
     set father [pop_get_entity_ $pop              $select_state]
 
@@ -1706,7 +1684,6 @@ proc ga_select_two_randomrank {pop &mother &father} {
     return 1 ;# true
   }
   
-  #return false
 }
 #-------------------------------------------------------------------------------
 #   synopsis:	Kind of tournament selection.  Choose two random
@@ -1721,32 +1698,12 @@ proc ga_select_two_randomrank {pop &mother &father} {
 proc ga_select_one_bestof2 {pop &mother} {
 
   USE_REFS
-  #   entity	*mother2;	/* Random competitor. */
   
-  #   if (!pop) die ("Null pointer to population structure passed.");
-  
-  #   if (pop->orig_size < 1)
-  #   {
-  #     *mother = NULL;
-  #     return TRUE;
-  #   }
-  
-  #set orig_size [GET $pop orig_size]
   set orig_size [GET $pop stable_size]
 
-  #   *mother = pop->entity_iarray[random_int(pop->orig_size)];
-  #   mother2 = pop->entity_iarray[random_int(pop->orig_size)];
-
-  #set mother1 [$pop get_entity [random_int $orig_size]]
-  #set mother2 [$pop get_entity [random_int $orig_size]]
-  
   set mother1 [pop_get_entity_ $pop  [random_int $orig_size]]
   set mother2 [pop_get_entity_ $pop  [random_int $orig_size]]
   
-  #   if (mother2->fitness > (*mother)->fitness)
-  #     *mother = mother2;
-  
-
   set fit1 [item_get_fitn $mother1]
   set fit2 [item_get_fitn $mother2]
 
@@ -1757,12 +1714,15 @@ proc ga_select_one_bestof2 {pop &mother} {
     set mother $mother2
   }
 
-  #   pop->select_state++;
-  SET $pop select_state [expr {[GET $pop select_state] + 1}]
+  # увеличиваем этот странный счетчик выбора особи из популяции
+  # 
+  set select_state [GET $pop select_state]
 
-  set ret [expr {[GET $pop select_state] > ($orig_size * [GET $pop mutation_ratio])} ]
+  incr select_state
+  SET $pop select_state $select_state ;# записали обратно
 
-  #   return pop->select_state>(pop->orig_size*pop->mutation_ratio);
+  set ret [expr {$select_state > ($orig_size * [GET $pop mutation_ratio])} ]
+
   return $ret
 }
 #-------------------------------------------------------------------------------
@@ -1859,7 +1819,7 @@ proc ga_select_two_bestof2 {pop &mother &father} {
 
   # истина, если закончился перебор (селекция пар) ?
   # 
-  set ret [expr {$s_state > 1.0 * $orig_size * $c_ratio} ]
+  set ret [expr {$s_state >   1.0 * $orig_size * $c_ratio} ]
   
   if {$::is_print > 2} {
   #if {$::is_print} {}
@@ -2517,7 +2477,7 @@ proc ga_genesis_main {
                       } {
 
   set pop [GAUL new  \
-                -lpop $population_size -lgen $len_chromo]
+                -lpop $population_size -lsrc $len_chromo]
 
   # /*
   #  * Assign population's user data.
@@ -2770,8 +2730,6 @@ proc make_itemslist {randpop_proc
   return $itemslist
 }
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 
@@ -4002,7 +3960,9 @@ proc ALL_TESTS {} {
 
     return [canonical_form $prog_new]
 
-  } {main {proc2 proc2 proc1} proc1 {p1 p1 p1} proc2 {proc1 p2 p2}}
+  } {main {proc2 proc2 proc1} proc2 {proc1 p2 p2} proc1 {p1 p1 p1}}
+
+  # {} {main {proc2 proc2 proc1} proc1 {p1 p1 p1} proc2 {proc1 p2 p2}}
   # {} {main {proc2 proc2 proc1} proc2 {proc1 p2 p2} proc1 {p1 p1 p1}}
 
   #-----------------------------------------------
@@ -4272,8 +4232,8 @@ proc ga_crossover_integer_singlepoints {pop father mother son daughter} {
   ga_singlepoint_crossover_integer_chromosome  $pop \
     [item_CH $father ] [item_CH $mother]    son_CH  daughter_CH
 
-  item_set_chromosome $son      $son_CH
-  item_set_chromosome $daughter $daughter_CH
+  item_set_mainsrc $son      $son_CH
+  item_set_mainsrc $daughter $daughter_CH
 
   return
 }
@@ -4383,8 +4343,8 @@ proc ga_crossover_char_doublepoints {pop father mother son daughter} \
 
   # и запишем по адресу:
   #
-  item_set_chromosome $son      $son_chromo
-  item_set_chromosome $daughter $dau_chromo
+  item_set_mainsrc $son      $son_chromo
+  item_set_mainsrc $daughter $dau_chromo
 
   return
 }
@@ -4535,8 +4495,8 @@ proc ga_crossover_double_doublepoints {pop father mother son daughter} {
   ga_doublepoint_crossover_double_chromosome  $pop [item_CH $father] [item_CH $mother ] \
                                                    son_CH  daughter_CH
 
-  item_set_chromosome $son      $son_CH
-  item_set_chromosome $daughter $daughter_CH
+  item_set_mainsrc $son      $son_CH
+  item_set_mainsrc $daughter $daughter_CH
 
   return
 }
@@ -4640,9 +4600,9 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
     #puts ""
   }
 
-  set chromosome [item_get_chromosome $father]
+  set chromosome [item_get_mainsrc $father]
 
-  item_set_chromosome $son $chromosome
+  item_set_mainsrc $son $chromosome
 
   #set len_chromo [GET $pop len_chromosomes]
 
@@ -4701,66 +4661,67 @@ proc ga_mutate_integer_singlepoint_drift {pop father son} {
 proc ga_mutate_printable_singlepoint_drift {pop father son}  {
 
 
-  set chromosome [item_get_chromosome $father]
+  set chromosome [item_get_mainsrc $father]
 
-  item_set_chromosome $son $chromosome ;# ????
+  item_set_mainsrc $son $chromosome ;# ????
 
-
-  #set len_chromo [GET $pop len_chromosomes]
 
   set len_chromo [llength $chromosome]
+
 
   # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
   # 
   set point [random_int  $len_chromo]
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #   /*
-  #     * Mutate by tweaking a single allele.
-  #     */
+  #
+  # Mutate by tweaking a single allele.
+  # 
+  # TODO: а почему меням только один ген, этого же мало !! !!!!
 
-  set point_gen [item_get_chromo_gen $son  $point] ;# старое значение
+  set point_gen_old [item_get_chromo_gen $son  $point] ;# старое значение
 
 
-  set is_digital [expr {[string is integer $point_gen] || [string is double $point_gen]}]
+  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
 
   if {$is_digital} {
+    # -------------------------------------------
 
     # The direction of drift. 
-    
+    # 
     if {[random_boolean]} {
       set dir -1
     } else {
       set dir  1
     }
     
-    set point_gen [expr {$point_gen + $dir}]  ;# новое  значение
+    set point_gen_new [expr {$point_gen_old + $dir}]  ;# новое  значение
+    # и это реально новое значение всегда
+
+    # -------------------------------------------
   } else {
+    # -------------------------------------------
 
     #exit
 
-    set point_gen [randinstr_NEXT $::gp_list]
+    if {1} {
+      set gp_list $::gp_list ;# в список входит и старый ген !
 
-    #puts "ga_mutate_printable_singlepoint_drift: NOT DIGITAL !! new gen = $point_gen"
+    } else {
+
+      # исключить элемент из списка, чтоб мутация была реальной
+      # 
+      set gp_list  [lsearch  -inline -all -not -exact $::gp_list $point_gen_old]
+
+    }
+
+    set point_gen_new [randinstr_NEXT $gp_list]
+
+    # -------------------------------------------
   }
 
 
-  #   set char_min_num $::allele_min_integer
-  #   set char_max_num $::allele_max_integer
-  
-  #   if {$point_gen > $char_max_num} {
-  #     puts "mutate 1..............."
-  #     set point_gen $char_min_num ;# скорректировали
-  #   }
-  
-  #   if {$point_gen < $char_min_num} {
-  #     puts "mutate 2..............."
-  #     set point_gen $char_max_num ;# скорректировали
-  #   }
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  item_set_chromo_gen $son  $point $point_gen ;# записали новое значение
+  item_set_chromo_gen $son  $point $point_gen_new ;# записали новое значение
 
   return
 }
@@ -4810,8 +4771,8 @@ proc ga_mutate_double_singlepoint_drift {pop father son}  {
 
   #   memcpy(son->CH, father->CH, pop->len_chromosomes*sizeof(double));
   #$son set_chromosome [$father get_chromosome]
-  #item_set_chromosome $son [$father get_chromosome]
-  item_set_chromosome $son [item_get_chromosome $father]
+  #item_set_mainsrc $son [$father get_chromosome]
+  item_set_mainsrc $son [item_get_mainsrc $father]
 
   # /*   if (i!=chromo) */
   # /*   { */
@@ -5013,48 +4974,82 @@ proc gaul_crossover {pop task} {
 # return:	none
 
 # ------------------------------------------------------------------------------
-proc gaul_mutation {pop task} {
+proc mutate_mother_to_dau {pop mother mutate_proc eval_proc task} {
 
 
-  if {$::is_print > 2} {
-    puts "gaul_mutation  : (select_one_proc = [GET $pop select_one])"
+  set dau [ga_get_free_entity $pop]  ;# создали нового !!!
+  
+  $mutate_proc $pop  $mother $dau
+  #
+  # например   ga_mutate_printable_singlepoint_drift
+  
+  # здесь бы сразу мутантку посчитать?
+  # 
+  pop_eval_item  $pop $dau $eval_proc  $task
+  
+  if {$::is_print >= 3} {
+    print_entit  $mother "mom = "
+    print_entit  $dau    "dau = "
     puts ""
   }
   
-  set select_one_proc [GET $pop select_one]
- 
-  set mutate_proc     [GET $pop mutate]
+}
+# ------------------------------------------------------------------------------
+proc gaul_mutation {pop task} {
 
+
+  set select_one_proc [GET $pop select_one] 
+  set mutate_proc     [GET $pop mutate]
+  set eval_proc       [GET $task "fitness_proc"]
+  set mutation_ratio  [GET $pop "mutation_ratio"]
   
-  if {[GET $pop mutation_ratio] <= 0.0}  { return }  
+  if {$::is_print >= 3} {
+    puts "gaul_mutation  : "
+    puts ""
+    puts "  select_one_proc = $select_one_proc"
+    puts "  mutate_proc     = $mutate_proc"  
+    puts "  eval_proc       = $eval_proc"
+    puts "  mutation_ratio  = $mutation_ratio"
+    puts ""
+  }
   
+  if {$mutation_ratio <= 0.0}  { return }  
+  
+  # здесь обнуляем, т.е. начинаем процедуру выбора (селекции) сначала
+  # 
   SET $pop select_state 0
   
+
   # Select entities to undergo asexual reproduction, in each case the child will
   # have a genetic mutation of some type.
  
-  #set eval_proc [GET $pop "evaluate"]
-  set eval_proc [GET $task "fitness_proc"]
+  set mother_list {}
+  set mother_list_mode 1
 
-  set mother "" ;# <-------- &
+  set mother "" ;# <-------- & для Jim?
   # 
-  while { ! [$select_one_proc  $pop mother] } {
+  while {1} {
 
-    set dau [ga_get_free_entity $pop]  ;# создали нового !!!
+    set ret [$select_one_proc  $pop mother]
+    if {$ret} {break}
 
-    $mutate_proc $pop  $mother $dau
-    
-    # здесь бы сразу мутантку посчитать?
-    # 
-    pop_eval_item  $pop $dau $eval_proc  $task
+    if {$mother_list_mode} {
+      lappend mother_list $mother
+    } else {
 
-    if {$::is_print >= 3} {
-      print_entit  $dau "dau ="
-      puts ""
+      mutate_mother_to_dau  $pop $mother $mutate_proc $eval_proc $task  
+      #
+      # если сразу мутируем и добавляем в популяцию, то его же в этом цикле
+      # можем выбрать ? это вроде не очень?
     }
-
   }
   
+  if {$mother_list_mode} {
+    foreach mother $mother_list {
+      mutate_mother_to_dau  $pop $mother $mutate_proc $eval_proc $task   
+    }
+  }
+
   return
 }
 # //------------------------------------------------------------------------------
@@ -5468,7 +5463,7 @@ proc ga_evolution_main {task pop max_generations} {
   SET $pop "generation" 0
 
 
-  #--------------------------------------------------------------------
+  #------------------------------------------------
   while {1} {
 
     if {! [ga_evolution_step  $task $pop $max_generations $fit_target $fit_error]} {
@@ -5478,7 +5473,7 @@ proc ga_evolution_main {task pop max_generations} {
     if {$::is_print >= 2} {pop_print $pop "stderr"}
 
   } ;# /* Generation loop. */
-  #--------------------------------------------------------------------
+  #------------------------------------------------
   
   #puts ""
 
@@ -5706,41 +5701,49 @@ proc gp_crossover {a b} {
   list $x0 $x1
 }
 #-------------------------------------------------------------------------------
+proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
+
+  USE_REFS
+
+  set r [random_double 1.0]
+  
+  # заменяем итем-строку
+  # 
+  if {$r <= $prob} {
+    set item [randinstr_NEXT $gp_list]
+    
+    if {$mode == 0} {
+      #puts "................................ lset   item = $item"
+      lset program $i $item ; # для Tcl-8.4   
+
+    } else {
+      #puts "................................ linsert item = $item"
+      set program  [linsert $program $i $item]
+    }
+
+  }
+  
+}
+#-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа, в которой каждая 
 # инструкция будет заменена (или новая вставлена сразу за ней) с заданной 
 # вероятностью '$p'.
+# 
 #-------------------------------------------------------------------------------
 proc gp_joy_mutate {program prob} {
 
+
+  # TODO: привести к общему виду с 
+  # gaul_mutation {pop task}
+  # ga_mutate_printable_singlepoint_drift {pop father son}
+
   set gp_list $::gp_list
+
 
   for {set i 0} {$i < [llength $program]} {incr i} {
     
-    #set r [expr {rand()}]
-    #set r [random_rand] - неверно, не в [0,1] !
-    set r [random_double 1.0]
-    #puts "............. gp_joy_mutate: r = $r,  prob = $prob"
-
-    # заменяем итем-строку
-    # 
-    if {$r <= $prob} {
-      set item [randinstr_NEXT $gp_list]
-      #puts "................................ lset   item = $item"
-      lset program $i $item ; # для Tcl-8.4            
-    }
-
-    #set r [expr {rand()}]
-    #set r [random_rand]
-    set r [random_double 1.0]
-    #puts "............. gp_joy_mutate: r = $r,  prob = $prob"
-
-    # добавляем итем-стрку
-    # 
-    if {$r <= $prob} {
-      set item [randinstr_NEXT $gp_list]
-      #puts "................................ linsert item = $item"
-      set program [linsert $program $i $item]
-    }
+    mutate_and_lset_or_linsert  program $i $prob $gp_list  0
+    mutate_and_lset_or_linsert  program $i $prob $gp_list  1
   }
   
   return $program
@@ -5748,11 +5751,12 @@ proc gp_joy_mutate {program prob} {
 #-------------------------------------------------------------------------------
 proc make_mutant {leader  mutprob} {
 
-
   set prg        [item_get_main_src $leader] ;# исходник на JOY в виде строки?
   
+
   set prg_mutant [gp_joy_mutate  $prg $mutprob]
   
+
   # делаем нового агента-мутанта
   
   set leader_mutant [item_make $prg_mutant]  
@@ -5843,21 +5847,6 @@ proc make_offsprings_from_leaders {leaders l} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-# proc erase_fit_from_list {leaders} {
-
- 
-#   set leaders_prg {}
-  
-#   foreach leader $leaders {
-
-#     set prg [item_get_main_src $leader]
-#     lappend leaders_prg $prg ;# отделяем от старого фитнеса
-#   }
-  
-#   return $leaders_prg
-# }
-
-#-------------------------------------------------------------------------------
 proc dict_print_real_all_in_list {name list_pd} {
 
   puts stderr "$name : " 
@@ -5909,7 +5898,7 @@ proc itemslist_sorted_evolution_3parts {sorted_items mutprob} {
 
   #---------------------------------------
   # 3)
-  # генерируем последнюю 1/3 популяции мутируя лидеров
+  # генерируем последнюю 1/3 популяции мутируя лидеров (?)
   
   
   set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
@@ -5918,23 +5907,11 @@ proc itemslist_sorted_evolution_3parts {sorted_items mutprob} {
 
   #dict_print_real_all_in_list  "itemslist_sorted_evolution_3parts"  $mutated_items
 
-  #---------------------------------------
-  # отделяем "leaders" от фитнеса и делаем обычный спсок программ-исходников ??
-  #
-  #set leaders_prg [erase_fit_from_list $leaders_items]
- 
+
   #---------------------------------------
   # склеиваем три популяции исходников (лидеров, отпрысков, мутантов)
   # создавая популяцию исходников для следующей итерации.
   #
-  #set pop [concat $leaders_prg $offsprings_prg $mutated_prg] ;# новая популяция на месте
-                                                      # старой ??
-  # заного собираем из исходников итемы, т.е. агентов популяции
-  # 
-  #set offsprings_items [make_itemslist_from_prgpop  $offsprings_prg]
-  #set mutated_items    [make_itemslist_from_prgpop  $mutated_prg] 
-  #---------------------------------------
-
 
   set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items] 
   
@@ -6370,8 +6347,6 @@ proc run_gp_evolution_for_task {task seed randpop_proc
                      } {
 
 
-  #set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
-
   #-------------------------------------
   if {$seed == "@"} {
 
@@ -6382,7 +6357,7 @@ proc run_gp_evolution_for_task {task seed randpop_proc
   #-------------------------------------
 
   set obj \
-    [BOT33 new  -lpop $population_size -lgen $len_chromosomes \
+    [BOT33 new  -lpop $population_size -lsrc $len_chromosomes \
        -task $task]
 
     
@@ -6442,7 +6417,7 @@ proc run_gp_evolution_old {seed randpop_proc
   #-------------------------------------
 
   set obj \
-    [BOT33 new  -lpop $population_size -lgen $len_chromosomes \
+    [BOT33 new  -lpop $population_size -lsrc $len_chromosomes \
        -task $task]
 
     
@@ -6471,7 +6446,7 @@ proc FS_fitness_list {list_calc task} {
 
 
   if {$::ITEMS_LIST} {
-    set list_calc  [item_get_chromosome $list_calc]
+    set list_calc  [item_get_mainsrc $list_calc]
   }
 
   #set list_true [split $::target_text ""]
@@ -6713,12 +6688,12 @@ proc maintest_seed_proc {pop adam} {
 # ------------------------------------------------------------------------------
 proc pop1_create {args} {
 
-  set len_chromosomes [dict_parse $args "-lgen"] 
+  set len_chromosomes [dict_parse $args "-lsrc"] 
   set population_size [dict_parse $args "-lpop"] 
 
 
   set pop [GAUL new  \
-                -lpop $population_size -lgen $len_chromosomes]
+                -lpop $population_size -lsrc $len_chromosomes]
 
   
   SET $pop  generation_hook NULL ;# $generation_hook

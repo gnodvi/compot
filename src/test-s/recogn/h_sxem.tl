@@ -73,7 +73,8 @@ exec wish $0 ${1+"$@"}
     scale .c.ss3 -from 2000 -to   0 -variable S(sum) -length 200 -sliderlength 5 -state disabled -bg green2
     entry .c.es4 -width 3 -textvar S(out) -state readonly
 
-    .c create text   280  20          -text $S(title) -font {Times 24 bold}
+    #.c create text   280  20          -text $S(title) -font {Times 24 bold}
+    .c create text   280  20          -text $S(title) -font {Times 12 bold}
 
     .c create text    12  80          -text "Input 1"   -anchor w
     .c create line    30 100  310 100 -width 5 -arrow last

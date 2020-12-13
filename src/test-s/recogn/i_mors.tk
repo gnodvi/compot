@@ -30,12 +30,15 @@ exec wish $0 ${1+"$@"}
  }
  option add *Button -padx 0
  proc ui {} {
+
     global timevec morse
     set font {Courier 10}
+
     canvas .c -height 58 -relief sunken -borderwidth 1
     .c create oval 5 5 55 55 -fill gold2 -outline gold3 -width 2 -tag key
     .c create text 70 2 -text "Morse Trainer" -anchor nw \
-        -font {Times 24 {bold italic}}
+        -font {Times 12 {bold italic}}
+
     .c create text 70 38 -anchor nw -text \
         "Click the brass button to morse - have fun with Tcl/Tk!" 
     .c bind key <1> {compute; %W move current 2 2}

@@ -217,7 +217,7 @@ proc test_generation_callback {generation pop} {
     
     #     ;(format t "pop_get_entity_: r = ~s   ~%" r)
     
-    set best_chromo  [item_get_chromosome  $best]
+    set best_chromo  [item_get_mainsrc  $best]
     #set best_fit     [ENT_FITNESS          $best] ;# [$best cget -fitness] 
     #set best_fit     [ent_get_fitness $best]
     set best_fit     [item_get_fitn $best]
@@ -420,7 +420,7 @@ proc _test_score {this_entity task} {
   #   ; можно считать их в общей схеме полагаю фложок - фикс,
   #   ; а можно - как дополнительное условие, алгоритм расчета фитнеса.
   
-  set chromosome [item_get_chromosome  $this_entity]
+  set chromosome [item_get_mainsrc  $this_entity]
   
 
 
@@ -541,7 +541,7 @@ proc draw_entity {pop id name} {
 
 
   set entity  [pop_get_entity_      $pop $id]
-  set chromo  [item_get_chromosome  $entity]
+  set chromo  [item_get_mainsrc  $entity]
   
   puts ""  
   puts [format "%s : fitness = %.6f "  $name [pop_get_entity_fitness_  $pop $id]]

@@ -141,7 +141,7 @@ proc all5s_mutate {pop father son}  {
   #     ((int *)son->CH)[i] = ((int *)father->CH)[i];
   
   #set son_CH [$father get_chromosome]
-  set son_CH [item_get_chromosome $father]
+  set son_CH [item_get_mainsrc $father]
 
   #   //
   #   // Mutate by tweaking a single allele.
@@ -167,7 +167,7 @@ proc all5s_mutate {pop father son}  {
 
   lset son_CH $point $gen ;# смутировали хромосому-список
 
-  item_set_chromosome $son $son_CH ;# и записали ее в сына
+  item_set_mainsrc $son $son_CH ;# и записали ее в сына
 
   return
 }
@@ -286,7 +286,7 @@ proc _1_main {} \
   #                                                 beststring, &beststrlen);
 
   set best_entity [ga_get_entity_from_rank $pop 0]
-  set beststring [item_get_chromosome $best_entity]
+  set beststring [item_get_mainsrc $best_entity]
 
   puts $beststring
 
@@ -371,7 +371,7 @@ proc _2_main {} \
   puts "The final solution was:"
 
   set best_entity [ga_get_entity_from_rank $pop 0]
-  set beststring [item_get_chromosome $best_entity]
+  set beststring [item_get_mainsrc $best_entity]
 
   puts $beststring
 

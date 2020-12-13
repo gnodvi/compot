@@ -5,45 +5,35 @@
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-proc v1_get_result_from_one_arg {prg_11 val {prog_11 @}} {
+#proc v1_get_result_from_one_arg {prg_11 val {prog_11 @}} {}
+proc v1_get_result_from_one_arg {prg_11 val} {
 
 
   # кладем одно значение в стек
-
+  # 
   push $val 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #d+
-
-  #puts "prg    = $prg"
-  #puts "prg_11 = $prg_11"
-
-  #if {$prog == @} {puts "v1_get_result_from_one_arg:  prog == @ !!"}
-
-  #if {[string equal $prog "@"]} {
-
-  #  puts "v1_get_result_from_one_arg: prog= |$prog|"
-  #} 
 
   # выполняем программку
+  # 
+  run_v1_src_or_prog $prg_11 ;### $prog_11
 
-  run_v1_src_or_prog $prg_11 $prog_11
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  #run_v2_src_old $prg 
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # забираем одно значение из стека
-
+  # 
   set result [pop]
+
 
   return $result
 }
 #-------------------------------------------------------------------------------
 # кладем один аргумент в стек и выполняем joy-программу
+#
+# proga - обобщенное название программы, там могут быть разные варианты (типы) 
+#
 #-------------------------------------------------------------------------------
-proc getresult_prg_val_11 {prg_11 val {prog_11 @}} {
+#proc getresult_prg_val_11 {prg_11 val {prog_11 @}} {}
+proc getresult_prg_val_11 {prg_11 val} {
 
 
   #convert_22_to_11  $prg_22 prg_11
@@ -51,17 +41,39 @@ proc getresult_prg_val_11 {prg_11 val {prog_11 @}} {
 
   v0_set_stack_null ;# и не более того !!!!
 
+  #-----------------------------------------------------------------
+  if {0} {
+  #-----------------------------------------------------------------
 
-  if {[catch {set result [v1_get_result_from_one_arg  $prg_11 $val $prog_11]} err ]} {
-
-    if {[IsDebug]} {
-      puts stderr "ERROR = $err"
+    # да вроде уже отлавливаем на уровне команд
+    # 
+    # отлпаливаем аварийное завершение целиком полность программы !?
+    # 
+    
+    if {[catch {set result [v1_get_result_from_one_arg  $prg_11 $val]} err ]} {
+      
+      if {$::error_print1} {
+        puts stderr "r_error_print1: getresult_prg_val_11: err = $err"
+        puts stderr ""
+      }
+      
+      return {}
+    } else {
+      return $result
     }
 
-    return {}
+  #-----------------------------------------------------------------
   } else {
+  #-----------------------------------------------------------------
+
+    set result [v1_get_result_from_one_arg  $prg_11 $val]
+
     return $result
+
+  #-----------------------------------------------------------------
   }
+  #-----------------------------------------------------------------
+
 
 }
 #-------------------------------------------------------------------------------
@@ -850,7 +862,7 @@ proc squareFitness {prg_11 task args} {
   set is_print [dict_parse $args "-is_print"   0]
 
   if {$::ITEMS_LIST} {
-    set prg_11  [item_get_chromosome $prg_11]
+    set prg_11  [item_get_mainsrc $prg_11]
   }
 
   set prog_11 @ ;# это заглушка на будущее ?
@@ -870,9 +882,13 @@ proc squareFitness {prg_11 task args} {
   #set is_print 0
 
   if {$is_print} {
-    puts stderr ""
-    puts stderr "-------------------------------------------------------------------"
-    puts stderr "squareFitness, prg = $prg_11,  x_list = $x_list, func = $func"
+    #puts stderr ""
+    #puts stderr "-------------------------------------------------------------------"
+    #puts stderr ""
+    #puts stderr "squareFitness: prg    = $prg_11"
+    #puts stderr "squareFitness: x_list = $x_list"
+    #puts stderr "squareFitness: func   = $func"
+    #puts stderr ""
   }
 
   set fitness 0
@@ -885,7 +901,8 @@ proc squareFitness {prg_11 task args} {
 
     # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
     # 
-    set result [getresult_prg_val_11  $prg_11 $x $prog_11]
+    #set result [getresult_prg_val_11  $prg_11 $x $prog_11]
+    set result [getresult_prg_val_11  $prg_11 $x]
  
     #---------------------------------------------------------------
 
@@ -897,7 +914,7 @@ proc squareFitness {prg_11 task args} {
     #set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
     if {$is_print} {
-      puts stderr "x = $x, o = $o, len = $len"
+      puts stderr "x = $x, result = |$result|, ::joy_ST = |$::joy_ST|"
     }
     #---------------------------------------------------------------
     #
@@ -905,7 +922,7 @@ proc squareFitness {prg_11 task args} {
     if {$result eq {}}  {
 
       if {$is_print} {
-        puts stderr "ERROR???"
+        puts stderr "squareFitness: x = $x, result eq {} , ERROR operator??"
       }
       # ошибка программы (на первом ошибочном операторе) !!
       # 
@@ -924,7 +941,7 @@ proc squareFitness {prg_11 task args} {
       # здесь может быть просто списко или символ-строка, а не число!
       # но пока кроме числе и {ошибки} в стеке ничего не предвидится
       #
-      puts "NOT DIGITAL ???? !!!"
+      puts "squareFitness: NOT DIGITAL ???? !!!"
       exit
 
       incr fitness 50 ;# при каждой ошибке добавляем дельту
@@ -945,7 +962,7 @@ proc squareFitness {prg_11 task args} {
       set delta_sum [+ $delta_sum $delta]
 
       if {$is_print} {
-        puts stderr "x = $x, o = $o, result = $result, delta = $delta, delat_sum = $delta_sum"
+        puts stderr "squareFitness: x = $x, o = $o, result = $result, delta = $delta, delat_sum = $delta_sum"
       }
 
       #set fitness [+ $fitness $delta]
@@ -986,19 +1003,17 @@ proc TEST_xx {} {
   set argv [lrange $argv 2 end]
 
   puts ""
-  puts stderr "argv = $argv"
+  #puts stderr "argv = $argv"
   #exit
 
   set seed        [dict_parse $argv "-seed"  2013]
   set lpop        [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
   set size        [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums"  10]  ;# шагов эволюции 
-  set vers        [dict_parse $argv "-vers"   0]
+  set vers        [dict_parse $argv "-vers"  "gp"]
   set is_print    [dict_parse $argv "-print"  1]
 
   set ::gp_list   [dict_parse $argv "-list"   "dup * nop +"]
-
-  #set func        [dict_parse $argv "-func"  {$x ** 2 + $x}]
   set func        [dict_parse $argv "-func"  {x ** 2 + x}]
 
   #----------------------------------------------
@@ -1026,16 +1041,32 @@ proc TEST_xx {} {
   #----------------------------------------------
 
   #------------------------------------------
-  if {$vers == "test"} {
+  if {$vers == "testjoy"} {
 
-    #set prim {x**2 + x}
-    #puts "prim = $prim"
-    #set prim [x_subst $prim] 
-    #puts "prim = $prim"
+    #set task [task_create "squareFitness"  -fit_tobest "MIN" -func {$x ** 2}]
 
-    set task [task_create "squareFitness"  -fit_tobest "MIN" -func {$x ** 2}]
+    set ::error_print1 1
+    set ::error_print2 1
+    set ::error_print3 1
 
-    fitness_test $task "+ dup * dup" 
+    #fitness_test $task "+ dup * dup" 
+    #fitness_test $task "+ " 
+
+    set ::error_saverestore 1
+
+    #set result [getresult_prg_val_11 "+ + + dup *" 3 "@"]
+    #set result [getresult_prg_val_11 "+ + + dup *" 3]
+
+    #set proga "+ + + dup *"
+    set proga "+ dup * + + "
+
+    v0_set_stack_null 
+    set result [v1_get_result_from_one_arg $proga  3]
+
+
+    puts ""
+    puts "result = $result"
+    puts "joy_ST = $::joy_ST"
     puts ""
 
     exit
@@ -1048,12 +1079,15 @@ proc TEST_xx {} {
 
 
   #----------------------------------------------
-  if {$vers == 0} {
+
+  if {$vers == "gp"} {
   #----------------------------------------------
     #
     # gp_evolution
 
     set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
+
+    #set ::error_saverestore 1
 
     run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
                               $lpop $size  \
@@ -1062,29 +1096,43 @@ proc TEST_xx {} {
 
   #----------------------------------------------
   } 
-  if {$vers == 1} {
+  if {$vers == "ga"} {
   #----------------------------------------------
     #
     # ga_evolution
     
     set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
 
+    #set ::error_saverestore 1
+
     set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
 
     set ::is_print $is_print
   
-    set obj \
-      [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers] 
+    #srandom_set 20 ;#???
+    #test_random_seed $seed ;# 1
 
-    set pop [GET $obj "pop"] ;# только эти функции выбора работают
+    set obj \
+      [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
+
+    set pop [GET $obj "pop"]
+
+    # только эти функции выбора работают для GP!
+    # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
+    # чем в BOT01 для поиска строк
+
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"
 
     set ret [calc_BOT01 $obj {*}$argv]
 
+    # TODO: почему не работает seed=@ ??
+    #
+    # l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -vers ga
+
   #----------------------------------------------
   } 
-  if {$vers == 2} {
+  if {$vers == "test"} {
   #----------------------------------------------
     #
     # ga_evolution, ищем как обычную строку (но для FS_fitness_list)
@@ -1106,7 +1154,7 @@ proc TEST_xx {} {
     #test_random_seed 0 ;#$i
   
     set obj \
-      [BOT01 new  -lpop $lpop -lgen $size -task $task -vers $vers] 
+      [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
 
     set pop [GET $obj "pop"]
     SET $pop  select_one   "ga_select_one_bestof2"
@@ -1134,19 +1182,19 @@ proc TEST_xx {} {
 
 # ищем простую функцию x^2:
 #
-# l~.tl TEST TEST_xx  -seed @  -lpop 10 -size 6 -nums -1 -test 1
+# l~.tl TEST TEST_xx  -seed @ -lpop 10 -size 6 -nums -1
 
-
+#--------------------------------
 # ищем простую функцию x^3 + x^2:      dup dup dup * + * 
 #
 # l~.tl TEST TEST_xx  -seed 0 -lpop 50 -size 6 -nums -1 -vers 1 -print 1
 
-
+#--------------------------------
 # ищем простую функцию x^3 + x^2 + x:  dup dup dup dup * nop + * + 
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 100 -size 6 -nums -1 -vers 1 -print 2
 
-
+#--------------------------------
 # какой-то странный все же алгоритм, долго не сходится
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 -func 'x ** 3 + x ** 2 + x'
