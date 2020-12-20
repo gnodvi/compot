@@ -1,0 +1,11 @@
+r_error_print2: r: err = can't use empty string as operand of "+", ST = , ST_save = 3
+
+r_error_print2: r: err = can't use empty string as operand of "+", ST = , ST_save = 9
+
+r_error_print2: r: err = can't use empty string as operand of "+", ST = , ST_save = 9
+
+
+result = 9
+joy_ST = 
+
+

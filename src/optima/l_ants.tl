@@ -981,7 +981,7 @@ proc convert_prog_22_to_11 {prog_22} {
 
 }
 #-------------------------------------------------------------------------------
-proc convert_22_to_11_ALL {prg_22 {prog_22 "@"}} {
+proc convert_22_to_11_ALL {prg_22 } {
 
   # 22 = BEG + END
 
@@ -1035,7 +1035,7 @@ proc game_loop_any_key_joy {prg_22} {
   return ""
 }
 #-------------------------------------------------------------------------------
-proc game_loop_all_num_joy {src  n {prog @} } {
+proc game_loop_all_num_joy {src n} {
 
 
   # и кстати, вынос сюда сильно ускоряет цикл !!
@@ -1086,7 +1086,7 @@ proc game_do_eval_steps_joy  {src  steps} {
 
   } else {
     
-    game_loop_all_num_joy  $src $steps "@"
+    game_loop_all_num_joy  $src $steps ;# "@"
 
     game_print
   }
@@ -1339,12 +1339,11 @@ proc arr_make_20 {} {
   return [set $parr] ;# а здесь уже возвращаем сам массив (из глоб.переменной)
 
 }
-# ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc run_ants_game {src  arr_make_proc {prog @} {n 50}} {
+proc run_ants_game {src  arr_make_proc {n 50}} {
 
   
   set pol   [pole_create  $arr_make_proc]
@@ -1359,7 +1358,7 @@ proc run_ants_game {src  arr_make_proc {prog @} {n 50}} {
 
   #-----------------------------------------------
 
-  game_loop_all_num_joy   $src  $n "@" ;# 50
+  game_loop_all_num_joy   $src  $n ;# "@" ;# 50
 
 
   # ну и наконец, посчитаем фитнес
@@ -1371,7 +1370,7 @@ proc run_ants_game {src  arr_make_proc {prog @} {n 50}} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
-proc antsFitness {src  {prog @}} {
+proc FITPROC_ants {p task} {
 
   #v1_init_all ;# ???????????????????? 
 
@@ -1383,12 +1382,19 @@ proc antsFitness {src  {prog @}} {
   v0_set_stack_null  ;# #set ::joy_ST {}  ;# зануляем стек !! достаточно?
 
 
+  #if {$::ITEMS_LIST} {
+  set src  [item_get_mainsrc $p]
+  #} else {
+  #  set src $p
+  #}
+
+
   # TODO: вызывать также и prog !!!
   # 
   # это можно, вот только как всю прогу пееркодировать из 22 в 11 ?
   # 
  
-  set fitness [run_ants_game  $src  "arr_make_2" $prog] 
+  set fitness [run_ants_game  $src  "arr_make_2" ] 
 
   # fit_tobest = MIN 
   # fit_target = 0
@@ -1398,7 +1404,7 @@ proc antsFitness {src  {prog @}} {
 #---------------------------------------------------------------------------
 # 
 #---------------------------------------------------------------------------
-proc test_antsFitness {} {
+proc test_fitness_ants {} {
 
 
   ANTS_init "22"
@@ -1410,8 +1416,8 @@ proc test_antsFitness {} {
   #set prg {MOVE}
 
   # DebugOn
-
-  set fit [antsFitness $prg]
+  
+  set fit [FITPROC_ants [item_make $prg] NULL]
 
   game_print
 
@@ -1508,19 +1514,25 @@ proc ANTS_gp {} {
 
   run_gp_evolution  0 "make_rand_prgpop_unikum" \
                         $individuals $len \
-                        antsFitness "MIN"  0.1  $nums   1  0 ;# not game print
+                        FITPROC_ants "MIN"  0.1  $nums   1  0 ;# not game print
 
   return
 }
 #-------------------------------------------------------------------------------
-proc antsFitness20 {src  {prog @}} {
+proc FITPROC_ants20 {p task} {
 
   #v1_init_all ;# ???
+
+  #if {$::ITEMS_LIST} {
+  set src  [item_get_mainsrc $p]
+  #} else {
+  #  set src $p
+  #}
 
 
   set n 1 ;# будем делать один повтор (т.е. никакой не конечный автомат)
 
-  set fitness [run_ants_game  $src  "arr_make_20" $prog $n]
+  set fitness [run_ants_game  $src  "arr_make_20" $n]
  
   # fit_tobest = MIN 
   # fit_target = 0
@@ -1551,7 +1563,7 @@ proc ANTS_gp_new {} {
 
   run_gp_evolution  0 "make_rand_prgpop_unikum" \
                         $individuals $len \
-                        antsFitness20 "MIN" 0.1  $nums 1  game_print
+                        FITPROC_ants20 "MIN" 0.1  $nums 1  game_print
   
 }
 # ------------------------------------------------------------------------------
@@ -1751,7 +1763,7 @@ proc ANTS_33 {} {
 #    тогда куски ничем не отличаются от программ ??
 
 
-# k~.tl ANTS test_antsFitness
+# k~.tl ANTS test_fitness_ants
 # k~.tl ANTS ANTS_gp    @ 15 15 5
 
 

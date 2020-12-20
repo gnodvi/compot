@@ -109,7 +109,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
 
   SET $pop "generation" 0
   
-  pop_initial_score_and_sort $pop $task
+  pop_initial_fill $pop $task
   
   set size [get_pop_size $pop]
 
@@ -117,26 +117,18 @@ proc ga_deterministiccrowding {task pop max_generations} \
     lappend  ordered $i
   }
   
-  set fit_target [GET $task "fit_target"]
-  set fit_error  [GET $task "fit_error"]
-
   # ---------------------------------------------------------------------
   # 
   while {1} \
   {
   
-    set generation [GET $pop "generation"]
-    
-    pop_sorting  $pop [make_sortdriver_fromtask $task]
+    pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+    pop_sorting  $pop $task
     
     # --------------------------------------------------
 
-    if {0} {
-      puts "generation= $generation, max_generations= $max_generations, fit_target= $fit_target, fit_error= $fit_error"
-    }
-
-    if [is_check_generation_break  $pop $generation $max_generations \
-          $fit_target $fit_error \
+    if [is_check_generation_break  $pop $task \
+          $max_generations \
           1] {
       
       return false
@@ -214,6 +206,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
 
     # --------------------------------------------------
     
+    set generation [GET $pop "generation"]    
     incr generation
     SET $pop generation  $generation
     
@@ -223,7 +216,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
   
   #   // Ensure final ordering of population is correct.
   #   //
-  pop_sorting  $pop [make_sortdriver_fromtask $task]
+  pop_sorting  $pop $task
   
   
   return $generation

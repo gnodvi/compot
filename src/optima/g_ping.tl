@@ -510,13 +510,6 @@ proc pingpong_genesis {population_size len_chromo
           ]
   
 
-  #--------------------------------------------
-  # ??
-  #   $pop configure -ch_form " %02d" ;# 
-  #--------------------------------------------
-
-
- # return $pop
   return [list $task $pop]
 }
 # //------------------------------------------------------------------------------
@@ -528,15 +521,8 @@ proc main_ga {len_chromo} {
   
   parse_opts_3   num_runs population_size max_generations  50 50 200
   
-  # устанавливает глобальную! set ::is_print 1
-  
-  #   int i;		           /* Runs.                    */
-  #   population  *pop  = NULL;    /* Population of solutions. */
-  
   for {set i 0} {$i < $num_runs} {incr i} {
  
-    #   if (pop) ga_extinction (pop); # (ga_core.tl) может не понадобиться ???
-  
     set seed [expr {424242 * $i}]
     random_seed $seed
   
@@ -569,57 +555,27 @@ proc main_ga {len_chromo} {
 
     SET $pop ch_form "%02d " ;# 
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #
     ga_evolution  $task $pop $max_generations   
-    
-    #if {$::is_print} {
-    #  # осмотримся и распечатаемся:
-    #  # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
-    #  #
-    #  ga_population_seed $pop
-    #  #
-    #  $pop print
-    #  exit  ;# // пока здесь остановимся !
-    #}
-
-    #     //printf ("\n");
-    #     //pop_print (pop);
-    #     //printf ("\n");
-    
-    #     // вообще, почему оно здесь то вызывается, а не стандартным способом?
-    #     // i - должна быть итерацией, а не номером теста
-    #     // 
-    #     //pingpong_ga_callback (i, pop);
-    
+    #
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     puts ""
     puts "The final solution with found was: (seed = $seed):"
     
-    #   char	      *beststring = NULL;    /* Human readable form of best solution. */
-    #   size_t       beststrlen  = 0;      /* Length of beststring.                 */
-    
     set bestentity [ga_get_entity_from_rank $pop 0]
     
-    #set beststring [ga_chromosome_integer_to_string  $pop bestentity beststring &beststrlen]
-    #set beststring [$bestentity get_chromosome]
     set beststring [item_get_mainsrc $bestentity]
     
-    #   printf ("%s\n", beststring);
-    #   printf ("With score = %f\n", ga_entity_get_fitness (bestentity));
-    #   printf ("\n");
 
     puts $beststring
-    #puts [format "With score = %f" [ent_get_fitness $bestentity]]
     puts [format "With score = %f" [item_get_fitn $bestentity]]
     puts ""
     
-    #   //ga_extinction (pop);
-    
-    #   //s_free (beststring);
-    #   //*** glibc detected *** l_pingpong: double free or corruption (out): 0x09981968 ***
   }
   
   
-  #   exit (EXIT_SUCCESS);
 }
 # /*******************************************************************************
 #   pingpong9.c

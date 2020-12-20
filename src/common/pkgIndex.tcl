@@ -13,6 +13,7 @@ package ifneeded compot::common 1.0 "
   source [file join $dir "a-menu.tl"]
   source [file join $dir "a-comp.tl"]
   source [file join $dir "a-plot.tl"]
+  source [file join $dir "a-disp.tl"]
 
   source [file join $dir "b-com0.tl"]
   source [file join $dir "b-com1.tl"]
@@ -27,7 +28,6 @@ package ifneeded compot::common 1.0 "
   package provide compot::common 1.0
 "
 
-#  source [file join $dir "a-disp.tl"]
 #  package provide compot::common 1.0
 
 #-------------------------------------------------------------------------------

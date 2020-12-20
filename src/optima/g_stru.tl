@@ -328,8 +328,10 @@ proc make_task_for_BOT01 {vers} {
 
   if {$vers == 1} {
     
-    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
-    set fitness_func   "FS_fitness_list"
+    #set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
+
+    set fitness_func   "FITPROC_list_FS"
+
     # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
     set fit_target     0    
   } 
@@ -1705,7 +1707,7 @@ proc make_bots_list {argv} {
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
-  set task [task_create "FS_fitness_list" -fit_tobest "MAX" ]
+  set task [task_create "FITPROC_list_FS" -fit_tobest "MAX" ]
   #set ::sort_driver "MAX_to_LEFT"    
 
   set sort_driver  "MAX_to_LEFT" 

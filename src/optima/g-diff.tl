@@ -1372,7 +1372,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
   #   /*
   #     * Ensure final ordering of population is correct.
   #     */
-  pop_sorting $pop  [make_sortdriver_fromtask $task]
+  pop_sorting  $pop $task
   
 #   if {$::is_print} {
 #     puts ""

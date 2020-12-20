@@ -589,52 +589,6 @@ proc TEST_makeparas {} {
 
 }
 #-------------------------------------------------------------------------------
-proc fitness_00 {joy_prg} {
-
-  set fitness 0
-
-  #set result [getresult_prg_val_11  $joy_prg $i]
-  
-  #set result [getresult_prg  $joy_prg]
-  
-  #puts "joy_prg = $joy_prg  resul = $result"
-
-#   if {$result eq {}}  {
-    
-#     # здесь может быть просто списко или символ-строка, а не число!
-#     # 
-#     #puts "NOT run? NOT result !!"
-#     #exit
-
-#     incr fitness 50 ;# при каждой ошибке добавляем дельту
-    
-#   } elseif {![string is integer $result]} {
-
-#     incr fitness 50 ;# при каждой ошибке добавляем дельту
-    
-#   } else {
-    
-#     set delta [expr {abs($::sum_target-$result)}]  ;# ??
-    
-#     if {$delta > 1000} {
-#       # 
-#       set delta 1000 ;# anti overflow ???????????
-#     }
-
-#     incr fitness $delta
-#   }
-
-  
-  #return [expr {$fitness + [llength $joy_prg]}]
-  #
-  # давай пока длину не учитывать ?!
-  # 
-
-  return $fitness
-
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -670,25 +624,19 @@ v0_make_tclproc  m1 {} {
 
 }
 #-------------------------------------------------------------------------------
-proc fitness_01 {joy_prg {prog @}} {
+proc FITPROC_01 {p {prog @}} {
 
   set fitness 0
 
-  #set result [getresult_prg_val_11  $joy_prg $i]
-  
-  #set result [getresult_prg  $joy_prg]
-  
-  #if {$::OLD} {
-  #  set result [getresult_prg  $joy_prg]
-    
+  #if {$::ITEMS_LIST} {
+  set joy_prg  [item_get_mainsrc $p]
   #} else {
-    #puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    #puts "joy_prg= $joy_prg  prog= $prog"
-    #puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  #  set joy_prg $p
+  #}
+
 
   set result [getresult_prg  $joy_prg $prog]
-  #}
-  
+
 
   #puts "joy_prg = $joy_prg  resul = $result"
 
@@ -800,10 +748,9 @@ proc NEXT_01 {} {
 
   mp_init $pb 
 
-
   run_gp_evolution  0 $rand_prgpop_proc \
     $individuals $len \
-    fitness_01 "MIN"  0.1  $nums $is_print 0 ;# not game print
+    FITPROC_01 "MIN"  0.1  $nums $is_print 0 ;# not game print
   
   return
 }
@@ -857,13 +804,13 @@ proc x_subst {inp} {
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
 #-------------------------------------------------------------------------------
-proc squareFitness {prg_11 task args} {
+proc FITPROC_xx {prg_11 task args} {
 
   set is_print [dict_parse $args "-is_print"   0]
 
-  if {$::ITEMS_LIST} {
-    set prg_11  [item_get_mainsrc $prg_11]
-  }
+  #if {$::ITEMS_LIST} {
+  set prg_11  [item_get_mainsrc $prg_11]
+  #}
 
   set prog_11 @ ;# это заглушка на будущее ?
 
@@ -885,9 +832,9 @@ proc squareFitness {prg_11 task args} {
     #puts stderr ""
     #puts stderr "-------------------------------------------------------------------"
     #puts stderr ""
-    #puts stderr "squareFitness: prg    = $prg_11"
-    #puts stderr "squareFitness: x_list = $x_list"
-    #puts stderr "squareFitness: func   = $func"
+    #puts stderr "FITPROC_xx: prg    = $prg_11"
+    #puts stderr "FITPROC_xx: x_list = $x_list"
+    #puts stderr "FITPROC_xx: func   = $func"
     #puts stderr ""
   }
 
@@ -922,7 +869,7 @@ proc squareFitness {prg_11 task args} {
     if {$result eq {}}  {
 
       if {$is_print} {
-        puts stderr "squareFitness: x = $x, result eq {} , ERROR operator??"
+        puts stderr "FITPROC_xx: x = $x, result eq {} , ERROR operator??"
       }
       # ошибка программы (на первом ошибочном операторе) !!
       # 
@@ -941,7 +888,7 @@ proc squareFitness {prg_11 task args} {
       # здесь может быть просто списко или символ-строка, а не число!
       # но пока кроме числе и {ошибки} в стеке ничего не предвидится
       #
-      puts "squareFitness: NOT DIGITAL ???? !!!"
+      puts "FITPROC_xx: NOT DIGITAL ???? !!!"
       exit
 
       incr fitness 50 ;# при каждой ошибке добавляем дельту
@@ -962,7 +909,7 @@ proc squareFitness {prg_11 task args} {
       set delta_sum [+ $delta_sum $delta]
 
       if {$is_print} {
-        puts stderr "squareFitness: x = $x, o = $o, result = $result, delta = $delta, delat_sum = $delta_sum"
+        puts stderr "FITPROC_xx: x = $x, o = $o, result = $result, delta = $delta, delat_sum = $delta_sum"
       }
 
       #set fitness [+ $fitness $delta]
@@ -983,7 +930,7 @@ proc squareFitness {prg_11 task args} {
   #
   #incr fitness $len
 
-  #puts stderr "squareFitness, prg = $prg_11, fitness = $fitness"
+  #puts stderr "FITPROC_xx, prg = $prg_11, fitness = $fitness"
 
   return $fitness
 }
@@ -992,8 +939,35 @@ proc fitness_test {task item} {
 
   #set task NULL
 
-  puts "item = $item,  ret = [squareFitness  $item $task -is_print 1] "
+  puts "item = $item,  ret = [FITPROC_xx  $item $task -is_print 1] "
 
+}
+#-------------------------------------------------------------------------------
+proc test_joy_savestack {} {
+
+
+  v1_init_all  ;# !!!!!!!!!!! ???
+
+  #---------------------------------------------------
+
+  set ::error_print1 1
+  set ::error_print2 1
+  set ::error_print3 1
+  
+  set ::error_saverestore 1
+  
+  #set proga "+ + + dup *"
+  set proga "+ dup * + + "
+  
+  v0_set_stack_null 
+  set result [v1_get_result_from_one_arg $proga  3]
+  
+  
+  puts ""
+  puts "result = $result"
+  puts "joy_ST = $::joy_ST"
+  puts ""
+  
 }
 #-------------------------------------------------------------------------------
 proc TEST_xx {} {
@@ -1016,7 +990,7 @@ proc TEST_xx {} {
   set ::gp_list   [dict_parse $argv "-list"   "dup * nop +"]
   set func        [dict_parse $argv "-func"  {x ** 2 + x}]
 
-  #----------------------------------------------
+  #------------------------------------------------------
   #set ::randinstr   randinstr_SIMP 
 
   #set ::quotes_proc "make_quotes_BE"
@@ -1038,102 +1012,15 @@ proc TEST_xx {} {
       randinstr    "randinstr_SIMP" \
       quotes_proc  "quotes_proc_NULL"
   }
-  #----------------------------------------------
 
-  #------------------------------------------
-  if {$vers == "testjoy"} {
-
-    #set task [task_create "squareFitness"  -fit_tobest "MIN" -func {$x ** 2}]
-
-    set ::error_print1 1
-    set ::error_print2 1
-    set ::error_print3 1
-
-    #fitness_test $task "+ dup * dup" 
-    #fitness_test $task "+ " 
-
-    set ::error_saverestore 1
-
-    #set result [getresult_prg_val_11 "+ + + dup *" 3 "@"]
-    #set result [getresult_prg_val_11 "+ + + dup *" 3]
-
-    #set proga "+ + + dup *"
-    set proga "+ dup * + + "
-
-    v0_set_stack_null 
-    set result [v1_get_result_from_one_arg $proga  3]
-
-
-    puts ""
-    puts "result = $result"
-    puts "joy_ST = $::joy_ST"
-    puts ""
-
-    exit
-  } else {
-
-    set func [x_subst $func] 
-  }
+  set func [x_subst $func] 
  
   puts "func = $func"
 
+  #------------------------------------------------------
 
-  #----------------------------------------------
-
-  if {$vers == "gp"} {
-  #----------------------------------------------
-    #
-    # gp_evolution
-
-    set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
-
-    #set ::error_saverestore 1
-
-    run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
-                              $lpop $size  \
-                              0.2                \
-                              $nums  $is_print 0 
-
-  #----------------------------------------------
-  } 
-  if {$vers == "ga"} {
-  #----------------------------------------------
-    #
-    # ga_evolution
-    
-    set task [task_create "squareFitness"  -fit_tobest "MIN" -func $func]
-
-    #set ::error_saverestore 1
-
-    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
-
-    set ::is_print $is_print
-  
-    #srandom_set 20 ;#???
-    #test_random_seed $seed ;# 1
-
-    set obj \
-      [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
-
-    set pop [GET $obj "pop"]
-
-    # только эти функции выбора работают для GP!
-    # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
-    # чем в BOT01 для поиска строк
-
-    SET $pop  select_one   "ga_select_one_bestof2"
-    SET $pop  select_two   "ga_select_two_bestof2"
-
-    set ret [calc_BOT01 $obj {*}$argv]
-
-    # TODO: почему не работает seed=@ ??
-    #
-    # l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -vers ga
-
-  #----------------------------------------------
-  } 
   if {$vers == "test"} {
-  #----------------------------------------------
+  #------------------------------------------------------
     #
     # ga_evolution, ищем как обычную строку (но для FS_fitness_list)
 
@@ -1148,8 +1035,6 @@ proc TEST_xx {} {
     set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target \
               -fit_error 0.01 ]  
 
-    set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
-
     set ::is_print $is_print
     #test_random_seed 0 ;#$i
   
@@ -1162,11 +1047,67 @@ proc TEST_xx {} {
 
     set ret [calc_BOT01 $obj {*}$argv]
 
-  #----------------------------------------------
+  #------------------------------------------------------
   }
-  #----------------------------------------------
+  if {$vers == "gp"} {
+  #------------------------------------------------------
 
+    set task [task_create "FITPROC_xx"  -fit_tobest "MIN" -func $func]
 
+    run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
+                              $lpop $size  \
+                              0.2                \
+                              $nums  $is_print \
+                              -game_print_proc 0 
+
+    # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+
+  #------------------------------------------------------
+  } 
+  if {$vers == "ga"} {
+  #------------------------------------------------------
+    
+    set task [task_create "FITPROC_xx"  -fit_tobest "MIN" -func $func]
+
+    #set ::error_saverestore 1
+    
+    set ::is_print $is_print
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    if {$seed == "@"} {      
+      set seed [clock seconds]
+    }
+    
+    random_seed $seed 
+    #srandom_set 20 ;#???
+    #test_random_seed $seed ;# 1
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
+    set obj \
+      [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    set pop [GET $obj "pop"]
+    
+    # только эти функции выбора работают для GP!
+    # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
+    # чем в BOT01 для поиска строк
+    
+    SET $pop  select_one   "ga_select_one_bestof2"
+    SET $pop  select_two   "ga_select_two_bestof2"    
+         
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    calc_BOT01 $obj  -nums $nums
+         
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
+  } 
+  
+  
   return
 }
 #-------------------------------------------------------------------------------

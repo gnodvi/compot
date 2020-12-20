@@ -77,6 +77,33 @@ proc item_get_mainsrc {item} {
 
 }
 #-------------------------------------------------------------------------------
+proc prog_get_prg_src {prog prg_name} {
+
+  
+  return [dict get $prog  $prg_name "src"] 
+}
+#-------------------------------------------------------------------------------
+proc item_get_main_src {item} {
+
+  set prog [item_get_prog $item]
+
+  return [prog_get_prg_src $prog "main"]
+
+}
+#-------------------------------------------------------------------------------
+proc prog_set_prg_src {&prog prg_name prg_src} {
+
+  # TODO: наверное главная проблема - нужно сделать через ссылки на словари!!
+  # 
+
+  USE_REFS
+
+  dict set prog $prg_name "src" $prg_src  ;# занесем процедуру в библиотеку
+
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 proc item_create {len_chromosome} {
     
   set item [dict_create]
@@ -210,30 +237,7 @@ proc item_get_prog {item} {
 
 }
 #-------------------------------------------------------------------------------
-proc prog_set_prg_src {&prog prg_name prg_src} {
-
-  # TODO: наверное главная проблема - нужно сделать через ссылки на словари!!
-  # 
-
-  USE_REFS
-
-  dict set prog $prg_name "src" $prg_src  ;# занесем процедуру в библиотеку
-
-}
 #-------------------------------------------------------------------------------
-proc prog_get_prg_src {prog prg_name} {
-
-  
-  return [dict get $prog  $prg_name "src"] 
-}
-#-------------------------------------------------------------------------------
-proc item_get_main_src {item} {
-
-  set prog [item_get_prog $item]
-
-  return [prog_get_prg_src $prog "main"]
-
-}
 # ------------------------------------------------------------------------------
 proc generation_hook_check {pop generation} \
 {
@@ -247,8 +251,13 @@ proc generation_hook_check {pop generation} \
   return $ret
 }
 # //----------------------------------------------------------------------------
-proc is_check_generation_break {pop generation max_generations 
-                                  fit_target fit_error is_print} {
+proc is_check_generation_break {pop task max_generations 
+                                is_print} {
+
+  set generation [GET $pop "generation"]
+
+  set fit_target [GET $task "fit_target"]
+  set fit_error  [GET $task "fit_error"]
 
 
   set item0  [pop_get_entity_ $pop  0] ;# лучший итем?
@@ -294,50 +303,27 @@ proc is_check_generation_break {pop generation max_generations
   return 0 ;# false
 }
 #-------------------------------------------------------------------------------
-proc item_calc_fitness {item_ptr fitnessfunc task} {
+proc item_calc_fitness {item fitnessfunc task} {
 
   # а может уже посчитано?
   # 
-  set fitn  [item_get_fitn  $item_ptr] 
+  #set fitn  [item_get_fitn  $item] 
 
-#   if {$fitn != $::GA_MIN_FITNESS} {
-#     return
-#   }
-
-  set prog [item_get_prog    $item_ptr]
-  set src  [prog_get_prg_src $prog "main"] 
-
-  #-------------------------------------
-  #puts ""
-  #puts "prog = $prog"
-  #puts " src =  $src"
-  #puts ""
-  #-------------------------------------
-
-  #set fitn  [$fitnessfunc  $src $prog] ;# запускаем тест 
-  #set fitn  [$fitnessfunc  $src]  
-  set fitn  [$fitnessfunc  $src $task]  
+  #   if {$::ITEMS_LIST == 0} { 
+  
+  #     set prog [item_get_prog    $item]
+  #     set src  [prog_get_prg_src $prog "main"] 
+  
+  #     set fitn  [$fitnessfunc  $src $task]  
+  #   } else {
+  
+  set fitn  [$fitnessfunc  $item $task]  
+  #   }
+  
 
   incr ::eval_count
 
-  #-------------------------------------
-
-  #set fitn  [$fitnessfunc  $src "@"]
-  #set fitn  [$fitnessfunc  "@" $prog]
-
-  #-------------------------------------
-  #
-  # на переходный еприод можно и так и так запускать, т.е. если указана prog,то
-  # выполняется полная версия, иначе выполняется src - т.е. без библиотеки
-
-  # if {[string equal $prog "@"]} {
-  #   run_v1_src   $src_11 
-  # } else {
-  #   run_v1_prog  $prog
-  # }
-  #-------------------------------------
-
-  item_set_fitn  $item_ptr  $fitn
+  item_set_fitn  $item  $fitn
   
 }
 #-------------------------------------------------------------------------------
@@ -418,7 +404,7 @@ dict_class_create POP {} {
   #sort_driver "" 
 
   itemslist        ""  ;# _ 
-  generation       ""  ;# _ 
+  generation        0  ;# _ 
 
   best       "" ;# _для_хранения_лучшего_номера
 
@@ -433,7 +419,7 @@ dict_class_create POP {} {
   SET $obj "ch_form"         "% 6.3f " ;#  " %02d"   
   SET $obj "generation_hook" NULL
   
-  SET $obj generation      {}  
+  #SET $obj generation      -  
   SET $obj best            {}     
 }
 
@@ -780,10 +766,6 @@ set ::GA_MIN_FITNESS   "NOT-FIT"
 #  */
 # #define GA_DEFAULT_ALLELE_MUTATION_PROB	0.02
 
-# /*
-#  * A private prototype.
-#  */
-# boolean gaul_population_fill (population *pop, int num);
 
 # /**********************************************************************
 #   ga_similarity.h
@@ -860,8 +842,6 @@ proc ga_entity_seed {pop adam} \
 # 		int num			Number of entities to seed.
 #   return:	boolean success.
 #
-# boolean 
-# gaul_population_fill (population *pop, int num)
 #-------------------------------------------------------------------------------
 proc  gaul_population_fill {pop num} {
 
@@ -870,12 +850,12 @@ proc  gaul_population_fill {pop num} {
 
   if {$::is_print >= 3} {
     puts ""
-    puts "   gaul_population_fill ........... num = $num pop = $pop proc_seed = $proc_seed"
+    set procname [lindex [info level 0] 0]
+    puts "    $procname ........... num = $num pop = $pop proc_seed = $proc_seed"
     puts ""
   }
 
   #----------------------------------------------------------
-
   for {set i 0} {$i < $num} {incr i} {
 
     set adam [ga_entity_setup $pop] ;# 
@@ -883,6 +863,7 @@ proc  gaul_population_fill {pop num} {
     # заполняем структуру элемента
     #  
     $proc_seed  $pop $adam
+
 
     if {$::is_print >= 3} {
 
@@ -893,19 +874,14 @@ proc  gaul_population_fill {pop num} {
       puts ""
     }
     
-    # -------------------------------------------
     # вообще-то теперь надо добавить в популяцию: 
     # 
-
-    #puts stderr "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  1111 "
     pop_add_entity_ $pop  $adam
-    #puts stderr "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  2222 "
     
   }
   #----------------------------------------------------------
 
   if {$::is_print >= 2} {
-    #puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     puts ""
   }
 
@@ -942,8 +918,57 @@ proc pop_check_all_eval {pop task} \
 
   return
 }
+#-------------------------------------------------------------------------------
+#   ga_qsort.c
+
+#   ga_qsort - GA population sorting routines.
+
+#   Synopsis:	Sort the population by fitness.
+
+# 		These functions aren't intended for public use.
+
+# 		Two versions exist.  (1) The older version uses the
+# 		quicksort algorithm, but since it is inefficient for
+# 		small arrays we use a shuffle sort to sort blocks of
+# 		less than 8 elements.  Unfortunately, platform
+# 		precision seems to be critical to the final ordering
+# 		with degenerate fitness scores - resulting in different
+# 		evolution results on different types of computer, which
+# 		is unacceptable.  (2) The newer, low-tech, shuffle
+# 		sort which sucks from a 'fanciness' perspective... but
+# 		it works.
+
+# ------------------------------------------------------------------------------
+proc pop_sorting {pop task} {
+
+  if {[get_pop_size $pop] == 0} {
+    return ;# если в популяции ничего еще нет !!
+  }
+  
+  set itemslist   [GET $pop  "itemslist"] 
+  
+
+  set sort_driver [make_sortdriver_fromtask $task]
+  set sortcmd     [list lsort_pop_command $sort_driver]
+  
+  set itemslist_sorted [lsort -command $sortcmd $itemslist]
+
+  # The implementation of the lsort command uses the merge-sort algorithm which 
+  # is a stable sort that has O(n log n) performance characteristics. 
+
+  #set sortcmd "item_qsort_${sort_driver}"
+  #set itemslist_sorted [qsort_AF $itemslist $sortcmd] ?? отличия?
+  
+
+  SET $pop "itemslist" $itemslist_sorted
+  
+  SET $pop best 0 ;# после сортировки это должно быть так
+
+  return $itemslist_sorted
+}
+#-------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
-proc pop_initial_score_and_sort {pop task} {
+proc pop_initial_fill {pop task} {
 
 
   set size        [get_pop_size $pop]
@@ -957,10 +982,16 @@ proc pop_initial_score_and_sort {pop task} {
     gaul_population_fill $pop [expr {$stable_size - $size}]
   }
   
-  pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Хорошо бы это перенести в .._step
+  # 
+  #pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+  # 
+  # g_stru.jm _05_test  2 10 1
+  # g_stru.jm _dc_test  1 5 2  @
 
-  pop_sorting  $pop [make_sortdriver_fromtask $task]
-  
+  #pop_sorting  $pop $task  
+
   return
 }
 #-------------------------------------------------------------------------------
@@ -980,8 +1011,6 @@ proc ga_population_seed {pop} {
   if {$::is_print} {
     puts "ga_population_seed  ......... \n"
   }
-
-  # plog(LOG_DEBUG, "Population seeding by user-defined genesis.");
 
   return [gaul_population_fill  $pop [GET $pop stable_size]]
 }
@@ -1034,7 +1063,7 @@ proc ga_population_score_and_sort {pop task} \
   # а теперь сортируем !!! !!! !!! !!!
   # 
 
-  pop_sorting  $pop [make_sortdriver_fromtask $task]
+  pop_sorting  $pop $task
   
   return $::true
 }
@@ -2304,60 +2333,6 @@ proc item_qsort_MIN_to_LEFT {a b} {
   return [qsort_MIN_to_LEFT $a_fit $b_fit]
 }
 #-------------------------------------------------------------------------------
-#   ga_qsort.c
-
-#   ga_qsort - GA population sorting routines.
-
-#   Synopsis:	Sort the population by fitness.
-
-# 		These functions aren't intended for public use.
-
-# 		Two versions exist.  (1) The older version uses the
-# 		quicksort algorithm, but since it is inefficient for
-# 		small arrays we use a shuffle sort to sort blocks of
-# 		less than 8 elements.  Unfortunately, platform
-# 		precision seems to be critical to the final ordering
-# 		with degenerate fitness scores - resulting in different
-# 		evolution results on different types of computer, which
-# 		is unacceptable.  (2) The newer, low-tech, shuffle
-# 		sort which sucks from a 'fanciness' perspective... but
-# 		it works.
-
-#-------------------------------------------------------------------------------
-proc pop_sorting {pop sort_driver} {
-
-#   if {$sort_driver == ""} {
-#     set sort_driver $::sort_driver
-#     #set sort_driver [GET $pop sort_driver]
-#   }
-
-
-  if {[get_pop_size $pop] == 0} {
-    return ;# если в популяции ничего еще нет !!
-  }
-  
-  # в случае, если специально определена функция сравнения (а не просто по фитнесу)
-  # т.е. if (pop->rank != ga_rank_fitness) то надл использовать эту функцию!
-  #                ??? нафига, если все можно в вфитнес вынести ???
-  #set rank_proc [$self cget -rank]
-  #if {$rank_proc != "ga_rank_fitness"} {
-  #  die "NOT ..... ga_rank_fitness"
-  #}
-  
-  set itemslist [GET $pop itemslist]
-
-  # если ы списке реальные итемы (словари), то делаем типа
-  # item_MIN_to_LEFT или item_MAX_to_LEFT
-
-  set sortcmd "item_qsort_${sort_driver}"
-
-  SET $pop itemslist  [qsort_AF $itemslist $sortcmd]
-
-  SET $pop best 0 ;# после сортировки это должно быть так
-
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #   ga_utility.c
 
 #   ga_utility - High-level genetic algorithm routines.
@@ -2569,9 +2544,9 @@ proc make_itemslist_from_prgpop {prgpop} {
   # идем списком по "сырым заготовкам" - только программы
   # 
 
-  foreach prg $prgpop {
+  foreach src $prgpop {
 
-    set item  [item_make $prg] ;# здесь указатели !!
+    set item  [item_make $src] ;# здесь указатели !!
 
     # пока фитнеса нет, только программы
 
@@ -4899,6 +4874,24 @@ proc pop_entities_swap {pop  id1 id2} \
   return
 }
 # ------------------------------------------------------------------------------
+proc cross_to_dau_and_son {pop task mother father} {
+
+  set crossover_proc [GET $pop crossover] ;# !!
+  set eval_proc      [GET $task "fitness_proc"]
+
+
+  set son [ga_get_free_entity  $pop] ;# создали новых !!!
+  set dau [ga_get_free_entity  $pop] ;# 
+  
+  $crossover_proc $pop  $mother $father  $dau $son
+  
+  # здесь бы сразу деток посчитать?
+  # 
+  pop_eval_item  $pop $dau $eval_proc $task
+  pop_eval_item  $pop $son $eval_proc $task 
+  
+  return
+}
 # //------------------------------------------------------------------------------
 # //  synopsis:	Mating cycle. (i.e. Sexual reproduction).
 # //  parameters:	population *pop
@@ -4923,31 +4916,41 @@ proc gaul_crossover {pop task} {
   # 
   SET $pop  select_state 0
   
-  #set crossover_proc [GET $pop crossover] ;# TODO: странно, но что-то меняется!
-  #                                       для g_stru.tl _4  10 2 @
-
-  #set eval_proc [GET $pop "evaluate"]
   set eval_proc [GET $task "fitness_proc"]
+  
+  #set crossover_proc [GET $pop crossover] ;# 
+  #
+  # TODO: странно, но что-то меняется!
+  #        для g_stru.tl _4  10 2 @
+  # а дело в том, что crossover_proc - попеременно меняется на каждом шаге!
+  # такая вот особенность.
+  #   crossover_proc = _4_struggle_crossover
+  #   crossover_proc = _4_the_other_struggle_crossover
 
   # For JIM
   set mother "" ;# ссылка
   set father "" ;# ссылка
 
+  set mother_list {}
+  set father_list {}
+  set preparelist 1
+
   #  Select pairs of entities to mate via crossover.
   #
-  while {! [$select_two_proc $pop  mother father]} {
+  while {1} {
 
-    set crossover_proc [GET $pop crossover] ;# почему здесь ??
-  
-    set son [ga_get_free_entity  $pop] ;# создали новых !!!
-    set dau [ga_get_free_entity  $pop] ;# 
+    set ret [$select_two_proc $pop  mother father]
 
-    $crossover_proc $pop  $mother $father  $dau $son
-    
-    # здесь бы сразу деток посчитать?
-    # 
-    pop_eval_item  $pop $dau $eval_proc $task
-    pop_eval_item  $pop $son $eval_proc $task 
+    if {$ret} {break}
+
+    if {$preparelist} {
+
+      lappend mother_list  $mother
+      lappend father_list  $father
+    } else {
+
+      cross_to_dau_and_son $pop $task $mother $father
+    }
 
     # перепутанный порядок даже с сишным вариантом!
     # однако
@@ -4966,6 +4969,21 @@ proc gaul_crossover {pop task} {
     }
   }
   
+
+  if {$preparelist} {
+
+    set l [llength $mother_list]
+
+    for {set i 0} {$i < $l} {incr i} {
+
+      set mother [lindex $mother_list $i]
+      set father [lindex $father_list $i]
+  
+      cross_to_dau_and_son $pop $task $mother $father
+    }
+  }
+
+
   return
 }
 # ------------------------------------------------------------------------------
@@ -5032,6 +5050,7 @@ proc gaul_mutation {pop task} {
 
     set ret [$select_one_proc  $pop mother]
     if {$ret} {break}
+
 
     if {$mother_list_mode} {
       lappend mother_list $mother
@@ -5337,12 +5356,17 @@ proc gaul_migration_by_pairs {num_pops pops} {
 # ------------------------------------------------------------------------------
 proc gaul_migration {task num_pops pops} {
 
-  set sort_driver [make_sortdriver_fromtask $task]
-
   if {$::is_print} {
     puts "gaul_migration : "
     puts ""
   }
+
+
+#   for {set i 0} {$i < $num_pops} {incr i} \
+#   {
+#     set pop [lindex $pops $i]
+#     pop_sorting  $pop $task
+#   }
 
   gaul_migration_by_pairs  $num_pops $pops
 
@@ -5352,35 +5376,48 @@ proc gaul_migration {task num_pops pops} {
   # FIXME: возможно было бы более эффективно вставлять иммигрантов сразу корректно
   # 
   
-  for {set i 0} {$i < $num_pops} {incr i} \
-  {
-    pop_sorting [lindex $pops $i] $sort_driver
-  }
+  #set sort_driver [make_sortdriver_fromtask $task]
+
+
+#   for {set i 0} {$i < $num_pops} {incr i} \
+#   {
+#     set pop [lindex $pops $i]
+#     pop_sorting  $pop $task
+#   }
 
   return
 }
 # //----------------------------------------------------------------------------
-proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
+proc ga_evolution_step {task pop max_generations} {
 
 
-  set generation [GET $pop "generation"]
+  #----------------------------------------------
+  #  
+  # если какие-то недосчитаны, то посчитать фитнес
   
-  if [is_check_generation_break  $pop $generation $max_generations \
-        $fit_target $fit_error \
-        $::is_print] {
+  pop_check_all_eval  $pop $task
 
-    return 0 ;# false
-  }
-  
-  # основная часть !!!! делаем новое поколение!
+  #-----------------------------------------------------------------
+  # сортируем всех челнов популяции по фитнесу
+  #  
+  pop_sorting  $pop $task
+
+  #----------------------------------------------
   #
-
+  # проверяем не пора ли закончить цикл
+  
+  if [is_check_generation_break  $pop $task $max_generations $::is_print] \
+    { 
+      return false
+    }
+  
   if {$::is_print > 2} {
 
     puts stderr "ga_evolution_step .............................................. "
     puts ""
     #pop_print $pop "stderr" ; puts ""
   }
+
 
   #-----------------------------------------------------------------
   #  Crossover step 
@@ -5403,7 +5440,7 @@ proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
   # Apply environmental adaptations, score entities, sort entities, etc.
   #  
  
-  gaul_adapt_and_evaluate $pop $task ;# а где же сортировка?
+  gaul_adapt_and_evaluate $pop $task 
   
   if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
@@ -5420,9 +5457,8 @@ proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
 
   #-----------------------------------------------------------------
   # сортируем всех челнов популяции по фитнесу
-  # 
- 
-  pop_sorting $pop [make_sortdriver_fromtask $task]
+  #  
+  pop_sorting  $pop $task
 
   #-----------------------------------------------------------------
   # Убиваем наименее приспособленных членов популяции, чтобы восстановить 
@@ -5433,75 +5469,12 @@ proc ga_evolution_step {task pop max_generations  fit_target fit_error} {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  set generation [GET $pop "generation"]  
   incr generation
   SET $pop generation $generation
   
 
   return 1 ;# true
-}
-# //----------------------------------------------------------------------------
-# //  synopsis:	Main genetic algorithm routine.  Performs GA-based
-# //		optimisation on the given population.
-# //		This is a generation-based GA.
-# //		ga_genesis(), or equivalent, must be called prior to
-# //		this function.
-# //  parameters:
-# //  return:
-# //----------------------------------------------------------------------------
-proc ga_evolution_main {task pop max_generations} {
-
-
-  set fit_target [GET $task "fit_target"]
-  set fit_error  [GET $task "fit_error"]
-
-
-  # Do all the generations:
-  # 
-  # Stop when (a) max_generations reached, or
-  #           (b) "pop->generation_hook" returns FALSE.  
-
-  SET $pop "generation" 0
-
-
-  #------------------------------------------------
-  while {1} {
-
-    if {! [ga_evolution_step  $task $pop $max_generations $fit_target $fit_error]} {
-      break;
-    }
-
-    if {$::is_print >= 2} {pop_print $pop "stderr"}
-
-  } ;# /* Generation loop. */
-  #------------------------------------------------
-  
-  #puts ""
-
-  if {$::is_print > 2} {
-
-    puts ""
-    puts "FINAL RESULT: "
-    puts ""
-    pop_print_ $pop
-    puts ""
-  }
-
-  #exit
-  #return $generation
-  return [GET $pop "generation"]
-}
-# //------------------------------------------------------------------------------
-proc ga_evolution {task pop  max_generations} {
-
-
-  # Score and sort the initial population members.
-  #  
-  pop_initial_score_and_sort  $pop $task
- 
-  set generation [ga_evolution_main  $task $pop $max_generations]
-
-  return $generation
-
 }
 # //------------------------------------------------------------------------------
 # //  synopsis:	Main genetic algorithm routine.  Performs GA-based
@@ -5526,7 +5499,11 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
  
     # Score and sort the initial population members.
     #  
-    pop_initial_score_and_sort $pop $task  
+    pop_initial_fill $pop $task  
+
+    pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+
+    #pop_sorting  $pop $task
   }
   
 
@@ -5536,8 +5513,8 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
   set complete ::false ;# Whether evolution is terminated
   
-  set fit_target [GET $task "fit_target"]
-  set fit_error  [GET $task "fit_error"]
+  #set fit_target [GET $task "fit_target"]
+  #set fit_error  [GET $task "fit_error"]
 
 
   while {1} {
@@ -5550,6 +5527,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
     gaul_migration $task  $num_pops $pops
     
     
+    #--------------------------------------------------------------------
     for {set i 0} {$i < $num_pops} {incr i} {
 
       if {$::is_print} {
@@ -5560,22 +5538,78 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
       set pop [lindex $pops $i]
 
-      if {! [ga_evolution_step  $task $pop $max_generations $fit_target $fit_error]} {
+      #pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+
+      if {! [ga_evolution_step  $task $pop $max_generations]} {
         set complete TRUE
         break;
-      }
-        
-      #--------------------------------------------------------------------
+      }        
 
     }
+    #--------------------------------------------------------------------
     
+    #gaul_migration $task  $num_pops $pops
   } 
   
   return $generation
 }
-# //******************************************************************************
+# //----------------------------------------------------------------------------
+# //  synopsis:	Main genetic algorithm routine.  Performs GA-based
+# //		optimisation on the given population.
+# //		This is a generation-based GA.
+# //		ga_genesis(), or equivalent, must be called prior to
+# //		this function.
+# //  parameters:
+# //  return:
+# //----------------------------------------------------------------------------
+proc ga_evolution_main {task pop max_generations} {
+
+
+  # Do all the generations:
+  # 
+  # Stop when (a) max_generations reached, or
+  #           (b) "pop->generation_hook" returns FALSE.  
+
+  SET $pop "generation" 0
+
+
+  #------------------------------------------------
+  while {1} {
+
+    if {! [ga_evolution_step  $task $pop $max_generations]} {
+      break;
+    }
+
+    if {$::is_print >= 2} {pop_print $pop "stderr"}
+
+  } 
+  # /* Generation loop. */
+  #------------------------------------------------
+  
+  if {$::is_print > 2} {
+
+    puts ""
+    puts "FINAL RESULT: "
+    puts ""
+    pop_print_ $pop
+    puts ""
+  }
+
+  return [GET $pop "generation"]
+}
 # //------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
+proc ga_evolution {task pop  max_generations} {
+
+
+  # Score and sort the initial population members.
+  #  
+  pop_initial_fill  $pop $task
+ 
+  set generation [ga_evolution_main  $task $pop $max_generations]
+
+  return $generation
+
+}
 # //------------------------------------------------------------------------------
 # //------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -5796,54 +5830,12 @@ proc get_rand_offspring {leaders l} {
   set item    [lindex $leaders $x]
 
   #set parent_prg [item_get_prog $item]
-
   #return $parent_prg
+
+  #puts "get_rand_offspring: item = $item, prog = [set $item]"
+  #exit
+
   return $item
-}
-#-------------------------------------------------------------------------------
-proc add_offspring {&offsprings offspring l} {
-
-  USE_REFS
-
-  lappend offsprings $offspring         ;# добавили отпрыска
-
-  if {[llength $offsprings] == $l} {return 0} ;# если привысили лимит - выходим
-
-  return 1
-}
-#-------------------------------------------------------------------------------
-proc make_offsprings_from_leaders {leaders l} {
-
-  #set l [llength $leaders]
-
-  # генерируем другую 1/3  популяции отпрысками от случайных лидеров.
-  #
-  set offsprings {}
-  
-  while 1 {
-    
-    set parent0  [get_rand_offspring  $leaders $l]
-    set parent1  [get_rand_offspring  $leaders $l]
-
-    set parent0_prg [item_get_main_src $parent0]
-    set parent1_prg [item_get_main_src $parent1]
-
-    # трюк получения двух значений от функции списком: (здесь чистые prg?)
-    # 
-    foreach {offspring0 offspring1} \
-      [gp_crossover $parent0_prg $parent1_prg] break
-    
-
-    # добавляем отпрысков и смотрим превышение лимита:
-    # 
-    if {! [add_offspring  offsprings $offspring0 $l]} break
-    if {! [add_offspring  offsprings $offspring1 $l]} break
-  }
-  
-
-  #if {$is_print} {puts "OFFSPRINGS = $offsprings \n"}
-   
-  return $offsprings
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -5855,67 +5847,6 @@ proc dict_print_real_all_in_list {name list_pd} {
     dict_print_real $item
   }
 
-}
-#-------------------------------------------------------------------------------
-proc itemslist_sorted_evolution_3parts {sorted_items mutprob} {
-
-
-  # TODO: а зачем мне тут так хитро выедлять начальную треть группы?
-  # потом от инх делаем остальные две трети, что не точно по целому значению.
-  #
-  # лучше просто задать нужные цифры, а список лидеров уже сортированный!
-
-  # и вообще - это слишком простой вариант, нужно сначала добавлять, потом
-  #            пересчитывать и потом уже убивать слабых
-
-  set len [llength $sorted_items]
-
-  #---------------------------------------
-  # 1)
-  # выделяем лидеров популяции  (1/3)
-
-  
-  set l [expr {$len/3}] ;# размер лидирующей группы
-  
-  set leaders_items [lrange $sorted_items 0 [expr {$l-1}]]
-  
-  #if {$is_print} {puts "LEADERS = $leaders \n"}
-    
-
-  #---------------------------------------
-  # 2)
-  # генерируем другую 1/3  популяции отпрысками от случайных лидеров
- 
-  
-  set o $l ;# сгенерим столько же отпрысков от лидеров
-
-  set offsprings_prg   [make_offsprings_from_leaders  $sorted_items $o]
-  
-  #puts stderr "itemslist_sorted_evolution_3parts: offsprings_prg = $offsprings_prg"
-
-  set offsprings_items [make_itemslist_from_prgpop     $offsprings_prg]
-
-
-  #---------------------------------------
-  # 3)
-  # генерируем последнюю 1/3 популяции мутируя лидеров (?)
-  
-  
-  set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
-
-  set mutated_items  [make_mutated_from_leaders  $sorted_items $m  $mutprob]
-
-  #dict_print_real_all_in_list  "itemslist_sorted_evolution_3parts"  $mutated_items
-
-
-  #---------------------------------------
-  # склеиваем три популяции исходников (лидеров, отпрысков, мутантов)
-  # создавая популяцию исходников для следующей итерации.
-  #
-
-  set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items] 
-  
-  return $pop_items
 }
 #-------------------------------------------------------------------------------
 # proc pop_create_simp {} {
@@ -6028,7 +5959,7 @@ proc item_print_fitness {item i} {
   return
 }
 #-------------------------------------------------------------------------------
-proc gp_pop_calc_fitness_all {pop task} {
+proc pop_calc_fitness_all {pop task} {
 
   set fitnessfunc [GET $task "fitness_proc"]  
   set itemlist    [GET $pop  "itemslist"] 
@@ -6059,114 +5990,7 @@ proc gp_pop_all_print {pop} {
 
   return
 }
-# ------------------------------------------------------------------------------
-proc is_check_generation_break_gp {pop i max_generations 
-                                   is_print} {
-
-  set steps $max_generations
-
-  if {$i >= $steps} {
-    return $::true
-  } 
-  
-  if {$is_print} {
-    puts "EVOLVE ..................................... i = $i \n"    
-  }
-
-  return $::false
-}
-# ------------------------------------------------------------------------------
-proc gp_evolution_main {task  pop max_generations 
-                          {is_print        1}    
-                          {game_print_proc 0}    
-                          {mutprob         0.1}   
-                        } {
-
-  set steps $max_generations
-
-  SET $pop "generation" 0
-  set i 0
-
-  set fit_target [GET $task "fit_target"]
-  set fit_error  [GET $task "fit_error"]
-
-  # ---------------------------------------------------------------------
-  # 
-  while {1} {
-
-    set i         [GET $pop "generation"]
-    set itemslist [GET $pop  "itemslist"] 
-    
-
-    # запускаем каждую программу, и формируем список из нее и ее фитнеса
-    #  
-    gp_pop_calc_fitness_all $pop $task ;#  $itemslist ;###$fitnessfunc
-
-    #gp_pop_all_print        $pop ;# $itemslist 
-
-    set itemslist   [GET $pop  "itemslist"] 
-    #----------------------------------------------
-
-    # сортируем особей по фитнесу - лучший  фитнес идет куда ранее задано 
-    #                               в ::sort_driver ?
-    # как отказаться от этой глобальной переменной ?
-
-    set sort_driver [make_sortdriver_fromtask $task]
-    #set sort_driver $::sort_driver
-
-    set sortcmd [list lsort_pop_command $sort_driver]
-
-    set itemslist_sorted [lsort -command $sortcmd $itemslist]
-    
-    set best_item [lindex $itemslist_sorted 0]
-    
-    SET $pop "itemslist" $itemslist_sorted
-
-    if {$is_print > 1} {
-    puts ""
-    puts "-------------------------------------------------------------------"
-    puts ""
-      gp_pop_all_print     $pop ;# $itemslist 
-    }
-    #exit
-
-    print_best $i  $task $best_item  $is_print $game_print_proc ;# $fitnessfunc 
-
-    #----------------------------------------------
-
-    if [is_check_generation_break  $pop $i $max_generations \
-          $fit_target $fit_error \
-          0] \
-      {     
-        return false
-      }      
-    #----------------------------------------------
-
-    # а это основная эволюция:
-    # 
-    set itemslist [itemslist_sorted_evolution_3parts  $itemslist_sorted  $mutprob]
-    #
-    # после нее итемы не сортированы
-    #
-
-    #----------------------------------------------
-
-    SET $pop "itemslist" $itemslist
-
-#     if {$is_print > 1} {
-#       puts ""
-#     }
-
-    incr i
-    SET $pop "generation" $i ;# $generation
-  }
-  
-
-  return
-}
 #-------------------------------------------------------------------------------
-
-#set ::NEWFITN 0
 
 #set ::fit_target 53.1
 set ::fit_target 55.213
@@ -6203,7 +6027,7 @@ proc calc_BOT {obj args} {
   
   set  pop [GET $obj "pop"]
   
-  pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+  pop_initial_fill  $pop $task ;# инициация итемов функцией [GET $pop seed]  
   
   ga_evolution_main           $task $pop $max_generations ;# 0.01
   
@@ -6235,28 +6059,220 @@ dict_class_create BOT33 {BOT} {
 
   set task [task_create "FS_fitness_list" -fit_tobest "MAX" ]
 
-  #set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-
   #-------------------------
   
   SET $obj "task" $task  
 
   set pop [POP new  {*}$args]
 
-  #set sort_driver [dict_parse $args "-sort_driver"] 
-
-  #set      ::sort_driver $sort_driver
-  #SET $pop "sort_driver" $sort_driver
-  
-  #SET $pop  ch_form "%s" 
-
   SET $obj "pop"  $pop
 }
 
+#-------------------------------------------------------------------------------
+proc add_offspring {&offsprings offspring l} {
+
+  USE_REFS
+
+  lappend offsprings $offspring ;# добавили отпрыска
+
+  if {[llength $offsprings] == $l} {
+
+    return 0 ;# если привысили лимит - выходим ? может перед проверять?
+  } 
+
+  return 1
+}
+#-------------------------------------------------------------------------------
+proc make_offsprings_from_leaders {leaders l} {
+
+  #set l [llength $leaders]
+
+  # генерируем другую 1/3  популяции отпрысками от случайных лидеров.
+  #
+  set offsprings {}
+  
+  while 1 {
+    
+    set parent0  [get_rand_offspring  $leaders $l]
+    set parent1  [get_rand_offspring  $leaders $l]
+
+    set parent0_src [item_get_main_src $parent0]
+    set parent1_src [item_get_main_src $parent1]
+
+    # трюк получения двух значений от функции списком: (здесь чистые prg?)
+    # 
+    foreach {offspring0_src offspring1_src} \
+      \
+      [gp_crossover  $parent0_src $parent1_src] break
+    
+#     if {1} {
+      set s0  [item_make $offspring0_src] 
+      set s1  [item_make $offspring1_src] 
+#     } else {
+#       set s0  $offspring0_src 
+#       set s1  $offspring1_src
+#     }
+
+    # добавляем отпрысков и смотрим превышение лимита = l:
+    # 
+
+    if {! [add_offspring  offsprings $s0  $l]} break
+    if {! [add_offspring  offsprings $s1  $l]} break
+  }
+  
+
+  #if {$is_print} {puts "OFFSPRINGS = $offsprings \n"}
+   
+  return $offsprings
+}
+#-------------------------------------------------------------------------------
+proc pop_gp_evilution_3 {pop sorted_items mutprob} {
+
+  # предполагается что итемы тут уже отсортированы !!
+  # 
+  # это слишком простой вариант, нужно сначала добавлять, потом
+  #            пересчитывать и потом уже убивать слабых ?
+
+  set len [llength $sorted_items]
+
+  #---------------------------------------
+  # 1)
+  # выделяем лидеров популяции  (1/3)
+
+  
+  set l [expr {$len/3}] ;# размер лидирующей группы
+  
+  set leaders_items [lrange $sorted_items 0 [expr {$l-1}]]
+  
+  #if {$is_print} {puts "LEADERS = $leaders \n"}
+    
+
+  #---------------------------------------
+  # 2)
+  # генерируем другую 1/3  популяции отпрысками от случайных лидеров
+ 
+  
+  set o $l ;# сгенерим столько же отпрысков от лидеров
+
+  set offsprings_items  [make_offsprings_from_leaders  $sorted_items $o]
+ 
+  #---------------------------------------
+  # 3)
+  # генерируем последнюю 1/3 популяции мутируя лидеров (?)
+  
+  
+  set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
+
+  set mutated_items  [make_mutated_from_leaders  $sorted_items $m  $mutprob]
+
+  #dict_print_real_all_in_list  "pop_gp_evilution_3"  $mutated_items
+
+
+  #---------------------------------------
+  # склеиваем три популяции исходников (лидеров, отпрысков, мутантов)
+  # создавая популяцию исходников для следующей итерации.
+  #
+
+  set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items] 
+  
+
+  #---------------------------------------
+  # записываем их в популяцию
+
+  SET $pop "itemslist" $pop_items
+
+
+  return $pop_items
+}
+# ------------------------------------------------------------------------------
+proc pop_print_step_info {pop task is_print step_print_proc} {
+
+  set i [GET $pop generation]
+
+  if {$is_print > 1} {
+    puts ""
+    puts "-------------------------------------------------------------------"
+    puts ""
+    gp_pop_all_print  $pop 
+  }
+  
+  set itemslist [GET $pop  "itemslist"] 
+
+  set best_item [lindex $itemslist 0]
+  
+  print_best $i  $task $best_item  $is_print $step_print_proc  
+  
+}
+# ------------------------------------------------------------------------------
+proc gp_evolution_step {task  pop max_generations 
+                          {is_print        1}    
+                          {step_print_proc 0}    
+                          {mutprob         0.1}   
+                      } {
+
+  #----------------------------------------------
+  #  
+  # запускаем каждую программу, и формируем список из нее и ее фитнеса
+  
+  pop_calc_fitness_all $pop $task 
+  
+  #----------------------------------------------
+  # 
+  # сортируем особей по фитнесу - лучший  фитнес идет куда ранее задано 
+  
+  set itemslist_sorted [pop_sorting  $pop $task]
+  
+  #----------------------------------------------
+  #
+  # выводим некоторую краткую инфу
+  
+  pop_print_step_info  $pop $task $is_print $step_print_proc
+  
+  #----------------------------------------------
+  #
+  # проверяем не пора ли закончить цикл
+  
+  if [is_check_generation_break  $pop $task $max_generations 0] \
+    {     
+      return false
+    }      
+  
+  #----------------------------------------------
+  # 
+  # а это основной шаг эволюции (после него итемы не сортированы):
+  
+  pop_gp_evilution_3  $pop $itemslist_sorted  $mutprob
+  
+  
+  #----------------------------------------------
+  
+  set generation [GET $pop generation]
+  incr generation
+  SET $pop "generation" $generation 
+  
+  return true
+}
+# ------------------------------------------------------------------------------
+proc gp_evolution_main {task  pop max_generations 
+                          {is_print        1}    
+                          {step_print_proc 0}    
+                          {mutprob         0.1}   
+                        } {
+
+  while {1} {
+
+    set ret [gp_evolution_step  $task $pop $max_generations $is_print \
+               $step_print_proc $mutprob]
+    
+    if {! $ret} {break}
+  }
+  
+
+  return
+}
 #-----------------------------------------------------------
 proc calc_BOT33  {obj args} {
   
-  #puts stderr "calc_BOT33: args = $args"
   
   set task [dict_parse $args "-task" [GET $obj "task"]] 
   
@@ -6264,31 +6280,20 @@ proc calc_BOT33  {obj args} {
     set max_generations [dict_parse $args "-nums" ] 
   }
   
-  set  pop [GET $obj "pop"]
-  
   set is_print         [dict_parse $args "-is_print"        1]
-  #puts "is_print = $is_print"
-  #exit
   set game_print_proc  [dict_parse $args "-game_print_proc" 0]
   set mutprob          [dict_parse $args "-mutprob"         0.1]
    
-  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
-  #  
   set randpop_proc     [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
 
+  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
+  #  
+
+  set  pop [GET $obj "pop"]
+  
   set population_size [GET $pop "stable_size"]
   set len_chromosomes [GET $pop "len_chromosomes"]
   
-  if {0} {
-  puts stderr ""
-  puts stderr "calc_BOT33: randpop_proc    = $randpop_proc"
-  puts stderr "calc_BOT33: population_size = $population_size"
-  puts stderr "calc_BOT33: len_chromosomes = $len_chromosomes"
-  puts stderr "calc_BOT33:             pop = $pop"
-  dict_print $pop
-  exit
-  }
-
   set itemslist [make_itemslist  \
                    $randpop_proc \
                    $population_size $len_chromosomes   $is_print]
@@ -6339,14 +6344,17 @@ proc make_sortdriver_fromtask {task} {
   return $sort_driver
 }
 #-------------------------------------------------------------------------------
-proc run_gp_evolution_for_task {task seed randpop_proc 
+proc run_gp_evolution_for_task {
+                       task
+                       seed randpop_proc 
                        population_size  len_chromosomes 
                        mutprob 
                        max_generations   is_print 
-                       game_print_proc 
+                       args
                      } {
 
-
+  #game_print_proc 
+ 
   #-------------------------------------
   if {$seed == "@"} {
 
@@ -6364,98 +6372,60 @@ proc run_gp_evolution_for_task {task seed randpop_proc
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
-  RUN1 "calc_" $obj \
-    -nums           $max_generations \
-    -task            $task \
-    -is_print        $is_print        \
-    -game_print_proc $game_print_proc \
-    -mutprob         $mutprob \
-    -randpop_proc    $randpop_proc
+  #RUN1 "calc_" $obj \
 
+  calc_BOT33  $obj \
+    -nums           $max_generations  \
+    -task            $task            \
+    -is_print        $is_print        \
+    -mutprob         $mutprob         \
+    -randpop_proc    $randpop_proc    \
+    {*}$args
+
+#    -game_print_proc $game_print_proc \
 
   return
 }
 #-------------------------------------------------------------------------------
-proc run_gp_evolution {seed randpop_proc 
+proc run_gp_evolution {
+                       seed randpop_proc 
                        population_size  len_chromosomes 
                        fitnessfunc  fit_tobest 
                        mutprob 
                        max_generations   is_print 
                        {game_print_proc 0} 
+                       args
                      } {
 
 
   set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
 
-  run_gp_evolution_for_task $task $seed $randpop_proc     \
+  run_gp_evolution_for_task \
+                       $task \
+                       $seed $randpop_proc     \
                        $population_size  $len_chromosomes \
                        $mutprob                           \
                        $max_generations  $is_print        \
-                       $game_print_proc                   \
+                       -game_print_proc $game_print_proc
  
   return
 }
 #-------------------------------------------------------------------------------
-proc run_gp_evolution_old {seed randpop_proc 
-                       population_size  len_chromosomes 
-                       fitnessfunc  fit_tobest 
-                       mutprob 
-                       max_generations   is_print 
-                       {game_print_proc 0} 
-                     } {
 
-
-  set task [task_create $fitnessfunc -fit_tobest $fit_tobest]
-
-  #-------------------------------------
-  if {$seed == "@"} {
-
-    set seed [clock seconds]
-  }
-
-  random_seed $seed 
-  #-------------------------------------
-
-  set obj \
-    [BOT33 new  -lpop $population_size -lsrc $len_chromosomes \
-       -task $task]
-
-    
-  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
-  # и  выпоняем эволюционный поиск 
-
-  RUN1 "calc_" $obj \
-    -nums           $max_generations \
-    -task            $task \
-    -is_print        $is_print        \
-    -game_print_proc $game_print_proc \
-    -mutprob         $mutprob \
-    -randpop_proc    $randpop_proc
-
-
-  return
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-set ::ITEMS_LIST 0
+#set ::ITEMS_LIST 1
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#proc FS_fitness_list {list_calc {prog @}} {}
-proc FS_fitness_list {list_calc task} {
+proc FITPROC_list_FS {list_calc task} {
 
 
-  if {$::ITEMS_LIST} {
-    set list_calc  [item_get_mainsrc $list_calc]
-  }
+  #if {$::ITEMS_LIST} {
+  set list_calc  [item_get_mainsrc $list_calc]
+  #}
 
-  #set list_true [split $::target_text ""]
   set list_true $::target_text  ;# это список
 
   set len_true [llength $list_true]
   set len_calc [llength $list_calc]
-
-  #puts stderr "FS_fitness_list: true = $list_true, calc = $list_calc"
 
   set fit 0 ;# начальное значение фитнес 
 
@@ -6513,31 +6483,17 @@ proc FS_fitness_list {list_calc task} {
 }
 #-------------------------------------------------------------------------------
 
-# g_stru.jm _gp_test 2013  20 5 -1
-# 
-#  561) BEST: '1 2 2 3 3 1 4 4 4 4 5 5 5 5 5' with fitness -1
-#  562) BEST: '1 2 2 3 3 1 4 4 4 4 5 5 5 5 5' with fitness -1
-#  563) BEST: '1 2 2 3 3 3 4 4 4 4 5 5 5 5 5' with fitness 0
-
-#-------------------------------------------------------------------------------
-# proc FS_fitness_list_NEW {list_calc} {
-
-#   set ::NEWFITN 1
-
-#   #return [FS_fitness_list  $list_calc $prog]
-#   return [FS_fitness_list  $list_calc]
-
-# }
-#-------------------------------------------------------------------------------
 # ищем пока простто структуру
-#-------------------------------------------------------------------------------
+
 # g_stru.tl _gp_test 2013 10 6 10
 #-------------------------------------------------------------------------------
 proc gp_fitness_test {item} {
 
   set task NULL
 
-  puts "item = $item,  ret = [FS_fitness_list  $item $task] "
+  set item [item_make $item]
+
+  puts "item = [item_get_mainsrc $item],  ret = [FITPROC_list_FS  $item $task] "
 
 }
 #-------------------------------------------------------------------------------
@@ -6551,12 +6507,9 @@ proc _gp_test {} {
 
   global argc
 
-  #set ::NEWFITN 1 ;# даже немного замедляет ?! 
-
   #----------------------------------------------------------------
   if {$argc == 1} {
 
-    #set ::NEWFITN 1
 
     gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
     gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 4"
@@ -6571,31 +6524,9 @@ proc _gp_test {} {
 
     exit
 
-#     set bnums 10 ;# population_size
-#     set bsize 15
-#     set steps  1 ;# 1 ;# max_generations 
-    
-#     set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
-#     set ::is_fitn_first   1 ;# 0 ;# g-corA.tl -> item_print_fitness
-    
   #----------------------------------------------------------------
   } else {
   #----------------------------------------------------------------
-
-
-
-    # берем данные из командной строки: k~.tl TEST FS  @  20 15 100
-    #                                   cd ../others ; h_stru.tl FS
-    #incr ::ind0
-
-    #set bnums ""
-    #set bsize ""
-    #set steps ""
-
-    #parse_opt_seed_3_new  bnums bsize steps 
-
-    # if ! @ -> mysrand var 
-
 
     global argc argv argv0
     set argv [lrange $argv 1 end]
@@ -6605,6 +6536,7 @@ proc _gp_test {} {
     set bsize  [dict_parse $argv "-size"  6] 
     set steps  [dict_parse $argv "-nums" 10]
 
+  #----------------------------------------------------------------
   }
   #----------------------------------------------------------------
 
@@ -6613,25 +6545,13 @@ proc _gp_test {} {
   #set ::randinstr  "randinstr_NEXT"
   #set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
 
+  set  fitnessfunc  "FITPROC_list_FS"
 
-  set  fitnessfunc  "FS_fitness_list"
-  #set  fitnessfunc  "FS_fitness_list_NEW"
-
-  #set  sort_driver  "MAX_to_LEFT" ;## большие влево?
-  #set ::sort_driver "MAX_to_LEFT"    
-
-  # ------------------------------------------------
-
-  #random_seed 0 ;# ?? mysrand 2013
-
-  #puts ""
-  #puts "GP_find ..."
   puts ""
   puts "bnums  = $bnums"  ;# колич-во ботов
   puts "bsize  = $bsize"  ;# макс. длина ботов (при начальном старте?)
   puts "steps  = $steps"  ;# шагов эволюции  
   puts ""
-
 
 
   set is_print 1
@@ -6642,7 +6562,6 @@ proc _gp_test {} {
     $fitnessfunc "MAX" \
     0.1  $steps  $is_print 0 ;# not game print
 
-  # ------------------------------------------------
 
   return
 }
@@ -6655,7 +6574,6 @@ proc _gp_test {} {
 
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc maintest_seed_proc {pop adam} {
@@ -6759,7 +6677,7 @@ proc calc_BOT01 {obj args} {
   
   set  pop [GET $obj "pop"]
   
-  pop_initial_score_and_sort  $pop $task ;# инициация итемов функцией [GET $pop seed]  
+  pop_initial_fill  $pop $task ;# инициация итемов функцией [GET $pop seed]  
 
   if {$::is_print > 1} {
     pop_print $pop
