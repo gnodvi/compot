@@ -1490,10 +1490,9 @@ proc ANTS_gp {} {
 
   read_params  individuals len nums
 
-  set ::gp_list       "MOVE RIGHT IF_FOOD_AHEAD nop i" 
+  set gp_list       "MOVE RIGHT IF_FOOD_AHEAD nop i" 
 
   #---------------------------------------------
-
 
   #ANTS_init "22"    ;# какой-то другой результат !!
   #set quotes_proc "make_quotes_BE"
@@ -1512,9 +1511,16 @@ proc ANTS_gp {} {
 
   set ::sort_driver "MIN_to_LEFT"    
 
-  run_gp_evolution  0 "make_rand_prgpop_unikum" \
-                        $individuals $len \
-                        FITPROC_ants "MIN"  0.1  $nums   1  0 ;# not game print
+  set task [task_create FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
+    
+  run_gp_evolution_for_task \
+      $task \
+      0 "make_rand_prgpop_unikum"  \
+      $individuals  $len $nums \
+      1                     \
+      -mutprob          0.1 \
+      -game_print_proc  0 
+
 
   return
 }
@@ -1547,7 +1553,7 @@ proc ANTS_gp_new {} {
 
   read_params  individuals len nums
 
-  set ::gp_list  "M R L"
+  set gp_list  "M R L"
   
   ANTS_init "11" ;# начальная инициализация системы функций
   
@@ -1561,9 +1567,15 @@ proc ANTS_gp_new {} {
 
   set ::sort_driver "MIN_to_LEFT"    
 
-  run_gp_evolution  0 "make_rand_prgpop_unikum" \
-                        $individuals $len \
-                        FITPROC_ants20 "MIN" 0.1  $nums 1  game_print
+  set task [task_create FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
+    
+  run_gp_evolution_for_task \
+      $task \
+      0 "make_rand_prgpop_unikum"  \
+      $individuals  $len $nums \
+      1                     \
+      -mutprob          0.1 \
+      -game_print_proc  game_print 
   
 }
 # ------------------------------------------------------------------------------

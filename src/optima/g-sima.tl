@@ -175,7 +175,7 @@ proc  ga_sa {task pop
   #   if (best->fitness==GA_MIN_FITNESS) pop->evaluate(pop, best);
   #
 
-  if {[string equal [item_get_fitn $best]  $::GA_MIN_FITNESS]} {item
+  if {[string equal [item_get_fitn $best]  $::GA_NOT_FIT]} {item
 
     puts "...... GA_MIN_FITNESS ......................"
 
@@ -184,7 +184,7 @@ proc  ga_sa {task pop
     pop_eval_item $pop $best $eval_proc $task
     
   }
-#   if {[ent_get_fitness $initial] == $::GA_MIN_FITNESS} {
+#   if {[ent_get_fitness $initial] == $::GA_NOT_FIT} {
 #     [$pop.evaluate] $pop $initial
 #   }
   

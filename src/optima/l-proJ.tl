@@ -281,17 +281,13 @@ proc TEST_randprog {} {
   #
   read_seedflag  ind 
 
-
   #   set minlen 1
   #   set maxlen 8
   #
-  #   set ::randinstr randinstr_SIMP
-  #   set ::gp_list     "+ - * / dup" ;# работает !!
-  #   set prg [make_randprog [rand $minlen $maxlen]]
 
   set n 10
 
-  set ::gp_list     "+ - * dup i" 
+  set gp_list     "+ - * dup i" 
 
   #------------------------------------------
   set ::randinstr randinstr_SIMP
@@ -307,7 +303,7 @@ proc TEST_randprog {} {
   # ERROR = can't use non-numeric string as operand of "*"
 
 
-  set prg [make_randprog $n $::gp_list $::randinstr $::quotes_proc]
+  set prg [make_randprog $n $gp_list $::randinstr $::quotes_proc]
 
   #set prg "dup *"
 
@@ -336,7 +332,7 @@ proc TEST_randprog {} {
 #
 #
 #-------------------------------------------------------------------------------
-proc randinstr_or_LIST {} {
+proc randinstr_or_LIST {gp_list} {
 
   # здесь уже можно подумать, а не сделать ли квотированный список
   #if {[myrand 0 3] == 0} {
@@ -346,7 +342,7 @@ proc randinstr_or_LIST {} {
     #set  instr { nop nop} ;# очень простой список!
 
   #} else {
-    set  instr   [lrand_new  $::gp_list]
+    set  instr   [lrand_new  $gp_list]
   #}
 
   return $instr
@@ -354,7 +350,7 @@ proc randinstr_or_LIST {} {
 #-------------------------------------------------------------------------------
 # создать случайную тру-программу длиной не больше 'n'
 #-------------------------------------------------------------------------------
-proc make_randtrueprog {num_max ind_max fitnessfunc_check} {
+proc make_randtrueprog {gp_list num_max ind_max fitnessfunc_check} {
 
   set ind 0 ;# это всего, чтобы не зациклиться
   set num 0 ;# а это макс длина программы? а зачем? пусть уж какая получится?
@@ -365,7 +361,7 @@ proc make_randtrueprog {num_max ind_max fitnessfunc_check} {
     #set instr [randinstr_SIMP]  - здесь можем получить и список инструкций 
     # 
     #set instr [randinstr_SIMP] 
-    set instr [randinstr_or_LIST] 
+    set instr [randinstr_or_LIST $gp_list] 
 
     set rab $prg       ;# делаем рабочую копию для теста
 
@@ -429,13 +425,13 @@ proc TEST_pp {} {
   set ind_max 100
   puts ""
 
-  set ::gp_list     "dup i i" 
+  set gp_list     "dup i i" 
 
   v1_init_all  
 
   # делаем выполнимую программу
   # 
-  set prg [make_randtrueprog   $num_max $ind_max squareFitness_check_true]
+  set prg [make_randtrueprog  $gp_list $num_max $ind_max squareFitness_check_true]
 
   puts ""
   puts "RANDTRUEPROG = $prg"
@@ -739,7 +735,7 @@ proc NEXT_01 {} {
   set is_print 1
   #DebugOn
 
-  set ::gp_list   "p1" ;#  "p1 nop"  "p1 m1" 
+  set gp_list   "p1" ;#  "p1 nop"  "p1 m1" 
 
   set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
     
@@ -748,9 +744,15 @@ proc NEXT_01 {} {
 
   mp_init $pb 
 
-  run_gp_evolution  0 $rand_prgpop_proc \
-    $individuals $len \
-    FITPROC_01 "MIN"  0.1  $nums $is_print 0 ;# not game print
+  set task [task_create FITPROC_01  "-fit_tobest" "MIN" -gp_list $gp_list]
+    
+  run_gp_evolution_for_task \
+      $task \
+      0 $rand_prgpop_proc   \
+      $individuals  $len $nums \
+      $is_print             \
+      -mutprob          0.1 \
+      -game_print_proc  0   \
   
   return
 }
@@ -798,25 +800,24 @@ proc x_subst {inp} {
   return $out
 }
 #-------------------------------------------------------------------------------
+
+set ::FULLPROG 0
+
+#-------------------------------------------------------------------------------
 #
 # Типичный пример. Выявлем (раскручиваем) программу, вычисляющую квадрат числа.
 # Лучшая програма :  "DUP *"
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
 #-------------------------------------------------------------------------------
-proc FITPROC_xx {prg_11 task args} {
+proc FITPROC_xx {proga task args} {
 
   set is_print [dict_parse $args "-is_print"   0]
 
   #if {$::ITEMS_LIST} {
-  set prg_11  [item_get_mainsrc $prg_11]
+  set src  [item_get_mainsrc $proga]
   #}
 
-  set prog_11 @ ;# это заглушка на будущее ?
-
-  #set vers [GET $task "vers"]
-
-  #set x_list [get_x_list  1 5  5]
   set x_list [get_x_list  0 2  10]
 
   #puts "x_list = $x_list"
@@ -832,7 +833,7 @@ proc FITPROC_xx {prg_11 task args} {
     #puts stderr ""
     #puts stderr "-------------------------------------------------------------------"
     #puts stderr ""
-    #puts stderr "FITPROC_xx: prg    = $prg_11"
+    #puts stderr "FITPROC_xx: prg    = $src"
     #puts stderr "FITPROC_xx: x_list = $x_list"
     #puts stderr "FITPROC_xx: func   = $func"
     #puts stderr ""
@@ -848,8 +849,7 @@ proc FITPROC_xx {prg_11 task args} {
 
     # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
     # 
-    #set result [getresult_prg_val_11  $prg_11 $x $prog_11]
-    set result [getresult_prg_val_11  $prg_11 $x]
+    set result [getresult_prg_val_11  $src $x]
  
     #---------------------------------------------------------------
 
@@ -923,14 +923,13 @@ proc FITPROC_xx {prg_11 task args} {
 
   # длину учитывать ? но тогда генетич. разнообразие ухудшается?
   #
-  #incr fitness [llength $prg_11] 
-
+  #incr fitness [llength $src] 
 
   # нам не нужны лишние результаты в стеке ? тоже ухудшает? лучше потом преобразовать?
   #
   #incr fitness $len
 
-  #puts stderr "FITPROC_xx, prg = $prg_11, fitness = $fitness"
+  #puts stderr "FITPROC_xx, prg = $src, fitness = $fitness"
 
   return $fitness
 }
@@ -987,7 +986,7 @@ proc TEST_xx {} {
   set vers        [dict_parse $argv "-vers"  "gp"]
   set is_print    [dict_parse $argv "-print"  1]
 
-  set ::gp_list   [dict_parse $argv "-list"   "dup * nop +"]
+  set gp_list   [dict_parse $argv "-list"   "dup * nop +"]
   set func        [dict_parse $argv "-func"  {x ** 2 + x}]
 
   #------------------------------------------------------
@@ -1024,7 +1023,7 @@ proc TEST_xx {} {
     #
     # ga_evolution, ищем как обычную строку (но для FS_fitness_list)
 
-    set ::gp_list      "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
+    set gp_list      "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
     set ::target_text  "nop dup dup nop nop nop nop * nop + nop nop"
     set size 12
 
@@ -1032,8 +1031,11 @@ proc TEST_xx {} {
     # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
     set fit_target     0    
   
-    set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target \
-              -fit_error 0.01 ]  
+    set task [task_create $fitness_func \
+                -fit_tobest       "MAX" \
+                -fit_target $fit_target \
+                -fit_error  0.01        \
+                -gp_list    $gp_list  
 
     set ::is_print $is_print
     #test_random_seed 0 ;#$i
@@ -1052,22 +1054,46 @@ proc TEST_xx {} {
   if {$vers == "gp"} {
   #------------------------------------------------------
 
-    set task [task_create "FITPROC_xx"  -fit_tobest "MIN" -func $func]
+    set task [task_create "FITPROC_xx"  \
+                -fit_tobest     "MIN" \
+                -func           $func \
+                -gp_list    $gp_list]
 
     run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
                               $lpop $size  \
-                              0.2                \
-                              $nums  $is_print \
-                              -game_print_proc 0 
+                              $nums  $is_print   \
+                              -game_print_proc 0 \
+                              -mutprob       0.2
 
     # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
 
+    #-------------------------------------
+    if {$seed == "@"} {
+      
+      set seed [clock seconds]
+    }
+    
+    random_seed $seed 
+    #-------------------------------------
+
+    set obj [BOT33 new   -lpop $lpop -lsrc $size \
+               -task $task -is_print 0]
+
+
+    calc_BOT33  $obj \
+      -nums            $nums  \
+      -task            $task             \
+      -is_print        $is_print         \
+      -randpop_proc    $rand_prgpop_proc 
+    
   #------------------------------------------------------
   } 
   if {$vers == "ga"} {
   #------------------------------------------------------
     
-    set task [task_create "FITPROC_xx"  -fit_tobest "MIN" -func $func]
+    set task [task_create "FITPROC_xx"  -fit_tobest "MIN" \
+                -func    $func \
+                -gp_list $gp_list ]
 
     #set ::error_saverestore 1
     

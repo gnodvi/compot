@@ -209,7 +209,7 @@ proc pingpong_score {entity task} {
 # //------------------------------------------------------------------------------
 # // Seed initial solutions.
 # //------------------------------------------------------------------------------
-proc pingpong_seed {pop adam} {
+proc pingpong_seed {pop task adam} {
 
   # int	  i, j;   // Team members 
   
@@ -301,7 +301,7 @@ proc pingpong_mutate_swap {pop mother son} {
 #                                      entity *daughter, entity *son)
 # {
 # //------------------------------------------------------------------------------
-proc pingpong_crossover {pop mother father dau son} {
+proc pingpong_crossover {pop task  mother father dau son} {
 
 #   int	  i, j;	/* Team members. */
 

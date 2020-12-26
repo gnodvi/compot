@@ -17,3 +17,19 @@ make_prgpop: INIT POPULATION =
 009)     best =    2.650 :   nop dup + 
 010)     best =    2.650 :   nop dup + 
 
+make_prgpop: INIT POPULATION = 
+
+{* *} {* *} {* * * *} {* *} {* *} {* *} {* *} {* * nop * nop *} * {* nop *}
+
+000)     best =   25.000 :   * * 
+001)     best =   25.000 :   * * 
+002)     best =   25.000 :   * * 
+003)     best =   25.000 :   * * 
+004)     best =   25.000 :   * * 
+005)     best =   25.000 :   * * 
+006)     best =   25.000 :   * * 
+007)     best =   25.000 :   * * 
+008)     best =   25.000 :   * * 
+009)     best =   25.000 :   * * 
+010)     best =   25.000 :   * * 
+

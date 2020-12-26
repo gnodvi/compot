@@ -294,7 +294,7 @@ proc ga_tabu {task pop initial max_iterations} {
   #   //
   #   // Ensure that initial solution is scored.
   #   //
-  if {[string equal [item_get_fitn $best]  $::GA_MIN_FITNESS]} {
+  if {[string equal [item_get_fitn $best]  $::GA_NOT_FIT]} {
     #pop->evaluate (pop, best);
     #puts "!!!!!!!!!!!!!!!!!!!!!!!!"
     #$eval_proc $pop $best

@@ -86,7 +86,7 @@ proc all5s_score {item task}  {
 # all5s_seed (population *pop, entity *entity)
 
 # //------------------------------------------------------------------------------
-proc all5s_seed {pop entity} \
+proc all5s_seed {pop task entity} \
 {
   # int  point; /* Index of allele to seed */
   
@@ -110,7 +110,7 @@ proc all5s_seed {pop entity} \
 # all5s_mutate (population *pop, entity *father, entity *son)
 
 # //------------------------------------------------------------------------------
-proc all5s_mutate {pop father son}  {
+proc all5s_mutate {pop task  father son}  {
 
   #   int   i;                             /* Loop variable over all chromosomes */
   #   int   point;                         /* Index of allele to mutate          */
@@ -269,7 +269,7 @@ proc _1_main {} \
     # пока здесь остановимся, осмотримся и распечатаемся:
     # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
     #
-    ga_population_seed $pop  
+    ga_population_seed $pop $task 
     #
     $pop print
   }

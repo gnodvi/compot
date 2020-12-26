@@ -96,7 +96,7 @@ proc ga_population_set_gradient_parameters {pop
 # check_starting_solution (population *pop, entity *current) 
 
 # //------------------------------------------------------------------------------
-proc check_starting_solution {pop current} \
+proc check_starting_solution {pop task current} \
 {
 
   if {$current == "NULL"} \
@@ -106,7 +106,7 @@ proc check_starting_solution {pop current} \
     }
     
     set current [ga_get_free_entity  $pop]
-    ga_entity_seed  $pop $current
+    ga_entity_seed  $pop $task $current
 
   } else {   
     if {$::is_print} {
@@ -226,7 +226,7 @@ proc ga_steepestascent_double {task pop current max_iterations} \
   
   #   // Do we need to generate a random starting solution? 
   #   // 
-  set current [check_starting_solution  $pop $current]
+  set current [check_starting_solution  $pop $task $current]
   
   #   GAgradient gradient_proc = pop->gradient_params->gradient; /* Return gradients array. */
   #   //

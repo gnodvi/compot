@@ -503,7 +503,7 @@ proc point_to_entity {point ent i} {
 
 }
 # ;#-------------------------------------------------------------------------------
-proc _test_seed {pop adam} {  ;# task - описание заадчи
+proc _test_seed {pop task adam} {  ;# task - описание заадчи
 
 
   #   ;; TODO: здесь нужно бы иметь индекс, т.е. связь с начальными значениями ??
@@ -635,7 +635,7 @@ proc pntssolver_do {population_size max_generations
 
   #   ;;    # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
   #   ;;    #
-  ga_population_seed  $pop
+  ga_population_seed  $pop $task
   
   if $::__is_print { 
     pop_print $pop

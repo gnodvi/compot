@@ -234,7 +234,11 @@ proc FS_fitness {text_calc task} {
   
   set len [item_get_chromo_len $text_calc] 
 
-  set text_true $::target_text
+  # 
+  #set text_true $::target_text
+  # 
+  # 
+  set text_true [GET $task "target_text"]
 
 
   # Loop over alleles in chromosome.
@@ -254,6 +258,7 @@ proc FS_fitness {text_calc task} {
     }
 
     set char_calc_decm  [item_get_chromo_gen $text_calc  $k]
+
 
     #if {$::CHROMOLIST} { 
     set char_calc_decm [scan $char_calc_decm "%c"]  ;# десятичные коды символьных цифр
@@ -336,8 +341,11 @@ proc make_task_for_BOT01 {vers} {
     set fit_target     0    
   } 
   
-  set task [task_create $fitness_func -fit_tobest "MAX" -fit_target $fit_target \
-              -fit_error 0.01 ]  
+  set task [task_create $fitness_func \
+              -fit_tobest "MAX"       \
+              -fit_target $fit_target \
+              -fit_error 0.01 \
+              -gp_list $::gp_list -target_text $::target_text]  
   
   return $task
 }
@@ -354,7 +362,7 @@ proc _01_test {} {
   set max_generations [dict_parse $argv "-nums" 10]
 
   set vers            [dict_parse $argv "-vers"  0]
-  set ::target_text   [dict_parse $argv "-list" $::target_text]
+  set target_text     [dict_parse $argv "-list"  $::target_text]
  
   puts ""
   puts "lpop  = $population_size"  ;# колич-во ботов
@@ -367,7 +375,8 @@ proc _01_test {} {
   
   #---------------------------------------------------------------------
 
-  set task [make_task_for_BOT01 $vers]
+  set task  [make_task_for_BOT01 $vers]
+  SET $task target_text $target_text 
   
   set obj \
     [BOT01 new  -lpop $population_size -lsrc $len_chromo -task $task -vers $vers] 
@@ -644,8 +653,11 @@ proc _03_test {} \
 
   set len_chromo [LTARGET] 
   
-  set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.01 ]  
-  #set ::sort_driver "MAX_to_LEFT"    
+  set task [task_create  "FS_fitness"   \
+              -fit_tobest "MAX"         \
+              -fit_target $::fit_target \
+              -fit_error  0.01  \
+              -gp_list $::gp_list  -target_text $::target_text]  
 
   puts ""
   puts "bnums  = $population_size"  ;# колич-во ботов
@@ -687,12 +699,12 @@ proc _03_test {} \
 #   return $::true
 # }
 # ------------------------------------------------------------------------------
-proc _4_struggle_mutate {pop father son} \
+proc _4_struggle_mutate {pop task father son} \
 {
  
   # похоже это тоже самое !?
   # 
-  ga_mutate_printable_singlepoint_drift  $pop $father $son
+  ga_mutate_printable_singlepoint_drift  $pop $task $father $son
 
 
   return
@@ -703,19 +715,19 @@ proc _4_struggle_mutate {pop father son} \
 #
 # т.е. вызываются попеременно
 # //------------------------------------------------------------------------------
-proc _4_the_other_struggle_crossover {pop father mother son daughter} \
+proc _4_the_other_struggle_crossover {pop task  father mother son daughter} \
 {
 
-  ga_crossover_char_singlepoints  $pop $father $mother $son $daughter
+  ga_crossover_char_singlepoints  $pop $task  $father $mother $son $daughter
 
   SET $pop crossover _4_struggle_crossover
 
   return
 }
 # //------------------------------------------------------------------------------
-proc _4_struggle_crossover {pop father mother son daughter} \
+proc _4_struggle_crossover {pop task  father mother son daughter} \
 {
-  ga_crossover_char_doublepoints $pop $father $mother $son $daughter
+  ga_crossover_char_doublepoints $pop $task  $father $mother $son $daughter
 
   SET $pop crossover _4_the_other_struggle_crossover
 
@@ -734,6 +746,7 @@ dict_class_create  BOT04 {BOT} {
   # 
   set len_chromo      [dict_parse $args "-lsrc" ] 
   set population_size [dict_parse $args "-lpop" ] 
+  set task            [dict_parse $args "-task" ] 
   
   set pop [GAUL new  \
              -lpop $population_size -lsrc $len_chromo]
@@ -763,7 +776,7 @@ dict_class_create  BOT04 {BOT} {
   set seed_proc  "maintest_seed_proc"
   
   
-  SET $pop seed        $seed_proc      ;# /* Individual initialisation    */
+  SET $pop seedproc    $seed_proc      ;# /* Individual initialisation    */
   
   SET $pop adapt      _3_struggle_adaptation ;# /* Environmental adaptation operator */
   SET $pop select_one  ga_select_one_sus     ;# /* Mutation selection operator  */
@@ -778,7 +791,7 @@ dict_class_create  BOT04 {BOT} {
   #     * Seed the initial population. (Could do this manually - it
   #     * just calls pop->seed() 100 times in this case.)
   #     */
-  ga_population_seed $pop
+  ga_population_seed $pop $task
   
   #   /*
   #     * Set the GA parameters.
@@ -850,8 +863,10 @@ proc _04_test {} \
 
   #-----------------------------------------------------------------
 
-  set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.01 ]  
-  #set ::sort_driver "MAX_to_LEFT"    
+  set task [task_create  "FS_fitness" -fit_tobest "MAX" \
+              -fit_target $::fit_target \
+              -fit_error 0.01  \
+              -gp_list $::gp_list  -target_text $::target_text]  
 
   puts ""
   puts "bnums  = $population_size"  ;# колич-во ботов
@@ -1028,8 +1043,8 @@ proc _05_test {} \
 
   set len_chromo [LTARGET] 
   
-  set task [task_create "FS_fitness" -fit_tobest "MAX" ]
-  #set ::sort_driver "MAX_to_LEFT"    
+  set task [task_create "FS_fitness" -fit_tobest "MAX"  \
+              -gp_list $::gp_list  -target_text $::target_text]
   
   #----------------------------------------------------------------------
 
@@ -1155,10 +1170,10 @@ proc _dc_test {} \
     
     set len_chromo [LTARGET] 
   
-    set task [task_create "FS_fitness" -fit_tobest "MAX" ]
-    # set ::sort_driver "MAX_to_LEFT"    
+    set task [task_create "FS_fitness" \
+                -fit_tobest "MAX"  \
+                -gp_list $::gp_list  -target_text $::target_text]
 
- 
     #----------------------------------------------------------
 
     set obj \
@@ -1365,8 +1380,8 @@ proc eschemes {} \
                 150 600 300 300
   
 
-  set task [task_create "FS_fitness" -fit_tobest "MAX" ]
-  #set ::sort_driver "MAX_to_LEFT"    
+  set task [task_create "FS_fitness" -fit_tobest "MAX"  \
+              -gp_list $::gp_list  -target_text $::target_text]
 
   set len_chromo [LTARGET] 
   
@@ -1500,36 +1515,76 @@ proc ent_as_string_list {e ch_form} {
   return $buf
 }
 # ------------------------------------------------------------------------------
-proc maintest_run {make_bots_proc argv} {
+proc make_textlist {num_text target_text0 gp_list  size pmin pmax} {
 
 
-  set size [dict_parse $argv "-size" [LTARGET]] 
+  set textlist {}
 
-  set pmin 1  ;# 2 выбираем длину блоков повторов из этого интервала: от
-  set pmax 4  ;# 3 и до 
+  for {set t 0} {$t < $num_text} {incr t} {
+    
+    if {$t == 0} { 
+      # берем задачу-строку  по умолчанию
+      set text  $target_text0
+    } else {
+      set text  [make_random_target_text   $gp_list $size  $pmin $pmax]
+    }
+    
+    puts stderr "text =  $text"
+    lappend  textlist $text
+  }
+  
+  puts stderr "textlist =  $textlist"
+
+  return $textlist
+}
+# ------------------------------------------------------------------------------
+
+# argc = 3   argv = maintest_531 -mode S
+# text =  1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
+# textlist =  {1 2 2 3 3 3 4 4 4 4 5 5 5 5 5}
+# target_text = 1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
+
+# mode = S
+
+# ga_population_set_parameters ... 
+
+# ga_population_seed  ......... 
+
+# ga_population_set_parameters ... 
+
+# lpop = 30
+# size = 15
+
+
+# calc_BOT01: args = -nums -1 is_print 0
+# calc_BOT01: nums = -1
+# calc_BOT01: vers = 0
+
+# 000)     best =   43.702 :   6 2 2 2 3 1 8 3 6 3 3 7 5 4 2 
+# 001)     best =   43.681 :   1 2 2 2 3 1 8 5 6 1 3 7 4 2 9 
+# 002)     best =   44.617 :   3 1 9 2 8 6 4 4 4 7 7 5 5 3 7 
+# 003)     best =   46.723 :   5 2 2 8 3 6 5 3 3 9 5 5 5 5 2 
+# 004)     best =   47.830 :   1 2 2 1 7 3 4 2 4 4 7 7 5 3 1 
+# t=0, r=0, bot01 :  04 gens,  0282 eval,  str = 1 2 2 1 7 3 4 2 4 4 7 7 5 3 1 ,  fit = 47.83 
+
+# ------------------------------------------------------------------------------
+proc maintest_run {make_bots_proc task_list argv} {
+
+  # -----------------------------------------------------------------
 
   set num_text        [dict_parse $argv "-text"  1] ;# 1 ;# 2
   set num_runs        [dict_parse $argv "-runs"  1] ;# 2 ;# 5 ;# количество экспериментов
   set max_generations [dict_parse $argv "-nums" -1] ;# 30 ;# 15 - останов 
 
-  set ::gp_list "1 2 3 4 5 6 7 8 9"
-
   #set sum_generations 0
   set min +99999
   set max -99999
 
-
   # -----------------------------------------------------------------
+
   for {set t 0} {$t < $num_text} {incr t} {
 
-    
-    if {$t == 0} { 
-      # берем задачу-строку  по умолчанию
-    } else {
-      set ::target_text  [make_random_target_text   $::gp_list $size  $pmin $pmax]
-    }
-    
-    puts "target_text = $::target_text"
+    set task [lindex $task_list $t]
 
     # ----------------------------------------------------------------- 
     for {set r 0} {$r < $num_runs} {incr r} {
@@ -1541,7 +1596,7 @@ proc maintest_run {make_bots_proc argv} {
       # или здесь создавать какждый цикл новые боты-объекты?? 
       # 
 
-      set botobjs [make_bots_list $argv]
+      set botobjs [$make_bots_proc $task $argv]
 
       # должен уже быть готов список ботов
       # и к каждому боту свое описание задачи 
@@ -1628,7 +1683,7 @@ proc make_bots_standart {bots lpop size task} {
 
 }
 # ------------------------------------------------------------------------------
-proc make_bots_list {argv} {
+proc make_bots_list {task argv} {
 
   set mode       [dict_parse  $argv "-mode"     S] 
 
@@ -1641,9 +1696,6 @@ proc make_bots_list {argv} {
   set size       [dict_parse  $argv "-size" [LTARGET]] 
 
   #-------------------------------------------------------------
-
-  set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.01 ]  
-  #set ::sort_driver "MAX_to_LEFT"    
 
   set bots [dict_create] 
   
@@ -1695,8 +1747,10 @@ proc make_bots_list {argv} {
     # хочу сделать задачу поменьше (быстрее),
     # просто увеличив ошибку?
 
-    set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 8.0 ]
-    #set ::sort_driver "MAX_to_LEFT"    
+#     set task [task_create  "FS_fitness" -fit_tobest "MAX" \
+#                 -fit_target $::fit_target -fit_error 8.0  -gp_list $::gp_list]
+
+    SET $task "fit_error" 8.0
 
     #task_print $task
 
@@ -1707,8 +1761,8 @@ proc make_bots_list {argv} {
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
-  set task [task_create "FITPROC_list_FS" -fit_tobest "MAX" ]
-  #set ::sort_driver "MAX_to_LEFT"    
+  set task [task_create "FITPROC_list_FS" -fit_tobest "MAX" \
+              -gp_list $::gp_list]
 
   set sort_driver  "MAX_to_LEFT" 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
@@ -1725,8 +1779,8 @@ proc make_bots_list {argv} {
   } else {
   #-------------------------------------------------------------
 
-    set task [task_create  "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target -fit_error 0.1 ]
-    #set ::sort_driver "MAX_to_LEFT"    
+    set task [task_create  "FS_fitness" -fit_tobest "MAX" \
+                -fit_target $::fit_target -fit_error 0.1  -gp_list $::gp_list]
 
     dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lsrc $size -task $task]
 
@@ -1747,12 +1801,43 @@ proc maintest_531 {} {
 
   puts "argc = $argc   argv = $argv"
  
+
   # надо оставить только словарные параметры
   # 
   set argv [lrange $argv 1 end]
 
 
-  maintest_run "make_bots_list" $argv
+  set task [task_create  \
+              "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
+              -fit_error 0.01  -gp_list $::gp_list]  
+
+
+  # -----------------------------------------------------------------
+
+  set num_text  [dict_parse $argv "-text"  1] ;# 1 ;# 2
+  
+  set size      [dict_parse $argv "-size" [LTARGET]] 
+  set pmin 1  ;# 2 выбираем длину блоков повторов из этого интервала: от
+  set pmax 4  ;# 3 и до 
+  
+  set textlist [make_textlist  $num_text $::target_text  $::gp_list  $size $pmin $pmax]
+  
+  set task_list {}
+  for {set t 0} {$t < $num_text} {incr t} {
+    
+    set task [task_create  \
+              "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
+              -fit_error 0.01  \
+              -gp_list $::gp_list -target_text [lindex $textlist $t]]  
+
+    lappend task_list $task
+  }
+    
+  # -----------------------------------------------------------------
+  # -----------------------------------------------------------------
+
+  maintest_run "make_bots_list"  $task_list $argv
+
 
   # g_stru.tl maintest_531 -mode @ -text 3 -runs 3
   # 

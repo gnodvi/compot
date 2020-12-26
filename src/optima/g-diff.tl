@@ -1095,7 +1095,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
 
     #puts "i = $i   entity = $entity"
  
-    if {[item_get_fitn $entity] == $::GA_MIN_FITNESS} {
+    if {[item_get_fitn $entity] == $::GA_NOT_FIT} {
       #puts "i = $i"
 
       pop_eval_item  $pop $entity $eval_proc $task

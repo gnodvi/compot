@@ -124,7 +124,7 @@ proc _test_score {this_entity  task} {
 # /* static */ boolean 
 # _test_seed (population *pop, entity *adam)
 #-------------------------------------------------------------------------------
-proc _test_seed {pop adam} {
+proc _test_seed {pop task adam} {
 
   # /* Checks. */
   #   if (!pop)  die ("Null pointer to population structure passed.");
@@ -368,7 +368,7 @@ proc test_ga {task} {
   # пока здесь остановимся, осмотримся и распечатаемся:
   # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
   #
-  ga_population_seed $pop
+  ga_population_seed $pop $task
   #
   
   ga_evolution  $task $pop $max_generations   
@@ -742,7 +742,7 @@ proc test_de {task strategy_list} {
 
     # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
     #
-    ga_population_seed $pop
+    ga_population_seed $pop $task
     
     # пока здесь остановимся, осмотримся и распечатаемся:
     #$pop print

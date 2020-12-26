@@ -2,8 +2,15 @@ ga_population_set_parameters ...
 
 
 
-  step   0  ...  f0 = -52.490  i0 =  1 4 2 5 6 7 8 0 3 
+-------------------------------------------------------------------
 
+    1)   fitn =  -52.490 :   1 4 2 5 6 7 8 0 3
+    2)   fitn = -222.880 :   3 6 0 1 7 5 8 2 4
+    3)   fitn = -265.333 :   8 5 2 4 6 7 0 1 3
+    4)   fitn = -572.000 :   6 1 7 8 0 2 4 5 3
+    5)   fitn = -757.333 :   7 2 8 0 3 4 1 5 6
+
+000)     best =  -52.490 :   1 4 2 5 6 7 8 0 3 
 ga_select_two_randomrank: 
 orig_size = 5   select_state = 1
 ga_select_two_randomrank: 
@@ -15,8 +22,15 @@ orig_size = 5   select_state = 4
 ga_select_two_randomrank: 
 orig_size = 5   select_state = 5
 
-  step   1  ...  f0 = -52.490  i0 =  1 4 2 5 6 7 8 0 3 
+-------------------------------------------------------------------
 
+    1)   fitn =  -52.490 :   1 4 2 5 6 7 8 0 3
+    2)   fitn =  -52.490 :   1 4 2 5 6 7 8 0 3
+    3)   fitn = -222.880 :   3 6 0 1 7 5 8 2 4
+    4)   fitn = -222.880 :   3 6 0 1 7 5 8 2 4
+    5)   fitn = -222.880 :   3 6 0 1 7 5 8 2 4
+
+001)     best =  -52.490 :   1 4 2 5 6 7 8 0 3 
 
 The final solution with found was: (seed = 0):
 1 4 2 5 6 7 8 0 3

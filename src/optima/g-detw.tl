@@ -74,14 +74,14 @@ proc main_swap_childs {pop i father mother son daughter permutation} \
   return
 }
 # //------------------------------------------------------------------------------
-proc mutation_step {pop child} \
+proc mutation_step {pop task child} \
 {
 
   if {[random_boolean_prob [GET $pop mutation_ratio]]} \
   {
     
     set this_entity [ga_get_free_entity $pop]
-    [GET $pop mutate]  $pop $child $this_entity
+    [GET $pop mutate]  $pop $task  $child $this_entity
     
     pop_del_entity  $pop $child
     set child $this_entity
@@ -122,7 +122,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
   while {1} \
   {
   
-    pop_check_all_eval  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+    pop_calc_fitness_nov  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
     pop_sorting  $pop $task
     
     # --------------------------------------------------
@@ -161,13 +161,13 @@ proc ga_deterministiccrowding {task pop max_generations} \
       set son      [ga_get_free_entity $pop]
       set daughter [ga_get_free_entity $pop]
 
-      $crossover_proc  $pop $mother $father $daughter $son
+      $crossover_proc  $pop $task  $mother $father $daughter $son
       
       #  // Mutation step.
       #  //
       
-      set daughter [mutation_step  $pop $daughter]
-      set son      [mutation_step  $pop $son]
+      set daughter [mutation_step  $pop $task $daughter]
+      set son      [mutation_step  $pop $task $son]
       
       #  // Apply environmental adaptations, score entities, sort entities, etc.
       #  // FIXME: Currently no adaptation.
