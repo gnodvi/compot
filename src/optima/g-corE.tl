@@ -6015,7 +6015,7 @@ dict_class_create BOT {} {
   ;# _это_перечисление_переменных
   
   name  "BotName"
-  task  ""
+  task  {}
   pop   ""
 
 } {
@@ -6040,6 +6040,9 @@ proc calc_BOT {obj args} {
   
   set  pop [GET $obj "pop"]
   
+  SET $pop "generation" 0
+  SET $pop "itemlist"   {}
+
   pop_initial_fill  $pop $task ;# инициация итемов функцией [GET $pop seedproc]  
   
   ga_evolution_main           $task $pop $max_generations ;# 0.01
@@ -6242,7 +6245,10 @@ proc calc_BOT33  {obj args} {
   #  
 
   set  pop [GET $obj "pop"]
-  
+  # 
+  SET $pop "generation" 0
+  SET $pop "itemlist"   {}
+
   set population_size [GET $pop "stable_size"]
   set len_chromosomes [GET $pop "len_chromosomes"]
   
@@ -6557,7 +6563,6 @@ proc pop1_create {args} {
   SET $pop  crossover   ga_crossover_char_allele_mixing
   SET $pop  replace     NULL ;# $replace   ;#
   
-  #SET $pop  ch_form "%c" 
   SET $pop  ch_form "%s " 
   
   SET $pop  scheme           GA_SCHEME_DARWIN
@@ -6610,6 +6615,9 @@ proc calc_BOT01 {obj args} {
   puts stderr ""
   
   set  pop [GET $obj "pop"]
+  # 
+  SET $pop "generation" 0
+  SET $pop "itemlist"   {}
   
   #puts "[procname]: task = [set $task]"
   # exit
