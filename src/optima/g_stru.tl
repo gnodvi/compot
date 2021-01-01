@@ -226,13 +226,18 @@ proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
   
   return $fit
 }
+# ------------------------------------------------------------------------------
+
+#set ::fit_target 53.1
+set ::fit_target 55.213
+
 #------------------------------------------------------------------------------if
 
-proc FS_fitness {text_calc task} {
+proc FS_fitness {item_text_calc task} {
 
   set fit 0.0
   
-  set len [item_get_chromo_len $text_calc] 
+  set len [item_get_chromo_len  $item_text_calc] 
 
   set text_true [GET $task "target_text"]
 
@@ -253,8 +258,7 @@ proc FS_fitness {text_calc task} {
       exit
     }
 
-    set char_calc_decm  [item_get_chromo_gen $text_calc  $k]
-
+    set char_calc_decm  [item_get_chromo_gen  $item_text_calc  $k]
 
     #if {$::CHROMOLIST} { 
     set char_calc_decm [scan $char_calc_decm "%c"]  ;# десятичные коды символьных цифр
@@ -277,32 +281,6 @@ proc FS_fitness {text_calc task} {
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc do_print_best {pop name} \
-{
-
-  set best_entity [ga_get_entity_from_rank $pop 0]
-  set best_fitnes [item_get_fitn           $best_entity] 
-
-  #puts [format "The final solution with %s evolution with score %f was:" $name $best_fitnes]
-  puts -nonewline [format "Best solution %s, score = %5.2f : " $name $best_fitnes]
-
-  #   beststring = ga_chromosome_char_to_string (pop, ga_get_entity_from_rank (pop, 0), 
-  #                                              beststring, &beststrlen);
-  #   printf ("%s\n", beststring);
-  #   printf ("\n");
-
-  item_print_ch $best_entity ""
-  puts ""
-
-  set generation [GET $pop "generation"] ;# сколько было генераций
-  puts "generation = $generation"
-
-  puts [format "Total number of fitness evaluations: %ld" $::eval_count]
-
-  puts ""
-
-}
-# ------------------------------------------------------------------------------
 
 #  struggle.c
 # 
@@ -315,7 +293,6 @@ proc do_print_best {pop name} \
 
 #   return [string length $str]
 # }
-# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc make_task_for_BOT01 {vers} {
@@ -344,6 +321,32 @@ proc make_task_for_BOT01 {vers} {
               -gp_list $::gp_list -target_text $::target_text]  
   
   return $task
+}
+# ------------------------------------------------------------------------------
+proc do_print_best {pop name} \
+{
+
+  set best_entity [ga_get_entity_from_rank $pop 0]
+  set best_fitnes [item_get_fitn           $best_entity] 
+
+  #puts [format "The final solution with %s evolution with score %f was:" $name $best_fitnes]
+  puts -nonewline [format "Best solution %s, score = %5.2f : " $name $best_fitnes]
+
+  #   beststring = ga_chromosome_char_to_string (pop, ga_get_entity_from_rank (pop, 0), 
+  #                                              beststring, &beststrlen);
+  #   printf ("%s\n", beststring);
+  #   printf ("\n");
+
+  item_print_ch $best_entity ""
+  puts ""
+
+  set generation [GET $pop "generation"] ;# сколько было генераций
+  puts "generation = $generation"
+
+  puts [format "Total number of fitness evaluations: %ld" $::eval_count]
+
+  puts ""
+
 }
 # ------------------------------------------------------------------------------
 proc _01_test {} {
@@ -1472,36 +1475,6 @@ proc sort_proc {aa bb} {
 
 }
 #-------------------------------------------------------------------------------
-proc print_result_maintest {botobjs sum_name} {
-
-  upvar $sum_name sum
-
-  set resultlist {}
-
-  dict for {botname obj} [set $botobjs] {
-
-    lappend  resultlist [list $botname $sum($botname)]
-  }
-
-  set sortresult [lsort -command "sort_proc" $resultlist] 
-
-  set n 1
-
-  foreach s $sortresult {
-
-    set a [lindex $s 0]
-    set b [lindex $s 1]
-
-    puts [format "%d mesto : %8s, %6d eval"  $n $a $b]
-    incr n
-  }
-
-  puts ""
-  puts "------------------------------------------------"
-
-  return
-}
-#-------------------------------------------------------------------------------
 proc ent_as_string_list {e ch_form} {
 
 
@@ -1540,82 +1513,68 @@ proc make_text_variant {t target_text0 gp_list  size pmin pmax} {
   return $text
 }
 # ------------------------------------------------------------------------------
-# proc make_textlist {num_text target_text0 gp_list  size pmin pmax} {
+proc get_target_text {t gp_list target_text0 args} {
 
+  set len [llength $target_text0]
 
-#   set textlist {}
-
-#   for {set t 0} {$t < $num_text} {incr t} {
-   
-#     set text [make_text_variant $t $target_text0 $gp_list $size $pmin $pmax]
-
-#     lappend  textlist $text
-#   }
-  
-#   puts stderr "textlist =  $textlist"
-
-#   return $textlist
-# }
-# ------------------------------------------------------------------------------
-
-# argc = 3   argv = maintest_531 -mode S
-# text =  1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
-# textlist =  {1 2 2 3 3 3 4 4 4 4 5 5 5 5 5}
-# target_text = 1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
-
-# mode = S
-
-# ga_population_set_parameters ... 
-
-# ga_population_seed  ......... 
-
-# ga_population_set_parameters ... 
-
-# lpop = 30
-# size = 15
-
-
-# calc_BOT01: args = -nums -1 is_print 0
-# calc_BOT01: nums = -1
-# calc_BOT01: vers = 0
-
-# 000)     best =   43.702 :   6 2 2 2 3 1 8 3 6 3 3 7 5 4 2 
-# 001)     best =   43.681 :   1 2 2 2 3 1 8 5 6 1 3 7 4 2 9 
-# 002)     best =   44.617 :   3 1 9 2 8 6 4 4 4 7 7 5 5 3 7 
-# 003)     best =   46.723 :   5 2 2 8 3 6 5 3 3 9 5 5 5 5 2 
-# 004)     best =   47.830 :   1 2 2 1 7 3 4 2 4 4 7 7 5 3 1 
-# t=0, r=0, bot01 :  04 gens,  0282 eval,  str = 1 2 2 1 7 3 4 2 4 4 7 7 5 3 1 ,  fit = 47.83 
-
-# ------------------------------------------------------------------------------
-proc get_target_text {t args} {
-
-  set size       [dict_parse  $args "-size" [LTARGET]] 
+  set size       [dict_parse  $args "-size" $len] 
   set pmin       [dict_parse  $args "-pmin"] 
   set pmax       [dict_parse  $args "-pmax"] 
 
-  #set gp_list [GET $task gp_list] 
-
-  set target_text [make_text_variant $t $::target_text $::gp_list $size $pmin $pmax]
+  set target_text [make_text_variant $t $target_text0 $gp_list $size $pmin $pmax]
 
   return $target_text
 }
 # ------------------------------------------------------------------------------
-# proc task_correct {task t args} {
+proc dict_incr {obj var incr_val} {
 
-#   set size       [dict_parse  $args "-size" [LTARGET]] 
-#   set pmin       [dict_parse  $args "-pmin"] 
-#   set pmax       [dict_parse  $args "-pmax"] 
 
-#   set gp_list [GET $task gp_list] 
+  set val [GET $obj $var]
 
-#   set target_text [make_text_variant $t $::target_text $gp_list $size $pmin $pmax]
+  set val [+ $val $incr_val]
 
-#   SET $task target_text $target_text
-# }
+  SET $obj $var $val
+
+}
+#-------------------------------------------------------------------------------
+proc maintest_run_print_result {botobjs result_name} {
+
+  upvar $result_name result
+
+
+  set resultlist {}
+
+  dict for {botname obj} [set $botobjs] {
+
+    set res $result("sum",$botname)
+
+    lappend  resultlist [list $botname $res]
+  }
+
+  set sortresult [lsort -command "sort_proc" $resultlist] 
+
+
+  set n 1
+
+  foreach s $sortresult {
+
+    set a [lindex $s 0]
+    set b [lindex $s 1]
+
+    puts [format "%d mesto : %8s, %6d eval"  $n $a $b]
+    incr n
+  }
+
+  puts ""
+  puts "------------------------------------------------"
+
+  return
+}
 # ------------------------------------------------------------------------------
-# make_bots_proc = make_bots_list
 # 
-proc maintest_run {make_bots_proc num_text num_runs max_generations  args} {
+proc maintest_run {gp_list target_text0 get_target_text_proc
+                   make_bots_proc 
+                   num_text num_runs max_generations  args} {
 
 
   set min +99999
@@ -1625,12 +1584,8 @@ proc maintest_run {make_bots_proc num_text num_runs max_generations  args} {
 
   for {set t 0} {$t < $num_text} {incr t} {
 
-    # TODO: если список задач нулевой, то не добвлять этот так в задачи!
-    # 
 
-    #set botobjs [$make_bots_proc  {*}$args]
-
-    set target_text [get_target_text  $t {*}$args]
+    set target_text [$get_target_text_proc  $t $gp_list $target_text0 {*}$args]
     
     # ----------------------------------------------------------------- 
     for {set r 0} {$r < $num_runs} {incr r} {
@@ -1640,7 +1595,7 @@ proc maintest_run {make_bots_proc num_text num_runs max_generations  args} {
       puts ""
       
 
-      set botobjs [$make_bots_proc  {*}$args]
+      set botobjs [$make_bots_proc  $gp_list $target_text0   {*}$args]
 
       # должен уже быть готов список ботов
       # и к каждому боту свое описание задачи 
@@ -1651,21 +1606,25 @@ proc maintest_run {make_bots_proc num_text num_runs max_generations  args} {
       #       
       dict for {botname obj} [set $botobjs] {
         
+        #---------------------------------------
         # надо для самого первого прохода, инициировать накоптельную сумму
+        #
+
         if {$t == 0 && $r == 0} {
-          set sum($botname) 0
+
+          set result("sum",$botname) 0
         }
 
         set ::eval_count 0 ;# Number of fitness evaluations performed
         
         #---------------------------------------
+
         #
         # task уже должен быть задан для этого конкретного бота ?
         # да, но нужно поткорректировать вариант
         # 
         set task [GET $obj task]
 
-        #task_correct $task $t {*}$args
         SET $task "target_text" $target_text
 
         RUN1 "calc_" $obj -nums $max_generations -is_print 0 -task $task
@@ -1696,7 +1655,7 @@ proc maintest_run {make_bots_proc num_text num_runs max_generations  args} {
 
         # и еще нам нужна общая сумма по всем испытаниям (?)
         # 
-        incr sum($botname) $::eval_count
+        incr result("sum",$botname) $::eval_count
 
       }
       # закончили цикл по всем ботам
@@ -1714,7 +1673,7 @@ proc maintest_run {make_bots_proc num_text num_runs max_generations  args} {
   # num_text (закончили цикл по всем задачам) 
   # ----------------------------------------------------------------- 
   
-  print_result_maintest  $botobjs sum
+  maintest_run_print_result  $botobjs result
   
   return
 }
@@ -1729,14 +1688,13 @@ proc make_bots_standart {bots lpop size task} {
 
 }
 # ------------------------------------------------------------------------------
-proc make_bots_list {args} {
+proc make_bots_list {gp_list target_text0 args} {
 
-  # -----------------------------------------------------------------
 
   set task [task_create  \
               "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
-              -fit_error 0.01  -gp_list $::gp_list \
-              -target_text $::target_text]  
+              -fit_error 0.01  -gp_list $gp_list \
+              -target_text $target_text0]  
 
   # -----------------------------------------------------------------
 
@@ -1750,7 +1708,6 @@ proc make_bots_list {args} {
 
   set size       [dict_parse  $args "-size" [LTARGET]] 
 
-  #-------------------------------------------------------------
 
   set bots [dict_create] 
   
@@ -1798,29 +1755,24 @@ proc make_bots_list {args} {
   elseif {$mode == "S"} {
   #-------------------------------------------------------------
 
-    # фиксированный тест
-    #srandom_set 2019 ;# постоянный выбор текстовой строки
-    #srandom_set 0;# постоянный выбор текстовой строки
-
     # хочу сделать задачу поменьше (быстрее),
     # просто увеличив ошибку?
 
-#     set task [task_create  "FS_fitness" -fit_tobest "MAX" \
-#                 -fit_target $::fit_target -fit_error 8.0  -gp_list $::gp_list]
-
     SET $task "fit_error" 8.0
-
-    #task_print $task
 
     make_bots_standart $bots  $lpop $size $task
 
+    # а ведь можно просто фиксировать маленькое кол-во шагов
+    # и считать 1) сколько раз достигнем цели или
+    #           2) как близко подойдет к ней.
+ 
   #-------------------------------------------------------------
   } \
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
   set task [task_create "FITPROC_list_FS" -fit_tobest "MAX" \
-              -gp_list $::gp_list]
+              -gp_list $gp_list]
 
   set sort_driver  "MAX_to_LEFT" 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
@@ -1838,7 +1790,7 @@ proc make_bots_list {args} {
   #-------------------------------------------------------------
 
     set task [task_create  "FS_fitness" -fit_tobest "MAX" \
-                -fit_target $::fit_target -fit_error 0.1  -gp_list $::gp_list]
+                -fit_target $::fit_target -fit_error 0.1  -gp_list $gp_list]
 
     dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lsrc $size -task $task]
 
@@ -1866,12 +1818,6 @@ proc maintest_531 {} {
 
   # -----------------------------------------------------------------
 
-#   set task_main [task_create  \
-#               "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
-#               -fit_error 0.01  -gp_list $::gp_list]  
-
-  # -----------------------------------------------------------------
-
   set num_text  [dict_parse $argv "-text"  1] ;# 1 ;# 2  
   set size      [dict_parse $argv "-size"  [LTARGET]] 
 
@@ -1896,7 +1842,8 @@ proc maintest_531 {} {
   set num_runs        [dict_parse $argv "-runs"  1] ;# 2 ;# 5 ;# количество экспериментов
   set max_generations [dict_parse $argv "-nums" -1] ;# 30 ;# 15 - останов 
 
-  maintest_run "make_bots_list"  \
+  maintest_run $::gp_list $::target_text "get_target_text" \
+    "make_bots_list"  \
     $num_text $num_runs $max_generations  {*}$argv -pmin $pmin -pmax $pmax
 
 
