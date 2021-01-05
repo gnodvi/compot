@@ -883,19 +883,17 @@ proc is_check_generation_break {pop task max_generations
   set item0  [pop_get_entity_ $pop  0] ;# лучший итем?
 
   set fitn0  [item_get_fitn   $item0]
-  set fitn0  [format "%7.3f"  $fitn0]
-  
+
+  set fitn0  [format "%7.3f"  $fitn0]  
   set index  [format "% 3d"   $generation]
   
   if {$is_print >= 1} {
     
-#     if {$is_print >= 2} {puts ""}
-    
-#     puts -nonewline [format "  step %3d  ...  f0 = $fitn0  " $index]
-#     item_print_ch     $item0 "i0 =  "
-#     puts ""
-    
-#     if {$is_print >= 2} {puts ""}
+    #     if {$is_print >= 2} {puts ""}
+    #     puts -nonewline [format "  step %3d  ...  f0 = $fitn0  " $index]
+    #     item_print_ch     $item0 "i0 =  "
+    #     puts ""
+    #     if {$is_print >= 2} {puts ""}
     
   } else {
     
@@ -909,13 +907,11 @@ proc is_check_generation_break {pop task max_generations
     
     set delta [expr {abs ($fitn0 - $fit_target)}]
     if {$delta <= $fit_error} {
-      #break
-      return 1 ;# true
+      return 1 ;#true
     } 
     
   } else {
     if {$generation >= $max_generations} {
-     # break
       return 1 ;# true
     } 
   }
@@ -6603,10 +6599,10 @@ proc calc_BOT01 {obj args} {
   set max_generations [dict_parse $args "-nums"  10] 
   set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
 
-  puts stderr ""
-  puts stderr "calc_BOT01: args = $args" 
-  puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
-  puts stderr "calc_BOT01: vers = $vers"  
+  #puts stderr ""
+  #puts stderr "calc_BOT01: args = $args" 
+  #puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
+  #puts stderr "calc_BOT01: vers = $vers"  
   #task_print $task  
   puts stderr ""
   
