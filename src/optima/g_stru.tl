@@ -1512,256 +1512,6 @@ proc get_target_text {t gp_list target_text0 args} {
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc dict_incr {obj var incr_val} {
-
-
-  set val [GET $obj $var]
-
-  set val [+ $val $incr_val]
-
-  SET $obj $var $val
-
-}
-# ------------------------------------------------------------------------------
-proc result_sort_proc_sum {aa bb} {
-
-  set a_sum [lindex $aa 1]
-  set b_sum [lindex $bb 1]
-
-  # возвращаемое значение определяет "желаемый" знак разности левого и правого 
-  # 
-
-  if {$a_sum <  $b_sum}  {return -1} ;# т.е МЕНЬШИЕ будут слева в списке 
-  if {$a_sum == $b_sum}  {return  0} 
-  if {$a_sum >  $b_sum}  {return  1} 
-
-}
-# ------------------------------------------------------------------------------
-proc result_sort_proc_res {aa bb} {
-
-  set a_sum [lindex $aa 1]
-  set b_sum [lindex $bb 1]
-
-  set a_res [lindex $aa 2]
-  set b_res [lindex $bb 2]
-
-  # возвращаемое значение определяет "желаемый" знак разности левого и правого 
-  # 
-
-  if {$a_res >  $b_res}  {return -1}   ;# т.е БОЛЬШИЕ будут слева в списке 
-
-  if {$a_res == $b_res}  {
-    #return  0
-    if {$a_sum <  $b_sum}  {return -1} ;# т.е МЕНЬШИЕ будут слева в списке 
-    if {$a_sum == $b_sum}  {return  0} 
-    if {$a_sum >  $b_sum}  {return  1} 
-  } 
-
-  if {$a_res <  $b_res}  {return  1} 
-
-}
-#-------------------------------------------------------------------------------
-proc maintest_run_print_result {max_generations botobjs result_upvar} {
-
-  upvar $result_upvar result
-
-
-  set resultlist {}
-
-  dict for {botname obj} [set $botobjs] {
-
-    set sum $result("sum",$botname)
-    set ret $result("ret",$botname)
-
-    # сформируем строку списка для дальнейшей сортировки
-    # 
-
-    lappend  resultlist [list $botname  $sum $ret]
-  }
-
-  # сформировали список имя-сумма
-  # и теперь отсортируем его
-
-  if {$max_generations < 0} {
-    set sortresult [lsort -command "result_sort_proc_sum" $resultlist] 
-  } else {
-    set sortresult [lsort -command "result_sort_proc_res" $resultlist] 
-  }
-
-  # теперь строки списка уже по ранжиру
-  # можемпросто их распечатать
-
-  set n 1
-
-  foreach s $sortresult {
-
-    set botname [lindex $s 0]
-
-    set sum $result("sum",$botname)
-    set ret $result("ret",$botname)
-
-    puts [format "%d mesto : %8s, %6d eval, %6d rets"  $n  $botname $sum $ret]
-    incr n
-  }
-
-  puts ""
-  puts "------------------------------------------------"
-
-  return
-}
-# ------------------------------------------------------------------------------
-# 
-proc is_this_target {item task} {
-
-  set fit  [item_get_fitn  $item] 
-
-  set fit_target [GET $task "fit_target"]
-  set fit_error  [GET $task "fit_error"]
-
-  set delta [expr {abs ($fit - $fit_target)}]
-
-  if {0} {
-  puts [format \
-          "[procname] : fit_error= $fit_error, fit_target= $fit_target, fit= %5.3f, delta= %5.3f" $fit $delta]
-  }
-
-  if {$delta <= $fit_error} {
-    return 1 ;#true
-  } 
-
-  return 0 ;# false
-}
-# ------------------------------------------------------------------------------
-proc dict_clone {obj} {
-
-  set  obj_new [dict_create]
-
-  set $obj_new [set $obj]
-
-  return $obj_new
-}
-# ------------------------------------------------------------------------------
-# 
-proc maintest_run {gp_list target_text0 get_target_text_proc
-                   make_bots_proc 
-                   num_text num_runs max_generations  args} {
-
-
-  set min +99999
-  set max -99999
-
-  #set botobjs [$make_bots_proc  $gp_list $target_text0   {*}$args]
-
-  # -----------------------------------------------------------------
-
-  for {set t 0} {$t < $num_text} {incr t} {
-
-
-    set target_text [$get_target_text_proc  $t $gp_list $target_text0 {*}$args]
-    
-    puts stderr "t=$t, target_text =  $target_text"
-
-    # ----------------------------------------------------------------- 
-    for {set r 0} {$r < $num_runs} {incr r} {
-      
-      #puts -nonewline [format "r= $r   "]
-      #puts "run = $r   "
-      puts ""
-      
-
-      set botobjs [$make_bots_proc  $gp_list $target_text0   {*}$args]
-
-      # должен уже быть готов список ботов
-      # и к каждому боту свое описание задачи 
-
-      test_random_seed $r      
-        
-      # ------------------------------------------------------------
-      #       
-      dict for {botname obj} [set $botobjs] {
-        
-        #set obj [dict_clone $obj]
-
-        #---------------------------------------
-        # надо для самого первого прохода, инициировать накоптельную сумму
-        #
-
-        if {$t == 0 && $r == 0} {
-
-          set result("sum",$botname) 0
-          set result("ret",$botname) 0
-        }
-
-        set ::eval_count 0 ;# Number of fitness evaluations performed
-        
-        #---------------------------------------
-        # task уже должен быть задан для этого конкретного бота
-        # но нужно поткорректировать вариант
-        # 
-
-        set  task [GET $obj task]
-        SET $task "target_text" $target_text
-
-        #---------------------------------------
-        # основной расчет
-        #
-
-        RUN1 "calc_" $obj -nums $max_generations -is_print 0 -task $task
-        
-        # забираем результаты
-        # 
-        foreach {num_generations  best_entity  ch_form} \
-          [RUN1 "final_" $obj] \
-          break
-        
-        set ret [is_this_target  $best_entity [GET $obj "task"]]
-
-        # теперь напечатаем результаты по этому испытанию       
-       
-        #set best_fitnes    [item_get_fitn $best_entity] 
-        #set best_as_string [item_as_string  $best_entity $ch_form]
-
-        puts ""
-        puts -nonewline [format "t=$t, r=$r, "]
-        puts -nonewline [format "$botname :  "]
-        #puts -nonewline [format "%02d gens,  " $num_generations]
-        puts -nonewline [format "%04d eval,  " $::eval_count]
-        #puts -nonewline [format "str = %s,  " $best_as_string]
-        #puts -nonewline [format "fit = %5.2f " $best_fitnes]        
-        puts -nonewline [format "sucsess = %d " $ret]        
-        puts ""
-        puts "-------------------------------------------------------------------------"
-        puts ""
-        flush stdout  ;# все данные должны быть выведены
-
-        # и еще нам нужна общая сумма по всем испытаниям (?)
-        # 
-        incr result("sum",$botname) $::eval_count
-        incr result("ret",$botname) $ret
-
-      }
-      # закончили цикл по всем ботам
-      # ------------------------------------------------------------  
-      
-      puts ""
-      
-    } 
-    # num_runs (закончили цикл по всем повторам выполнения)
-    # -----------------------------------------------------------------  
-    
-    puts ""
-    
-  } 
-  # num_text (закончили цикл по всем задачам) 
-  # ----------------------------------------------------------------- 
-  
-  maintest_run_print_result  $max_generations $botobjs result
-  
-  return
-}
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 proc make_bots_standart {bots lpop size task} {
 
@@ -1806,7 +1556,6 @@ proc make_bots_list {gp_list target_text0 args} {
     #set ::is_print 1
 
     make_bots_standart  $bots $lpop $size $task
-    #make_bots_standart  $bots $lpop $size {}
 
   #-------------------------------------------------------------
   } \
@@ -1925,9 +1674,25 @@ proc maintest_531 {} {
   set num_runs        [dict_parse $argv "-runs"  1] ;# 2 ;# 5 ;# количество экспериментов
   set max_generations [dict_parse $argv "-nums" -1] ;# 30 ;# 15 - останов 
 
-  maintest_run $::gp_list $::target_text "get_target_text" \
-    "make_bots_list"  \
-    $num_text $num_runs $max_generations  {*}$argv -pmin $pmin -pmax $pmax
+
+
+  set botobjs [make_bots_list  $::gp_list $::target_text   {*}$argv]
+
+
+  #---------------------------------------------------------
+  set targets {}
+
+  for {set t 0} {$t < $num_text} {incr t} {
+
+    test_random_seed $t      
+    set target_text [get_target_text   $t $::gp_list $::target_text {*}$argv \
+                       -pmin $pmin -pmax $pmax ]
+
+    lappend targets $target_text
+  }
+  #---------------------------------------------------------
+
+  maintest_run  $botobjs  $targets   $num_runs $max_generations  
 
 
   # g_stru.tl maintest_531 -mode @ -text 3 -runs 3
