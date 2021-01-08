@@ -232,7 +232,7 @@ proc FS_fitness_one_calc_add {fit  char_calc_decm char_true_decm} {
 set ::fit_target 55.213
 
 #------------------------------------------------------------------------------if
-
+# 
 proc FS_fitness {item_text_calc task} {
 
   set fit 0.0
@@ -295,7 +295,7 @@ proc FS_fitness {item_text_calc task} {
 # }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-proc make_task_for_BOT01 {vers} {
+proc make_task_for_BOT01 {vers args} {
 
 
   if {$vers == 0} {
@@ -306,19 +306,28 @@ proc make_task_for_BOT01 {vers} {
 
   if {$vers == 1} {
     
-    #set ::ITEMS_LIST 1 ;# чтобы в fitness_func вытащить из итема искодник src
-
     set fitness_func   "FITPROC_list_FS"
 
     # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
     set fit_target     0    
   } 
+
+
+  # а теперь
+  #
   
-  set task [task_create $fitness_func \
+  set task_local [task_create $fitness_func \
               -fit_tobest "MAX"       \
               -fit_target $fit_target \
               -fit_error 0.01 \
               -gp_list $::gp_list -target_text $::target_text]  
+
+
+  #set task [dict_parse $args "-task" $task_local]
+  set task $task_local
+
+  SET $task "fitness_func" $fitness_func
+  SET $task "fit_target"   $fit_target
   
   return $task
 }
@@ -1497,18 +1506,18 @@ proc make_text_variant {t target_text0 gp_list  size pmin pmax} {
   return $text
 }
 # ------------------------------------------------------------------------------
-proc get_target_text {t gp_list target_text0 args} {
+#proc get_target_text {t gp_list target_text0 size pmin pmax} {
 
-  set len [llength $target_text0]
+  #set len [llength $target_text0]
 
-  set size       [dict_parse  $args "-size" $len] 
-  set pmin       [dict_parse  $args "-pmin"] 
-  set pmax       [dict_parse  $args "-pmax"] 
+  #set size       [dict_parse  $args "-size" $len] 
+  #set pmin       [dict_parse  $args "-pmin"] 
+  #set pmax       [dict_parse  $args "-pmax"] 
 
-  set target_text [make_text_variant $t $target_text0 $gp_list $size $pmin $pmax]
+#  set target_text [make_text_variant $t $target_text0 $gp_list $size $pmin $pmax]
 
-  return $target_text
-}
+#  return $target_text
+#}
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -1523,13 +1532,8 @@ proc make_bots_standart {bots lpop size task} {
 
 }
 # ------------------------------------------------------------------------------
-proc make_bots_list {gp_list target_text0 args} {
+proc make_bots_list {task gp_list target_text0 args} {
 
-
-  set task [task_create  \
-              "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
-              -fit_error 0.01  -gp_list $gp_list \
-              -target_text $target_text0]  
 
   # -----------------------------------------------------------------
 
@@ -1539,9 +1543,26 @@ proc make_bots_list {gp_list target_text0 args} {
   puts ""
 
   set lpop       [dict_parse  $args "-lpop"     30]    
-  set size       [dict_parse  $args "-size"     [LTARGET]] 
   set ::is_print [dict_parse  $args "-is_print" 1]
 
+  set size       [dict_parse  $args "-size"     [LTARGET]] 
+  set pmin       [dict_parse  $args "-pmin"] 
+  set pmax       [dict_parse  $args "-pmax"] 
+
+  # -----------------------------------------------------------------
+
+#   set task [task_create  \
+#               "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
+#               -fit_error 0.01  -gp_list $gp_list \
+#               -target_text $target_text0         \
+#               -size $size -pmin $pmin -pmax $pmax
+#              ]  
+
+  # -----------------------------------------------------------------
+
+  #puts "[procname] : size = [GET $task size]"
+
+  # -----------------------------------------------------------------
 
   set bots [dict_create] 
   
@@ -1562,10 +1583,14 @@ proc make_bots_list {gp_list target_text0 args} {
   elseif {$mode == "T"} {
   #-------------------------------------------------------------
 
+    #set args_add "-size $size "
+
+    #--------------------------------------------
+
     srandom_set 2019 ;# постоянный выбор текстовой строки
     
     set vers 0
-    set task [make_task_for_BOT01 $vers]
+    set task [make_task_for_BOT01 $vers -task $task]
 
     set obj [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers]
     dict_set $bots "bot01_vers0" $obj
@@ -1573,7 +1598,7 @@ proc make_bots_list {gp_list target_text0 args} {
     #--------------------------------------------
 
     set vers 1
-    set task [make_task_for_BOT01 $vers]
+    set task [make_task_for_BOT01 $vers -task $task]
 
     set obj [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers]
 
@@ -1604,28 +1629,28 @@ proc make_bots_list {gp_list target_text0 args} {
   elseif {$mode == "Z"} {
   #-------------------------------------------------------------
 
-  set task [task_create "FITPROC_list_FS" -fit_tobest "MAX" \
-              -gp_list $gp_list]
+#   set task [task_create "FITPROC_list_FS" -fit_tobest "MAX" \
+#               -gp_list $gp_list]
 
-  set sort_driver  "MAX_to_LEFT" 
-  set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+#   set sort_driver  "MAX_to_LEFT" 
+#   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
-  set obj \
-    [BOT33 new   -lpop $lpop -lsrc $size \
-       -sort_driver $sort_driver  -task $task -is_print 0]
+#   set obj \
+#     [BOT33 new   -lpop $lpop -lsrc $size \
+#        -sort_driver $sort_driver  -task $task -is_print 0]
 
 
-  dict_set $bots "bot33" $obj 
+#   dict_set $bots "bot33" $obj 
 
   #-------------------------------------------------------------
 
   } else {
   #-------------------------------------------------------------
 
-    set task [task_create  "FS_fitness" -fit_tobest "MAX" \
-                -fit_target $::fit_target -fit_error 0.1  -gp_list $gp_list]
+#     set task [task_create  "FS_fitness" -fit_tobest "MAX" \
+#                 -fit_target $::fit_target -fit_error 0.1  -gp_list $gp_list]
 
-    dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lsrc $size -task $task]
+#     dict_set $bots "bot$mode" [BOT$mode new  -lpop $lpop -lsrc $size -task $task]
 
   }
   #-------------------------------------------------------------
@@ -1636,6 +1661,24 @@ proc make_bots_list {gp_list target_text0 args} {
   #puts ""
 
 return $bots
+}
+# ------------------------------------------------------------------------------
+proc task_correct_target_text {task t} {
+
+  #puts "[procname] : size = [GET $task size]"
+
+  #test_random_seed $t 
+     
+  #set size       [GET  $task "size"] 
+  #set pmin       [GET  $task "pmin"] 
+  #set pmax       [GET  $task "pmax"] 
+
+  set gp_list    [GET  $task "gp_list"] 
+
+
+  #set target_text [make_text_variant $t $::target_text $::gp_list $size $pmin $pmax]
+
+  return
 }
 # ------------------------------------------------------------------------------
 proc maintest_531 {} {
@@ -1675,8 +1718,14 @@ proc maintest_531 {} {
   set max_generations [dict_parse $argv "-nums" -1] ;# 30 ;# 15 - останов 
 
 
+  set task [task_create  \
+              "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
+              -fit_error 0.01  -gp_list $::gp_list \
+              -target_text $::target_text          \
+              -size $size -pmin $pmin -pmax $pmax
+             ]  
 
-  set botobjs [make_bots_list  $::gp_list $::target_text   {*}$argv]
+  set botobjs [make_bots_list  $task $::gp_list $::target_text   {*}$argv]
 
 
   #---------------------------------------------------------
@@ -1685,14 +1734,14 @@ proc maintest_531 {} {
   for {set t 0} {$t < $num_text} {incr t} {
 
     test_random_seed $t      
-    set target_text [get_target_text   $t $::gp_list $::target_text {*}$argv \
-                       -pmin $pmin -pmax $pmax ]
-
+    #set target_text [get_target_text   $t $::gp_list $::target_text $size $pmin $pmax ]
+    set target_text [make_text_variant $t $::target_text $::gp_list $size $pmin $pmax]
+    
     lappend targets $target_text
   }
   #---------------------------------------------------------
 
-  maintest_run  $botobjs  $targets   $num_runs $max_generations  
+  maintest_run  $botobjs  $targets "task_correct_target_text"  $num_runs $max_generations  
 
 
   # g_stru.tl maintest_531 -mode @ -text 3 -runs 3

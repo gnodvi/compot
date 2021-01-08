@@ -6760,7 +6760,7 @@ proc dict_clone {obj} {
 }
 # ------------------------------------------------------------------------------
 # 
-proc maintest_run {botobjs targets  
+proc maintest_run {botobjs targets task_correct
                    num_runs max_generations} {
 
 
@@ -6807,6 +6807,10 @@ proc maintest_run {botobjs targets
 
         set  task [GET $obj task]
         SET $task "target_text" $target_text
+
+        $task_correct $task $t ;# лучше бы так, в общем виде
+
+        #puts "[procname] : size = [GET $task size]"
 
         #---------------------------------------
         # основной расчет

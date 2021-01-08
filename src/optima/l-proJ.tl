@@ -823,6 +823,8 @@ proc FITPROC_xx {proga task args} {
   #puts "x_list = $x_list"
   #exit
 
+  # ???? 
+  # 
   set func [GET $task "func"]
 
   # начинаем в цикле подсчет фитнеса --------------------------
@@ -1052,7 +1054,12 @@ proc TEST_xx {} {
   #------------------------------------------------------
   }
   if {$vers == "gp"} {
+
+  # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+  
   #------------------------------------------------------
+  #
+  # запускаем эволюцию GP напрямую, через функцию
 
     set task [task_create "FITPROC_xx"  \
                 -fit_tobest     "MIN" \
@@ -1060,21 +1067,24 @@ proc TEST_xx {} {
                 -gp_list    $gp_list]
 
     run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
-                              $lpop $size  \
-                              $nums  $is_print   \
+                              $lpop $size        \
+                              $nums $is_print    \
                               -game_print_proc 0 \
-                              -mutprob       0.2
+                              -mutprob         0.2
 
-    # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+    #--------------------------------
+    #
+    # задаем начальную "случайность"
 
-    #-------------------------------------
     if {$seed == "@"} {
       
       set seed [clock seconds]
     }
     
     random_seed $seed 
-    #-------------------------------------
+    #--------------------------------
+    #
+    # и теперь другим способом, через бота
 
     set obj [BOT33 new   -lpop $lpop -lsrc $size \
                -task $task -is_print 0]
@@ -1085,6 +1095,16 @@ proc TEST_xx {} {
       -task            $task             \
       -is_print        $is_print         \
       -randpop_proc    $rand_prgpop_proc 
+
+    #--------------------------------
+    #
+    # а теперь запустим "соревнование"
+    
+    #set botobjs [list $obj]
+    #set targets [list ]
+    
+    #maintest_run  $botobjs  $targets   $num_runs $max_generations  
+   
     
   #------------------------------------------------------
   } 
