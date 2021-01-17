@@ -1,0 +1,48 @@
+
+func = $x**2+$x
+run_gp_evolution_for_task : seed = 0 !!!!!!!!!!!
+
+make_prgpop: INIT POPULATION: 
+
+prgpop = {dup * * dup} {+ * + dup} {dup +} {+ nop} {* +}
+
+000)     best =    2.650 :   dup + 
+001)     best =    2.650 :   dup + 
+002)     best =    2.650 :   dup + 
+003)     best =    2.650 :   dup + 
+004)     best =    2.650 :   dup + 
+005)     best =    2.650 :   dup + 
+006)     best =    2.650 :   dup + 
+007)     best =    2.650 :   dup + 
+008)     best =    2.650 :   dup + 
+009)     best =    2.650 :   dup + 
+010)     best =    2.650 :   dup + 
+011)     best =    2.650 :   dup + 
+012)     best =    0.000 :   dup dup * + 
+
+====================================================================
+
+make_prgpop: INIT POPULATION: 
+
+prgpop = {dup nop dup nop * nop} {+ * * * nop dup} {+ dup} {+ +} *
+
+000)     best =    3.752 :   dup nop dup nop * nop 
+001)     best =    3.752 :   dup nop dup nop * nop 
+002)     best =    3.752 :   dup nop dup nop * nop 
+003)     best =    3.752 :   dup nop dup nop * nop 
+004)     best =    3.752 :   dup nop dup nop * nop 
+005)     best =    3.752 :   dup nop dup nop * nop 
+006)     best =    3.752 :   dup nop dup nop * nop 
+007)     best =    3.752 :   dup nop dup nop * nop 
+008)     best =    3.752 :   dup nop dup nop * nop 
+009)     best =    2.650 :   dup nop dup nop dup nop + nop nop 
+010)     best =    2.650 :   dup nop dup nop dup nop + nop nop 
+011)     best =    2.650 :   dup nop dup nop dup nop + nop nop 
+012)     best =    2.650 :   dup nop dup nop dup nop + nop nop 
+013)     best =    2.650 :   dup nop dup nop dup nop + nop nop 
+014)     best =    2.650 :   dup nop dup nop dup nop + nop nop 
+015)     best =    2.191 :   dup nop dup dup nop + nop + nop nop 
+016)     best =    0.000 :   dup nop nop dup dup nop * nop + nop nop 
+
+====================================================================
+

@@ -1511,7 +1511,7 @@ proc ANTS_gp {} {
 
   set ::sort_driver "MIN_to_LEFT"    
 
-  set task [task_create FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
+  set task [task_create  -fit_func FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   run_gp_evolution_for_task \
       $task \
@@ -1567,7 +1567,7 @@ proc ANTS_gp_new {} {
 
   set ::sort_driver "MIN_to_LEFT"    
 
-  set task [task_create FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
+  set task [task_create  -fit_func FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   run_gp_evolution_for_task \
       $task \

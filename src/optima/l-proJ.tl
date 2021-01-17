@@ -744,7 +744,7 @@ proc NEXT_01 {} {
 
   mp_init $pb 
 
-  set task [task_create FITPROC_01  "-fit_tobest" "MIN" -gp_list $gp_list]
+  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   run_gp_evolution_for_task \
       $task \
@@ -970,6 +970,33 @@ proc test_joy_savestack {} {
   puts ""
   
 }
+# ------------------------------------------------------------------------------
+proc task_correct_gp {task t r} {
+
+
+#   set size    [GET $task "size"] 
+#   set pmin    [GET $task "pmin"] 
+#   set pmax    [GET $task "pmax"] 
+
+#   set gp_list      [GET $task "gp_list"] 
+#   set target_text0 [GET $task "target_text"] 
+
+  
+#   test_random_seed [+ $t $r]      
+
+
+#   if {$t == 0} { 
+#     # берем задачу-строку  по умолчанию
+#     set text  $target_text0
+#   } else {
+#     set text  [make_random_target_text   $gp_list $size  $pmin $pmax]
+#   }
+
+
+#   SET $task "target_text" $text
+
+  return
+}
 #-------------------------------------------------------------------------------
 proc TEST_xx {} {
 
@@ -986,9 +1013,9 @@ proc TEST_xx {} {
   set size        [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums"  10]  ;# шагов эволюции 
   set vers        [dict_parse $argv "-vers"  "gp"]
-  set is_print    [dict_parse $argv "-print"  1]
+  set print       [dict_parse $argv "-print"  1]
 
-  set gp_list   [dict_parse $argv "-list"   "dup * nop +"]
+  set gp_list     [dict_parse $argv "-list"   "dup * nop +"]
   set func        [dict_parse $argv "-func"  {x ** 2 + x}]
 
   #------------------------------------------------------
@@ -1018,124 +1045,104 @@ proc TEST_xx {} {
  
   puts "func = $func"
 
+
+  set task [task_create  \
+              -fit_func "FITPROC_xx"  \
+              -fit_tobest     "MIN" \
+              -func           $func \
+              -gp_list    $gp_list]
+  
+
+  #--------------------------------
+  #
+  # задаем начальную "случайность"
+  
+  if {$seed == "@"} {
+    
+    set seed [clock seconds]
+  }
+  
+  #random_seed $seed 
+  test_random_seed $seed 
+
+  set obj_ga \
+    [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
+    
+
+  set obj_gp [BOT33 new   -lpop $lpop -lsrc $size \
+                -task $task -print $print]
+
+  #--------------------------------
+
+
   #------------------------------------------------------
 
-  if {$vers == "test"} {
+  if {$vers == "fs"} {
   #------------------------------------------------------
     #
-    # ga_evolution, ищем как обычную строку (но для FS_fitness_list)
+    # ga_evolution, ищем как обычную строку 
 
     set gp_list      "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
     set ::target_text  "nop dup dup nop nop nop nop * nop + nop nop"
     set size 12
 
-    set fitness_func   "FS_fitness_list"
-    # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
+    set fitness_func   "FITPROC_list_FS"
     set fit_target     0    
+    # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
   
-    set task [task_create $fitness_func \
-                -fit_tobest       "MAX" \
-                -fit_target $fit_target \
-                -fit_error  0.01        \
-                -gp_list    $gp_list  
+    set task_fs [task_create  -fit_func $fitness_func \
+                   -fit_tobest       "MAX" \
+                   -fit_target $fit_target \
+                   -fit_error  0.01        \
+                   -gp_list    $gp_list]  
 
-    set ::is_print $is_print
-    #test_random_seed 0 ;#$i
+    set ::is_print $print
   
     set obj \
-      [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
+      [BOT01 new  -lpop $lpop -lsrc $size -task $task_fs -vers $vers] 
 
     set pop [GET $obj "pop"]
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"
 
-    set ret [calc_BOT01 $obj {*}$argv]
+    set ret [calc_BOT01 $obj {*}$argv  -print 1]
 
   #------------------------------------------------------
   }
   if {$vers == "gp"} {
 
-  # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
-  
   #------------------------------------------------------
   #
   # запускаем эволюцию GP напрямую, через функцию
 
-    set task [task_create "FITPROC_xx"  \
-                -fit_tobest     "MIN" \
-                -func           $func \
-                -gp_list    $gp_list]
-
     run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
                               $lpop $size        \
-                              $nums $is_print    \
+                              $nums $print       \
                               -game_print_proc 0 \
                               -mutprob         0.2
 
-    #--------------------------------
-    #
-    # задаем начальную "случайность"
-
-    if {$seed == "@"} {
-      
-      set seed [clock seconds]
-    }
-    
-    random_seed $seed 
-    #--------------------------------
-    #
-    # и теперь другим способом, через бота
-
-    set obj [BOT33 new   -lpop $lpop -lsrc $size \
-               -task $task -is_print 0]
+    puts ""
+    puts "===================================================================="
 
 
-    calc_BOT33  $obj \
+    calc_BOT33  $obj_gp \
       -nums            $nums  \
       -task            $task             \
-      -is_print        $is_print         \
+      -print           $print         \
       -randpop_proc    $rand_prgpop_proc 
 
-    #--------------------------------
-    #
-    # а теперь запустим "соревнование"
-    
-    #set botobjs [list $obj]
-    #set targets [list ]
-    
-    #maintest_run  $botobjs  $targets   $num_runs $max_generations  
-   
+    puts ""
+    puts "===================================================================="
+
     
   #------------------------------------------------------
   } 
   if {$vers == "ga"} {
   #------------------------------------------------------
     
-    set task [task_create "FITPROC_xx"  -fit_tobest "MIN" \
-                -func    $func \
-                -gp_list $gp_list ]
-
-    #set ::error_saverestore 1
+    set ::is_print $print
     
-    set ::is_print $is_print
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    if {$seed == "@"} {      
-      set seed [clock seconds]
-    }
-    
-    random_seed $seed 
-    #srandom_set 20 ;#???
-    #test_random_seed $seed ;# 1
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    set obj \
-      [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    set pop [GET $obj "pop"]
+    set pop [GET $obj_ga "pop"]
     
     # только эти функции выбора работают для GP!
     # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
@@ -1144,27 +1151,42 @@ proc TEST_xx {} {
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"    
          
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    calc_BOT01 $obj  -nums $nums
-         
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    calc_BOT01 $obj_ga  -nums $nums   -print 1
 
-    # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
+  #------------------------------------------------------
   } 
+  if {$vers == "ga_gp"} {
+  #------------------------------------------------------
+    
+    #
+    # а теперь запустим "соревнование"
+    
+    
+    set botobjs [dict_create] 
+  
+    dict_set $botobjs "BOT33" $obj_gp
+
+    maintest_run  $botobjs  "task_correct_gp" 1 1 $nums  
+   
+
+  #------------------------------------------------------
+  } 
+  #------------------------------------------------------
   
   
   return
 }
 #-------------------------------------------------------------------------------
 
-# ищем строку 1 2 2 3 3 3 4 4 4 4 5 5 5 5 5
+# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
+# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+  
+# OUT:
+# l~.tl TEST TEST_xx  -seed    0 -lpop  5 -size 6 -nums -1 -vers gp -print 2 
+# l~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
 
-# g_stru.jm _01_test -lpop 10 -nums -1 -test 0  ;# ga_evolution FS_fitness
-# g_stru.jm _01_test -lpop 10 -nums -1 -test 1  ;# ga_evolution FS_fitness_list
-
-# g_stru.jm _gp_test 2013 10 6 -1     ;# gp_evolution FS_fitness_list
-
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 # ищем простую функцию x^2:

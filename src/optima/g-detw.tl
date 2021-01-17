@@ -95,7 +95,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
 
   set generation 0
 
-  set eval_proc      [GET $task "fitness_proc"]
+  set eval_proc      [GET $task "fit_func"]
   set mutate_proc    [GET $pop  "mutate"]
   set crossover_proc [GET $pop  "crossover"]
 

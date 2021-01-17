@@ -488,7 +488,7 @@ proc pingpong_genesis {population_size len_chromo
   #   //int population_size = 50;  
   #   population *pop = NULL;   /* Population of solutions. */
   
-  set task [task_create "pingpong_score" -fit_tobest "MAX"]
+  set task [task_create  -fit_func "pingpong_score" -fit_tobest "MAX"]
 
   set pop [ga_genesis_main      \
 	     $task \
@@ -519,8 +519,9 @@ proc main_ga {len_chromo} {
   set population_size "" ;
   set max_generations "" ;
   
-  parse_opts_3   num_runs population_size max_generations  50 50 200
+  set print [parse_opts_3   num_runs population_size max_generations  50 50 200]
   
+
   for {set i 0} {$i < $num_runs} {incr i} {
  
     set seed [expr {424242 * $i}]
@@ -557,7 +558,7 @@ proc main_ga {len_chromo} {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #
-    ga_evolution  $task $pop $max_generations   
+    ga_evolution  $task $pop $max_generations  -print $print  
     #
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -734,7 +735,7 @@ proc main_sa {} {
     
     set len_chromo 25
    
-    set task [task_create "pingpong_score" -fit_tobest "MAX"]
+    set task [task_create  -fit_func "pingpong_score" -fit_tobest "MAX"]
 
     set pop [ga_genesis_main   \
 	       $task \

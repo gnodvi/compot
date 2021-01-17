@@ -33,7 +33,7 @@ proc parse_opts {&population_size &max_generations
 
   global argc argv argv0
 
-  set ::is_print 0
+  set print 0
 
   #puts "argc = $argc"
   #exit
@@ -48,10 +48,12 @@ proc parse_opts {&population_size &max_generations
 
     set population_size [lindex $argv 1]
     set max_generations [lindex $argv 2]
-    if  {$argc == 4}    {set ::is_print 1}
+    if  {$argc == 4}    {set print 1}
   }
 
-  return
+  set ::is_print $print
+
+  return $print
 }
 # /*******************************************************************************
 #   ga_x_tester.c
@@ -303,7 +305,7 @@ proc test_ga {task} {
   set population_size ""
   set max_generations ""
 
-  parse_opts  population_size max_generations  200 500
+  set print [parse_opts  population_size max_generations  200 500]
 
   puts ""
 
@@ -371,7 +373,7 @@ proc test_ga {task} {
   ga_population_seed $pop $task
   #
   
-  ga_evolution  $task $pop $max_generations   
+  ga_evolution  $task $pop $max_generations  -print $print 	 
   
   puts ""
 
@@ -389,9 +391,9 @@ proc main_sd2 {task} \
   set population_size  ""
   set max_iterations   ""
 
-  parse_opts  population_size max_iterations  50 1000
+  set print [parse_opts  population_size max_iterations  50 1000]
 
-  if {$::is_print} {
+  if {$print} {
     puts ""
     puts stderr "main_sd2 ....... 1 "
   }
@@ -467,7 +469,7 @@ proc main_sd2 {task} \
   
   puts stderr "main_sd2 ....... 4 "
 
-  if {$::is_print} {
+  if {$print} {
     puts stderr "main_sd2 ....... 5 "
     puts stderr "pop = $pop"
     
@@ -501,7 +503,7 @@ proc main_sd2 {task} \
   #   ga_extinction (pop);  
   #  exit (EXIT_SUCCESS);
 
-  if {$::is_print} {
+  if {$print} {
     puts ""
   }
 
@@ -675,6 +677,9 @@ proc strategy_parse_and_print {s
 #-------------------------------------------------------------------------------
 proc test_de {task strategy_list} {
 
+
+  #set print 1 ;#$::is_print
+
   #   population	*pop;	/* Population of solutions.       */
   #   entity		*best;	/* Fittest entity.                */
   #   int		i=0;	/* Loop variable over strategies. */
@@ -682,7 +687,7 @@ proc test_de {task strategy_list} {
   set population_size  "" 
   set max_generations  ""
 
-  parse_opts  population_size max_generations  40 50
+  set print [parse_opts  population_size max_generations  40 50]
 
   random_seed 23091975
 
@@ -762,7 +767,7 @@ proc test_de {task strategy_list} {
 
     # выполняем основной расчет (поиск минимума)
     #
-    ga_differentialevolution  $pop $max_generations  $task			
+    ga_differentialevolution  $pop $task $max_generations -print $print			
 
 
     if {1} {
@@ -795,7 +800,7 @@ proc test_de {task strategy_list} {
     set C [lindex $best_chromo 2]
     set D [lindex $best_chromo 3]
 
-    if {$::is_print} { 
+    if {0} { 
 
       puts [format "FINAL BEST : numer = $best  fitness = %f" $best_fit]
       puts ""
@@ -838,7 +843,7 @@ proc main {} {
 
   #set ::is_my_random 0  ;# 1 - это было мое ..
 
-  set task [task_create "_test_score" -fit_tobest "MIN" -isreverse 0 -fit_error 0.001 ]
+  set task [task_create  -fit_func "_test_score" -fit_tobest "MIN" -isreverse 0 -fit_error 0.001 ]
   set ::sort_driver "MIN_to_LEFT"   
 
   #-------------------------------------------------------
@@ -850,7 +855,7 @@ proc main {} {
     #
     # а почему реверсивный дает лучше (другой) результат ???
 
-    set task [task_create "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
+    set task [task_create  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
     set ::sort_driver "MAX_to_LEFT"    
     
     test_ga $task

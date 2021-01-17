@@ -288,7 +288,7 @@ proc ga_tabu {task pop initial max_iterations} {
     ga_entity_copy $pop $best $initial
   }
   
-  set eval_proc [GET $task "fitness_proc"]
+  set eval_proc [GET $task "fit_func"]
   #-------------------------------------------------
 
   #   //

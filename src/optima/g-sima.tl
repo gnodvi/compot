@@ -179,7 +179,7 @@ proc  ga_sa {task pop
 
     puts "...... GA_MIN_FITNESS ......................"
 
-    set eval_proc [GET $task "fitness_proc"]
+    set eval_proc [GET $task "fit_func"]
     #$eval_proc  $pop $best
     pop_eval_item $pop $best $eval_proc $task
     
@@ -257,7 +257,7 @@ proc  ga_sa {task pop
     #[GET $pop evaluate] $pop       $putative
     
     #set task      [GET $pop  "TASK"]
-    set eval_proc [GET $task "fitness_proc"]
+    set eval_proc [GET $task "fit_func"]
     #$eval_proc $pop       $putative
     pop_eval_item $pop $putative $eval_proc $task
 

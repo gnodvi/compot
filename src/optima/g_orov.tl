@@ -612,7 +612,7 @@ proc pntssolver_do {population_size max_generations
   #              ))
   
   
-  set task [task_create  "_test_score" -fit_tobest "MAX"]
+  set task [task_create   -fit_func "_test_score" -fit_tobest "MAX"]
 
   set pop [ga_genesis_main   \
 	   $task \
@@ -656,7 +656,7 @@ proc pntssolver_do {population_size max_generations
   
   #   ;;    # выполняем основной расчет (поиск минимума)
   #   ;;    #
-  ga_differentialevolution  $pop $max_generations $task			
+  ga_differentialevolution  $pop $task	$max_generations 		
   
   
   if $::__is_print {

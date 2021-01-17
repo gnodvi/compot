@@ -192,7 +192,7 @@ proc make_putative {pop current step_size current_g putative} \
 proc ga_steepestascent_double {task pop current max_iterations} \
 {
 
-  set eval_proc [GET $task "fitness_proc"]
+  set eval_proc [GET $task "fit_func"]
 
 
   set GR [GET $pop gr_params]

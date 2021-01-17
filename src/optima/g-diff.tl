@@ -982,10 +982,11 @@ proc find_best_solution {pop rank_proc} {
 # {
 #   int		generation = 0;		/* Current generation number. */
 # //------------------------------------------------------------------------------
-proc prepare_permutation {size} {
+proc prepare_permutation {size args} {
 
+  set print [dict_parse $args "-print"]
 
-  if {$::is_print} {
+  if {$print} {
     puts "Prepare arrays to store permutations ..."
   }
 
@@ -1009,17 +1010,19 @@ proc pop_eliminate {p} {
 
   set orig_size [GET $p "stable_size"]
   
-  set tmp [GET $p "itemslist"]
+  set tmp [GET $p "itemlist"]
 
-  SET $p "itemslist" [lrange $tmp $orig_size end] ;# взяли первые $orig_size
+  SET $p "itemlist" [lrange $tmp $orig_size end] ;# взяли первые $orig_size
 
   return
 }
 #-------------------------------------------------------------------------------
-proc ga_differentialevolution	{pop max_generations  task} {
+proc ga_differentialevolution	{pop task max_generations args} {
 
 
-  set eval_proc [GET $task "fitness_proc"]
+  set print $::is_print
+
+  set eval_proc [GET $task "fit_func"]
 
 
   set DE [GET $pop de_params]
@@ -1081,7 +1084,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
   #   /*    schedule(static) */
   
   # ;-------------------------------------------------------------------
-  if {$::is_print || $::__is_print} {
+  if {$print} {
     puts ""
   }
 
@@ -1102,7 +1105,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
 
     }
 
-    if {$::is_print || $::__is_print} {
+    if {$print} {
 
       set fit [item_get_fitn $entity]
       #puts "ga_diff: evaluate .. i= $i  fit= $fit%"
@@ -1111,13 +1114,13 @@ proc ga_differentialevolution	{pop max_generations  task} {
 
   }
 
-  if {$::is_print || $::__is_print} {
+  if {$print} {
       puts ""
   }
   # ;-------------------------------------------------------------------
   
 
-  set permutation [prepare_permutation  [get_pop_size $pop]]
+  set permutation [prepare_permutation  [get_pop_size $pop] -print $print]
   
   #
   # Determine weighting factor. (в ходе генерации не меняется, я предположил..)
@@ -1145,7 +1148,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
   #while {$generation < $max_generations} {}
   while {1} {
 
-    if {$::is_print || $::__is_print} {
+    if {$print} {
       puts ""
       puts "GENERATION LOOP ......... generation = $generation"
       puts ""
@@ -1185,7 +1188,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
     #for {set i 0} {$i < [GET $pop orig_size]} {incr i} {}
     for {set i 0} {$i < [GET $pop stable_size]} {incr i} {
 
-      if {$::is_print} {
+      if {$print} {
         puts ""
         puts [format "i= %2d ...................................." $i]
 
@@ -1198,7 +1201,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
       #set oldentity [$pop get_entity $i]
       set oldentity [pop_get_entity_ $pop  $i]
 
-      if {$::is_print} {
+      if {$print} {
         print_entit  $oldentity "OLDENTITY ="
         pop_print $pop
       }
@@ -1232,7 +1235,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
 
       set num_perturbed    [GET $DE de_num_perturbed]
 
-      if {$::is_print} {
+      if {$print} {
         print_entit  $tmpentity "TMPENTITY ="
         #puts "permutation = $permutation"
         pop_print $pop
@@ -1251,7 +1254,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
       } 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      if {$::is_print} {
+      if {$print} {
         print_entit  $tmpentity "TMPENTITY ="
         pop_print $pop
       }
@@ -1289,7 +1292,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
       }
       
       
-      if {$::is_print} {
+      if {$print} {
         puts -nonewline [format "  n= %d  old = %f .. new = %f "  \
                            $n $old_fit $new_fit]
       }
@@ -1302,14 +1305,14 @@ proc ga_differentialevolution	{pop max_generations  task} {
         #
         # так оно ж (копирование) не работало ?? !!
 
-        if {$::is_print} { puts "" }
+        if {$print} { puts "" }
 
         pop_add_entity_ $pop  $oldentity ;# "перезапишем" на старое
 
       } else {
         # ура, улучшилось !!
         #
-        if {$::is_print} { puts [format " .... OK !!"] }
+        if {$print} { puts [format " .... OK !!"] }
 
         #$pop set_entity $i $tmpentity ;# перезапишем на новое
         #
@@ -1327,7 +1330,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
     # // 
     # // ~~~~~~~~~~~~~~~~~ I LOOP FINAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    if {$::is_print} {
+    if {$print} {
       puts ""
       puts "I LOOP FINAL ........................................."
       puts ""
@@ -1346,7 +1349,7 @@ proc ga_differentialevolution	{pop max_generations  task} {
     pop_eliminate $pop
     
 
-    if {$::is_print} {
+    if {$print} {
       puts ""
 #       $pop print
       pop_print $pop
