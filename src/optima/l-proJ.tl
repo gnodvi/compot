@@ -587,89 +587,6 @@ proc TEST_makeparas {} {
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-# NEXT_01  - простейший тест из плюсов и минусов
-
-set ::sum        0  ;# начальное значение сумматора 
-set ::sum_target 0  ;# к чему стремимся, что надо получить 
-
-
-# ------------------------------------------------------------------------------
-proc PLUS_1 {} {
-
-  incr ::sum +1
-
-}
-# ------------------------------------------------------------------------------
-proc MINUS_1 {} {
-
-  incr ::sum -1
-
-}
-#-------------------------------------------------------------------------------
-v0_make_tclproc  p1 {} {
-
-  PLUS_1 ;# это уже вызываем TCL-функцию из прикладной библиотеки
-
-}
-#-------------------------------------------------------------------------------
-v0_make_tclproc  m1 {} {
-
-  MINUS_1 ;# это уже вызываем TCL-функцию из прикладной библиотеки
-
-}
-#-------------------------------------------------------------------------------
-proc FITPROC_01 {p {prog @}} {
-
-  set fitness 0
-
-  #if {$::ITEMS_LIST} {
-  set joy_prg  [item_get_mainsrc $p]
-  #} else {
-  #  set joy_prg $p
-  #}
-
-
-  set result [getresult_prg  $joy_prg $prog]
-
-
-  #puts "joy_prg = $joy_prg  resul = $result"
-
-  if {$result eq {}}  {
-    
-    # здесь может быть просто списко или символ-строка, а не число!
-    # 
-    #puts "NOT run? NOT result !!"
-    #exit
-
-    incr fitness 50 ;# при каждой ошибке добавляем дельту
-    
-  } elseif {![string is integer $result]} {
-
-    incr fitness 50 ;# при каждой ошибке добавляем дельту
-    
-  } else {
-    
-    set delta [expr {abs($::sum_target-$result)}]  ;# ??
-    
-    if {$delta > 1000} {
-      # 
-      set delta 1000 ;# anti overflow ???
-    }
-
-    incr fitness $delta
-  }
-
-  
-  #return [expr {$fitness + [llength $joy_prg]}]
-  #
-  # давай пока длину не учитывать ?!
-  # 
-
-  return $fitness
-}
-#-------------------------------------------------------------------------------
 proc itemspop_print {itemspop} {
 
 
@@ -681,8 +598,6 @@ proc itemspop_print {itemspop} {
 
   return
 }
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc mp_create {} {
@@ -710,53 +625,6 @@ proc mp_init {pb args} {
   if [info exists "quotes_proc"] {set ::quotes_proc $quotes_proc}
 
 }
-#-------------------------------------------------------------------------------
-proc NEXT_01 {} {
-
-
-  # берем данные из командной строки (n~.tl NEXT_01  2013  10 6 10)
-  # 
-  incr ::ind0
-
-  parse_opt_seed_3_new  individuals len nums
-
-  puts "individuals  = $individuals" ;# колич-во ботов
-  puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
-  puts "nums         = $nums"        ;# шагов эволюции  
-  puts ""
-
-  set ::sum_target 20
-
-  puts "::sum_target = $::sum_target" ;# к чему стремимся, что надо получить 
-  puts ""
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  set is_print 1
-  #DebugOn
-
-  set gp_list   "p1" ;#  "p1 nop"  "p1 m1" 
-
-  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-    
-
-  set pb [mp_create]
-
-  mp_init $pb 
-
-  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" -gp_list $gp_list]
-    
-  run_gp_evolution_for_task \
-      $task \
-      0 $rand_prgpop_proc   \
-      $individuals  $len $nums \
-      $is_print             \
-      -mutprob          0.1 \
-      -game_print_proc  0   \
-  
-  return
-}
-#-------------------------------------------------------------------------------
 proc get_x_list {xmin xmax nums} {
 
   set x_list {}
@@ -1167,7 +1035,10 @@ proc TEST_xx {} {
   
     dict_set $botobjs "BOT33" $obj_gp
 
-    maintest_run  $botobjs  "task_correct_gp" 1 1 $nums  
+    set num_text 1
+    set num_runs [dict_parse $argv "-runs" 1]
+
+    maintest_run  $botobjs  "task_correct_gp" $num_text $num_runs  $nums  
    
 
   #------------------------------------------------------
@@ -1178,6 +1049,30 @@ proc TEST_xx {} {
   return
 }
 #-------------------------------------------------------------------------------
+#
+# соревнование-тест (пока с одним участником)
+
+# О.Г. Монахов, Э.А.Монахова, 2017
+#
+# Параллельный алгоритм 
+# многовариантного эволюционного синтеза нелинейных моделей
+#
+#
+
+# l~.tl TEST TEST_xx  -seed @ -lpop 200 -size 6 -nums 500 -vers ga_gp -runs 100 -func 'x ** 3 + x ** 2 + x'
+#
+# Вариант попроще:
+# 
+#l~.tl TEST TEST_xx  -seed @ -lpop 50 -size 10 -nums 100 -vers ga_gp -runs 10 -func 'x ** 3 + x ** 2 + x'
+#
+# TODO:
+#   этот примитивный генетичекий алгоритм очень плохо сходится. нужно делать рефакторинг, 
+#   выделение блоков и статистику по расположению этих блоков относительно друг друга 
+#  (.е. это уже начальное понятие типа данных), а также об их эффективном вкладе в результат..
+#  
+#  
+
+#-------------------------------------------------------------------------------
 
 # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
 # l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
@@ -1187,23 +1082,19 @@ proc TEST_xx {} {
 # l~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 
 # ищем простую функцию x^2:
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 10 -size 6 -nums -1
 
-#--------------------------------
 # ищем простую функцию x^3 + x^2:      dup dup dup * + * 
 #
 # l~.tl TEST TEST_xx  -seed 0 -lpop 50 -size 6 -nums -1 -vers 1 -print 1
 
-#--------------------------------
 # ищем простую функцию x^3 + x^2 + x:  dup dup dup dup * nop + * + 
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 100 -size 6 -nums -1 -vers 1 -print 2
 
-#--------------------------------
 # какой-то странный все же алгоритм, долго не сходится
 #
 # l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 -func 'x ** 3 + x ** 2 + x'
@@ -1215,6 +1106,169 @@ proc TEST_xx {} {
 #l~.tl TEST TEST_xx  -seed @ -lpop 200 -nums -1 -print 2 -vers 0 -func 'x ** 3 + x ** 2 + x'
 
 #-------------------------------------------------------------------------------
+
+# Вспомогательные тесты:
+
+# l~.tl ANTS ANTS_gp 2012  10 15 2
+# l~.tl TEST TEST_pp 2014
+
+# l~.tl TEST TEST_makeparas
+# l~.tl TEST TEST_randprog @
+# l~.tl TEST TEST_randprog 2014
+
+###########################################################################################
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# NEXT_01  - простейший тест из плюсов и минусов
+
+set ::sum        0  ;# начальное значение сумматора 
+set ::sum_target 0  ;# к чему стремимся, что надо получить 
+
+
+# ------------------------------------------------------------------------------
+# proc PLUS_1 {} {
+
+#   incr ::sum +1
+
+# }
+# ------------------------------------------------------------------------------
+# proc MINUS_1 {} {
+
+#   incr ::sum -1
+
+# }
+#-------------------------------------------------------------------------------
+v0_make_tclproc  p1 {} {
+
+  #PLUS_1 ;# это уже вызываем TCL-функцию из прикладной библиотеки
+  incr ::sum +1
+
+}
+#-------------------------------------------------------------------------------
+v0_make_tclproc  m1 {} {
+
+  #MINUS_1 ;# это уже вызываем TCL-функцию из прикладной библиотеки
+  incr ::sum -1
+
+}
+#-------------------------------------------------------------------------------
+v0_make_tclproc  p9 {} {
+
+  incr ::sum +9
+
+}
+#-------------------------------------------------------------------------------
+proc FITPROC_01 {p {prog @}} {
+
+  set fitness 0
+
+  #if {$::ITEMS_LIST} {
+  set joy_prg  [item_get_mainsrc $p]
+  #} else {
+  #  set joy_prg $p
+  #}
+
+
+  set result [getresult_prg  $joy_prg $prog]
+
+
+  #puts "joy_prg = $joy_prg  resul = $result"
+
+  if {$result eq {}}  {
+    
+    # здесь может быть просто списко или символ-строка, а не число!
+    # 
+    #puts "NOT run? NOT result !!"
+    #exit
+
+    incr fitness 50 ;# при каждой ошибке добавляем дельту
+    
+  } elseif {![string is integer $result]} {
+
+    incr fitness 50 ;# при каждой ошибке добавляем дельту
+    
+  } else {
+    
+    set delta [expr {abs($::sum_target-$result)}]  ;# ??
+    
+    if {$delta > 1000} {
+      # 
+      set delta 1000 ;# anti overflow ???
+    }
+
+    incr fitness $delta
+  }
+
+  
+  #return [expr {$fitness + [llength $joy_prg]}]
+  #
+  # давай пока длину не учитывать ?!
+  # 
+
+  return $fitness
+}
+#-------------------------------------------------------------------------------
+proc NEXT_01 {} {
+
+
+  # берем данные из командной строки (n~.tl NEXT_01  2013  10 6 10)
+  # 
+  # l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums 4
+
+
+  global argc argv argv0
+  set argv [lrange $argv 2 end]
+  
+  puts ""
+  puts "argv = $argv"
+  puts ""
+
+  set seed        [dict_parse $argv "-seed" 2016]
+  set individuals [dict_parse $argv "-lpop" 10]
+  set len         [dict_parse $argv "-size" 10] 
+  set nums        [dict_parse $argv "-nums"  4]
+  set gp_list     [dict_parse $argv "-list" "p1"] ;#  "p1 nop"  "p1 m1" 
+  
+  set ::sum_target 20
+
+
+  puts "individuals  = $individuals" ;# колич-во ботов
+  puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
+  puts "nums         = $nums"        ;# шагов эволюции  
+  puts "gp_list      = $gp_list"     ;#   
+
+  puts "::sum_target = $::sum_target" ;# к чему стремимся, что надо получить 
+  puts ""
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set is_print 1
+  #DebugOn
+
+
+  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+    
+
+  set pb [mp_create]
+
+  mp_init $pb 
+
+  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" -gp_list $gp_list]
+    
+  run_gp_evolution_for_task    \
+      $task                    \
+      $seed $rand_prgpop_proc  \
+      $individuals  $len $nums \
+      $is_print                \
+      -mutprob          0.1    \
+      -game_print_proc  0      \
+  
+  return
+}
+#-------------------------------------------------------------------------------
+###########################################################################################
 
 # Основные идеи:
 
@@ -1232,19 +1286,8 @@ proc TEST_xx {} {
 #   +) слияние нескольких программ с локальными библиотеками : commit
 #   -) слияние и рtфакторинг с использованием общей библиотеки.
 
-#   -) перевод всех алгоритмов : prg --> prog ;
+#   +) перевод всех алгоритмов : prg --> prog ;
 #   -) запуск joy_run с использованием сторонних библиотек;
 #   -) поиск лучшего решения путем рефакторинга;
 
-#-------------------------------------------------------------------------------
-
-# Вспомогательные тесты:
-
-# l~.tl ANTS ANTS_gp 2012  10 15 2
-# l~.tl TEST TEST_pp 2014
-
-# l~.tl TEST TEST_makeparas
-# l~.tl TEST TEST_randprog @
-# l~.tl TEST TEST_randprog 2014
-
-################################################################################
+###########################################################################################

@@ -3408,7 +3408,7 @@ proc libra_refactoring {prog {start_w 2}} {
 #-------------------------------------------------------------------------------
 proc proc_find  {prog p} {
 
-  if {[dict exist $prog $p]} {
+  if {[dict exists $prog $p]} {
 
     #set f [dict get $prog $p]
     set f [prog_get_prg_src $prog $p]
@@ -3432,7 +3432,7 @@ proc make_unfactoring_prog {prog_old} {
 
     puts "p = $p"
 
-    set f [proc_find $prog_old $p]
+    set f [proc_find  $prog_old $p]
     
     if {$f == {}} {
 
@@ -3982,17 +3982,24 @@ proc ITEM_test {} {
   #set src  {p1 p1 p1   p2 p2  p2 p2  p1 p1 p1} 
 
 
-  #set prog_origin  [make_simple_main_prog $src]
-  #puts "prog_origin = $prog_origin"
-
-  set item_prog    [item_make $src]  
-
-  puts " src = $src"
-  puts "item = [set $item_prog]"
 
   #puts ""
   #puts "----------------------------------------------------"
   #puts ""
+
+  set item_prog  [item_make             $src]  
+  set orig_prog  [make_simple_main_prog $src]
+
+
+  puts " src = $src"
+
+  puts "item_prog = [set $item_prog]"
+  puts "orig_prog = $orig_prog"
+  puts ""
+
+  puts ""
+  puts "----------------------------------------------------"
+  puts ""
 
   #set item_prog    [item_make $src]  
 
@@ -4001,7 +4008,7 @@ proc ITEM_test {} {
 
   #puts ""
   
-  return
+  #return
 
   #d+
 
@@ -4012,16 +4019,21 @@ proc ITEM_test {} {
 
   proc_name_index_init
 
-  set prog2 [libra_refactoring   $prog_origin $start_w] 
+  set prog2 [libra_refactoring   $orig_prog $start_w] 
 
-  puts "----------------------------------------------------"
-  puts ""
-  puts "prg_origin = $prg"
-  puts ""
+  #puts "prg_origin = $prg"
+  #puts ""
 
   #puts "prog1 = $prog1"  
+  puts ""
   puts "prog2 = $prog2"  
   puts ""
+
+  #puts ""
+  #puts "----------------------------------------------------"
+  #puts ""
+
+  #return
 
    
   puts "RandYes 100 = [RandYes 100]"
@@ -4029,6 +4041,8 @@ proc ITEM_test {} {
   puts "RandYes  50 = [RandYes  50]"
   puts "RandYes  10 = [RandYes  10]"
   puts ""
+
+  #return
 
   set prog3 [make_unfactoring_prog  $prog2]
 
@@ -4039,6 +4053,8 @@ proc ITEM_test {} {
   puts ""
 
 
+  #return
+
   set prog4_old  [list \
                     "main"  {src {proc1 p2 p2 proc1 p2 p2 proc1}}  \
                     "proc1" {src {p1 p1 p1}}] 
@@ -4046,15 +4062,17 @@ proc ITEM_test {} {
   puts "prog4_old = $prog4_old"  
   puts ""
 
+  #return
+
   #------------------------------------------------------------
 
   #set prog_new = main {src {proc1 proc1 proc1}} proc1 {src {proc1 p2 p2}}
 
-  #set prog_new  [list \
+  set prog_new  [list \
                     "main"  {src {proc1 proc1 proc1}}  \
                     "proc1" {src {proc1 p2 p2}}] 
 
-  #set      prog_new [commit_to_from  $prog_new $prog_old] 
+  set      prog_new [commit_to_from  $prog_new $prog4_old] 
 
   #return
 
