@@ -3430,7 +3430,7 @@ proc make_unfactoring_prog {prog_old} {
 
   foreach p $prg_old {
 
-    puts "p = $p"
+    #puts "p = $p"
 
     set f [proc_find  $prog_old $p]
     
@@ -3606,37 +3606,42 @@ proc get_arglist {instr} {
 # получить случайную инструкцию
 # вариант с анализом аргументов
 #-------------------------------------------------------------------------------
-proc randinstr_ARGS {gp_list} {
+# proc randinstr_ARGS {gp_list} {
 
-  #set instr [lrand $gp_list]
-  set instr [lrand_new $gp_list]
+#   #set instr [lrand $gp_list]
+#   set instr [lrand_new $gp_list]
   
-  set arglist [info args $instr]
+#   set arglist [info args $instr]
   
-  if {[llength $arglist] == 0} { #if {$arglist eq {}}  - для Tcl-8.4 
-    #puts "111111111111"
-    return $instr
+#   if {[llength $arglist] == 0} { #if {$arglist eq {}}  - для Tcl-8.4 
+#     #puts "111111111111"
+#     return $instr
     
-  } else {
+#   } else {
     
-    #puts "222222222222"
-    info default $instr [lindex $arglist 0] l
+#     #puts "222222222222"
+#     info default $instr [lindex $arglist 0] l
 
-    foreach {min max} $l break
-    return [list $instr [rand $min $max]]
-  }
+#     foreach {min max} $l break
+#     return [list $instr [rand $min $max]]
+#   }
 
-}
+# }
 #-------------------------------------------------------------------------------
 # возвращаем случайную инструкцию
 # пока упрощенный вариант -  не получается анализ аргументов
 #-------------------------------------------------------------------------------
 proc randinstr_SIMP {gp_list} {
 
-  # set  instr   [lrand_new $gp_list] ;# error on litle list !!??
+  # set  instr   [lrand_new $gp_list] ;# not true  on litle list !!??
+
+  # здест будем еще смотреть в глобальной (пока не в локальной) формруемой библиотеке
+  # ::gp_list_library, а ее формировать автоматически в ...
 
   set  instr   [lrand $gp_list]
 
+  return $instr
+  
   #------------------------------------------------------------
   #set  procname ::joy::builtin::${instr} ;# делаем имя более уникальным!
   #puts "instr= $instr  procname= $procname"
@@ -3669,10 +3674,8 @@ proc randinstr_SIMP {gp_list} {
 
   #puts stderr "[procname] : gp_list= $gp_list, instr= $instr"
 
-  return $instr
+  #return $instr
   
-
-
   #------------------------------------------------------------
   #puts "instr= $instr   arglist= $arglist"
   
@@ -3992,10 +3995,10 @@ proc ITEM_test {} {
 
 
   puts " src = $src"
+  puts ""
 
   puts "item_prog = [set $item_prog]"
   puts "orig_prog = $orig_prog"
-  puts ""
 
   puts ""
   puts "----------------------------------------------------"
@@ -4019,14 +4022,14 @@ proc ITEM_test {} {
 
   proc_name_index_init
 
-  set prog2 [libra_refactoring   $orig_prog $start_w] 
+  set orig_prog_refact [libra_refactoring   $orig_prog $start_w] 
 
   #puts "prg_origin = $prg"
   #puts ""
 
   #puts "prog1 = $prog1"  
-  puts ""
-  puts "prog2 = $prog2"  
+  #puts ""
+  puts "orig_prog_refact = $orig_prog_refact"  
   puts ""
 
   #puts ""
@@ -4036,22 +4039,24 @@ proc ITEM_test {} {
   #return
 
    
-  puts "RandYes 100 = [RandYes 100]"
-  puts "RandYes  90 = [RandYes  90]"
-  puts "RandYes  50 = [RandYes  50]"
-  puts "RandYes  10 = [RandYes  10]"
-  puts ""
+  #puts "RandYes 100 = [RandYes 100]"
+  #puts "RandYes  90 = [RandYes  90]"
+  #puts "RandYes  50 = [RandYes  50]"
+  #puts "RandYes  10 = [RandYes  10]"
+  #puts ""
 
   #return
 
-  set prog3 [make_unfactoring_prog  $prog2]
+  set orig_prog_unfact [make_unfactoring_prog  $orig_prog_refact]
 
-  puts ""
-  puts "prog3 = $prog3"  
+  #puts ""
+  puts "orig_prog_unfact = $orig_prog_unfact"  
   puts ""
   puts "----------------------------------------------------"
   puts ""
 
+
+  #------------------------------------------------------------
 
   #return
 
@@ -4063,8 +4068,6 @@ proc ITEM_test {} {
   puts ""
 
   #return
-
-  #------------------------------------------------------------
 
   #set prog_new = main {src {proc1 proc1 proc1}} proc1 {src {proc1 p2 p2}}
 
@@ -5857,24 +5860,42 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
 
   USE_REFS
 
+
   set r [random_double 1.0]
   
-  # заменяем итем-строку
-  # 
-  if {$r <= $prob} {
-    set item [randinstr_NEXT $gp_list]
-    
-    if {$mode == 0} {
-      #puts "................................ lset   item = $item"
-      lset program $i $item ; # для Tcl-8.4   
-
-    } else {
-      #puts "................................ linsert item = $item"
-      set program  [linsert $program $i $item]
-    }
-
+  if {$r > $prob} {
+    return ;# ничего не делаем, уходим
   }
+
+  # делаем мутацию
+  # 
+
+  if {$mode == 0} {
+
+    # удалим итем
+    #
+    ##set program  [lremove $program $i] ;# invalid command name "lremove"
+    set program  [lreplace $program $i $i] 
+
+  } else {
+
+    # выберем из списка (или списков !!!)
+    # 
+    set item [randinstr_NEXT $gp_list]
+
   
+    switch -- $mode {
+      1 {
+        lset program $i $item                     ;# либо заменяем итем 
+      }  
+      2 {
+        set program  [linsert $program $i $item]  ;# либо добавляем
+      }
+    } 
+  }
+
+
+  return
 }
 #-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа, в которой каждая 
@@ -5889,14 +5910,14 @@ proc gp_joy_mutate {task program prob} \
   # gaul_mutation {pop task}
   # ga_mutate_printable_singlepoint_drift {pop father son}
 
-  #set gp_list $::gp_list
   set gp_list [GET $task gp_list]
 
 
   for {set i 0} {$i < [llength $program]} {incr i} {
     
-    mutate_and_lset_or_linsert  program $i $prob $gp_list  0
+    mutate_and_lset_or_linsert  program $i $prob $gp_list  0 
     mutate_and_lset_or_linsert  program $i $prob $gp_list  1
+    mutate_and_lset_or_linsert  program $i $prob $gp_list  2
   }
   
   return $program
@@ -6104,15 +6125,9 @@ dict_class_create BOT33 {BOT} {
 } {
   # а это конструктор класса 
 
-  #set task [task_create "FS_fitness_list" -fit_tobest "MAX"] 
-  # 
-  # -gp_list $::gp_list
-
   set task    [dict_parse $args "-task" ] 
-
   
   SET $obj "task" $task  
-  #set task    [dict_parse $args "-task" ] 
 
   set pop [POP new  {*}$args]
 
@@ -6200,9 +6215,6 @@ proc gp_evolution_4 {pop task args} {
   
   set leaders_items [lrange $sorted_items 0 [expr {$l-1}]]
   
-  #if {$is_print} {puts "LEADERS = $leaders \n"}
-    
-
   #---------------------------------------
   # 2)
   # генерируем другую 1/3  популяции отпрысками от случайных лидеров
@@ -6250,7 +6262,8 @@ proc gp_evolution_main {task  pop max_generations
 
   while {1} {
 
-    set ret [pop_evolution  $pop $task $max_generations "gp_evolution_4" \
+    set ret [pop_evolution  $pop $task $max_generations \
+               "gp_evolution_4" \
                 -print $is_print  -mutprob $mutprob -printproc $step_print_proc]
     
     if {! $ret} {break}
@@ -6354,8 +6367,6 @@ proc run_gp_evolution_for_task {
                        args
                      } {
 
-  #game_print_proc 
- 
   #-------------------------------------
   if {$seed == "@"} {
 
@@ -6370,7 +6381,7 @@ proc run_gp_evolution_for_task {
 
   set obj \
     [BOT33 new  -lpop $population_size -lsrc $len_chromosomes \
-       -task $task]
+       -task $task {*}$args]
 
     
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)

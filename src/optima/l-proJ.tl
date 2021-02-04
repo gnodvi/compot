@@ -876,6 +876,13 @@ proc TEST_xx {} {
   #puts stderr "argv = $argv"
   #exit
 
+  #------------------------------------------------------
+
+  set args {-print  1}
+
+  #------------------------------------------------------
+
+
   set seed        [dict_parse $argv "-seed"  2013]
   set lpop        [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
   set size        [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
@@ -912,7 +919,6 @@ proc TEST_xx {} {
   set func [x_subst $func] 
  
   puts "func = $func"
-
 
   set task [task_create  \
               -fit_func "FITPROC_xx"  \
@@ -973,7 +979,11 @@ proc TEST_xx {} {
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"
 
-    set ret [calc_BOT01 $obj {*}$argv  -print 1]
+    set m [dict merge $args $argv]
+    puts "m = $m"
+
+    #set ret [calc_BOT01 $obj {*}$argv  -print 1]
+    set ret [calc_BOT01 $obj {*}$m]
 
   #------------------------------------------------------
   }
@@ -1213,7 +1223,7 @@ proc FITPROC_01 {p {prog @}} {
 proc NEXT_01 {} {
 
 
-  # берем данные из командной строки (n~.tl NEXT_01  2013  10 6 10)
+  # берем данные из командной строки 
   # 
   # l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums 4
 
@@ -1262,8 +1272,10 @@ proc NEXT_01 {} {
       $seed $rand_prgpop_proc  \
       $individuals  $len $nums \
       $is_print                \
+      -print        $is_print  \
       -mutprob          0.1    \
       -game_print_proc  0      \
+    {*}$argv
   
   return
 }

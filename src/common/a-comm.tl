@@ -896,7 +896,7 @@ proc check_true_and_calc {
   #           -I "\n"                     
    #          -I " "                     
 
-  set cmd {diff --ignore-all-space --ignore-blank-lines \
+  set cmd_diff {diff --ignore-all-space --ignore-blank-lines \
              -I "Time" \
              $TRUE_FILE_fordiff \
              $CALC_FILE_fordiff > $DIFF_FILE}
@@ -905,30 +905,10 @@ proc check_true_and_calc {
   # --ignore-blank-lines  игнорирует изменения, состоящие в наличии или 
   #                       отсутсвии пустых строк
 
-  # ---------------------------
-#   set cmd {diff --ignore-all-space --ignore-blank-lines \
-#              -I "\n"                      \
-#              -I "Time" \
-#              $TRUE_FILE_fordiff \
-#              $CALC_FILE_fordiff}
-
-#   puts ""
-#   puts "cmd= $cmd"  
-
-#   #eval exec $cmd
-#   eval exec {diff --ignore-all-space --ignore-blank-lines -I "\n" sw1-mk11.cfg sw1.out }
-
-#   puts ""
-#   puts ""
-#   exit
-  # ---------------------------
-
-  #puts "cmd= $cmd"  
-
   # TODO: используется unix-программа DIFF ?? а для Windows ??
   # 
 
-  if [catch {eval exec $cmd} ret] { ;# сравнение прошло с "ошибкой", т.е. 
+  if [catch {eval exec $cmd_diff} ret] { ;# сравнение прошло с "ошибкой", т.е. 
     # 
     # файлы различаются? вообще довольно странно, .. хотя ..
     # можно сравнить результирующий файл с нулем, но это ведь тоже не очевидно.
@@ -936,7 +916,6 @@ proc check_true_and_calc {
     win_puts "FAILED" RED
 
     # TODO: используется unix-программа MORE ?? а для Windows ??
-    # 
     # TODO: используется unix-программа DIFF ?? а для Windows ?? 
 
     puts "" 
@@ -949,13 +928,13 @@ proc check_true_and_calc {
 
     if {$is_to_overwrite} {
 
+      #------------------------------------------------------------------
       puts -nonewline "FAILED: do you wish to overwrite (y or \[n\]) ? "
       
       flush stdout               ;# все данные должны быть выведены
       set answer [gets stdin]
       puts " "
-      
-      
+           
       switch $answer {
         y {
           exec cp $CALC_FILE_forcopy $TRUE_FILE_forcopy 
@@ -967,6 +946,8 @@ proc check_true_and_calc {
           puts "NOT   : continue with OLD configure!"
         }
       }  
+      #------------------------------------------------------------------
+
 
     } ;# is_to_overwrite END
     
@@ -1034,6 +1015,32 @@ proc check_true_and_calc_begin {name} {
 
 }
 #-------------------------------------------------------------------------------
+proc run_cmd {dir_cmd cmd calc_file} { 
+
+  set pwd_dir [pwd]
+
+  if {[catch {cd $dir_cmd} err]} {
+    puts stderr $err
+    exit
+  }
+  # так нельзя совсем уходить в директорию.. надо только на выполнение
+
+  # запускаем команду на выполнение !!!
+  set err 0
+  
+  # TODO: используется unix /dev/null ?? а для Windows ??
+  # 
+
+  if [catch {eval exec $cmd  2> /dev/null >  calc_file} ret] {
+    set err 1 ;# сделаем пометочку об неясной ошибке
+  } 
+
+  cd $pwd_dir ;# возврашаемся!
+
+
+  return [list $err $ret]
+}
+#-------------------------------------------------------------------------------
 proc run_cmd_and_check {is_replasing dir_cmd rr i 
      CALC_FILE TRUE_FILE  CALC_FILE_SED TRUE_FILE_SED  DIFF_FILE   
      } {
@@ -1051,28 +1058,36 @@ proc run_cmd_and_check {is_replasing dir_cmd rr i
   #check_true_and_calc_begin "$i"
   # ---------------------------------------------------------
 
-    # было в lib.sh:
-    # (cd ${DIR_CMD} ; eval $CMD > $CALC_FILE  2> /dev/null)
-
-  set pwd_dir [pwd]
-  if {[catch {cd $dir_cmd} err]} {
-    puts stderr $err
-    exit
-  }
-  # так нельзя совсем уходить в директорию.. надо только на выполнение
-
   # ---------------------------------------------------------
-  # запускаем команду на выполнение !!!
-  set err 0
-  
-  # TODO: используется unix /dev/null ?? а для Windows ??
-  # 
+  if {1} {
 
-  if [catch {eval exec $cmd  2> /dev/null >  $CALC_FILE} ret] {
-    set err 1 ;# сделаем пометочку об неясной ошибке
-  } 
+    set pwd_dir [pwd]
+    
+    if {[catch {cd $dir_cmd} err]} {
+      puts stderr $err
+      exit
+    }
+    # так нельзя совсем уходить в директорию.. надо только на выполнение
+    
+    # запускаем команду на выполнение !!!
+    set err 0
+    
+    # TODO: используется unix /dev/null ?? а для Windows ??
+    # 
+    
+    if [catch {eval exec $cmd  2> /dev/null >  $CALC_FILE} ret] {
+      set err 1 ;# сделаем пометочку об неясной ошибке
+    } 
+    
+    cd $pwd_dir ;# возврашаемся!
 
-  cd $pwd_dir ;# возврашаемся!
+  } else {
+    
+    foreach {err ret} \
+      [run_cmd  $dir_cmd $cmd $CALC_FILE] \
+      break
+    
+  }
   # ---------------------------------------------------------
   
   # тeпeрь надо сравнить два файла
@@ -1090,9 +1105,11 @@ proc run_cmd_and_check {is_replasing dir_cmd rr i
   # 
   # здесь мне надо по-хитрому: сравнивать время-модифицированные файлы
   # а вот заменять исходные !!
+
   check_true_and_calc  $TRUE_FILE_SED  $CALC_FILE_SED  $DIFF_FILE \
     $TRUE_FILE  $CALC_FILE  1
   
+
   if ($err) {
     # при этом результат работы может и совпадать ..
 

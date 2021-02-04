@@ -1,3 +1,5 @@
+# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -132,19 +134,37 @@ for TRUE_FILE in ${DIR_TST}/*               # цикл по всем файлам в указанной ди
       # read -s -n1 -p "FAILED: do you wish to overwrite (y or [n]) ? " keypress
       # но не работает на  F11 !
 
-      echo "FAILED: do you wish to overwrite (y or [n]) ? ";
-      read keypress; # а так работает и возможно надежнее "вводить и подтверждать"!
+      #--------------------------------------------------------------------
+      echo "FAILED: do you _run this command (y or [n]) ? ";
 
+      read keypress; # а так работает и возможно надежнее "вводить и подтверждать"!
       echo; 
- 
       case "$keypress" in
+
+      "Y" | "y" )
+         echo "run command :::  ${DIR_CMD}/$CMD"
+         echo ""
+         eval ${DIR_CMD}/$CMD 
+
+      esac
+      #--------------------------------------------------------------------
+
+      #--------------------------------------------------------------------
+      echo "FAILED: do you wish to overwrite (y or [n]) ? ";
+
+      read keypress; 
+      echo; 
+      case "$keypress" in
+
       "Y" | "y" )
          cp $CALC_FILE $TRUE_FILE # принимаем новый выход как истинный !
          echo "YES   : overwrite CALC -> TRUE !!"
+
       ;;
               * )
          echo "NOT   : continue with this CALC !"
       esac
+      #--------------------------------------------------------------------
 
       echo    
     else
