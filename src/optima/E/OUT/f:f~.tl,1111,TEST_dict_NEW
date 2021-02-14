@@ -1,0 +1,47 @@
+
+src1 = 3 kvadrat ^
+src2 = dup *
+
+-------------------------------------------
+
+prog = main {src ::G_LIST_7} kvadrat {src ::G_LIST_8}
+
+
+dict_print DICT = 
+  main    {
+    src = ::G_LIST_7
+  }
+  kvadrat {
+    src = ::G_LIST_8
+  }
+
+list_print ::G_LIST_7 = 3 kvadrat ^
+
+list_print ::G_LIST_8 = dup *
+
+
+-------------------------------------------
+
+prog = main {src {3 kvadrat ^}} kvadrat {src {dup *}}
+
+
+dict_print DICT = 
+  main    {
+    src = 3 kvadrat ^
+  }
+  kvadrat {
+    src {
+      dup = *
+    }
+  }
+
+
+-------------------------------------------
+
+    = 9
+{1 {2 3}} {1 {2 3}}
+
+-------------------------------------------
+
+    = 9
+

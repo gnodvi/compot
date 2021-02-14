@@ -21,12 +21,12 @@ Structure of Package:
 /doc         : documentation;
 /ext         : 
 /src         :
-  /alaska    : 
   /common    : common library, utils; 
   /dialog    : GUI;
+  /lisper    : 
   /m         : run make and tests;
   /optima    : GA, GP and so on ..;
-  /recogn    : 
+  /tensor    : 
   /test-s    :
 /            : 
 .gitignore   : 

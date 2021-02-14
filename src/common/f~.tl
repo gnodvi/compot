@@ -123,6 +123,34 @@ set CUR_DIR "f"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 
+# ;-------------------------------------------------------------------------------
+# (defun SORT-TABS (argus)
+
+#   (my_load "f-sort.cl" CUR_DIR) (use-package :a_sort)
+#   (my_load "f-tabs.cl" CUR_DIR) (use-package :a-ctab)
+
+#   (load "f_test.li")
+
+#   (run_cdr_argus (first argus) argus "TEST ..")
+
+# )
+# ;-------------------------------------------------------------------------------
+# ;(defun SORT-TEST (argus)
+
+# ;  (my_load "f-sort.cl" CUR_DIR) (use-package :a_sort)
+
+# ;  (run_cdr_argus (first argus) argus "SORT ..")
+# ;)
+# ;-------------------------------------------------------------------------------
+# ;-------------------------------------------------------------------------------
+# (defun TOUR (argus)
+
+#   (my_load "f-tabs.cl" CUR_DIR) (use-package :a-ctab)
+
+#   (load "f-tour.cl")
+#   (run_cdr_argus (first argus) argus "TEST ..")
+
+# )
 #-------------------------------------------------------------------------------
 
 # l~.tl SORT-TEST sort_main

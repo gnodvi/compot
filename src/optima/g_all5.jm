@@ -34,9 +34,8 @@ package require compot::common
 
 # source "b-com0.tl"
 # source "b-com1.tl"
+# source "f-rand.tl"
 
-
-#source "f-rand.tl"
 
 source "g-corE.tl"
 

@@ -1,20 +1,31 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
 #-------------------------------------------------------------------------------
+
+
+source "f-0000.tl"  ;# общие части
+source "f-1111.tl"  ;# 
+
+
+# формируется динамически (словарная библиотека)
+
+set ::gp_dict [dict_create]
+
+set ::gp_dict_AUTO 0
+
+librarys_push $::gp_dict ;# запихнуть в глобальную библиотеку 
+
 #-------------------------------------------------------------------------------
 
 #namespace import ::struct::*
 
 #-------------------------------------------------------------------------------
 
-
 set ::GA_BOLTZMANN_FACTOR	1.38066e-23
-
 
 #set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
 
 set ::ISPRINT 0
-
 
 # #define GA_TINY_DOUBLE		(1.0e-9)
 
@@ -3717,14 +3728,41 @@ proc quotes_proc_NULL {oldprg} {
   return $newprg
 }
 #-------------------------------------------------------------------------------
+# 
+#-------------------------------------------------------------------------------
+proc only_names_from_gpdict {} {
+
+
+  set d [set $::gp_dict]
+
+  set ret [dict keys $d]
+
+  return $ret
+}
+#-------------------------------------------------------------------------------
+
+
 # создать случайную программу (список?) длиной не больше 'n' или равно ??
 # 
 #-------------------------------------------------------------------------------
-proc make_randprog {n gp_list {randinstr "randinstr_SIMP"} {quotes_proc "quotes_proc_NULL"}} {
+proc make_randprog {n gp_list {randinstr "randinstr_SIMP"} 
+                      {quotes_proc "quotes_proc_NULL"}} {
+
+
+  set GP_LIST {} ;# сфомируем совокупный на этот момент список
+
+  lappend GP_LIST  {*}$gp_list ;# это заданные в задаче
+
+
+  set names [only_names_from_gpdict] ;# формируется динамически
+
+  lappend GP_LIST {*}$names ;# добавили в общий список откуда выбираем
+
+  #puts "names = $names, GP_LIST = $GP_LIST"
 
   while {[incr n -1] >= 0} {
 
-    set instr [$randinstr $gp_list]
+    set instr [$randinstr $GP_LIST]
 
     lappend prg $instr
   }
@@ -4707,7 +4745,6 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
 
       # исключить элемент из списка, чтоб мутация была реальной
       # 
-      #set gp_list  [lsearch  -inline -all -not -exact $::gp_list $point_gen_old]
       set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
 
     }
@@ -6195,9 +6232,23 @@ proc make_offsprings_from_leaders {leaders l} \
 #-------------------------------------------------------------------------------
 proc gp_evolution_4 {pop task args} {
 
+
   set mutprob [dict_parse  $args "-mutprob" 0.1]
 
   set sorted_items [GET $pop "itemlist"]
+
+  #---------------------------------------
+  if {$::gp_dict_AUTO} {
+
+    set best_item [lindex $sorted_items 0]
+
+    puts stderr "gp_evolution_4: best_item = [set $best_item]"
+
+    #SET $::gp_dict "p3" {src { p1 p1 p1       }}
+    #SET $::gp_dict "p5" {src { p1 p1 p1 p1 p1 }}
+
+  }
+  #---------------------------------------
 
   # предполагается что итемы тут уже отсортированы !!
   # 

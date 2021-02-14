@@ -12,7 +12,7 @@ set auto_path [linsert $auto_path 0 "$dir/src/test-s"]
 
 package ifneeded compot 1.0 "
 
-  package require compot::alaska
+  package require compot::tensor
   package require compot::common
   package require compot::dialog
   package require compot::optima

@@ -1004,6 +1004,8 @@ proc DICT_test_02 {} {
 #-------------------------------------------------------------------------------
 proc dict_create {args} {
 
+  #puts "1111"
+
   set d [MAKE_GLOBAL_NAME "DICT"] ;# [MAKE_GLOBAL_DICT] 
 
   set $d [dict create {*}$args]
@@ -1401,9 +1403,9 @@ proc print_ret_pointers {ret {is_real "false"} {ofile "stdout"}} {
   return
 }
 #-------------------------------------------------------------------------------
-proc dict_print {pd {mainname ""}  {is_real "false"} {ofile "stdout"} {num_keys_max 5}} {
-
-  #set num_keys_max 5
+proc dict_print {pd {mainname ""}  {is_real "false"} {ofile "stdout"} 
+                 {num_keys_max 5}
+                 args} {
 
 
   if [is_GLOBAL_DICT $pd]  { # это ссылка на словарь
@@ -1411,14 +1413,13 @@ proc dict_print {pd {mainname ""}  {is_real "false"} {ofile "stdout"} {num_keys_
     set name $pd
     set d [set $pd]
 
-  } else { # это сам словарь
+  } else { # или это сам словарь
 
     set name "DICT" ;# имя для печати этого словаря
     set d $pd
   }
 
   #------------------------------------------------------
-
 
   # если имя конкретно указано - возьмем его?
   # 
@@ -1667,6 +1668,32 @@ proc TEST_big {} {
 # 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+proc TEST_create {} {
+
+  puts ""
+  puts "TEST_create ....."
+  puts ""
+
+  set dic1 [dict_create]
+
+  puts "dic1  = $dic1"
+  puts "dic1  = [set $dic1]"
+
+  set dic2 [dict_create a b]
+
+  puts "dic2  = $dic2"
+  puts "dic2  = [set $dic2]"
+
+
+}
+#-------------------------------------------------------------------------------
+
+#   set dic3 [dict_create a b]
+
+#   puts stderr "dic3  = $dic3"
+#   puts stderr "dic3  = [set $dic3]"
+
+
 #-------------------------------------------------------------------------------
 
 

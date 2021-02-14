@@ -65,7 +65,7 @@ proc TENS {} {
   # load $name_lib TensorNew
   #------------------------
 
-  package require compot::alaska
+  package require compot::tensor
 
   source "u_tens.tl"
 

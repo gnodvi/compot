@@ -29,6 +29,7 @@ exec wish $0 ${1+"$@"}
     ---.. 8 ----. 9 / " "
  }
  option add *Button -padx 0
+
  proc ui {} {
 
     global timevec morse
@@ -119,7 +120,10 @@ exec wish $0 ${1+"$@"}
     }
     set res
  }
- ui
+
+
+ui
+
 bind . <Escape> {exec wish $argv0 &; exit}
 
 #-------------------------------------------------------------------------------

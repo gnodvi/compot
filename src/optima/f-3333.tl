@@ -160,24 +160,26 @@ proc v3_init_null {} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc dict_create {} {
+# proc dict_create {} {
 
-  set pd [MAKE_GLOBAL_NAME]
+#   set pd [MAKE_GLOBAL_NAME]
     
-  #dict set $pi  FIT {}
-  #dict set $pi  PRG {}
+#   #dict set $pi  FIT {}
+#   #dict set $pi  PRG {}
     
-  return $pd ;# "указатель" (глобальное имя)
-}
+#   return $pd ;# "указатель" (глобальное имя)
+# }
 #------------------------------------------------------
 proc joy-push-type {type val} {
 
   if {$::_NEW} {
 
-    set obj [dict_create]
+    # !!!!!!!!!!!!!! неправильный словарь !!!! надо как в a_dict !!
+    #
+    #set obj [dict_create]
 
-    dict set $obj  TYP $type
-    dict set $obj  VAL $val
+    #dict set $obj  TYP $type
+    #dict set $obj  VAL $val
 
   } else {
 

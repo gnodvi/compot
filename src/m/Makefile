@@ -7,7 +7,7 @@
 include ./Make.mak
 
 
-ALASKA_DIR = ../alaska		
+TENSOR_DIR = ../tensor		
 COMMON_DIR = ../common
 DIALOG_DIR = ../dialog
 
@@ -18,12 +18,12 @@ TEST-S_DIR = ../test-s/m
 #-------------------------------------------------------------------------------
 
 
-all:  COMMON__ ALASKA__ DIALOG__   OPTIMA__  TEST-S__  ##LISPER__   
+all:  COMMON__ TENSOR__ DIALOG__   OPTIMA__  TEST-S__  ##LISPER__   
 
 #-------------------------------------------------------------------------------
 
-ALASKA__ :
-	(cd $(ALASKA_DIR); make)
+TENSOR__ :
+	(cd $(TENSOR_DIR); make)
 
 COMMON__ :
 	(cd $(COMMON_DIR); make)
@@ -44,7 +44,7 @@ TEST-S__ :
 #-------------------------------------------------------------------------------
 
 clean : 
-	(cd $(ALASKA_DIR); make clean)
+	(cd $(TENSOR_DIR); make clean)
 	(cd $(COMMON_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
 

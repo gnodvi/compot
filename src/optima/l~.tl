@@ -61,17 +61,20 @@ proc ALIB {} {
 proc ANTS {} {
 
 
-  source "k-0000.tl"  ;# общие части
+  source "f-0000.tl"  ;# общие части
 
-  source "k-1111.tl"  ;# надо будет подключить и ко всем примерам!!
-  source "k-2222.tl"  ;
+  source "f-1111.tl"  ;# надо будет подключить и ко всем примерам!!
 
-  source "k-3333.tl"  ;
+  source "f-2222.tl"  ;
 
-  source "g-corE.tl"
- 
+  source "f-3333.tl"  ; #  ????? dict_create
+
+  #set dic4 [dict_create a b]
+  #puts stderr "dic4  = $dic4"
+  #puts stderr "dic4  = [set $dic4]"
+
+  source "g-corE.tl" 
   source "l-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
-
   source "l_ants.tl"
 
 
@@ -83,8 +86,8 @@ proc ANTS {} {
 #-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "k-0000.tl"  ;# общие части
-  source "k-1111.tl"  ;# простой jOY 
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  ;# простой jOY 
 
   source "g-corE.tl"
   source "l-proJ.tl"  ; # тесты на JOY

@@ -5,19 +5,16 @@
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-#proc v1_get_result_from_one_arg {prg_11 val {prog_11 @}} {}
 proc v1_get_result_from_one_arg {prg_11 val} {
-
 
   # кладем одно значение в стек
   # 
   push $val 
 
-
   # выполняем программку
   # 
-  run_v1_src_or_prog $prg_11 ;### $prog_11
-
+  #run_v1_src_or_prog $prg_11 ;### $prog_11
+  run_v1_src $prg_11
 
   # забираем одно значение из стека
   # 
@@ -32,7 +29,6 @@ proc v1_get_result_from_one_arg {prg_11 val} {
 # proga - обобщенное название программы, там могут быть разные варианты (типы) 
 #
 #-------------------------------------------------------------------------------
-#proc getresult_prg_val_11 {prg_11 val {prog_11 @}} {}
 proc getresult_prg_val_11 {prg_11 val} {
 
 
@@ -75,6 +71,27 @@ proc getresult_prg_val_11 {prg_11 val} {
   #-----------------------------------------------------------------
 
 
+}
+#-------------------------------------------------------------------------------
+proc getresult_prog_val {prog val} {
+
+
+  v0_set_stack_null ;# и не более того !!!!
+  
+  # кладем одно значение в стек
+  # 
+  push $val 
+
+  # выполняем программку
+  # 
+  run_v1_prog $prog
+
+  # забираем одно значение из стека
+  # 
+  set result [pop]
+
+
+  return $result
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -678,13 +695,9 @@ set ::FULLPROG 0
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
 #-------------------------------------------------------------------------------
-proc FITPROC_xx {proga task args} {
+proc FITPROC_xx {prog task args} {
 
   set is_print [dict_parse $args "-is_print"   0]
-
-  #if {$::ITEMS_LIST} {
-  set src  [item_get_mainsrc $proga]
-  #}
 
   set x_list [get_x_list  0 2  10]
 
@@ -713,13 +726,16 @@ proc FITPROC_xx {proga task args} {
 
   set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
+
+
   foreach x $x_list {
 
     set o [expr $func]
 
     # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
     # 
-    set result [getresult_prg_val_11  $src $x]
+ 
+    set result [getresult_prog_val  $prog $x]
  
     #---------------------------------------------------------------
 
@@ -1069,16 +1085,21 @@ proc TEST_xx {} {
 #
 #
 
-# l~.tl TEST TEST_xx  -seed @ -lpop 200 -size 6 -nums 500 -vers ga_gp -runs 100 -func 'x ** 3 + x ** 2 + x'
+# l~.tl TEST TEST_xx  -seed @ -lpop 200 -size 6 -nums 500 -vers ga_gp -runs 100 \
+                      -func 'x ** 3 + x ** 2 + x'
 #
 # Вариант попроще:
 # 
-#l~.tl TEST TEST_xx  -seed @ -lpop 50 -size 10 -nums 100 -vers ga_gp -runs 10 -func 'x ** 3 + x ** 2 + x'
+#l~.tl TEST TEST_xx  -seed @ -lpop 50 -size 10 -nums 100 -vers ga_gp -runs 10 \
+                     -func 'x ** 3 + x ** 2 + x'
 #
 # TODO:
-#   этот примитивный генетичекий алгоритм очень плохо сходится. нужно делать рефакторинг, 
-#   выделение блоков и статистику по расположению этих блоков относительно друг друга 
-#  (.е. это уже начальное понятие типа данных), а также об их эффективном вкладе в результат..
+#   этот примитивный генетичекий алгоритм очень плохо сходится. нужно делать 
+#   рефакторинг, 
+#   выделение блоков и статистику по расположению этих блоков относительно друг 
+#   друга 
+#   (.е. это уже начальное понятие типа данных), а также об их эффективном 
+#   вкладе в результат..
 #  
 #  
 
@@ -1107,13 +1128,15 @@ proc TEST_xx {} {
 
 # какой-то странный все же алгоритм, долго не сходится
 #
-# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 -func 'x ** 3 + x ** 2 + x'
+# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 
+#                                     -func 'x ** 3 + x ** 2 + x'
 
 #-------------------------------------------------------------------------------
 
 #007)     best =    0.000 :   dup dup dup + nop + dup + + 
 
-#l~.tl TEST TEST_xx  -seed @ -lpop 200 -nums -1 -print 2 -vers 0 -func 'x ** 3 + x ** 2 + x'
+#l~.tl TEST TEST_xx  -seed @ -lpop 200 -nums -1 -print 2 -vers 0 
+#                    -func 'x ** 3 + x ** 2 + x'
 
 #-------------------------------------------------------------------------------
 
@@ -1220,26 +1243,38 @@ proc FITPROC_01 {p {prog @}} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
+proc argo_print {argo} {
+
+  puts ""
+  puts "argo = $argo"
+  puts ""
+
+  dict_print $argo 
+
+}
+#-------------------------------------------------------------------------------
+proc gp_list_to_librarys {gp_list} {
+
+  # если src == {}, то это tcl-функция ?
+
+  set bibl  [list "p3" {src {}}] 
+
+  librarys_push $bibl ;# запихнуть в глобальную библиотеку 
+
+}
+#-------------------------------------------------------------------------------
 proc NEXT_01 {} {
 
-
-  # берем данные из командной строки 
-  # 
-  # l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums 4
-
-
   global argc argv argv0
-  set argv [lrange $argv 2 end]
+  set argo [lrange $argv 2 end]
   
-  puts ""
-  puts "argv = $argv"
-  puts ""
+  argo_print $argo 
 
-  set seed        [dict_parse $argv "-seed" 2016]
-  set individuals [dict_parse $argv "-lpop" 10]
-  set len         [dict_parse $argv "-size" 10] 
-  set nums        [dict_parse $argv "-nums"  4]
-  set gp_list     [dict_parse $argv "-list" "p1"] ;#  "p1 nop"  "p1 m1" 
+  set seed        [dict_parse $argo "-seed" 2016]
+  set individuals [dict_parse $argo "-lpop" 10]
+  set len         [dict_parse $argo "-size" 10] 
+  set nums        [dict_parse $argo "-nums"  4]
+  set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
   
   set ::sum_target 20
 
@@ -1257,16 +1292,44 @@ proc NEXT_01 {} {
   set is_print 1
   #DebugOn
 
-
   set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
     
-
   set pb [mp_create]
 
   mp_init $pb 
 
-  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" -gp_list $gp_list]
-    
+  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" \
+                         -gp_list  $gp_list]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #gp_list_to_librarys  $gp_list ;# запихнуть в глобальную библиотеку 
+
+  # сделаем сразу вручную ::mainlib и начнем уже использовать !!
+  #
+
+#   set ::gp_dict  [dict_create \
+#                     "p3" {src { p1 p1 p1       }} \
+#                     "p5" {src { p1 p1 p1 p1 p1 }} \
+#                    ] 
+
+  #librarys_push $::gp_dict ;# запихнуть в глобальную библиотеку 
+  # но это надо бы сделать один раз где-то раньше
+
+
+  SET $::gp_dict "p3" {src { p1 p1 p1       }}
+  SET $::gp_dict "p5" {src { p1 p1 p1 p1 p1 }}
+
+  set ::gp_dict_AUTO 1
+
+  #dict_print $bibl_new
+
+  ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
+  ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
+  ##                                            -list,\{,p1,p3,p5,\}
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   run_gp_evolution_for_task    \
       $task                    \
       $seed $rand_prgpop_proc  \
@@ -1275,12 +1338,14 @@ proc NEXT_01 {} {
       -print        $is_print  \
       -mutprob          0.1    \
       -game_print_proc  0      \
-    {*}$argv
+    {*}$argo
   
+
+  #librarys_print
+
   return
 }
-#-------------------------------------------------------------------------------
-###########################################################################################
+################################################################################
 
 # Основные идеи:
 
@@ -1291,15 +1356,27 @@ proc NEXT_01 {} {
 #   их окружении; эта инфа используется как "описание типов" для адекватной
 #   подстройки программ в эволюции;
 
+# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
+# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
+# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
 
-# l~.tl TEST NEXT_01 @  10 5 2
+# -) универсальная передача параметров через args (dict_print);
 
-#   +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
-#   +) слияние нескольких программ с локальными библиотеками : commit
-#   -) слияние и рtфакторинг с использованием общей библиотеки.
+# -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
+#                "окружению" потом)
+# -) лучшие проги заносим в ::mainlib (аналог как у новосибирцев)
+# -) 
+# -) запуск joy_run ? с использованием сторонних библиотек (::mainlib);
 
-#   +) перевод всех алгоритмов : prg --> prog ;
-#   -) запуск joy_run с использованием сторонних библиотек;
-#   -) поиск лучшего решения путем рефакторинга;
+# run_v1_src_or_prog ->  run_v1_src   $proga 
+#                    ->  run_v1_prog  $prog  - будет через библиотеки !!
 
-###########################################################################################
+
+# +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
+# +) слияние нескольких программ с локальными библиотеками : commit
+# -) слияние и рtфакторинг с использованием общей библиотеки.
+
+# +) перевод всех алгоритмов : prg --> prog ;
+# -) поиск лучшего решения путем рефакторинга;
+
+################################################################################

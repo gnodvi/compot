@@ -19,13 +19,13 @@ run_tests  j E/OUT  .
 
 echo ""
 
-run_tests  k E/OUT  .
+run_tests  f E/OUT  .
 
 echo ""
 
-run_tests  l E/OUT  .
+# run_tests  l E/OUT  .
 
-echo ""
+# echo ""
 
 
 #-------------------------------------------------------------------------------

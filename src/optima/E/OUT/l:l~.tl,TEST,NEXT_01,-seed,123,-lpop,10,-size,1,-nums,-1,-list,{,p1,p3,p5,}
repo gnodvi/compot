@@ -1,0 +1,30 @@
+
+argo = -seed 123 -lpop 10 -size 1 -nums -1 -list { p1 p3 p5 }
+
+
+dict_print DICT = 
+  -seed = 123
+  -lpop = 10
+  -size = 1
+  -nums = -1
+  -list =  p1 p3 p5 
+
+individuals  = 10
+len          = 1
+nums         = -1
+gp_list      =  p1 p3 p5 
+::sum_target = 20
+
+run_gp_evolution_for_task : seed = 123 !!!!!!!!!!!
+
+make_prgpop: INIT POPULATION: 
+
+prgpop = p1 p5 p5 p5 p5 p3 p5 p5 p5 p1
+
+000)     best =   15.000 :   p5 
+001)     best =   14.000 :   p1 p5 
+002)     best =   14.000 :   p1 p5 
+003)     best =   14.000 :   p1 p5 
+004)     best =    5.000 :   p5 p5 p5 
+005)     best =    0.000 :   p5 p5 p5 p5 
+

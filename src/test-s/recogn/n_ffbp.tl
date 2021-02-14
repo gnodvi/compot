@@ -43,6 +43,10 @@ set bg(bias)   \#ffff88
 
 proc make_ui {} {
 
+  puts ""
+  puts "make_ui ................ "
+  puts ""
+
   global c
 
   if [winfo exists .sw] {
@@ -52,29 +56,29 @@ proc make_ui {} {
   }
 
   set sw [ScrolledWindow .sw -auto both]
-  set c [canvas [$sw getframe].c -bg white -scrollregion {0 0 800 600}]
+  set c  [canvas [$sw getframe].c -bg white -scrollregion {0 0 800 600}]
 
   $sw setwidget $c
   pack .sw -expand 1 -fill both
 
-  bind $c <Shift-ButtonPress-1> [list add_thing %x %y]
-  bind $c <Shift-B1-Motion> [list move_thing %x %y]
-  bind $c <Shift-ButtonRelease-1> [list release_thing %x %y]
+  bind $c <Shift-ButtonPress-1>    [list add_thing %x %y]
+  bind $c <Shift-B1-Motion>        [list move_thing %x %y]
+  bind $c <Shift-ButtonRelease-1>  [list release_thing %x %y]
 
-  $c bind node <ButtonPress-1> [list start_move_node %x %y]
-  $c bind node <B1-Motion> [list move_thing %x %y]
-  $c bind node <ButtonRelease-1> [list release_thing %x %y]
-  $c bind node <Double-Button-1> [list modify_node %x %y]
-  $c bind node <Enter> [list show_node_status]
-  $c bind node <Leave> [list clear_status]
+  $c bind node   <ButtonPress-1>   [list start_move_node %x %y]
+  $c bind node   <B1-Motion>       [list move_thing %x %y]
+  $c bind node   <ButtonRelease-1> [list release_thing %x %y]
+  $c bind node   <Double-Button-1> [list modify_node %x %y]
+  $c bind node   <Enter>           [list show_node_status]
+  $c bind node   <Leave>           [list clear_status]
   $c bind weight <Double-Button-1> [list modify_weight %x %y]
-  $c bind weight <Enter> [list show_weight_status]
-  $c bind weight <Leave> [list clear_status]
-  $c bind text <Double-Button-1> [list modify_weight_text %x %y]
-  $c bind text <Enter> [list show_weight_status_text]
-  $c bind text <Leave> [list clear_status]
+  $c bind weight <Enter>           [list show_weight_status]
+  $c bind weight <Leave>           [list clear_status]
+  $c bind text   <Double-Button-1> [list modify_weight_text %x %y]
+  $c bind text   <Enter>           [list show_weight_status_text]
+  $c bind text   <Leave>           [list clear_status]
 
-  pack [Separator .sep] -expand 0 -fill x
+  pack  [Separator .sep] -expand 0 -fill x
   frame .bot
   frame .bot.cur
 
@@ -97,30 +101,30 @@ proc make_ui {} {
   grid .bot.cur.status -  - -sticky nsew -padx 4 -pady 8
   grid $rb_s $le $cb_sw -sticky w -padx 4
   grid $rb_b $lnt $lsw -sticky w -padx 4
-  grid rowconfigure .bot.cur 0 -weight 1
+  grid rowconfigure    .bot.cur 0 -weight 1
   grid columnconfigure .bot.cur 0 -weight 1
   grid columnconfigure .bot.cur 1 -weight 1
   grid columnconfigure .bot.cur 2 -weight 1
 
   frame .bot.cmd
 
-  button .bot.cmd.sim -text "Simulate Once" -command simulate
-  button .bot.cmd.sl -text "Sim & Learn" -command sim_and_learn
-  button .bot.cmd.trials -text "Run Trials" -command run_trials
-  button .bot.cmd.print -text "Print Weights" -command print_weights
-  button .bot.cmd.reset -text "Reset Network" -command reset_network
-  button .bot.cmd.new -text "New Network" -command new_network
-  button .bot.cmd.save -text "Save" -command save
-  button .bot.cmd.load -text "Load" -command load_cmd
-  button .bot.cmd.quit -text "Quit" -command exit -bg red
+  button .bot.cmd.sim    -text "Simulate Once" -command simulate
+  button .bot.cmd.sl     -text "Sim & Learn"   -command sim_and_learn
+  button .bot.cmd.trials -text "Run Trials"    -command run_trials
+  button .bot.cmd.print  -text "Print Weights" -command print_weights
+  button .bot.cmd.reset  -text "Reset Network" -command reset_network
+  button .bot.cmd.new    -text "New Network"   -command new_network
+  button .bot.cmd.save   -text "Save"          -command save
+  button .bot.cmd.load   -text "Load"          -command load_cmd
+  button .bot.cmd.quit   -text "Quit"          -command exit -bg red
 
   grid .bot.cmd.sim    .bot.cmd.print .bot.cmd.save -sticky ew
   grid .bot.cmd.sl     .bot.cmd.reset .bot.cmd.load -sticky ew
   grid .bot.cmd.trials .bot.cmd.new   .bot.cmd.quit -sticky ew
-  grid .bot.cur .bot.cmd -sticky nsew
+  grid .bot.cur        .bot.cmd -sticky nsew
   grid columnconfigure .bot 0 -weight 1
   grid columnconfigure .bot 1 -weight 0
-  grid rowconfigure .bot 0 -weight 1
+  grid rowconfigure    .bot 0 -weight 1
 
   pack .bot -expand 1 -fill both -side bottom
 
@@ -774,6 +778,7 @@ proc run_trials {{is_gui 1}} {
     }
   }
 
+
   for {set iteration 1} {$iteration <= $::num_iterations} {incr iteration} {
 
     set total_error 0.0
@@ -783,6 +788,7 @@ proc run_trials {{is_gui 1}} {
     }
 
     array unset ::deltas
+
 
     foreach datum [get_test_set] {
 
@@ -803,12 +809,14 @@ proc run_trials {{is_gui 1}} {
       }
     }
 
+
     foreach weight_id $::weights(ids) {
       set ::weights($weight_id:cur) \
         [expr {$::weights($weight_id:cur) + $total_deltas($weight_id)}]
 
       if $is_gui {update_weight_text $weight_id}
     }
+
 
     set total_error [expr {$total_error / 2.0}]
 
@@ -818,6 +826,7 @@ proc run_trials {{is_gui 1}} {
 
     update
   }
+
 
   return
 }
@@ -1134,7 +1143,6 @@ proc gui_init {} {
   
   package require BWidget
   
-
 }
 #-------------------------------------------------------------------------------
 proc main_gui {} {
@@ -1150,7 +1158,7 @@ proc main_gui {} {
 
   set ::active_tag {}
   
-  set ::filename "h_ffbp.nt"  ;# "n-ffbp.net"
+  set ::filename "l_ffbp.nt"  ;# "n-ffbp.net"
 
   return
 }
@@ -1179,9 +1187,10 @@ proc main_cli {} {
 
   set ::active_tag {}
   
-  load_from_file "h_ffbp.nt" 
+  load_from_file "l_ffbp.nt" 
 
   run_trials 0
+
 
   return
 }
@@ -1214,7 +1223,7 @@ proc main_gui_unvisible {} {
   }
   #---------------------------
 
-  load_from_file "h_ffbp.nt" 
+  load_from_file "l_ffbp.nt" 
 
   #sleep 500
   #wait_press_enter
@@ -1233,14 +1242,16 @@ proc main_gui_unvisible {} {
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
+set ::filename "l_ffbp.nt"  ;# "n-ffbp.net"
+
 #main_cli ;# TODO
 
-main_gui_unvisible
+#main_gui_unvisible
 
-#main_gui
+main_gui
 
 ################################################################################
 
-# tclsh h_ffbp.tl
+# tclsh l_ffbp.tl
 
 ################################################################################

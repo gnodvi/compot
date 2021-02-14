@@ -1698,31 +1698,12 @@ proc maintest_531 {} {
   set pmin 1  ;# 2 выбираем длину блоков повторов из этого интервала: от
   set pmax 4  ;# 3 и до 
   
-  #set textlist [make_textlist  $num_text $::target_text  $::gp_list  $size $pmin $pmax]
-  
-  #set task_list {}
-  #for {set t 0} {$t < $num_text} {incr t} {
-    
-  #  set task [dict_create]
-  #  set $task [set $task_main] ;# склонировали
-  #  SET $task "target_text" [lindex $textlist $t]
-      
-  #  lappend task_list $task
-  #}    
-
   # -----------------------------------------------------------------
 
   set num_text        [dict_parse $argv "-text"  1] ;# 1 ;# 2
   set num_runs        [dict_parse $argv "-runs"  1] ;# 2 ;# 5 ;# количество экспериментов
   set max_generations [dict_parse $argv "-nums" -1] ;# 30 ;# 15 - останов 
 
-
-#   set task [task_create  \
-#               -fit_func "FS_fitness" -fit_tobest "MAX" -fit_target $::fit_target \
-#               -fit_error 0.01  -gp_list $::gp_list \
-#               -target_text $::target_text          \
-#               -size $size -pmin $pmin -pmax $pmax
-#              ]  
 
   set task  [make_task_for_STRU {*}$argv]
 
