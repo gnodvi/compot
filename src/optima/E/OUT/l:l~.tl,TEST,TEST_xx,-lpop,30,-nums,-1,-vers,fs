@@ -1,14 +1,11 @@
 
 func = $x**2+$x
 m = -print 1 -lpop 30 -nums -1 -vers fs
-000)     best =   -4.000 :   nop * nop nop nop nop nop nop nop + nop + 
-001)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-002)     best =   -2.000 :   nop * nop nop nop nop nop * nop + nop nop 
-003)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-004)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-005)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-006)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-007)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-008)     best =   -1.000 :   nop dup nop nop nop nop nop * nop + nop nop 
-009)     best =    0.000 :   nop dup dup nop nop nop nop * nop + nop nop 
+000)     best =   -4.000 :   + dup * * + nop nop * nop + nop nop 
+001)     best =   -2.000 :   dup dup nop nop nop nop nop * nop + nop nop 
+002)     best =   -2.000 :   nop dup * nop nop nop nop * nop nop nop nop 
+003)     best =   -3.000 :   nop dup * nop nop nop nop * + * nop nop 
+004)     best =   -2.000 :   nop dup + nop nop nop nop * * + nop nop 
+005)     best =   -1.000 :   nop dup dup nop + nop nop * nop + nop nop 
+006)     best =    0.000 :   nop dup dup nop nop nop nop * nop + nop nop 
 

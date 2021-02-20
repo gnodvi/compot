@@ -307,7 +307,7 @@ proc TEST_randprog {} {
   set gp_list     "+ - * dup i" 
 
   #------------------------------------------
-  set ::randinstr randinstr_SIMP
+  set ::randinstr randinstr_MAIN
 
   set ::quotes_proc "make_quotes_TCL"
   #set ::quotes_proc "quotes_proc_NULL"
@@ -319,8 +319,11 @@ proc TEST_randprog {} {
   # stack= | 3 {i dup dup i i dup - +} {2op *} |  instr= tcl  
   # ERROR = can't use non-numeric string as operand of "*"
 
+  set task [task_create  \
+              -gp_list    $gp_list]
+  
 
-  set prg [make_randprog $n $gp_list $::randinstr $::quotes_proc]
+  set prg [make_randprog  $task $n $::randinstr $::quotes_proc]
 
   #set prg "dup *"
 
@@ -633,7 +636,7 @@ proc mp_init {pb args} {
   #puts "randinstr = $randinstr"
   # quotes_proc 
 
-  set ::randinstr   "randinstr_SIMP"
+  set ::randinstr   "randinstr_MAIN"
   set ::quotes_proc "quotes_proc_NULL"
 
   # ?? проверяем существование локальных переменных ??
@@ -908,9 +911,12 @@ proc TEST_xx {} {
 
   set gp_list     [dict_parse $argv "-list"   "dup * nop +"]
   set func        [dict_parse $argv "-func"  {x ** 2 + x}]
+  set auto        [dict_parse $argv "-auto"   0]
+
+  set ::gp_dict_AUTO $auto
 
   #------------------------------------------------------
-  #set ::randinstr   randinstr_SIMP 
+  #set ::randinstr   randinstr_MAIN 
 
   #set ::quotes_proc "make_quotes_BE"
   #set ::quotes_proc "make_quotes_TCL"
@@ -924,11 +930,11 @@ proc TEST_xx {} {
 
   if {0} {
     mp_init $pb \
-      randinstr    "randinstr_SIMP" \
+      randinstr    "randinstr_MAIN" \
       quotes_proc  "make_quotes_TCL"
   } else {
     mp_init $pb \
-      randinstr    "randinstr_SIMP" \
+      randinstr    "randinstr_MAIN" \
       quotes_proc  "quotes_proc_NULL"
   }
 
@@ -1173,6 +1179,12 @@ set ::sum_target 0  ;# к чему стремимся, что надо получить
 
 # }
 #-------------------------------------------------------------------------------
+v0_make_tclproc  null {} {
+
+  set ::sum 0
+
+}
+#-------------------------------------------------------------------------------
 v0_make_tclproc  p1 {} {
 
   #PLUS_1 ;# это уже вызываем TCL-функцию из прикладной библиотеки
@@ -1263,6 +1275,19 @@ proc gp_list_to_librarys {gp_list} {
 
 }
 #-------------------------------------------------------------------------------
+proc gp_dict_print {} {
+
+
+  set dict [set $::gp_dict]
+
+  dict for {key val} $dict {
+
+    set src [dict get  $val "src"]
+    puts "$key : $src"
+  }
+
+}
+#-------------------------------------------------------------------------------
 proc NEXT_01 {} {
 
   global argc argv argv0
@@ -1275,6 +1300,7 @@ proc NEXT_01 {} {
   set len         [dict_parse $argo "-size" 10] 
   set nums        [dict_parse $argo "-nums"  4]
   set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
+  set auto        [dict_parse $argo "-auto"  0]
   
   set ::sum_target 20
 
@@ -1303,26 +1329,14 @@ proc NEXT_01 {} {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  #gp_list_to_librarys  $gp_list ;# запихнуть в глобальную библиотеку 
+  #SET $::gp_dict "p222" {src { p1 p1 p1 }}
+  #SET $::gp_dict "p5" {src { p3 p1 p1 }}
+  #gp_dict_add_by_src { p1 p1 p1 }
+  #gp_dict_add_by_src { p1 p1 p1 p1 p1 }
+  #gp_dict_add_by_src { p000 p001 p1 p1 p1 }
+  #SET $::gp_dict "p5" {src { p1 p1 p1 }}
 
-  # сделаем сразу вручную ::mainlib и начнем уже использовать !!
-  #
-
-#   set ::gp_dict  [dict_create \
-#                     "p3" {src { p1 p1 p1       }} \
-#                     "p5" {src { p1 p1 p1 p1 p1 }} \
-#                    ] 
-
-  #librarys_push $::gp_dict ;# запихнуть в глобальную библиотеку 
-  # но это надо бы сделать один раз где-то раньше
-
-
-  SET $::gp_dict "p3" {src { p1 p1 p1       }}
-  SET $::gp_dict "p5" {src { p1 p1 p1 p1 p1 }}
-
-  set ::gp_dict_AUTO 1
-
-  #dict_print $bibl_new
+  set ::gp_dict_AUTO $auto
 
   ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
   ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
@@ -1341,7 +1355,8 @@ proc NEXT_01 {} {
     {*}$argo
   
 
-  #librarys_print
+  puts ""
+  gp_dict_print 
 
   return
 }

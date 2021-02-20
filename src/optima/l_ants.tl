@@ -2107,7 +2107,7 @@ proc ANTS_gp {} {
   set mp [mp_create]
 
   mp_init $mp \
-    randinstr    "randinstr_SIMP" \
+    randinstr    "randinstr_MAIN" \
     quotes_proc  $quotes_proc
 
   set ::sort_driver "MIN_to_LEFT"    
@@ -2162,7 +2162,7 @@ proc ANTS_gp_new {} {
   set mp [mp_create]
 
   mp_init $mp \
-    randinstr    "randinstr_SIMP" \
+    randinstr    "randinstr_MAIN" \
     quotes_proc  "quotes_proc_NULL"
 
 

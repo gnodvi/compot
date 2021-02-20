@@ -2389,17 +2389,19 @@ proc dict_parse_all {d args} {
 
 }
 #-------------------------------------------------------------------------------
-#proc task_create {fit_func  args}
 proc task_create {args} \
 {
 
   set t [dict_create]
 
-  #SET $t "fit_func" $fit_func
 
-  SET $t "fit_tobest" "MIN" ;# т.е. чем меьше, тем лучше 
-  SET $t "fit_target" 0
-  SET $t "fit_error"  0.01
+  SET $t fit_tobest  "MIN" ;# т.е. чем меьше, тем лучше 
+  SET $t fit_target  0
+  SET $t fit_error   0.01
+
+  SET $t randinstr   "randinstr_MAIN" 
+  SET $t quotes_proc "quotes_proc_NULL"
+
 
   dict_parse_all $t {*}$args
 
@@ -2572,9 +2574,9 @@ proc make_itemlist_from_prgpop {prgpop} {
 # n - требуемое кол-во особей в популяции
 #
 #-------------------------------------------------------------------------------
-proc make_rand_prgpop_unikum {n 
-                               minlen maxlen 
-                               gp_list randinstr quotes_proc} {
+proc make_rand_prgpop_unikum {task n 
+                              minlen maxlen 
+                              gp_list randinstr quotes_proc} {
 
   set prgpop {}
 
@@ -2583,9 +2585,10 @@ proc make_rand_prgpop_unikum {n
   
   for {set i 0} {$i < $n} {} {
     
-    set p [get_randprog_unikum  $prgpop $minlen $maxlen \
-                                $attempts $max_attempts \
-                                $gp_list  $randinstr $quotes_proc]
+    set p [get_randprog_unikum  $task \
+             $prgpop $minlen $maxlen  \
+             $attempts $max_attempts  \
+             $gp_list  $randinstr $quotes_proc]
     
     if {$p == {}} { 
 
@@ -2612,7 +2615,7 @@ proc make_rand_prgpop_unikum {n
 # длинами (этих программ) из заданного диапазона
 
 #-------------------------------------------------------------------------------
-proc make_rand_prgpop {bnums minlen maxlen  gp_list randinstr quotes_proc} {
+proc make_rand_prgpop {task bnums minlen maxlen  gp_list randinstr quotes_proc} {
 
   set prgpop {}
 
@@ -2620,7 +2623,7 @@ proc make_rand_prgpop {bnums minlen maxlen  gp_list randinstr quotes_proc} {
 
     set n [myrand_new $minlen $maxlen]
 
-    lappend prgpop [make_randprog $n  $gp_list $randinstr $quotes_proc]
+    lappend prgpop [make_randprog  $task $n $randinstr $quotes_proc]
   }
 
   return $prgpop
@@ -2673,8 +2676,9 @@ proc make_prgpop {task randpop_proc
   set maxlen $len
   #----------------------------------------
 
-  set prgpop [$randpop_proc  $population_size  $minlen $maxlen \
-                             $gp_list   $::randinstr $::quotes_proc]
+  set prgpop [$randpop_proc  $task \
+                $population_size  $minlen $maxlen \
+                $gp_list   $::randinstr $::quotes_proc ]
   
   if {$is_print} {
     puts ""
@@ -2696,8 +2700,8 @@ proc make_itemlist {task randpop_proc
 
   
   set prgpop [make_prgpop  $task $randpop_proc \
-                            $population_size $len \
-                             $is_print]
+                $population_size $len \
+                $is_print]
 
   #   if {$is_print} {
   #     puts ""
@@ -3519,7 +3523,7 @@ proc canonical_form {prog} {
 #-------------------------------------------------------------------------------
 
 
-set ::randinstr   "randinstr_SIMP"
+set ::randinstr   "randinstr_MAIN"
 set ::quotes_proc "quotes_proc_NULL"
 
 #-------------------------------------------------------------------------------
@@ -3639,17 +3643,75 @@ proc get_arglist {instr} {
 
 # }
 #-------------------------------------------------------------------------------
+# возвращаем случайный элемент из списка  (a_comm.tl)
+
+#-------------------------------------------------------------------------------
+# proc lrand {list} {
+    
+#   lindex $list [expr {int(rand()*[llength $list])}]
+    
+# }
+#-------------------------------------------------------------------------------
+proc only_names_from_gpdict {} {
+
+
+  set d [set $::gp_dict]
+
+  set ret [dict keys $d]
+
+  return $ret
+}
+#-------------------------------------------------------------------------------
+proc make_GP_LIST {gp_list} {
+
+
+  if {$::gp_dict_AUTO} {
+
+    set GP_LIST {} ;# сфомируем совокупный на этот момент список
+    
+    lappend GP_LIST  {*}$gp_list ;# это заданные в задаче
+    
+    
+    set names [only_names_from_gpdict] ;# формируется динамически
+    
+    lappend GP_LIST {*}$names ;# добавили в общий список откуда выбираем
+    
+    #puts stderr "::gp_dict = [set $::gp_dict]"
+    #puts stderr "names = $names, GP_LIST = $GP_LIST"
+
+    return $GP_LIST
+
+  } else {
+
+    return $gp_list
+  }
+
+}
+#-------------------------------------------------------------------------------
 # возвращаем случайную инструкцию
 # пока упрощенный вариант -  не получается анализ аргументов
 #-------------------------------------------------------------------------------
-proc randinstr_SIMP {gp_list} {
+proc randinstr_MAIN {gp_list} {
 
+  #   #set  instr  [lrand $gp_list] ;# ???
   # set  instr   [lrand_new $gp_list] ;# not true  on litle list !!??
 
   # здест будем еще смотреть в глобальной (пока не в локальной) формруемой библиотеке
   # ::gp_list_library, а ее формировать автоматически в ...
 
-  set  instr   [lrand $gp_list]
+  #set  instr  [lrand     $gp_list]
+
+  #------------------------------------------------------------
+
+  #if {0} {
+
+  #  set  instr  [lrand_new $gp_list] 
+  #} else {
+
+  set GP_LIST [make_GP_LIST  $gp_list]
+  #set   instr [lrand_new     $GP_LIST] ;# нет уверенности в этой функции!
+  set   instr [lrand  $GP_LIST] ;#
+  #}
 
   return $instr
   
@@ -3730,39 +3792,22 @@ proc quotes_proc_NULL {oldprg} {
 #-------------------------------------------------------------------------------
 # 
 #-------------------------------------------------------------------------------
-proc only_names_from_gpdict {} {
-
-
-  set d [set $::gp_dict]
-
-  set ret [dict keys $d]
-
-  return $ret
-}
-#-------------------------------------------------------------------------------
-
-
 # создать случайную программу (список?) длиной не больше 'n' или равно ??
 # 
 #-------------------------------------------------------------------------------
-proc make_randprog {n gp_list {randinstr "randinstr_SIMP"} 
-                      {quotes_proc "quotes_proc_NULL"}} {
+proc make_randprog {task  n 
+                    {randinstr   "randinstr_MAIN"  } 
+                    {quotes_proc "quotes_proc_NULL"}} {
 
 
-  set GP_LIST {} ;# сфомируем совокупный на этот момент список
+  set gp_list [GET $task gp_list]
 
-  lappend GP_LIST  {*}$gp_list ;# это заданные в задаче
-
-
-  set names [only_names_from_gpdict] ;# формируется динамически
-
-  lappend GP_LIST {*}$names ;# добавили в общий список откуда выбираем
-
-  #puts "names = $names, GP_LIST = $GP_LIST"
+  #set randinstr   [GET $task randinstr]
+  #set quotes_proc [GET $task quotes_proc]
 
   while {[incr n -1] >= 0} {
 
-    set instr [$randinstr $GP_LIST]
+    set instr [randinstr_MAIN $gp_list]
 
     lappend prg $instr
   }
@@ -3780,13 +3825,13 @@ proc make_randprog {n gp_list {randinstr "randinstr_SIMP"}
   return $prg
 }
 #-------------------------------------------------------------------------------
-proc get_randprog_unikum {result minlen maxlen attempts max_attempts 
+proc get_randprog_unikum {task result minlen maxlen attempts max_attempts 
                           gp_list randinstr quotes_proc} {
 
  #puts "... 1"
 
- set prg [make_randprog [myrand_new  $minlen $maxlen] \
-            $gp_list $randinstr \
+ set prg [make_randprog  $task [myrand_new  $minlen $maxlen] \
+            $randinstr \
             $quotes_proc]
 
  #puts "prg = $prg "
@@ -4749,7 +4794,7 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
 
     }
 
-    set point_gen_new [randinstr_NEXT $gp_list]
+    set point_gen_new [randinstr_MAIN $gp_list]
 
     # -------------------------------------------
   }
@@ -5770,25 +5815,6 @@ proc ga_evolution {task pop  max_generations args} {
 }
 # //------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-# возвращаем случайный элемент из списка  (a_comm.tl)
-
-#-------------------------------------------------------------------------------
-# proc lrand {list} {
-    
-#   lindex $list [expr {int(rand()*[llength $list])}]
-    
-# }
-#-------------------------------------------------------------------------------
-proc randinstr_NEXT {gp_list} {
-
-  #set  instr  [lrand $gp_list] ;# ???
-
-  set  instr  [lrand_new $gp_list] ;# ???
-    
-  return $instr
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 # Ядро движка GP.
@@ -5918,7 +5944,7 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
 
     # выберем из списка (или списков !!!)
     # 
-    set item [randinstr_NEXT $gp_list]
+    set item [randinstr_MAIN $gp_list]
 
   
     switch -- $mode {
@@ -6230,6 +6256,98 @@ proc make_offsprings_from_leaders {leaders l} \
   return $offsprings
 }
 #-------------------------------------------------------------------------------
+
+set ::gp_dict_NUMER 0
+
+#-------------------------------------------------------------------------------
+proc is_this_src_exist {src_new} {
+
+  # проверяем тольков ::gp_dict, поскольку в gp_list "элементраные" !?
+
+  dict for {name namedict} [set $::gp_dict] {
+
+    set src_old [dict get $namedict "src"]
+    #puts "is_this_src_exist: name = $name, namedict = $namedict, src = $src"
+
+    if {$src_new == $src_old} {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+#-------------------------------------------------------------------------------
+proc gp_dict_add_by_src {src} {
+
+
+  #puts "gp_dict_add_item: src = $src"
+
+  #------------------------------------------------
+  # проверяем, есть ли уже програ с таким текстом
+  # 
+  set is_exist [is_this_src_exist $src]
+  
+  if {$is_exist} {
+    # continue
+    #  return
+    #puts "gp_dict_add_by_src: src exist !!!!!!!! "
+    return 0
+  }
+  
+  #------------------------------------------------
+  # нет смысла брать исходник в одну функцию!
+
+  if {[llength $src] == 1} {
+
+    return 0
+  }
+
+  #------------------------------------------------
+  #return
+
+  set name [format "p%03d" $::gp_dict_NUMER]
+  
+  SET $::gp_dict $name [list src $src]
+  
+  #puts stderr "gp_dict_add_bu_src: src = $src, name = $name, ::gp_dict = [set $::gp_dict]"   
+
+  incr ::gp_dict_NUMER
+
+  return 1
+}
+#-------------------------------------------------------------------------------
+proc gp_dict_add_item {item} {
+
+
+  set src [item_get_main_src $item]
+  
+  return [gp_dict_add_by_src $src]
+
+}
+#-------------------------------------------------------------------------------
+proc works_on_gp_dict {sorted_items} {
+
+
+  foreach item $sorted_items {
+
+    set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
+    
+    set src [item_get_main_src $item]
+    
+    set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
+    
+    #if {$add_ok} {
+    break
+    #}
+
+    # пока берем только самый первый (если есть подходящий)
+    # не сильно улучшает, если искать среди всего списка?
+    # 
+  }
+
+  return
+}
+#-------------------------------------------------------------------------------
 proc gp_evolution_4 {pop task args} {
 
 
@@ -6237,17 +6355,6 @@ proc gp_evolution_4 {pop task args} {
 
   set sorted_items [GET $pop "itemlist"]
 
-  #---------------------------------------
-  if {$::gp_dict_AUTO} {
-
-    set best_item [lindex $sorted_items 0]
-
-    puts stderr "gp_evolution_4: best_item = [set $best_item]"
-
-    #SET $::gp_dict "p3" {src { p1 p1 p1       }}
-    #SET $::gp_dict "p5" {src { p1 p1 p1 p1 p1 }}
-
-  }
   #---------------------------------------
 
   # предполагается что итемы тут уже отсортированы !!
@@ -6266,6 +6373,11 @@ proc gp_evolution_4 {pop task args} {
   
   set leaders_items [lrange $sorted_items 0 [expr {$l-1}]]
   
+  #---------------------------------------
+  if {$::gp_dict_AUTO} {
+
+    works_on_gp_dict $leaders_items
+  }
   #---------------------------------------
   # 2)
   # генерируем другую 1/3  популяции отпрысками от случайных лидеров
@@ -6583,7 +6695,7 @@ proc _gp_test {} {
 
   set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"    
 
-  #set ::randinstr  "randinstr_NEXT"
+  #set ::randinstr  "randinstr_MAIN"
   #set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
 
   set  fitnessfunc  "FITPROC_list_FS"
@@ -6632,7 +6744,7 @@ proc maintest_seed_proc {pop task adam} {
 
   for {set point 0} {$point < $len} {incr point} {
     
-    set char_sym [randinstr_NEXT  $gp_list]
+    set char_sym [randinstr_MAIN  $gp_list]
     
     #if {$::CHROMOLIST} {
 

@@ -14,11 +14,12 @@ run_gp_evolution_for_task : seed = 2016 !!!!!!!!!!!
 
 make_prgpop: INIT POPULATION: 
 
-prgpop = {p1 p1 p3 p1 p3 p5} {p3 p3 p3 p1 p1 p1 p5 p5} {p5 p1 p3 p5} {p5 p3 p3 p3} {p5 p5 p1 p3} {p1 p3 p3 p1 p3 p1 p5 p5} {p5 p3 p5 p5 p3 p1} {p5 p5 p5 p3} {p3 p3 p3 p5 p5 p1 p1 p3} {p1 p1 p5 p5 p5 p5 p1 p5 p1 p5}
+prgpop = {p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1} {p1 p1 p1 p1} {p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1 p1 p1}
 
-000)     best =    2.000 :   p3 p3 p3 p1 p1 p1 p5 p5 
-001)     best =    0.000 :   p1 p3 p3 p1 p1 p1 p5 p5 
-002)     best =    0.000 :   p1 p3 p3 p1 p1 p1 p5 p5 
-003)     best =    0.000 :   p1 p3 p3 p1 p1 p1 p5 p5 
-004)     best =    0.000 :   p1 p3 p3 p1 p1 p1 p5 p5 
+000)     best =   10.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+001)     best =    8.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+002)     best =    8.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+003)     best =    3.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+004)     best =    2.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+
 

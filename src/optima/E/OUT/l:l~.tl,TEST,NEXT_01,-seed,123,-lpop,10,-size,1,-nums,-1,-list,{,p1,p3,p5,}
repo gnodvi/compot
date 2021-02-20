@@ -19,12 +19,31 @@ run_gp_evolution_for_task : seed = 123 !!!!!!!!!!!
 
 make_prgpop: INIT POPULATION: 
 
-prgpop = p1 p5 p5 p5 p5 p3 p5 p5 p5 p1
+prgpop = p1 p5 p3 p3 p5 p5 p3 p3 p5 p1
 
-000)     best =   15.000 :   p5 
-001)     best =   14.000 :   p1 p5 
-002)     best =   14.000 :   p1 p5 
-003)     best =   14.000 :   p1 p5 
-004)     best =    5.000 :   p5 p5 p5 
-005)     best =    0.000 :   p5 p5 p5 p5 
+000)     best =   19.000 :   p1 
+001)     best =   19.000 :   p1 
+002)     best =   19.000 :   p1 
+003)     best =   19.000 :   p1 
+004)     best =   19.000 :   p1 
+005)     best =   19.000 :   p1 
+006)     best =   19.000 :   p1 
+007)     best =   19.000 :   p1 
+008)     best =   19.000 :   p1 
+009)     best =   19.000 :   p1 
+010)     best =   18.000 :   p1 p1 
+011)     best =   18.000 :   p1 p1 
+012)     best =   18.000 :   p1 p1 
+013)     best =   18.000 :   p1 p1 
+014)     best =   17.000 :   p1 p1 p1 
+015)     best =   17.000 :   p1 p1 p1 
+016)     best =   16.000 :   p1 p1 p1 p1 
+017)     best =   16.000 :   p1 p1 p1 p1 
+018)     best =   16.000 :   p1 p1 p1 p1 
+019)     best =   14.000 :   p1 p1 p1 p1 p1 p1 
+020)     best =   14.000 :   p1 p1 p1 p1 p1 p1 
+021)     best =    9.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+022)     best =    6.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+023)     best =    0.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+
 
