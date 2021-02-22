@@ -9,32 +9,32 @@ prgpop = {+ dup} {* *} {+ nop} {nop *} {nop +} {nop nop nop nop * dup} {* + nop 
 000)     best =   25.000 :   + dup 
 001)     best =   25.000 :   + dup 
 002)     best =   25.000 :   + dup 
-003)     best =    6.115 :   nop 
-004)     best =    6.115 :   nop 
-005)     best =    6.115 :   nop 
-006)     best =    6.115 :   nop 
-007)     best =    6.115 :   nop 
-008)     best =    6.115 :   nop 
-009)     best =    6.115 :   nop 
-010)     best =    2.650 :   dup + 
+003)     best =   25.000 :   + dup 
+004)     best =    6.115 :   dup 
+005)     best =    6.115 :   dup 
+006)     best =    6.115 :   dup 
+007)     best =    6.115 :   dup 
+008)     best =    6.115 :   dup 
+009)     best =    6.115 :   dup 
+010)     best =    6.115 :   dup 
 
 ====================================================================
 
 make_prgpop: INIT POPULATION: 
 
-prgpop = + dup {nop * dup} {dup * nop} nop + {* + *} {+ nop * + dup} + +
+prgpop = {+ nop + dup} {dup nop +} {dup + * nop} dup {nop + * dup * *} {dup + dup nop *} {nop nop dup nop dup +} dup {+ +} {+ dup dup}
 
-000)     best =    3.752 :   dup * nop 
-001)     best =    3.752 :   dup * nop 
-002)     best =    3.752 :   dup * nop 
-003)     best =    2.828 :   dup dup * nop * 
-004)     best =    2.828 :   dup dup * nop * 
-005)     best =    2.828 :   dup dup * nop * 
-006)     best =    2.828 :   dup dup * nop * 
-007)     best =    2.828 :   dup dup * nop * 
-008)     best =    2.828 :   dup dup * nop * 
-009)     best =    2.650 :   dup dup nop + * 
-010)     best =    2.650 :   dup dup nop + * 
+000)     best =    2.650 :   dup nop + 
+001)     best =    2.650 :   dup nop + 
+002)     best =    2.650 :   dup nop + 
+003)     best =    2.650 :   dup nop + 
+004)     best =    2.650 :   dup nop + 
+005)     best =    2.191 :   nop dup nop dup + + 
+006)     best =    2.191 :   nop dup nop dup + + 
+007)     best =    2.191 :   nop dup nop dup + + 
+008)     best =    2.191 :   nop dup nop dup + + 
+009)     best =    2.191 :   nop dup nop dup + + 
+010)     best =    2.191 :   nop dup nop dup + + 
 
 ====================================================================
 

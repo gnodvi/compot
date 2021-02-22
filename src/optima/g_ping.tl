@@ -872,36 +872,6 @@ proc main_sa {} {
 # // - выделить общие процедуры по максимуму; 
 # // 
 # //------------------------------------------------------------------------------
-proc lset_test {} {
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #   if ( ( index < 0 ) || ( index >= listLen ) ) {
-  
-  #     Tcl_SetObjResult( interp,
-  #                       Tcl_NewStringObj( "list index out of range",
-  #                                         -1 ) );
-  #     return TCL_ERROR;
-  #   }
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  set i    0
-  set val -1
-
-  #set  tmp [$self cget -chrom_some] ;# это список
-  set  tmp {} ;# это список
-
-  puts "i = $i  val = $val llength = [llength $tmp]"
-  puts "tmp = $tmp " ;# списка нет?
-
-  if {[llength $tmp] == 0} {
-    lset tmp $val
-  } else {
-    lset tmp $i $val
-  }
-
-  puts "tmp = $tmp " ;# списка нет?
-}
-# //------------------------------------------------------------------------------
 proc main {} {
 
   #set ::NEWEST 1 ;# !!!!!!!!!!!!!!!!!!! OK !!!!

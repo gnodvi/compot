@@ -4196,7 +4196,7 @@ if {[info commands ::lmap] eq {}} {
   }
   
 }
-# ==============================================================================
+################################################################################
 
 # Emulate append feature for pre Tcl 8.6
 
@@ -4217,7 +4217,7 @@ if {[info commands ::lmap] eq {}} {
 
 #if { [package vsatisfies [info patchlevel] 8.5-8.6] } {}
 #jimtcl
-if {1} {
+if {0} {
 
   # версия удовлетворят условию min-max (т.е >= min и < max)
   #
@@ -4265,6 +4265,57 @@ if {1} {
   #puts "package vsatisfies  = NOT !" ;# для проверки тут печатаем
 }
 
+# //------------------------------------------------------------------------------
+proc TEST_lset {} {
+
+  puts ""
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #   if ( ( index < 0 ) || ( index >= listLen ) ) {
+  
+  #     Tcl_SetObjResult( interp,
+  #                       Tcl_NewStringObj( "list index out of range",
+  #                                         -1 ) );
+  #     return TCL_ERROR;
+  #   }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  set i    0
+  set val -1
+
+  #set  tmp [$self cget -chrom_some] ;# это список
+  set  tmp {} ;# это список
+
+  puts "i = $i  val = $val llength = [llength $tmp]"
+  puts "tmp = $tmp " ;# списка нет?
+
+  if {[llength $tmp] == 0} {
+    lset tmp $val
+  } else {
+    lset tmp $i $val
+  }
+
+  puts "tmp = $tmp " ;# списка нет?
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  puts ""
+
+  set l {1 2 3 4 5}
+
+  puts "l = $l"
+  #puts ""
+
+  lset l 0 9
+  puts "l = $l"
+
+  lset l 4 99
+  puts "l = $l"
+
+  puts ""
+
+  return
+}
 ################################################################################
 #-------------------------------------------------------------------------------
 # Маленький отладчик:

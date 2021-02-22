@@ -1,10 +1,9 @@
 
-ppp = a b c {d e  f g}
+ppp = a b   c {d e  f g}
 ppp = a b c {d e  f g}
 
 ------------------------------------------
 
-ppp = a b c {d e  f g}
 ppp = a b c {d e  f g}
 ppp = a b c {d e  f g}
 

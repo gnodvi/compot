@@ -5923,12 +5923,15 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
 
   USE_REFS
 
+  #puts stderr "mutate_and_lset_or_linsert: program = $program, i = $i, mode = $mode"
 
   set r [random_double 1.0]
   
   if {$r > $prob} {
     return ;# ничего не делаем, уходим
   }
+
+
 
   # делаем мутацию
   # 
@@ -5949,6 +5952,7 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
   
     switch -- $mode {
       1 {
+        #puts stderr "mutate_and_lset_or_linsert: program = $program, i = $i, item = $item"
         lset program $i $item                     ;# либо заменяем итем 
       }  
       2 {
@@ -5960,6 +5964,12 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
 
   return
 }
+#-------------------------------------------------------------------------------
+# 
+# g_stru.jm _gp_test -seed 2013 -lpop 10 -size 6 -nums 10
+# 
+#./COMPOT/src/common/a-comm.tl:4260: Error: bad index "": must be integer?[+-]integer? or end?[+-]integer?
+
 #-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа, в которой каждая 
 # инструкция будет заменена (или новая вставлена сразу за ней) с заданной 
@@ -5975,12 +5985,21 @@ proc gp_joy_mutate {task program prob} \
 
   set gp_list [GET $task gp_list]
 
+  #puts stderr "gp_joy_mutate: program = $program, len = [llength $program]"
+
 
   for {set i 0} {$i < [llength $program]} {incr i} {
     
-    mutate_and_lset_or_linsert  program $i $prob $gp_list  0 
-    mutate_and_lset_or_linsert  program $i $prob $gp_list  1
-    mutate_and_lset_or_linsert  program $i $prob $gp_list  2
+    set mode [lrand "0 1 2"]
+    #puts stderr "gp_joy_mutate: mode = $mode"
+
+    mutate_and_lset_or_linsert  program $i $prob $gp_list  $mode 
+
+    #mutate_and_lset_or_linsert  program $i $prob $gp_list  0 
+    #mutate_and_lset_or_linsert  program $i $prob $gp_list  1
+    #mutate_and_lset_or_linsert  program $i $prob $gp_list  2
+    # 
+    # так нельзя! я э могу уже изменить прогу, например укоротить !!!!
   }
   
   return $program

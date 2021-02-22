@@ -1063,7 +1063,17 @@ proc dict_get {d_keys args} {
   set d    [lindex $d_keys 0]
   set keys [lrange $d_keys 1 end] ;# {}
 
-  return [dict get [set $d] {*}$keys  {*}$args]
+  set dic [set $d]
+
+  if {[dict exists $dic {*}$keys {*}$args]} {
+
+    return [dict get $dic {*}$keys  {*}$args]
+  } else {
+
+    # code to deal with missing key
+    return {}
+  }
+
 }
 #-------------------------------------------------------------------------------
 proc dict_get_111 {d_keys args} {
@@ -1503,7 +1513,10 @@ proc TEST_new {} {
 
   puts "ppp = [set $d]"   
   puts "ppp = [dict get [set $d]]"   
-  puts "ppp = [dict_get $d]"   
+
+  #puts "ppp = [dict_get $d]" ;
+  # Error: wrong # args: should be "dict exists dictionary key ?key ...?"  
+
   puts ""
   #puts "ppp print = [dict print [set $d]]"   
   #puts ""
