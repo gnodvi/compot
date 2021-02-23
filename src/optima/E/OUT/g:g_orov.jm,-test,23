@@ -1,6 +1,8 @@
 
 
 num_test        = 23
+population_size = 40
+max_generations = 50
 
 
 p2 __ p3 =  30.5286750449

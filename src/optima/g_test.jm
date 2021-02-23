@@ -55,6 +55,29 @@ proc parse_opts {&population_size &max_generations
 
   return $print
 }
+#-------------------------------------------------------------------------------
+proc parse_opts_NEW {&population_size &max_generations  
+                def_population_size def_max_generations} {
+
+  USE_REFS
+
+  global argc argv argv0
+
+  set argv [lrange $argv 1 end]
+
+  #puts "argv = $argv"
+
+  #return
+
+  #set num_test        [dict_parse $argv "-test"   1]
+  set population_size [dict_parse $argv  "-lpop"   $def_population_size]
+  set max_generations [dict_parse $argv  "-nums"   $def_max_generations]
+  set print           [dict_parse $argv "-print"   0]
+
+  set ::is_print $print
+
+  return $print
+}
 # /*******************************************************************************
 #   ga_x_tester.c
 
@@ -292,11 +315,12 @@ proc _test_analytical_gradient {pop this_entity params &grad} \
   return $grms
 }
 # //------------------------------------------------------------------------------
-# //------------------------------------------------------------------------------
+
 # //  Synopsis:	Test program for GAUL's basic genetic algorithm.
 # //
 # //		This program aims to solve a function of the form
 # //		(0.75-A) + (0.95-B)^2 + (0.23-C)^3 + (0.71-D)^4 = 0
+
 # //------------------------------------------------------------------------------
 # void 
 proc test_ga {task} {
@@ -305,75 +329,45 @@ proc test_ga {task} {
   set population_size ""
   set max_generations ""
 
-  set print [parse_opts  population_size max_generations  200 500]
+  #set print [parse_opts      population_size max_generations  200 500]
+
+  set print [parse_opts_NEW  population_size max_generations  200 500]
 
   puts ""
 
   random_seed 23091975
 
-  #   pop = ga_genesis_double (
-  #        200,			      /* const int              population_size      */
-  #        1,			      /* const int              num_chromo           */
-  #        4,			      /* const int              len_chromo           */
-  #        _test_generation_callback, /* GAgeneration_hook      generation_hook      */
-  #        NULL,                      /* GAiteration_hook       iteration_hook       */
-  #        NULL,                      /* GAdata_destructor      data_destructor      */
-  #        NULL,                      /* GAdata_ref_incrementor data_ref_incrementor */
-  #        _test_score,	                       /* GAevaluate             evaluate    */
-  #        _test_seed,                         /* GAseed                 seed        */
-  #        NULL,                               /* GAadapt                adapt       */
-  #        ga_select_one_bestof2,              /* GAselect_one           select_one  */
-  #        ga_select_two_bestof2,              /* GAselect_two           select_two  */
-  #        ga_mutate_double_singlepoint_drift, /* GAmutate               mutate      */
-  #        ga_crossover_double_doublepoints,   /* GAcrossover            crossover   */
-  #        NULL,			       /* GAreplace              replace     */
-  #        NULL			               /* vpointer               User data   */
-  #        );
+  set pop [ga_genesis_main  \
+             $task                              {*}[NB                 ] \
+             $population_size		        {*}[NB                 ] \
+             1			                {*}[NB  num_chromo     ] \
+             4			                {*}[NB  len_chromo     ] \
+             _test_generation_callback          {*}[NB  generation_hook] \
+             NULL			        {*}[NB  iteration_hook ] \
+             NULL			        {*}[NB  data_destructor] \
+             NULL			        {*}[NB  data_ref_incrementor] \
+             _test_seed		                {*}[NB  seed           ] \
+             NULL			        {*}[NB  adapt          ] \
+             ga_select_one_bestof2	        {*}[NB  select_one     ] \
+             ga_select_two_bestof2	        {*}[NB  select_two     ] \
+             ga_mutate_double_singlepoint_drift {*}[NB  mutate         ] \
+             ga_crossover_double_doublepoints   {*}[NB  crossover      ] \
+             NULL			        {*}[NB  replace        ] \
+             NULL			        {*}[NB  User data      ] \
+            ]
 
-  set pop [ga_genesis_main                  \
-	   $task \
-           $population_size		      \
-           1			              \
-           4			              \
-           _test_generation_callback          \
-           NULL			              \
-           NULL			              \
-           NULL			              \
-           _test_seed		              \
-           NULL			              \
-           ga_select_one_bestof2	      \
-           ga_select_two_bestof2	      \
-           ga_mutate_double_singlepoint_drift \
-           ga_crossover_double_doublepoints   \
-           NULL			              \
-           NULL			              \
-          ]
-
-  #   ga_population_set_parameters(
-  #        pop,				/* population      *pop            */
-  #        GA_SCHEME_DARWIN,		/* const ga_scheme_type     scheme */
-  #        GA_ELITISM_PARENTS_SURVIVE,	/* const ga_elitism_type   elitism */
-  #        0.8,				/* double  crossover               */
-  #        0.2,				/* double  mutation                */
-  #        0.0      		        /* double  migration               */
-  #        );
-
-  ga_population_set_parameters                            \
-                               $pop	                  \
-                               GA_SCHEME_DARWIN	          \
-                               GA_ELITISM_PARENTS_SURVIVE \
-                               0.8			  \
-                               0.2			  \
-                               0.0      	          
+  ga_population_set_parameters \
+    $pop	               {*}[NB population      ] \
+    GA_SCHEME_DARWIN	       {*}[NB ga_scheme_type  ] \
+    GA_ELITISM_PARENTS_SURVIVE {*}[NB ga_elitism_type ] \
+    0.8			       {*}[NB crossover       ] \
+    0.2			       {*}[NB mutation        ] \
+    0.0      	               {*}[NB migration       ] 
                                
 
-  # пока здесь остановимся, осмотримся и распечатаемся:
-  # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
-  #
   ga_population_seed $pop $task
-  #
   
-  ga_evolution  $task $pop $max_generations  -print $print 	 
+  ga_evolution       $task $pop $max_generations  -print $print 	 
   
   puts ""
 
@@ -893,6 +887,12 @@ main
 # 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
+
+# g_test.jm  ga     20 10 
+# g_test.jm  ga_REV 20 10 
+# g_test.jm  de      9  1 
+# g_test.jm  de_test 9  2 
+# g_test.jm  sd2     5  5 
 
 
 # //------------------------------------------------------------------------------

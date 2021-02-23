@@ -42,72 +42,6 @@ source "g-diff.tl"
 # ; -) расстояния тоже могут быть не точны? как быть? варьировать по очереди?
 # ; -) для представления точек и узлов использовать библиотеку графов
 
-# ; -) cl v_pnts.cl  20   100   30 ; make_test_orovo
-# ; -) cl v_pnts.cl  22   200  200 ; make_real_orovo
-
-# ;#-------------------------------------------------------------------------------
-
-# ;(defpackage "OROVOS"
-# ;   (:nicknames    "MYPKG" "MY-PKG")
-# ;   (:use          "COMMON-LISP")
-# ;   (:shadow       "CAR" "CDR" "NULL")
-
-# ;   ;;   (:shadowing-import-from "VENDOR-COMMON-LISP"  "CONS")
-# ;   ;;   (:import-from  "VENDOR-COMMON-LISP"  "GC")
-# ;   ;;   (:export       "EQ" "CONS" "FROBOLA")
-# ;   )
-
-# ;(in-package "OROVOS")
-
-# ;(defvar       NULL NIL)
-
-# ;#+CLISP (defvar       NULL NIL)
-# ;#+SBCL  (defparameter NULL NIL)
-
-# ;#-------------------------------------------
-
-# ;#source "./f-rand.tl"
-# ;#source "./f-comm.tl"
-
-# ;(load  "EXT/OPT/src/f-sort.cl")
-# ;(load  "EXT/OPT/src/h-core.cl")
-# ;(load  "EXT/OPT/src/h-diff.cl")
-
-
-# (load  "LSP/f-sort.cl")
-# (load  "LSP/h-core.cl")
-# (load  "LSP/h-diff.cl")
-
-# ;# /*****************************************************************************
-# ;; 
-# ;; stefil/duplicates.lisp
-# ;; 
-# ;#-------------------------------------------------------------------------------
-
-
-# (defmacro enable-sharp-boolean-syntax ()
-#   "Copies *readtable* and enables #t and #f readers for t and nil in the copy."
-#   '(eval-when (:compile-toplevel :execute)
-#     (setf *readtable* (copy-readtable *readtable*))
-#     (%enable-sharp-boolean-syntax)))
-
-
-# (defun %enable-sharp-boolean-syntax ()
-#   (set-dispatch-macro-character
-#    #\# #\t
-#    (lambda (s c n)
-#      (declare (ignore s c n))
-#      t))
-#   (set-dispatch-macro-character
-#    #\# #\f
-#    (lambda (s c n)
-#      (declare (ignore s c n))
-#      nil)))
-
-
-# (enable-sharp-boolean-syntax)
-
-
 # ;#-------------------------------------------------------------------------------
 # ;#-------------------------------------------------------------------------------
 
@@ -129,7 +63,6 @@ source "g-diff.tl"
 
 # (defvar *max_len_defnode* 5) ; формат записи
 
-
 # (defvar *work_fix_points* NIL) ; для удобства: начальные фиксированные точки
 # (defvar *work_point*      NIL) ; для удобства: рабочая точка
 
@@ -138,7 +71,6 @@ source "g-diff.tl"
 
 
 # ;# /*******************************************************************************
-# ;#-------------------------------------------------------------------------------
 # ;# //------------------------------------------------------------------------------
 proc point_from_chromosome {chromosome i} {
 
@@ -146,16 +78,11 @@ proc point_from_chromosome {chromosome i} {
   #   ;
   #   ; cначала выпишем координаты в глобальную рабочую точку
   
-  #   ; (setf (elt point 0) (elt chromosome i))
-  
-  #   (loop :for d :from 0 :below *dim* :do
   for {set d 0} {$d < $::dim} {incr d} {
   
-    #     (setf (elt *work_point* d) (elt chromosome (+ (* i *dim*) d)))
     lset ::work_point $d [lindex $chromosome  [expr {($i * $::dim) + $d}] ]
   }
   
-  #   (copy-seq *work_point*)
   return $::work_point
 }
 # ;# //------------------------------------------------------------------------------
@@ -209,29 +136,23 @@ proc ext_point_print {point ext_ind} {
 proc test_generation_callback {generation pop} {
 
 
-  #   ;(format t "test_generation_callback: generation = ~s ~%" generation)
-  
   if {[expr {$generation % 10}] == 0} {
 
     set best [pop_get_entity_  $pop  0] 
     
-    #     ;(format t "pop_get_entity_: r = ~s   ~%" r)
-    
+    puts stderr "test_generation_callback: pop = [set $pop], best = $best"
+
     set best_chromo  [item_get_mainsrc  $best]
-    #set best_fit     [ENT_FITNESS          $best] ;# [$best cget -fitness] 
-    #set best_fit     [ent_get_fitness $best]
-    set best_fit     [item_get_fitn $best]
+    set best_fit     [item_get_fitn     $best]
     
     
     puts -nonewline [format "%3d  : "  $generation]
     
     if $::__is_print {
 
-      #       (loop :for i :from 0 :below *n_ext* :do
       for {set i 0} {$i < $::n_ext} {incr i} {
       
         set p [point_from_chromosome  $best_chromo $i]
-        #         ;(ext_point_print  point i)
         ext_point_print  $p $i
       }
     }
@@ -423,7 +344,6 @@ proc _test_score {this_entity task} {
   set chromosome [item_get_mainsrc  $this_entity]
   
 
-
   #   ;;  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #   ;; сформируем из хромосомы массив точек, а потом уже будем его обрабатывать
   #   ;;
@@ -437,26 +357,15 @@ proc _test_score {this_entity task} {
 
     #     (setf (elt points i)  (elt *work_fix_points* i))
     lset points $i [lindex $::work_fix_points $i]
-  }
-  
-  
-  #   ;(format t "_test_score: chromosome = ~s ~%" chromosome)
+  }  
   
   #   ;; теперь запишем точки из генома
   #   ;; 
 
-  #   (loop :for i :from 0 :below *n_ext*  :do 
   for {set i 0} {$i < $::n_ext} {incr i} {
   
-  #     (setf (elt points (+ i *n_fix*))  
-  #           (point_from_chromosome  chromosome  i))
-
     lset points [expr {$i + $::n_fix}] [point_from_chromosome  $chromosome  $i]
   }
-  
-
-  #   ;(print points)
-  #   ;;  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   #   ;; и теперь по этому 
   #   ;; 
@@ -494,10 +403,8 @@ proc point_init_by_random {&point} {
 proc point_to_entity {point ent i} { 
 
 
-  #   (loop for d :from 0 :below *dim* :do
   for {set d 0} {$d < $::dim} {incr d} {
   
-  #     (item_set_chromo_gen  ent (+ (* *dim* i) d)  (elt point d))
     item_set_chromo_gen  $ent [expr {($::dim * $i) + $d}]  [lindex $point $d]
   }
 
@@ -641,6 +548,15 @@ proc pntssolver_do {population_size max_generations
     pop_print $pop
   }
   
+  #puts ""
+  #puts "population_size = $population_size"
+
+  #puts ""
+  #puts "pntssolver_do ............ EXIT !!!!!!!!!!!"
+  #puts ""
+
+  #exit ;# !!!!!!!!!!!!!!1
+
   #   (ga_population_set_differentialevolution_parameters    
   #       pop 
   #       strategy crossover 
@@ -925,41 +841,27 @@ proc pntssolver_init_task {&defnodes  namededges dim max_val_arr} {
 
   USE_REFS
 
-  set ::dim  $dim ;# это уже глобальная переменная
-  
+  set ::dim  $dim ;# это уже глобальная переменная  
 
   #   ;(nodes_  (make-array 0 :adjustable t :fill-pointer 0))
   #   ;p
-  #   ;(n 0)
-  
+  #   ;(n 0)  
 
   set ::max_val_arr  $max_val_arr 
   
   #   ;; делаем массивы и заносим туда поэлементно
   
-  #   (setf *nodes*           (make-array     0 :adjustable t :fill-pointer 0))
-  #   (setf *work_fix_points* (make-array     0 :adjustable t :fill-pointer 0)) ; для удобства
-  
   set ::nodes {}
   set ::work_fix_points {}
 
-  #   ;(setf *seed_points*     (make-array     0 :adjustable t :fill-pointer 0))
-  
-  #   (setf *work_point*      (make-array *dim* 
-  #                                       :initial-element 0)) ; глобальная , рабочая точка
-  
   set ::work_point [list_make $::dim 0]
 
   #   ; создаем по заданным шаблонам уже мат. узлы:
   #   ;
   #   ; чтобы вернуть несколько значений (если переменные уже есть):
   #   ; 
-  #   (multiple-value-setq (*n_fix* *n_ext*) (loop_for_all_nodes_simple  defnodes *nodes*)
-  #     ;;
 
   foreach {::n_fix ::n_ext} [loop_for_all_nodes_simple  $defnodes ::nodes] {break}
-  #     ) 
-  
   
   #   ;(format t "pntssolver_init_task: fix_nodes_ = ~S ~%" *nodes*)
   #   ;(format t "~%" )
@@ -1462,72 +1364,30 @@ proc make_test_orovo {} {
 # ;# //------------------------------------------------------------------------------
 proc  MAIN {} {
   
-  #set ::NEWEST 1 ;# !!!!!!!!!!!!!!!!!!! OK !!!!
-
-
-  # (let* (
-
   set num_test          1
   set population_size  40 
   set max_generations  50
 
-  #   (argus  (get_argus))
-  #   )
-  
-  
-  #   (declare (special 
-  #                 population_size  max_generations num_test
-  #                 ))
-  
   # --------------------------------------------------
 
   global argc argv
 
+  #set argv [lrange $argv 1 end]
+
+  set num_test        [dict_parse $argv "-test"   1]
+  set population_size [dict_parse $argv "-lpop"  40]
+  set max_generations [dict_parse $argv "-nums"  50]
+  set ::is_print      [dict_parse $argv "-print"  0]
+
+
   puts ""
 
-  if {$argc == 0} { #  (if (= (length argus) 0) 
-
-    puts "argus = 0 !!!!!!!!!"
-    set num_test 1
-
-  } else {
-    set  num_test [lindex $argv 0] ;# (parse-integer (nth 0 argus)))
-  }
-
-  #string trim num_test "0"
+  set ::__is_print $::is_print  
 
   puts ""
   puts "num_test        = $num_test"
-  puts ""
-
-
-  switch -glob $num_test  {
-
-    "23" { ;# отдельные теcты без решателя точек
-      
-      new_prirezka_test
-      exit
-   }
-    default {
-    }
-  }
-    
-#   ;;--------------------------------------------------
-
-  if {$argc == 0} {
-
-    set  population_size  4
-    set  max_generations  1
-    
-    set ::__is_print false
-  } else {
-
-    parse_opts_int_int  1 population_size max_generations
-  }
-  
-
-  puts "population_size = $population_size" 
-  puts "max_generations = $max_generations"
+  puts "population_size = $population_size" ;# lpop
+  puts "max_generations = $max_generations" ;# nums
   puts ""
 
   random_seed 23091975 ;# сюда вынес, чтобы отдельно формировать случайные точки
@@ -1546,12 +1406,25 @@ proc  MAIN {} {
     "22" {
     
       make_real_orovo
-    
+
+      set ::is_print    1
+      #set  ::__is_print true
+
+      puts ""
+      puts "population_size = $population_size"
+      puts ""
+
       pntssolver_do  $population_size $max_generations \
         "GA_DE_STRATEGY_RANDTOBEST" \
         "GA_DE_CROSSOVER_BINOMIAL"  \
         1  ;# num_perturbed
 
+      exit
+    }
+
+    "23" {
+    
+      new_prirezka_test
       exit
     }
     #default: {
@@ -1572,14 +1445,12 @@ MAIN
 
 # ;-------------------------------------------------------------------------------
 
-# TODO: 
+# g_orov.jm  1  4 1 
+# g_orov.jm  1  40 40 
+# g_orov.jm  2  4 1 
+# g_orov.jm 20  100 30 
+# g_orov.jm 23 
 
-
-# что-то не совпадает, возможно дело в   random_int ???
-
-#    l_orov.tl  2  4 1
-# cl l_orov.cl  02  4 1
-
-
+# g_orov.jm 22 ERROR !!!!!!!!!!!!!!!!!!!!!!!!1 
 
 # ;-------------------------------------------------------------------------------
