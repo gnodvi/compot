@@ -1,0 +1,22 @@
+-----------------------------------------------------------
+                       Parameters                          
+-----------------------------------------------------------
+Evolutionary Strategy:			(1+4)-ES
+Inputs:					1
+Nodes:					20
+Outputs:				1
+Node Arity:				2
+Connection weights range:		+/- 1.000000
+Mutation Type:				probabilistic
+Mutation rate:				0.050000
+Recurrent Connection Probability:	0.000000
+Shortcut Connections:			1
+Fitness Function:			MSE
+Target Fitness:				0.000000
+Selection scheme:			selectFittest
+Reproduction scheme:			mutateRandomParent
+Update frequency:			1
+Threads:			1
+Function Set: (0)
+-----------------------------------------------------------
+

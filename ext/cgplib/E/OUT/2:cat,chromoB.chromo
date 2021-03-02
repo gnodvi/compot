@@ -1,0 +1,12 @@
+numInputs,1
+numNodes,2
+numOutputs,1
+arity,2
+functionSet,add,sub,mul,sq,cube,sin
+2
+0,0.829786
+0,0.189776
+3
+1,-0.842224
+0,-0.517104
+2,

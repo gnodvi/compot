@@ -7,25 +7,25 @@
 include ../../Make.mak
 
 
+CGPLIB_DIR = ../cgplib		
 PLOTER_DIR = ../ploter		
 ##JIMTCL_DIR = ../jimtcl		
-##COMMSH_DIR = ../commsh		
 
 #-------------------------------------------------------------------------------
 
 
-all:  PLOTER__ ##JIMTCL__ ##COMMSH__ 
+all:  CGPLIB__ PLOTER__ ##JIMTCL__ 
 
 #-------------------------------------------------------------------------------
+
+CGPLIB__ :
+	(cd $(CGPLIB_DIR); make)
 
 PLOTER__ :
 	(cd $(PLOTER_DIR); make)
 
 ##JIMTCL__ :
 ##	(cd $(JIMTCL_DIR); make)
-
-##COMMSH__ :
-##	(cd $(COMMSH_DIR); make)
 
 #-------------------------------------------------------------------------------
 test:
@@ -34,7 +34,7 @@ test:
 #-------------------------------------------------------------------------------
 
 clean : 
-##	(cd $(COMMSH_DIR); make clean)
+	(cd $(CGPLIB_DIR); make clean)
 	(cd $(PLOTER_DIR); make clean)
 ##	(cd $(JIMTCL_DIR); make clean)
 

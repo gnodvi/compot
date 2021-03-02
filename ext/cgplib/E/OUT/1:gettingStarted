@@ -1,0 +1,47 @@
+-----------------------------------------------------------
+                       Parameters                          
+-----------------------------------------------------------
+Evolutionary Strategy:			(1+4)-ES
+Inputs:					1
+Nodes:					15
+Outputs:				1
+Node Arity:				2
+Connection weights range:		+/- 1.000000
+Mutation Type:				probabilistic
+Mutation rate:				0.050000
+Recurrent Connection Probability:	0.000000
+Shortcut Connections:			1
+Fitness Function:			supervisedLearning
+Target Fitness:				0.100000
+Selection scheme:			selectFittest
+Reproduction scheme:			mutateRandomParent
+Update frequency:			500
+Threads:			1
+Function Set: add sub mul div sin (5)
+-----------------------------------------------------------
+
+
+-- Starting CGP --
+
+Gen	fitness
+0	212919.553510
+398	0.025230 - Solution Found
+
+(0):	input
+(1):	mul	 0  0 *
+(2):	mul	 1  1 *
+(3):	mul	 0  1 *
+(4):	sub	 3  0 *
+(5):	sub	 3  3 *
+(6):	sub	 2  5 
+(7):	mul	 3  4 *
+(8):	sub	 2  7 *
+(9):	sub	 5  5 
+(10):	add	 5  2 
+(11):	mul	10  8 
+(12):	add	 5  1 *
+(13):	add	12 12 
+(14):	sin	12 
+(15):	sub	12  8 *
+outputs: 15 
+
