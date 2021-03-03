@@ -23,7 +23,7 @@ package require compot::dialog
 
 #-------------------------------------------------------------------------------
 
-set auto_path [linsert $auto_path 0 "COMPOT/ext/tcllib/snit"]
+set auto_path [linsert $auto_path 0 "COMPOT/ext/tcl-tk/snit"]
 
 package require snit
 

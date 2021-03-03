@@ -46,7 +46,7 @@ get_options_CGP (int argc, char **argv,
                  int *update, 
                  double *fitness, 
                  int *nums, 
-                 int *is_verbose 
+                 int *verbose 
                  )
 {
   char c;
@@ -76,11 +76,11 @@ get_options_CGP (int argc, char **argv,
       break;
 
     case 'u': 
-      if (update)      *update= atoi (optarg); 
+      if (update)    *update= atoi (optarg); 
       break;
 
     case 'f': 
-      if (fitness)     *fitness = atof (optarg); 
+      if (fitness)   *fitness = atof (optarg); 
       break;
 
     case 'n': 
@@ -88,7 +88,7 @@ get_options_CGP (int argc, char **argv,
       break;
 
     case 'v':     // verbose - многословный
-      if (is_verbose) *is_verbose  = 1; // подробная печать 
+      if (verbose) *verbose  = 1; // подробная печать 
       break;
 
     default:      
@@ -145,7 +145,7 @@ int test_gettingStarted (int argc, char **argv) {
                    &updateFrequency,  
                    &targetFitness,  
                    &numGens,  
-                   NULL 
+                   &verbose 
                    );
 
   //---------------------------------
@@ -241,5 +241,5 @@ int main (int argc, char **argv) {
 }
 //------------------------------------------------------------------------------
 // gettingStarted -t gettingStarted -s0 -d2 -u10
-
+// gettingStarted -t gettingStarted -s0 -d2 -u1 -n10 -v
 //------------------------------------------------------------------------------

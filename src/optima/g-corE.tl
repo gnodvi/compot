@@ -23,8 +23,6 @@ librarys_push $::gp_dict ;# запихнуть в глобальную библиотеку
 
 set ::GA_BOLTZMANN_FACTOR	1.38066e-23
 
-#set ::sort_driver "MAX_to_LEFT" ;# функция признак-сортировки
-
 set ::ISPRINT 0
 
 # #define GA_TINY_DOUBLE		(1.0e-9)
@@ -2477,6 +2475,7 @@ proc ga_genesis_main {
   SET $pop  generation_hook $generation_hook
 
   #   pop->iteration_hook = iteration_hook;
+  SET $pop  iteration_hook $iteration_hook
   
   #   pop->data_destructor = data_destructor;
   #   pop->data_ref_incrementor = data_ref_incrementor;
@@ -6081,9 +6080,6 @@ proc lsort_pop_command {sort_driver a b} {
   # аоскольку используем функцияю lsort, присоединяем к ней типв "MIN_to_LEFT"
   # 
   set sort_driver lsort_$sort_driver
-
-  #set sort_driver lsort_$::sort_driver
-  # как отказаться от глобальной переменной? а вот так !! передали доп. параметр!!
 
   return [$sort_driver $a_fit $b_fit] ; # т.е МЕНЬШИЕ будут слева в списке 
 }

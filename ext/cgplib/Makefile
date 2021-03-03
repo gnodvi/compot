@@ -36,10 +36,10 @@ all: $(CGP) $(PROGS)
 
 #-------------------------------------------------------------------------------
 
-T/src.o: $(S)/cgp.c $(S)/cgp.h
+T/src.o: $(S)/cgp.c $(S)/common.h $(S)/cgp.h 
 	$(CC) -o $@ -c $(CFLAGS)  $<   
 
-T/common.o: $(S)/common.c $(S)/common.h
+T/common.o: $(S)/common.c $(S)/common.h $(S)/cgp.h 
 	$(CC) -o $@ -c $(CFLAGS)  $<   
 
 so: $(S)/cgp.c 

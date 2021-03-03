@@ -2110,8 +2110,6 @@ proc ANTS_gp {} {
     randinstr    "randinstr_MAIN" \
     quotes_proc  $quotes_proc
 
-  set ::sort_driver "MIN_to_LEFT"    
-
   set task [task_create  -fit_func FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   run_gp_evolution_for_task \
@@ -2165,8 +2163,6 @@ proc ANTS_gp_new {} {
     randinstr    "randinstr_MAIN" \
     quotes_proc  "quotes_proc_NULL"
 
-
-  set ::sort_driver "MIN_to_LEFT"    
 
   set task [task_create  -fit_func FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
     
