@@ -26,47 +26,17 @@ source "g-grad.tl"
 
 
 #-------------------------------------------------------------------------------
-proc parse_opts {&population_size &max_generations  
-                def_population_size def_max_generations} {
+proc parse_opts_NEW {argv &population_size &max_generations &len_chromo  
+                def_population_size def_max_generations def_len_chromo} {
 
   USE_REFS
 
-  global argc argv argv0
-
-  set print 0
-
-  #puts "argc = $argc"
-  #exit
-
-  if  {$argc == 1} { 
-    # вызов без параметров, только с одним mode
-    
-    set population_size  $def_population_size
-    set max_generations  $def_max_generations
- 
-  } else {
-
-    set population_size [lindex $argv 1]
-    set max_generations [lindex $argv 2]
-    if  {$argc == 4}    {set print 1}
-  }
-
-  set ::is_print $print
-
-  return $print
-}
-#-------------------------------------------------------------------------------
-proc parse_opts_NEW {&population_size &max_generations  
-                def_population_size def_max_generations} {
-
-  USE_REFS
-
-  global argc argv argv0
-
-  set argv [lrange $argv 1 end]
+  #global argv
+  #set argv [lrange $argv 1 end]
 
   set population_size [dict_parse $argv  "-lpop"   $def_population_size]
   set max_generations [dict_parse $argv  "-nums"   $def_max_generations]
+  set len_chromo      [dict_parse $argv  "-size"   $def_len_chromo]
   set print           [dict_parse $argv  "-print"  0]
 
   set ::is_print $print
@@ -89,27 +59,49 @@ proc parse_opts_NEW {&population_size &max_generations
 
 # *******************************************************************************/
 
-#-------------------------------------------------------------------------------
-
-# #define SQU(x)          ((x)*(x))		/* Square */
-# #define CUBE(x)         ((x)*(x)*(x))		/* Cube */
-# #define FOURTH_POW(x)	((x)*(x)*(x)*(x))	/* Guess ;) */
-# #define FIFTH_POW(x)	((x)*(x)*(x)*(x)*(x))	/*  - " - */
 
 #-------------------------------------------------------------------------------
-proc SQU {x} {
+proc P1 {x} {
+
+  return [expr {$x}]
+}
+#-------------------------------------------------------------------------------
+proc P2 {x} {
+
+  # #define SQU(x)         ((x)*(x))	     /* Square */
 
   return [expr {$x * $x}]
 }
 #-------------------------------------------------------------------------------
-proc CUBE {x} {
+proc P3 {x} {
+
+  # #define CUBE(x)        ((x)*(x)*(x))     /* Cube */
 
   return [expr {$x * $x * $x}]
 }
 #-------------------------------------------------------------------------------
-proc FOURTH_POW {x} {
+proc P4 {x} {
+
+  # #define FOURTH_POW(x)  ((x)*(x)*(x)*(x)) /* Guess ;) */
 
   return [expr {$x * $x * $x * $x}]
+}
+#-------------------------------------------------------------------------------
+proc P5 {x} {
+
+  # #define FIFTH_POW(x)   ((x)*(x)*(x)*(x)*(x))  /*  - " - */
+
+  return [expr {$x * $x * $x * $x * $x}]
+}
+#-------------------------------------------------------------------------------
+proc SIN {x} {
+
+  return [expr { sin ($x) }]
+}
+#-------------------------------------------------------------------------------
+proc COS {x} {
+
+  return [expr { cos ($x) }]
 }
 #-------------------------------------------------------------------------------
 # //  synopsis:	Fitness function.
@@ -118,24 +110,42 @@ proc FOURTH_POW {x} {
 # _test_score (population *pop, entity *this_entity)
 
 #-------------------------------------------------------------------------------
-proc _test_score {this_entity  task} {
+proc calc_fitness {this_entity task funclist} {
 
   set isreverse [GET $task "isreverse"]
 
-  #  double  A, B, C, D     /* Parameters. */
-  
-  set A [item_get_chromo_gen $this_entity  0] 
-  set B [item_get_chromo_gen $this_entity  1] 
-  set C [item_get_chromo_gen $this_entity  2] 
-  set D [item_get_chromo_gen $this_entity  3] 
 
+  #   set A(0) [item_get_chromo_gen $this_entity  0] 
+  #   set A(1) [item_get_chromo_gen $this_entity  1] 
+  #   set A(2) [item_get_chromo_gen $this_entity  2] 
+  #   set A(3) [item_get_chromo_gen $this_entity  3] 
   
-  set f1             [expr      {0.75 - $A}]
-  set f2 [SQU        [expr      {0.95 - $B}]]
-  set f3 [CUBE       [expr      {0.23 - $C}]]
-  set f4 [FOURTH_POW [expr      {0.71 - $D}]]
+  #   set F(0) [P1       [expr      {0.75 - $A(0) }]]
+  #   set F(1) [P2       [expr      {0.95 - $A(1) }]]
+  #   set F(2) [P3       [expr      {0.23 - $A(2) }]]
+  #   set F(3) [P4       [expr      {0.71 - $A(3) }]]
+  
+  #   set fitness [expr { abs($F(0)) + abs($F(1)) + abs($F(2)) + abs($F(3)) }]
 
-  set fitness [expr {abs($f1) + $f2 + abs($f3) + $f4 }]
+  set ind 0
+  set fit 0
+
+  foreach l $funclist {
+
+    set X [item_get_chromo_gen $this_entity  $ind] 
+
+    #puts "calc_fitness: X($ind) = $X"
+
+    set F [lindex $l 0]
+    set B [lindex $l 1]
+
+    set ret [$F  [expr  { $B - $X }]]
+
+    set fit [+ $fit [expr { abs($ret) } ]]
+    incr ind
+  }
+
+  set fitness $fit
 
   # т.е чем больше - тем хуже !
   # fit_tobest = MIN, движемся к нулю справа  : 0 <-- 
@@ -150,23 +160,76 @@ proc _test_score {this_entity  task} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
+
+set ::funclist_4 {"P1 0.75" "P2 0.95" "P3 0.23" "P4 0.71"} 
+set ::funclist_5 {"P1 0.75" "P2 0.95" "P3 0.23" "P4 0.71" "P5 0.50"} 
+set ::funclist_9 {"SIN 0.10" "P2 0.20" "P3 0.30" "P4 0.40" "P5 0.50" 
+  "P1 0.60" "P2 0.70" "P3 0.80" "P4 0.90" } 
+
+#-------------------------------------------------------------------------------
+proc get_targets_list {len_chromo} {
+
+  set tlist {}
+  #set tlist {0.75  0.95  0.23  0.71}
+  set flist "::funclist_${len_chromo}" 
+
+  foreach l [set $flist] {
+
+    set B [lindex $l 1]
+    lappend tlist $B
+  }
+  
+  return $tlist
+}
+#-------------------------------------------------------------------------------
+proc _test_score {this_entity  task} {
+
+
+  set len_chromo [GET $task "len_chromo"]  
+  set flist      "::funclist_${len_chromo}" 
+
+  #puts "len_chromo = $len_chromo, flist = $flist"
+
+  set fitness [calc_fitness $this_entity $task [set $flist]]
+
+  return $fitness
+}
+#-------------------------------------------------------------------------------
 # Seed genetic data.
 # 
 #-------------------------------------------------------------------------------
 proc _test_seed {pop task adam} {
 
-  item_set_chromo_gen $adam 0  [random_double 2.0]
-  item_set_chromo_gen $adam 1  [random_double 2.0]
-  item_set_chromo_gen $adam 2  [random_double 2.0]
-  item_set_chromo_gen $adam 3  [random_double 2.0]
+  set len_chromo [GET $task "len_chromo"]  
+
+  #   item_set_chromo_gen $adam 0  [random_double 2.0]
+  #   item_set_chromo_gen $adam 1  [random_double 2.0]
+  #   item_set_chromo_gen $adam 2  [random_double 2.0]
+  #   item_set_chromo_gen $adam 3  [random_double 2.0]
+
+  for {set i 0} {$i < $len_chromo} {incr i} {
+
+    item_set_chromo_gen $adam $i  [random_double 2.0]
+  }
 
   return true;
 }
 #-------------------------------------------------------------------------------
-proc print_one_line {name A B C D best_fit} {
+proc print_one_line {name best_fit {listvalues {}}} {
 
-  puts [format "%6s :   A = %f  B = %f  C = %f  D = %f   : fitness = %f "  $name \
-          $A $B $C $D $best_fit]
+  #puts [format "%6s :   A = %f  B = %f  C = %f  D = %f   : fitness = %f "  $name \
+
+  puts -nonewline [format "%6s :"  $name]
+
+  foreach v $listvalues {
+
+    puts -nonewline [format "  % 5.3f"  $v]
+  }
+  puts -nonewline [format "  "]
+
+  puts -nonewline [format ": fit = % 8.6f "  $best_fit]
+
+  puts ""
 
 }
 #-------------------------------------------------------------------------------
@@ -180,12 +243,12 @@ proc _test_generation_callback {generation pop} {
   set best_chromo [item_get_mainsrc $best]
   set best_fit    [item_get_fitn       $best]
   
-  set A [lindex $best_chromo 0]
-  set B [lindex $best_chromo 1]
-  set C [lindex $best_chromo 2]
-  set D [lindex $best_chromo 3]
+#   set A [lindex $best_chromo 0]
+#   set B [lindex $best_chromo 1]
+#   set C [lindex $best_chromo 2]
+#   set D [lindex $best_chromo 3]
   
-  print_one_line  [format "%3d" $generation]  $A $B $C $D  $best_fit
+  print_one_line  [format "%3d" $generation]  $best_fit $best_chromo
   
   return true;
 }
@@ -197,25 +260,25 @@ proc _test_generation_callback {generation pop} {
 # //		(0.75-A) + (0.95-B)^2 + (0.23-C)^3 + (0.71-D)^4 = 0
 
 # //------------------------------------------------------------------------------
-proc test_ga {task} {
+proc test_ga {argv task} {
 
 
   set population_size ""
   set max_generations ""
+  set len_chromo      ""
 
-  #set print [parse_opts      population_size max_generations  200 500]
+  #global argv
+  #set argv [lrange $argv 1 end]
 
-  set print [parse_opts_NEW  population_size max_generations  200 500]
+  set print [parse_opts_NEW  $argv population_size max_generations len_chromo  200 500 4]
 
-  #puts ""
-
-  # random_seed 23091975
+  SET $task "len_chromo" $len_chromo
 
   set pop [ga_genesis_main  \
              $task                              {*}[NB                 ] \
              $population_size		        {*}[NB                 ] \
              1			                {*}[NB  num_chromo     ] \
-             4			                {*}[NB  len_chromo     ] \
+             $len_chromo			{*}[NB  len_chromo     ] \
              _test_generation_callback          {*}[NB  generation_hook] \
              NULL			        {*}[NB  iteration_hook ] \
              NULL			        {*}[NB  data_destructor] \
@@ -289,15 +352,15 @@ proc _test_analytical_gradient {pop this_entity params &grad} \
 
   set g1 [expr {0.95 - $B}]
 
-  #   g2 = C > 0.23 ? -SQU(0.23 - C) : SQU(0.23 - C);
+  #   g2 = C > 0.23 ? -P2(0.23 - C) : P2(0.23 - C);
 
   if {$C > 0.23} {
-    set g2 -[SQU [expr {0.23 - $C}]]
+    set g2 -[P2 [expr {0.23 - $C}]]
   } else {
-    set g2  [SQU [expr {0.23 - $C}]]
+    set g2  [P2 [expr {0.23 - $C}]]
   }
 
-  set g3 [CUBE [expr {0.71 - $D}]] ;# тут бы макросами может сделать?
+  set g3 [P3 [expr {0.71 - $D}]] ;# тут бы макросами может сделать?
   
 
   #   grad[0] = g0 ;
@@ -328,29 +391,29 @@ proc _test_iteration_callback {iteration solution} \
   set ch [item_get_mainsrc $solution]
   set fi [item_get_fitn    $solution]
 
-  set A [lindex $ch 0]
-  set B [lindex $ch 1]
-  set C [lindex $ch 2]
-  set D [lindex $ch 3]
+#   set A [lindex $ch 0]
+#   set B [lindex $ch 1]
+#   set C [lindex $ch 2]
+#   set D [lindex $ch 3]
   
-  print_one_line  [format "%3d" $iteration]  $A $B $C $D  $fi ;# $best_fit
+  print_one_line  [format "%3d" $iteration]  $fi $ch
 
   return true
 }
 # ------------------------------------------------------------------------------
-proc main_sd2 {task} \
+proc test_sd2 {argv task} \
 {
 
-  #   population	*pop;			/* Population of solutions. */
-  #   entity		*solution;		/* Optimised solution.      */
-  
   set population_size  ""
   set max_iterations   ""
+  set len_chromo       ""
 
-  #set print [parse_opts  population_size max_iterations  50 1000]
-  #random_seed  23091975
-  
-  set print [parse_opts_NEW  population_size max_iterations  50 1000]
+  #global argv
+  #set argv [lrange $argv 1 end]
+
+  set print [parse_opts_NEW  $argv population_size max_iterations len_chromo  50 1000 4]
+
+  SET $task "len_chromo" $len_chromo
 
   if {$print} {
     puts ""
@@ -498,14 +561,18 @@ proc main_sd2 {task} \
 
 # это едиинчный тест для отладки
 # 
-set strategy_test {
+set ::strategy_test {
   { "DE/best/1/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
   { "DE/rand-to-best/1/bin"    GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
 }
 
+set ::strategy_best {
+  { "DE/best/1/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+}
+
 # это полный список тестов (оригинальный)
 # 
-set strategy_full_origin {
+set ::strategy_full_origin {
 
   { "DE/best/1/exp (DE0)"      GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  0.5  0.5 }
   { "DE/best/1/exp (DE0)"      GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  2.0  0.0 }
@@ -627,26 +694,30 @@ proc strategy_parse_and_print {s
     puts [format "   weighting_factor  =  %f" $weighting_factor]
     puts [format "   weighting_factor2 =  %f" $weighting_factor2]
 
-    puts ""
   }
+
+  puts ""
 
   return
 }
 #-------------------------------------------------------------------------------
-#proc test_de {population_size max_generations} {}
+proc de_run_one {task strategy_one  population_size max_generations len_chromo print} {
+
+
+
+}
 #-------------------------------------------------------------------------------
-proc test_de {task strategy_list} {
+proc test_de_all {argv task strategy_list} {
 
 
   set population_size  "" 
   set max_generations  ""
+  set len_chromo       ""
 
-  #set print [parse_opts  population_size max_generations  40 50]
-  #random_seed 23091975
+  set print [parse_opts_NEW  $argv population_size max_generations len_chromo  40 50 4]
 
-  set print [parse_opts_NEW  population_size max_generations  40 50]
+  SET $task "len_chromo" $len_chromo
 
-  #puts ""
 
   set label             ""
   set strategy          "" 
@@ -658,9 +729,12 @@ proc test_de {task strategy_list} {
   
   foreach s $strategy_list {
 
+
     strategy_parse_and_print $s \
                        label strategy crossover num_perturbed crossover_factor \
                        weighting_factor weighting_factor2
+
+
 
     #  pop = ga_genesis_double (
     #      40,			   /* const int              population_size      */
@@ -685,7 +759,7 @@ proc test_de {task strategy_list} {
 	     $task \
              $population_size          \
              1                         \
-             4                         \
+             $len_chromo               \
              test_generation_callback  \
              NULL                      \
              NULL                      \
@@ -725,59 +799,32 @@ proc test_de {task strategy_list} {
     ga_differentialevolution  $pop $task $max_generations -print $print			
 
 
-    if {1} {
+#     if {1} {
       #  //# предполагаем, что уже отсортирована популяция ??
       #  // 
       set best 0
 
-    } else {
+#     } else {
 
-      # ну, а если не отсортирована, воспользуемся полученным расчетом по фитнесу:
-      # 
-      #set best [$pop cget -best] ;# вычисляется после "break"
+#       # ну, а если не отсортирована, воспользуемся полученным расчетом по фитнесу:
+#       # 
+#       #set best [$pop cget -best] ;# вычисляется после "break"
 
-      # пока придется так по-топорному (т.е. снова здесь повторить поиск лучшего):
-      # 
-      set rank_proc [$pop cget -rank]
-      set best [find_best_solution $pop $rank_proc]
-    }
+#       # пока придется так по-топорному (т.е. снова здесь повторить поиск лучшего):
+#       # 
+#       set rank_proc [$pop cget -rank]
+#       set best [find_best_solution $pop $rank_proc]
+#     }
 
-    #set best_entity [$pop get_entity $best]
-    set best_entity [pop_get_entity_ $pop  $best]
-
-    #set best_fit    [$pop get_entity_fitness $best]
+    set best_entity [pop_get_entity_         $pop  $best]
     set best_fit    [pop_get_entity_fitness_ $pop  $best]
 
     set best_chromo [item_get_mainsrc $best_entity]
 
-    set A [lindex $best_chromo 0]
-    set B [lindex $best_chromo 1]
-    set C [lindex $best_chromo 2]
-    set D [lindex $best_chromo 3]
-
-    if {0} { 
-
-      puts [format "FINAL BEST : numer = $best  fitness = %f" $best_fit]
-      puts ""
-      
-      puts [format "   A = %f  ( 0.75 )" $A]
-      puts [format "   B = %f  ( 0.95 )" $B]
-      puts [format "   C = %f  ( 0.23 )" $C]
-      puts [format "   D = %f  ( 0.71 )" $D]
-
-    } else {
-      print_one_line  "Final"  $A $B $C $D  $best_fit
-
-      puts ""
-    }
-
-    #     ga_extinction (pop);
+    print_one_line  "Final"  $best_fit $best_chromo
     
   }
 
-  #   exit (EXIT_SUCCESS);
-
-  #puts ""
 
   return
 }
@@ -787,7 +834,8 @@ proc main {} {
 
 
   global argc argv argv0
-  global strategy_full_origin strategy_simp strategy_test
+
+  #global strategy_full_origin strategy_test
 
   if  {$argc == 0} { 
     puts "argc == 0"
@@ -799,23 +847,24 @@ proc main {} {
   set task     [task_create  -fit_func "_test_score" -fit_tobest "MIN" -isreverse 0 -fit_error 0.001 ]
   set task_rev [task_create  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
     
+  global argv
+  set argv [lrange $argv 1 end]
+
+  set len_chromo   [dict_parse $argv  "-size" 4]
+
+  set tlist [get_targets_list $len_chromo] 
 
   puts ""
-  print_one_line  "Target"  0.75  0.95  0.23  0.71  0
+  print_one_line  "Target"  +0  $tlist ;#  {0.75  0.95  0.23  0.71}
   puts ""
-
 
   #-------------------------------------------------------
-  if     {$mode == "ga"    }   { test_ga $task } \
-  elseif {$mode == "ga_REV"}   { 
-    #
-    # а почему реверсивный дает лучше (другой) результат ???
-
-    test_ga $task_rev
-  } \
-  elseif {$mode == "de"}       { test_de  $task_rev  $strategy_full_origin } \
-  elseif {$mode == "de_test"}  { test_de  $task_rev  $strategy_test        } \
-  elseif {$mode == "sd2"}      { main_sd2 $task_rev } \
+  if     {$mode == "ga"    }   { test_ga      $argv $task     } \
+  elseif {$mode == "ga_REV"}   { test_ga      $argv $task_rev } \
+  elseif {$mode == "de_full"}  { test_de_all  $argv $task_rev  $::strategy_full_origin } \
+  elseif {$mode == "de_test"}  { test_de_all  $argv $task_rev  $::strategy_test        } \
+  elseif {$mode == "de"     }  { test_de_all  $argv $task_rev  $::strategy_best        } \
+  elseif {$mode == "sd2"}      { test_sd2     $argv $task_rev } \
   else {
     puts ""
     puts "ERROR mode = $mode"
@@ -824,7 +873,7 @@ proc main {} {
   #-------------------------------------------------------
 
   puts ""
-  print_one_line  "Target"  0.75  0.95  0.23  0.71  +0
+  print_one_line  "Target"  +0  $tlist ;#   {0.75  0.95  0.23  0.71} 
   puts ""
 
 }
