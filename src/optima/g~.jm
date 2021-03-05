@@ -31,7 +31,7 @@ package require compot::common
 
 source "g-corE.tl"
 
-source "g-diff.tl"
+#source "g-diff.tl"
 source "g-detw.tl"
 source "g-tabu.tl"
 source "g-sima.tl"
@@ -66,7 +66,6 @@ proc random_test_old {} {
 # ;-------------------------------------------------------------------------------
 proc random_test_new {} {
 
-
   set ::debug_print 1
   set ::simp_random 1
 
@@ -93,13 +92,19 @@ proc random_test_new {} {
 
   puts "(random-value 0.095) = [random-value 0.095]"
 
-#   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
-#   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+  #   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+  #   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+  
+  #   puts "(YRAND 10 20) = [YRAND 10 20]"
+  #   puts "(YRAND 10 20) = [YRAND 10 20]"
+  
+  puts ""
 
-#   puts "(YRAND 10 20) = [YRAND 10 20]"
-#   puts "(YRAND 10 20) = [YRAND 10 20]"
+  test_random_seed [clock seconds]
 
-   puts ""
+  puts "random_double_range {0 1.0} =  [random_double_range 0 1.0]"
+
+  puts ""
 
 }
 # //------------------------------------------------------------------------------

@@ -80,17 +80,24 @@ proc r_one {a} {
 
   if {[is_GLOBAL_DICT $a]} {
 
-    set ver [GET $a "ver"] 
+    set ver [GET $a "ver"] ;# посмотрим, задана ли вероятность !
     set cmd [GET $a "cmd"]
 
     if {$ver == {}} {
-      set ver 1.0
+      set ver 1.0 ;# вероятность исполнения команды в потоке
     }
 
     #puts "R_ONE_CMD: cmd = $cmd, ver = $ver" 
 
     # и еще посмотрим вероятность, может и не будем выполнять
-    # 
+    # TODO:
+ 
+    #set r [YRandF 0 1.0]
+    set r [random_double_range 0 1.0]
+
+    #puts "r = $r, ver = $ver"
+
+    if {$r < $ver} {return} ;# return "continue"
 
     set a $cmd
   }
@@ -1513,22 +1520,39 @@ proc TEST_dict_NEW {} {
 #-------------------------------------------------------------------------------
 proc TEST_dict_CMD {} {
 
+  set seed "@"
+
+  #-------------------------------------
+  if {$seed == "@"} {
+
+    set seed [clock seconds]
+  }
+
+  test_random_seed $seed 
+
+  #-------------------------------------
+
   v1_init_all       ;# начальная инициализация
 
   puts ""
 
   #run_v1_src {666 . }
 
-  set cmd1 [dict_create  "cmd" 1]
-  set cmd2 [dict_create  "cmd" 2]
-  set cmd3 [dict_create  "cmd" .]
+  # seed
+
+  set cmd1 [dict_create  "cmd" 1 "ver" 0.5]
+  set cmd2 [dict_create  "cmd" 2 "ver" 0.5]
+  set cmd3 [dict_create  "cmd" 3 "ver" 0.5]
 
   puts ""
 
   #set ::R_ONE_CMD 1
 
-  run_v1_src "$cmd1 $cmd2 $cmd3 $cmd3"
+  #run_v1_src "$cmd1 $cmd2 $cmd3 $cmd3"
+  run_v1_src "$cmd1 $cmd2 $cmd3"
 
+  #puts ""
+  r  .s ;# посмотреть стек
 
   #set ver [GET $cmd1 "ver"]
 

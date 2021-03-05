@@ -1,5 +1,14 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
+#-------------------------------------------------------------------------------
+#
+if [info exists ::G_DIFF_TL] {
+  return
+} else {
+  set  ::G_DIFF_TL ""
+}
+
+#-------------------------------------------------------------------------------
 # /**********************************************************************
 #   ga_de.c
 
@@ -15,6 +24,21 @@
 # 		You may notice that this code includes equivalents of
 # 		all of the original DE strategies along with a
 # 		selection of additional strateties.
+
+  # /*
+  #   pop->de_params->weighting_factor = random_double_range(-2.0, 2.0);
+  # */
+  # /*
+  #  * This is a easy method for implementing randomly selected
+  #  * scaling factor (F in original paper) for each generation, as
+  #  * suggested in:
+  #  *
+  #  * Karaboga D., Okdem, S. "A simple and global optimization algorithm
+  #  * for engineering problems: differential evolution algorithm",
+  #  * Elec. Engin. 12:53-60 (2004).
+  #  *
+  #  * Uncomment, if desired.
+  #  */
 
 
 #-------------------------------------------------------------------------------
@@ -1391,6 +1415,139 @@ proc ga_differentialevolution	{pop task max_generations args} {
    return $generation
 }
 # //******************************************************************************
-# //****************************************************************************
+#-------------------------------------------------------------------------------
+proc strategy_parse_and_print {s 
+                       &label &strategy &crossover &num_perturbed &crossover_factor
+                       &weighting_factor &weighting_factor2} {
 
+
+  USE_REFS
+
+  set label             [lindex $s 0]
+  set strategy          [lindex $s 1]
+  set crossover         [lindex $s 2]
+  set num_perturbed     [lindex $s 3]
+  set crossover_factor  [lindex $s 4]
+  set weighting_factor  [lindex $s 5]
+  set weighting_factor2 [lindex $s 6]
+
+
+  puts -nonewline [format "Strategy %s ; C = %f ; " $label $crossover_factor]
+
+
+  if {$weighting_factor != $weighting_factor2} {
+    puts [format "F = rand( %f, %f )" $weighting_factor $weighting_factor2]
+  } else {        
+    puts [format "F = %f"  $weighting_factor]
+  }
+
+
+  if {$::is_print} { 
+
+    puts "strategy_parse_and_print ......... "
+    puts ""
+    
+    puts "   label             =  $label            "   
+    puts "   strategy          =  $strategy         "
+    puts "   crossover         =  $crossover        "
+    puts "   num_perturbed     =  $num_perturbed    "
+    
+    puts [format "   crossover_factor  =  %f" $crossover_factor]
+    puts [format "   weighting_factor  =  %f" $weighting_factor]
+    puts [format "   weighting_factor2 =  %f" $weighting_factor2]
+
+  }
+
+  puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc de_run_one {task strategy_one label population_size max_generations len_chromo print
+               seed_proc step_proc} {
+
+  #set seed_proc "_test_seed"
+  #set step_proc "test_generation_callback"
+
+
+  set label             ""
+  set strategy          "" 
+  set crossover         "" 
+  set num_perturbed     "" 
+  set crossover_factor  ""
+  set weighting_factor  "" 
+  set weighting_factor2 ""
+  
+  strategy_parse_and_print $strategy_one \
+    label strategy crossover num_perturbed crossover_factor \
+    weighting_factor weighting_factor2
+  
+  
+  
+  #  pop = ga_genesis_double (
+  #      40,			   /* const int              population_size      */
+  #      1,			   /* const int              num_chromo           */
+  #      4,			   /* const int              len_chromo           */
+  #    test_generation_callback, /* GAgeneration_hook      generation_hook      */
+  #     NULL,			   /* GAiteration_hook       iteration_hook       */
+  #     NULL,			   /* GAdata_destructor      data_destructor      */
+  #     NULL,			   /* GAdata_ref_incrementor data_ref_incrementor */
+  #     _test_score,		   /* GAevaluate             evaluate             */
+  #     _test_seed,		   /* GAseed                 seed                 */
+  #     NULL,			   /* GAadapt                adapt                */
+  #     NULL,			   /* GAselect_one           select_one           */
+  #     NULL,			   /* GAselect_two           select_two           */
+  #     NULL,			   /* GAmutate               mutate               */
+  #     NULL,			   /* GAcrossover            crossover            */
+  #     NULL,			   /* GAreplace              replace              */
+  #     NULL			   /* vpointer               User data            */
+  #     );
+  
+  set pop [ga_genesis_main         \
+	     $task \
+             $population_size          \
+             1                         \
+             $len_chromo               \
+             $step_proc                \
+             NULL                      \
+             NULL                      \
+             NULL                      \
+             $seed_proc                \
+             NULL                      \
+             NULL                      \
+             NULL                      \
+             NULL                      \
+             NULL                      \
+             NULL                      \
+             NULL                      \
+            ]
+  
+  # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
+  #
+  ga_population_seed $pop $task
+  
+  # пока здесь остановимся, осмотримся и распечатаемся:
+  #$pop print
+  #exit
+  
+  #  ga_population_set_differentialevolution_parameters (
+  #      pop, strategy[i].strategy, strategy[i].crossover,
+  #      strategy[i].num_perturbed, strategy[i].weighting_factor, strategy[i].weighting_factor2,
+  #      strategy[i].crossover_factor
+  #      );
+  
+  ga_population_set_differentialevolution_parameters $pop \
+    $strategy $crossover   \
+    $num_perturbed $weighting_factor $weighting_factor2 \
+    $crossover_factor
+  
+  
+  # выполняем основной расчет (поиск минимума)
+  #
+  ga_differentialevolution  $pop $task $max_generations -print $print			
+  
+  return $pop
+}
+# //****************************************************************************
+#-------------------------------------------------------------------------------
 

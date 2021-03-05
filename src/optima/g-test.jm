@@ -21,39 +21,11 @@ package require compot::common
 
 source "g-corE.tl"
 
-source "g-diff.tl"
+#source "g-diff.tl"
+
 source "g-grad.tl"
 
 
-#-------------------------------------------------------------------------------
-proc parse_opts_NEW {argv &population_size &max_generations &len_chromo  
-                def_population_size def_max_generations def_len_chromo} {
-
-  USE_REFS
-
-  #global argv
-  #set argv [lrange $argv 1 end]
-
-  set population_size [dict_parse $argv  "-lpop"   $def_population_size]
-  set max_generations [dict_parse $argv  "-nums"   $def_max_generations]
-  set len_chromo      [dict_parse $argv  "-size"   $def_len_chromo]
-  set print           [dict_parse $argv  "-print"  0]
-
-  set ::is_print $print
-
-  #------------------------------
-  set seed            [dict_parse $argv  "-seed"   23091975]
-
-  if {$seed == "@"} {
-
-    set seed [clock seconds]
-  }
-
-  random_seed $seed
-  #------------------------------
-
-  return $print
-}
 # /*******************************************************************************
 #   ga_x_tester.c
 
@@ -215,24 +187,6 @@ proc _test_seed {pop task adam} {
   return true;
 }
 #-------------------------------------------------------------------------------
-proc print_one_line {name best_fit {listvalues {}}} {
-
-  #puts [format "%6s :   A = %f  B = %f  C = %f  D = %f   : fitness = %f "  $name \
-
-  puts -nonewline [format "%6s :"  $name]
-
-  foreach v $listvalues {
-
-    puts -nonewline [format "  % 5.3f"  $v]
-  }
-  puts -nonewline [format "  "]
-
-  puts -nonewline [format ": fit = % 8.6f "  $best_fit]
-
-  puts ""
-
-}
-#-------------------------------------------------------------------------------
 # synopsis:	Generation callback
 #
 # //------------------------------------------------------------------------------
@@ -253,6 +207,25 @@ proc _test_generation_callback {generation pop} {
   return true;
 }
 # //------------------------------------------------------------------------------
+# //  synopsis:	Generation callback
+# //------------------------------------------------------------------------------
+proc test_generation_callback {generation pop} {
+
+  
+  # /*
+  #  * Write top ranked solution every tenth generation.  Note, that this
+  #  * is not neccesarily the best solution because DE doesn't require
+  #  * the population to be sorted, as genetic algorithms usually do.
+  #  */
+  
+  if {[expr {$generation % 10}] == 0} {
+
+    _test_generation_callback $generation $pop
+  }
+  
+  return true
+}
+# //------------------------------------------------------------------------------
 
 # //  Synopsis:	Test program for GAUL's basic genetic algorithm.
 # //
@@ -263,50 +236,10 @@ proc _test_generation_callback {generation pop} {
 proc test_ga {argv task} {
 
 
-  set population_size ""
-  set max_generations ""
-  set len_chromo      ""
+  set seed_proc "_test_seed"
+  set step_proc "_test_generation_callback"
 
-  #global argv
-  #set argv [lrange $argv 1 end]
-
-  set print [parse_opts_NEW  $argv population_size max_generations len_chromo  200 500 4]
-
-  SET $task "len_chromo" $len_chromo
-
-  set pop [ga_genesis_main  \
-             $task                              {*}[NB                 ] \
-             $population_size		        {*}[NB                 ] \
-             1			                {*}[NB  num_chromo     ] \
-             $len_chromo			{*}[NB  len_chromo     ] \
-             _test_generation_callback          {*}[NB  generation_hook] \
-             NULL			        {*}[NB  iteration_hook ] \
-             NULL			        {*}[NB  data_destructor] \
-             NULL			        {*}[NB  data_ref_incrementor] \
-             _test_seed		                {*}[NB  seed           ] \
-             NULL			        {*}[NB  adapt          ] \
-             ga_select_one_bestof2	        {*}[NB  select_one     ] \
-             ga_select_two_bestof2	        {*}[NB  select_two     ] \
-             ga_mutate_double_singlepoint_drift {*}[NB  mutate         ] \
-             ga_crossover_double_doublepoints   {*}[NB  crossover      ] \
-             NULL			        {*}[NB  replace        ] \
-             NULL			        {*}[NB  User data      ] \
-            ]
-
-  ga_population_set_parameters \
-    $pop	               {*}[NB population      ] \
-    GA_SCHEME_DARWIN	       {*}[NB ga_scheme_type  ] \
-    GA_ELITISM_PARENTS_SURVIVE {*}[NB ga_elitism_type ] \
-    0.8			       {*}[NB crossover       ] \
-    0.2			       {*}[NB mutation        ] \
-    0.0      	               {*}[NB migration       ] 
-                               
-
-  ga_population_seed $pop $task
-  
-  ga_evolution       $task $pop $max_generations  -print $print 	 
-  
-  #puts ""
+  super_ga $task $seed_proc $step_proc {*}$argv
 
   return
 }
@@ -612,100 +545,9 @@ set ::strategy_full_origin {
 
 
 # //------------------------------------------------------------------------------
-# //  synopsis:	Generation callback
-# //------------------------------------------------------------------------------
-# static boolean 
-# test_generation_callback (int generation, population *pop)
-# //------------------------------------------------------------------------------
-proc test_generation_callback {generation pop} {
-
-  #     //entity	*this_entity;	/* Top ranked entity. */
-  
-  # /*
-  #  * This is a easy method for implementing randomly selected
-  #  * scaling factor (F in original paper) for each generation, as
-  #  * suggested in:
-  #  *
-  #  * Karaboga D., Okdem, S. "A simple and global optimization algorithm
-  #  * for engineering problems: differential evolution algorithm",
-  #  * Elec. Engin. 12:53-60 (2004).
-  #  *
-  #  * Uncomment, if desired.
-  #  */
-  # /*
-  #   pop->de_params->weighting_factor = random_double_range(-2.0, 2.0);
-  # */
-  
-  # /*
-  #  * Write top ranked solution every tenth generation.  Note, that this
-  #  * is not neccesarily the best solution because DE doesn't require
-  #  * the population to be sorted, as genetic algorithms usually do.
-  #  */
-  
-  if {[expr {$generation % 10}] == 0} {
-
-    _test_generation_callback $generation $pop
-  }
-  
-  return true
-}
-# //------------------------------------------------------------------------------
 # void 
 # test_de (/* int argc, char **argv */)
 
-#-------------------------------------------------------------------------------
-proc strategy_parse_and_print {s 
-                       &label &strategy &crossover &num_perturbed &crossover_factor
-                       &weighting_factor &weighting_factor2} {
-
-
-  USE_REFS
-
-  set label             [lindex $s 0]
-  set strategy          [lindex $s 1]
-  set crossover         [lindex $s 2]
-  set num_perturbed     [lindex $s 3]
-  set crossover_factor  [lindex $s 4]
-  set weighting_factor  [lindex $s 5]
-  set weighting_factor2 [lindex $s 6]
-
-
-  puts -nonewline [format "Strategy %s ; C = %f ; " $label $crossover_factor]
-
-
-  if {$weighting_factor != $weighting_factor2} {
-    puts [format "F = rand( %f, %f )" $weighting_factor $weighting_factor2]
-  } else {        
-    puts [format "F = %f"  $weighting_factor]
-  }
-
-
-  if {$::is_print} { 
-
-    puts "strategy_parse_and_print ......... "
-    puts ""
-    
-    puts "   label             =  $label            "   
-    puts "   strategy          =  $strategy         "
-    puts "   crossover         =  $crossover        "
-    puts "   num_perturbed     =  $num_perturbed    "
-    
-    puts [format "   crossover_factor  =  %f" $crossover_factor]
-    puts [format "   weighting_factor  =  %f" $weighting_factor]
-    puts [format "   weighting_factor2 =  %f" $weighting_factor2]
-
-  }
-
-  puts ""
-
-  return
-}
-#-------------------------------------------------------------------------------
-proc de_run_one {task strategy_one  population_size max_generations len_chromo print} {
-
-
-
-}
 #-------------------------------------------------------------------------------
 proc test_de_all {argv task strategy_list} {
 
@@ -718,103 +560,17 @@ proc test_de_all {argv task strategy_list} {
 
   SET $task "len_chromo" $len_chromo
 
+  set seed_proc "_test_seed"
+  set step_proc "test_generation_callback"
 
-  set label             ""
-  set strategy          "" 
-  set crossover         "" 
-  set num_perturbed     "" 
-  set crossover_factor  ""
-  set weighting_factor  "" 
-  set weighting_factor2 ""
   
   foreach s $strategy_list {
 
+    set pop [de_run_one  $task $s "" $population_size $max_generations $len_chromo $print \
+               $seed_proc $step_proc \
+              ]
 
-    strategy_parse_and_print $s \
-                       label strategy crossover num_perturbed crossover_factor \
-                       weighting_factor weighting_factor2
-
-
-
-    #  pop = ga_genesis_double (
-    #      40,			   /* const int              population_size      */
-    #      1,			   /* const int              num_chromo           */
-    #      4,			   /* const int              len_chromo           */
-    #    test_generation_callback, /* GAgeneration_hook      generation_hook      */
-    #     NULL,			   /* GAiteration_hook       iteration_hook       */
-    #     NULL,			   /* GAdata_destructor      data_destructor      */
-    #     NULL,			   /* GAdata_ref_incrementor data_ref_incrementor */
-    #     _test_score,		   /* GAevaluate             evaluate             */
-    #     _test_seed,		   /* GAseed                 seed                 */
-    #     NULL,			   /* GAadapt                adapt                */
-    #     NULL,			   /* GAselect_one           select_one           */
-    #     NULL,			   /* GAselect_two           select_two           */
-    #     NULL,			   /* GAmutate               mutate               */
-    #     NULL,			   /* GAcrossover            crossover            */
-    #     NULL,			   /* GAreplace              replace              */
-    #     NULL			   /* vpointer               User data            */
-    #     );
-
-    set pop [ga_genesis_main         \
-	     $task \
-             $population_size          \
-             1                         \
-             $len_chromo               \
-             test_generation_callback  \
-             NULL                      \
-             NULL                      \
-             NULL                      \
-             _test_seed                \
-             NULL                      \
-             NULL                      \
-             NULL                      \
-             NULL                      \
-             NULL                      \
-             NULL                      \
-             NULL                      \
-            ]
-
-    # (похоже инициация-seed еще не выполнялась ?) давай пока тут выполним:
-    #
-    ga_population_seed $pop $task
-    
-    # пока здесь остановимся, осмотримся и распечатаемся:
-    #$pop print
-    #exit
-
-    #  ga_population_set_differentialevolution_parameters (
-    #      pop, strategy[i].strategy, strategy[i].crossover,
-    #      strategy[i].num_perturbed, strategy[i].weighting_factor, strategy[i].weighting_factor2,
-    #      strategy[i].crossover_factor
-    #      );
-    
-    ga_population_set_differentialevolution_parameters $pop \
-                                     $strategy $crossover   \
-                                     $num_perturbed $weighting_factor $weighting_factor2 \
-                                     $crossover_factor
-       
-
-    # выполняем основной расчет (поиск минимума)
-    #
-    ga_differentialevolution  $pop $task $max_generations -print $print			
-
-
-#     if {1} {
-      #  //# предполагаем, что уже отсортирована популяция ??
-      #  // 
-      set best 0
-
-#     } else {
-
-#       # ну, а если не отсортирована, воспользуемся полученным расчетом по фитнесу:
-#       # 
-#       #set best [$pop cget -best] ;# вычисляется после "break"
-
-#       # пока придется так по-топорному (т.е. снова здесь повторить поиск лучшего):
-#       # 
-#       set rank_proc [$pop cget -rank]
-#       set best [find_best_solution $pop $rank_proc]
-#     }
+    set best 0
 
     set best_entity [pop_get_entity_         $pop  $best]
     set best_fit    [pop_get_entity_fitness_ $pop  $best]
@@ -826,6 +582,27 @@ proc test_de_all {argv task strategy_list} {
   }
 
 
+  return
+}
+#-------------------------------------------------------------------------------
+proc test_sc {argv task} {
+
+  set seed_proc "_test_seed"
+  set step_proc "test_generation_callback"
+
+  set pop [super_de $task $seed_proc $step_proc {*}$argv] ;# !!!!!!!!!!!!!!!!
+
+
+  set best 0
+  
+  set best_entity [pop_get_entity_         $pop  $best]
+  set best_fit    [pop_get_entity_fitness_ $pop  $best]
+  
+  set best_chromo [item_get_mainsrc $best_entity]
+  
+  print_one_line  "Final"  $best_fit $best_chromo
+  
+  
   return
 }
 # //------------------------------------------------------------------------------
@@ -865,6 +642,7 @@ proc main {} {
   elseif {$mode == "de_test"}  { test_de_all  $argv $task_rev  $::strategy_test        } \
   elseif {$mode == "de"     }  { test_de_all  $argv $task_rev  $::strategy_best        } \
   elseif {$mode == "sd2"}      { test_sd2     $argv $task_rev } \
+  elseif {$mode == "sc"}       { test_sc      $argv $task_rev } \
   else {
     puts ""
     puts "ERROR mode = $mode"

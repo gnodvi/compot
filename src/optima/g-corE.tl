@@ -5814,6 +5814,16 @@ proc ga_evolution {task pop  max_generations args} {
 }
 # //------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+# g-diff.tl
+#-------------------------------------------------------------------------------
+
+source "g-diff.tl"
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 # Ядро движка GP.
@@ -7124,5 +7134,139 @@ proc maintest_run {botobjs  task_correct
 }
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc parse_opts_NEW {argv 
+                     &population_size &max_generations &len_chromo  
+                     def_population_size def_max_generations def_len_chromo} {
+
+  USE_REFS
+
+  #global argv
+  #set argv [lrange $argv 1 end]
+
+  set population_size [dict_parse $argv  "-lpop"   $def_population_size]
+  set max_generations [dict_parse $argv  "-nums"   $def_max_generations]
+  set len_chromo      [dict_parse $argv  "-size"   $def_len_chromo]
+  set print           [dict_parse $argv  "-verb"   0]
+
+  set ::is_print $print
+
+  #------------------------------
+  set seed            [dict_parse $argv  "-seed"   23091975]
+
+  if {$seed == "@"} {
+    set seed [clock seconds]
+  }
+
+  random_seed $seed
+  #------------------------------
+
+  return $print
+}
+#-------------------------------------------------------------------------------
+#
+# SuperCalc !!!!!!!!!!!!!!!!!!!!!!!!
+#
+#-------------------------------------------------------------------------------
+proc print_one_line {name best_fit {listvalues {}}} {
+
+  #puts [format "%6s :   A = %f  B = %f  C = %f  D = %f   : fitness = %f "  $name \
+
+  puts -nonewline [format "%6s :"  $name]
+
+  foreach v $listvalues {
+
+    puts -nonewline [format "  % 5.3f"  $v]
+  }
+  puts -nonewline [format "  "]
+
+  puts -nonewline [format ": fit = % 14.12f "  $best_fit]
+
+  puts ""
+
+}
+#-------------------------------------------------------------------------------
+proc super_de {task seed_proc step_proc args} {
+
+  #set seed_proc "_test_seed"
+  #set step_proc "test_generation_callback"
+
+
+  set s { "DE/best/1/bin" GA_DE_STRATEGY_BEST GA_DE_CROSSOVER_BINOMIAL 1  0.8  0.5  0.5 }
+
+  set population_size  "" 
+  set max_generations  ""
+  set len_chromo       ""
+  # 
+  set print [parse_opts_NEW  $args   population_size max_generations len_chromo  40 50 4]
+
+  puts ""
+  puts "population_size = $population_size"
+  puts "max_generations = $max_generations"
+  puts "len_chromo      = $len_chromo"
+  puts ""
+
+  SET $task "len_chromo" $len_chromo
+
+  
+  set pop [de_run_one  $task $s "" $population_size $max_generations $len_chromo $print \
+          $seed_proc $step_proc]
+  
+
+  return $pop
+}
+#-------------------------------------------------------------------------------
+proc super_ga {task seed_proc step_proc args} {
+
+
+  set population_size ""
+  set max_generations ""
+  set len_chromo      ""
+
+  #global argv
+  #set argv [lrange $argv 1 end]
+
+  #puts "args = $args"
+
+  set print [parse_opts_NEW  $args population_size max_generations len_chromo  200 500 4]
+
+  SET $task "len_chromo" $len_chromo
+
+ set pop [ga_genesis_main  \
+             $task                              {*}[NB                 ] \
+             $population_size		        {*}[NB                 ] \
+             1			                {*}[NB  num_chromo     ] \
+             $len_chromo			{*}[NB  len_chromo     ] \
+             $step_proc                         {*}[NB  generation_hook] \
+             NULL			        {*}[NB  iteration_hook ] \
+             NULL			        {*}[NB  data_destructor] \
+             NULL			        {*}[NB  data_ref_incrementor] \
+             $seed_proc		                {*}[NB  seed           ] \
+             NULL			        {*}[NB  adapt          ] \
+             ga_select_one_bestof2	        {*}[NB  select_one     ] \
+             ga_select_two_bestof2	        {*}[NB  select_two     ] \
+             ga_mutate_double_singlepoint_drift {*}[NB  mutate         ] \
+             ga_crossover_double_doublepoints   {*}[NB  crossover      ] \
+             NULL			        {*}[NB  replace        ] \
+             NULL			        {*}[NB  User data      ] \
+            ]
+
+  ga_population_set_parameters \
+    $pop	               {*}[NB population      ] \
+    GA_SCHEME_DARWIN	       {*}[NB ga_scheme_type  ] \
+    GA_ELITISM_PARENTS_SURVIVE {*}[NB ga_elitism_type ] \
+    0.8			       {*}[NB crossover       ] \
+    0.2			       {*}[NB mutation        ] \
+    0.0      	               {*}[NB migration       ] 
+                               
+
+  ga_population_seed $pop $task
+  
+  ga_evolution       $task $pop $max_generations  -print $print 	 
+  
+  #puts ""
+
+
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

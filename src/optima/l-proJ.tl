@@ -502,7 +502,7 @@ proc v1_get_result_from_not_arg {prg_11 {prog @}} {
   return $result
 }
 #-------------------------------------------------------------------------------
-proc getresult_prg {prg_22 {prog @}} {
+proc getresult_prg {prg_22} {
 
 
   #convert_22_to_11  $prg_22 prg_11
@@ -1205,18 +1205,18 @@ v0_make_tclproc  p9 {} {
 
 }
 #-------------------------------------------------------------------------------
-proc FITPROC_01 {p {prog @}} {
+proc calc_FITPROC_01 {joy_prg} {
 
   set fitness 0
 
-  #if {$::ITEMS_LIST} {
-  set joy_prg  [item_get_mainsrc $p]
-  #} else {
-  #  set joy_prg $p
-  #}
+#   #if {$::ITEMS_LIST} {
+#   set joy_prg  [item_get_mainsrc $p]
+#   #} else {
+#   #  set joy_prg $p
+#   #}
 
 
-  set result [getresult_prg  $joy_prg $prog]
+  set result [getresult_prg  $joy_prg]
 
 
   #puts "joy_prg = $joy_prg  resul = $result"
@@ -1253,6 +1253,14 @@ proc FITPROC_01 {p {prog @}} {
   # 
 
   return $fitness
+}
+#-------------------------------------------------------------------------------
+proc FITPROC_01 {p task args} {
+
+
+  set joy_prg  [item_get_mainsrc $p]
+
+  return [calc_FITPROC_01 $joy_prg]
 }
 #-------------------------------------------------------------------------------
 proc argo_print {argo} {
@@ -1375,6 +1383,10 @@ proc NEXT_01 {} {
 # l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
 # l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
 
+# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
+
+
+
 # -) универсальная передача параметров через args (dict_print);
 
 # -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
@@ -1394,4 +1406,176 @@ proc NEXT_01 {} {
 # +) перевод всех алгоритмов : prg --> prog ;
 # -) поиск лучшего решения путем рефакторинга;
 
+################################################################################
+#
+# Новый метод (pGP - probabalistic):
+# 
+# 1) фиксируем "программу" максимального размера с избыточным кол-ом операторов
+# 2) каждый оператор идет с вероятность его выполения
+# 3) фитнес-значене = сумме попыток выполнения вероятностной программы
+# 4) ищем решение в виде вщественной хромомомы (а может и округляя вероятности)
+# 
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc _test_seed {pop task adam} {
+
+  set len_chromo [GET $task "len_chromo"]  
+
+  for {set i 0} {$i < $len_chromo} {incr i} {
+
+    item_set_chromo_gen $adam $i  [random_double 1.0]
+  }
+
+  return true;
+}
+#-------------------------------------------------------------------------------
+proc _test_score {this_entity  task} {
+
+
+  set len_chromo [GET $task "len_chromo"]  
+
+  set program {}
+
+  for {set i 0} {$i < $len_chromo} {incr i} {
+
+    set X [item_get_chromo_gen $this_entity  $i] 
+    
+    #puts -nonewline [format "  % 5.3f"  $X]
+
+    set cmd [dict_create  "cmd" p1 "ver" $X]
+    lappend program $cmd
+  }
+
+
+  set num_runs    7
+  set fitness_sum 0
+
+  for {set i 0} {$i < $num_runs} {incr i} {
+
+    set fitness [calc_FITPROC_01 $program]
+    #puts "fitness = $fitness"
+    incr fitness_sum $fitness
+  }
+
+  set fitness [expr {1.0 * $fitness_sum} / $num_runs]
+
+  set fitness [expr {-  $fitness}] 
+  #
+  # а теперь наоборот должно быть 
+  # fit_tobest = MAX, движемся к нулю сдева  : --> 0 
+  
+  #print_one_line  "--"  $fitness $this_entity
+
+  #puts -nonewline [format "  "]
+  #puts -nonewline [format ": fit = % f "  $fitness]
+  #puts ""
+
+  #set fitness 0.9
+  #puts "_test_score: program = $program, fitness = $fitness"
+
+  return $fitness
+}
+# //------------------------------------------------------------------------------
+proc _test_step {generation pop} {
+
+  set best [pop_get_entity_ $pop  0]
+  
+  set best_chromo [item_get_mainsrc $best]
+  set best_fit    [item_get_fitn    $best]
+  
+  #print_one_line  [format "%3d" $generation]  $best_fit $best_chromo
+
+  #puts [format "generation = %3d: best_fit = $best_fit" $generation] 
+
+  #puts ""
+  print_one_line  [format "%3d" $generation]  $best_fit $best_chromo
+  #puts ""
+
+  
+  return true;
+}
+#-------------------------------------------------------------------------------
+proc test_pGP {} {
+
+
+  #global argc argv argv0
+  #set argo [lrange $argv 2 end]
+
+  global argv 
+  set argv [lrange $argv 2 end]
+  
+  puts ""
+  #argo_print $argo 
+
+  set seed        [dict_parse $argv "-seed" 2016]
+  set individuals [dict_parse $argv "-lpop" 10]
+  #set len         [dict_parse $argo "-size" 10] 
+  set nums        [dict_parse $argv "-nums"  4]
+  #set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
+  #set auto        [dict_parse $argo "-auto"  0]
+  
+  set ::sum_target 5 ;# 20
+
+
+  puts "individuals  = $individuals" ;# колич-во ботов
+  #puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
+  puts "nums         = $nums"        ;# шагов эволюции  
+  #puts "gp_list      = $gp_list"     ;#   
+
+  puts "::sum_target = $::sum_target" ;# к чему стремимся, что надо получить 
+  puts ""
+
+  #exit
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #set is_print 1
+  #DebugOn
+
+  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+    
+  set pb [mp_create]
+
+  mp_init $pb 
+
+  #exit
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+  set task_rev [task_create  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
+    
+  #global argv
+  #set argv [lrange $argv 1 end]
+
+  set len_chromo  9 ;# [dict_parse $argv  "-size" 4]
+
+  SET $task_rev "len_chromo" $len_chromo
+
+  set seed_proc "_test_seed"
+  set step_proc "_test_step"
+
+  #set pop [super_de $task_rev $seed_proc $step_proc  {*}$argv -size 9] ;# !!!!!
+
+  set pop [super_ga $task_rev $seed_proc $step_proc  {*}$argv -size 9] ;# !!!!!
+
+  exit
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set best 0
+  
+  set best_entity [pop_get_entity_         $pop  $best]
+  set best_fit    [pop_get_entity_fitness_ $pop  $best]
+  
+  set best_chromo [item_get_mainsrc $best_entity]
+  
+  print_one_line  "Final"  $best_fit $best_chromo
+  
+  
+  return
+}
+# //------------------------------------------------------------------------------
+
+
+
+################################################################################
 ################################################################################
