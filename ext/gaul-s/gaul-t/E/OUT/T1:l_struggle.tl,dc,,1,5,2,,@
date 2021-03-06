@@ -1,0 +1,30 @@
+
+ga_population_set_parameters ... 
+
+   i = 0  ch= =y=E]GcYoS]Q-Iik{Mueiu;Ii.]b=6u"
+   i = 1  ch= m4Ex+^ez1<3l[(K,WP(f0JnR?hQjWRCt
+   i = 2  ch= A:Ody&ql)&{C'[;9=MG5]C}ycU_}EYkC
+   i = 3  ch= }y9i /(GFC+cy]g'n#\!,MRadm Sd&"t
+   i = 4  ch= &"@NjVx"Dq G^O"MzoN}NsGEI!;+$y^A
+
+ordered     = 0 1 2 3 4
+permutation = 2 0 3 4 1
+i= 0  dist1=  924.00  dist2=  848.00
+i= 1  dist1= 1183.00  dist2= 1343.00
+i= 2  dist1=  646.00  dist2= 1886.00
+i= 3  dist1= 1301.00  dist2= 1019.00
+i= 4  dist1= 1254.00  dist2=  930.00
+
+ordered     = 1 1 4 3 4
+permutation = 1 1 4 3 4
+i= 0  dist1=  664.00  dist2=  680.00
+i= 1  dist1=    0.00  dist2=    0.00
+i= 2  dist1= 1142.00  dist2= 1170.00
+i= 3  dist1=    0.00  dist2=    0.00
+i= 4  dist1=    0.00  dist2=    0.00
+
+The final solution with seed = 0 was:
+}4EE+^(GF<]c-Ig'WP(!,MRad. j=6ut
+With score = 58.72000000000001 
+
+

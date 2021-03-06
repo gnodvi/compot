@@ -1,0 +1,303 @@
+
+ga_population_seed  ......... 
+
+   i = 0  ch= geiu1!%[u1!%[AQW57g;s+mMKSnk.3vO
+   i = 1  ch= 8{4odC>9 gVw|ank.3P"TbXd8S<+"eHO
+   i = 2  ch= 01>[T?h{VEzku_Q'1kC)95]wg-E/Aw3#
+   i = 3  ch= {sQI?.%r5Dqy3QCwe<}P1(Ab3b3.}4v"
+   i = 4  ch= J0t4FH$J*(5\?z;nKt]BOvGyS?a?ST#L
+   i = 5  ch= 5$y0op?4+=s/SWm+.7RErgLYvyNc,mJi
+   i = 6  ch= r3RQ$OH3,Xtttjd{.k2ml`pvTvb8vtn\
+   i = 7  ch= >IMY}#/E_ysW7+b!DOFGDe@/&QQT]NKB
+   i = 8  ch= '9EiM#o_/1aiiZ-lc|i?")r]`&<ThPf6
+   i = 9  ch= @^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS
+
+ga_population_set_parameters ... 
+
+
+GENERATION LOOP ......... generation = 0
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 1
+
+   i=  0  ch= @^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS   fitness= 68.480000
+   i=  1  ch= r3RQ$OH3,Xtttjd{.k2ml`pvTvb8vtn\   fitness= 65.320000
+   i=  2  ch= 5$y0op?4+=s/SWm+.7RErgLYvyNc,mJi   fitness= 60.260000
+   i=  3  ch= >IMY}#/E_ysW7+b!DOFGDe@/&QQT]NKB   fitness= 59.140000
+   i=  4  ch= geiu1!%[u1!%[AQW57g;s+mMKSnk.3vO   fitness= 57.720000
+   i=  5  ch= 8{4odC>9 gVw|ank.3P"TbXd8S<+"eHO   fitness= 56.760000
+   i=  6  ch= '9EiM#o_/1aiiZ-lc|i?")r]`&<ThPf6   fitness= 56.680000
+   i=  7  ch= 01>[T?h{VEzku_Q'1kC)95]wg-E/Aw3#   fitness= 56.180000
+   i=  8  ch= J0t4FH$J*(5\?z;nKt]BOvGyS?a?ST#L   fitness= 54.380000
+   i=  9  ch= {sQI?.%r5Dqy3QCwe<}P1(Ab3b3.}4v"   fitness= 51.940000
+
+STABLE_SIZE = 10
+ORIG_SIZE   = 10
+SIZE        = 10
+BEST        = 0
+
+BEST = 0  (fitness = 68.480000)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gaul_crossover : (select_two_proc = ga_select_two_sus)
+
+  mom =@^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS
+  dad =5$y0op?4+=s/SWm+.7RErgLYvyNc,mJi
+  dau =@^&n"t>.2hs/SWm+.7RErgLYq/YE=YeS
+  son =5$y0op?4+=xfc=}#cgWFglQ*vyNc,mJi
+
+  mom =r3RQ$OH3,Xtttjd{.k2ml`pvTvb8vtn\
+  dad =8{4odC>9 gVw|ank.3P"TbXd8S<+"eHO
+  dau =8{4odC>9 gVw|ank.3P"TbpvTvb8vtn\
+  son =r3RQ$OH3,Xtttjd{.k2ml`Xd8S<+"eHO
+
+  mom =5$y0op?4+=s/SWm+.7RErgLYvyNc,mJi
+  dad =r3RQ$OH3,Xtttjd{.k2ml`pvTvb8vtn\
+  dau =5$y0op?4+=s/SWm+.k2ml`pvTvb8vtJi
+  son =r3RQ$OH3,Xtttjd{.7RErgLYvyNc,mn\
+
+  mom =>IMY}#/E_ysW7+b!DOFGDe@/&QQT]NKB
+  dad =@^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS
+  dau =@^&n"t>._ysW7+b!DOFGDe@/&QQT]NKB
+  son =>IMY}#/E2hxfc=}#cgWFglQ*q/YE=YeS
+
+  mom =geiu1!%[u1!%[AQW57g;s+mMKSnk.3vO
+  dad =@^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS
+  dau =geiu1!%[u1!%[AQW57g;slQ*KSnk.3vO
+  son =@^&n"t>.2hxfc=}#cgWFg+mMq/YE=YeS
+
+  mom ='9EiM#o_/1aiiZ-lc|i?")r]`&<ThPf6
+  dad =geiu1!%[u1!%[AQW57g;s+mMKSnk.3vO
+  dau =geiu1#o_/1aiiZ-lc|i?")r]`&<ThPf6
+  son ='9EiM!%[u1!%[AQW57g;s+mMKSnk.3vO
+
+  mom =01>[T?h{VEzku_Q'1kC)95]wg-E/Aw3#
+  dad =>IMY}#/E_ysW7+b!DOFGDe@/&QQT]NKB
+  dau =01>[T#/E_ysW7+b!DOFGD5]wg-E/Aw3#
+  son =>IMY}?h{VEzku_Q'1kC)9e@/&QQT]NKB
+
+  mom =J0t4FH$J*(5\?z;nKt]BOvGyS?a?ST#L
+  dad ={sQI?.%r5Dqy3QCwe<}P1(Ab3b3.}4v"
+  dau ={sQI?.%r5Dqy3QCwe<}P1vGyS?a?ST#L
+  son =J0t4FH$J*(5\?z;nKt]BO(Ab3b3.}4v"
+
+  mom ={sQI?.%r5Dqy3QCwe<}P1(Ab3b3.}4v"
+  dad ='9EiM#o_/1aiiZ-lc|i?")r]`&<ThPf6
+  dau ={sQI?#o_/1aiiQCwe<}P1(Ab3b3.}4v"
+  son ='9EiM.%r5Dqy3Z-lc|i?")r]`&<ThPf6
+
+  mom =@^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS
+  dad =5$y0op?4+=s/SWm+.7RErgLYvyNc,mJi
+  dau =5$y0ot>.2hxfc=}#cgWFglQ*q/YE=YeS
+  son =@^&n"p?4+=s/SWm+.7RErgLYvyNc,mJi
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 1
+
+   i=  0  ch= @^&n"t>.2hxfc=}#cgWFglQ*q/YE=YeS   fitness= 68.480000
+   i=  1  ch= r3RQ$OH3,Xtttjd{.k2ml`pvTvb8vtn\   fitness= 65.320000
+   i=  2  ch= 5$y0op?4+=s/SWm+.7RErgLYvyNc,mJi   fitness= 60.260000
+   i=  3  ch= >IMY}#/E_ysW7+b!DOFGDe@/&QQT]NKB   fitness= 59.140000
+   i=  4  ch= geiu1!%[u1!%[AQW57g;s+mMKSnk.3vO   fitness= 57.720000
+   i=  5  ch= 8{4odC>9 gVw|ank.3P"TbXd8S<+"eHO   fitness= 56.760000
+   i=  6  ch= '9EiM#o_/1aiiZ-lc|i?")r]`&<ThPf6   fitness= 56.680000
+   i=  7  ch= 01>[T?h{VEzku_Q'1kC)95]wg-E/Aw3#   fitness= 56.180000
+   i=  8  ch= J0t4FH$J*(5\?z;nKt]BOvGyS?a?ST#L   fitness= 54.380000
+   i=  9  ch= {sQI?.%r5Dqy3QCwe<}P1(Ab3b3.}4v"   fitness= 51.940000
+   i= 10  ch= 5$y0op?4+=xfc=}#cgWFglQ*vyNc,mJi   fitness= GA_MIN_FITNESS
+   i= 11  ch= @^&n"t>.2hs/SWm+.7RErgLYq/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 12  ch= r3RQ$OH3,Xtttjd{.k2ml`Xd8S<+"eHO   fitness= GA_MIN_FITNESS
+   i= 13  ch= 8{4odC>9 gVw|ank.3P"TbpvTvb8vtn\   fitness= GA_MIN_FITNESS
+   i= 14  ch= r3RQ$OH3,Xtttjd{.7RErgLYvyNc,mn\   fitness= GA_MIN_FITNESS
+   i= 15  ch= 5$y0op?4+=s/SWm+.k2ml`pvTvb8vtJi   fitness= GA_MIN_FITNESS
+   i= 16  ch= >IMY}#/E2hxfc=}#cgWFglQ*q/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 17  ch= @^&n"t>._ysW7+b!DOFGDe@/&QQT]NKB   fitness= GA_MIN_FITNESS
+   i= 18  ch= @^&n"t>.2hxfc=}#cgWFg+mMq/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 19  ch= geiu1!%[u1!%[AQW57g;slQ*KSnk.3vO   fitness= GA_MIN_FITNESS
+   i= 20  ch= '9EiM!%[u1!%[AQW57g;s+mMKSnk.3vO   fitness= GA_MIN_FITNESS
+   i= 21  ch= geiu1#o_/1aiiZ-lc|i?")r]`&<ThPf6   fitness= GA_MIN_FITNESS
+   i= 22  ch= >IMY}?h{VEzku_Q'1kC)9e@/&QQT]NKB   fitness= GA_MIN_FITNESS
+   i= 23  ch= 01>[T#/E_ysW7+b!DOFGD5]wg-E/Aw3#   fitness= GA_MIN_FITNESS
+   i= 24  ch= J0t4FH$J*(5\?z;nKt]BO(Ab3b3.}4v"   fitness= GA_MIN_FITNESS
+   i= 25  ch= {sQI?.%r5Dqy3QCwe<}P1vGyS?a?ST#L   fitness= GA_MIN_FITNESS
+   i= 26  ch= '9EiM.%r5Dqy3Z-lc|i?")r]`&<ThPf6   fitness= GA_MIN_FITNESS
+   i= 27  ch= {sQI?#o_/1aiiQCwe<}P1(Ab3b3.}4v"   fitness= GA_MIN_FITNESS
+   i= 28  ch= @^&n"p?4+=s/SWm+.7RErgLYvyNc,mJi   fitness= GA_MIN_FITNESS
+   i= 29  ch= 5$y0ot>.2hxfc=}#cgWFglQ*q/YE=YeS   fitness= GA_MIN_FITNESS
+
+STABLE_SIZE = 10
+ORIG_SIZE   = 10
+SIZE        = 30
+BEST        = 0
+
+BEST = 0  (fitness = 68.480000)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gaul_mutation : 
+
+  dau =00>[T?h{VEzku_Q'1kC)95]wg-E/Aw3#
+
+  dau =01>[T?h{VEzku`Q'1kC)95]wg-E/Aw3#
+
+
+GENERATION LOOP ......... generation = 1
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 2
+
+   i=  0  ch= @^&n"u>.2hxfc=}#cgWFg+mMq/YE=YeS   fitness= 67.180000
+   i=  1  ch= @^&n"p?4+=s/SWn+.7RErgLYvyNc,mJi   fitness= 64.580000
+   i=  2  ch= @^&n"t>._ysW7+b!DOFGDe@0&QQT]NKB   fitness= 64.420000
+   i=  3  ch= @^&n"t>.2is/SWm+.7RErgLYq/YE=YeS   fitness= 64.400000
+   i=  4  ch= 5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi   fitness= 64.300000
+   i=  5  ch= 5$y0ot>.2hxfc=}#cgWFglQ*q/ZE=YeS   fitness= 64.200000
+   i=  6  ch= >IMY}#/F2hxfc=}#cgWFglQ*q/YE=YeS   fitness= 63.160000
+   i=  7  ch= r3RQ$OH4,Xtttjd{.7RErgLYvyNc,mn\   fitness= 62.920000
+   i=  8  ch= 5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi   fitness= 62.620000
+   i=  9  ch= r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO   fitness= 61.220000
+
+STABLE_SIZE = 10
+ORIG_SIZE   = 10
+SIZE        = 10
+BEST        = 0
+
+BEST = 0  (fitness = 67.180000)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gaul_crossover : (select_two_proc = ga_select_two_sus)
+
+  mom =@^&n"u>.2hxfc=}#cgWFg+mMq/YE=YeS
+  dad =r3RQ$OH4,Xtttjd{.7RErgLYvyNc,mn\
+  dau =@^&n"u>.2hxfc=}{.7RErgLYq/YE=YeS
+  son =r3RQ$OH4,Xtttjd#cgWFg+mMvyNc,mn\
+
+  mom =@^&n"p?4+=s/SWn+.7RErgLYvyNc,mJi
+  dad =@^&n"t>._ysW7+b!DOFGDe@0&QQT]NKB
+  dau =@^&n"t>._ysW7+b!DOFGrgLYvyNc,mJi
+  son =@^&n"p?4+=s/SWn+.7REDe@0&QQT]NKB
+
+  mom =@^&n"t>._ysW7+b!DOFGDe@0&QQT]NKB
+  dad =@^&n"u>.2hxfc=}#cgWFg+mMq/YE=YeS
+  dau =@^&n"t>._ysW7+b!DOFGD+mM&QQT]NKB
+  son =@^&n"u>.2hxfc=}#cgWFge@0q/YE=YeS
+
+  mom =5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi
+  dad =5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi
+  dau =5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi
+  son =5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi
+
+  mom =5$y0ot>.2hxfc=}#cgWFglQ*q/ZE=YeS
+  dad =>IMY}#/F2hxfc=}#cgWFglQ*q/YE=YeS
+  dau =5$y0ot>.2hxfc=}#cgWFglQ*q/ZE=YeS
+  son =>IMY}#/F2hxfc=}#cgWFglQ*q/YE=YeS
+
+  mom =>IMY}#/F2hxfc=}#cgWFglQ*q/YE=YeS
+  dad =5$y0ot>.2hxfc=}#cgWFglQ*q/ZE=YeS
+  dau =5$y0ot>.2hxfc=}#cgWFglQ*q/YE=YeS
+  son =>IMY}#/F2hxfc=}#cgWFglQ*q/ZE=YeS
+
+  mom =r3RQ$OH4,Xtttjd{.7RErgLYvyNc,mn\
+  dad =@^&n"t>.2is/SWm+.7RErgLYq/YE=YeS
+  dau =r3Rn"t>.2is/SWm+.7RErgLYq/YE=Ye\
+  son =@^&Q$OH4,Xtttjd{.7RErgLYvyNc,mnS
+
+  mom =5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi
+  dad =5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi
+  dau =5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi
+  son =5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi
+
+  mom =r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO
+  dad =r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO
+  dau =r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO
+  son =r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO
+
+  mom =@^&n"u>.2hxfc=}#cgWFg+mMq/YE=YeS
+  dad =r3RQ$OH4,Xtttjd{.7RErgLYvyNc,mn\
+  dau =r3RQ$OH4,Xtttjd{.7RFg+mMq/YE=YeS
+  son =@^&n"u>.2hxfc=}#cgWErgLYvyNc,mn\
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 2
+
+   i=  0  ch= @^&n"u>.2hxfc=}#cgWFg+mMq/YE=YeS   fitness= 67.180000
+   i=  1  ch= @^&n"p?4+=s/SWn+.7RErgLYvyNc,mJi   fitness= 64.580000
+   i=  2  ch= @^&n"t>._ysW7+b!DOFGDe@0&QQT]NKB   fitness= 64.420000
+   i=  3  ch= @^&n"t>.2is/SWm+.7RErgLYq/YE=YeS   fitness= 64.400000
+   i=  4  ch= 5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi   fitness= 64.300000
+   i=  5  ch= 5$y0ot>.2hxfc=}#cgWFglQ*q/ZE=YeS   fitness= 64.200000
+   i=  6  ch= >IMY}#/F2hxfc=}#cgWFglQ*q/YE=YeS   fitness= 63.160000
+   i=  7  ch= r3RQ$OH4,Xtttjd{.7RErgLYvyNc,mn\   fitness= 62.920000
+   i=  8  ch= 5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi   fitness= 62.620000
+   i=  9  ch= r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO   fitness= 61.220000
+   i= 10  ch= r3RQ$OH4,Xtttjd#cgWFg+mMvyNc,mn\   fitness= GA_MIN_FITNESS
+   i= 11  ch= @^&n"u>.2hxfc=}{.7RErgLYq/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 12  ch= @^&n"p?4+=s/SWn+.7REDe@0&QQT]NKB   fitness= GA_MIN_FITNESS
+   i= 13  ch= @^&n"t>._ysW7+b!DOFGrgLYvyNc,mJi   fitness= GA_MIN_FITNESS
+   i= 14  ch= @^&n"u>.2hxfc=}#cgWFge@0q/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 15  ch= @^&n"t>._ysW7+b!DOFGD+mM&QQT]NKB   fitness= GA_MIN_FITNESS
+   i= 16  ch= 5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi   fitness= GA_MIN_FITNESS
+   i= 17  ch= 5$y0pp?4+=xfc=}#cgWFglQ*vyNc,mJi   fitness= GA_MIN_FITNESS
+   i= 18  ch= >IMY}#/F2hxfc=}#cgWFglQ*q/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 19  ch= 5$y0ot>.2hxfc=}#cgWFglQ*q/ZE=YeS   fitness= GA_MIN_FITNESS
+   i= 20  ch= >IMY}#/F2hxfc=}#cgWFglQ*q/ZE=YeS   fitness= GA_MIN_FITNESS
+   i= 21  ch= 5$y0ot>.2hxfc=}#cgWFglQ*q/YE=YeS   fitness= GA_MIN_FITNESS
+   i= 22  ch= @^&Q$OH4,Xtttjd{.7RErgLYvyNc,mnS   fitness= GA_MIN_FITNESS
+   i= 23  ch= r3Rn"t>.2is/SWm+.7RErgLYq/YE=Ye\   fitness= GA_MIN_FITNESS
+   i= 24  ch= 5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi   fitness= GA_MIN_FITNESS
+   i= 25  ch= 5$y0op?4+=s/SWm+.k2ml`pwTvb8vtJi   fitness= GA_MIN_FITNESS
+   i= 26  ch= r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO   fitness= GA_MIN_FITNESS
+   i= 27  ch= r3RQ$OH3-Xtttjd{.k2ml`Xd8S<+"eHO   fitness= GA_MIN_FITNESS
+   i= 28  ch= @^&n"u>.2hxfc=}#cgWErgLYvyNc,mn\   fitness= GA_MIN_FITNESS
+   i= 29  ch= r3RQ$OH4,Xtttjd{.7RFg+mMq/YE=YeS   fitness= GA_MIN_FITNESS
+
+STABLE_SIZE = 10
+ORIG_SIZE   = 10
+SIZE        = 30
+BEST        = 0
+
+BEST = 0  (fitness = 67.180000)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gaul_mutation : 
+
+  dau =5$y0op?4+=s/SWm+.k2ml`owTvb8vtJi
+
+  dau =5$y0op?4+=s/SWm+.j2ml`pwTvb8vtJi
+
+
+GENERATION LOOP ......... generation = 2
+
+
+FINAL RESULT: 
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 2
+
+   i=  0  ch= @^&n"u>.2ixfc=}#cgWErgLYvyNc,mn\   fitness= 69.000000
+   i=  1  ch= @^&n"u>.2hxfc=}#cgWFge@1q/YE=YeS   fitness= 68.000000
+   i=  2  ch= @_&n"t>._ysW7+b!DOFGrgLYvyNc,mJi   fitness= 66.740000
+   i=  3  ch= r3RQ$OH4,Xtttjd#cgWFg+mMvyNc,mn]   fitness= 66.520000
+   i=  4  ch= r3Rn"t>/2is/SWm+.7RErgLYq/YE=Ye\   fitness= 64.500000
+   i=  5  ch= 5$y0pp?4+=xfc=}#cgWFglQ*vyNc-mJi   fitness= 64.320000
+   i=  6  ch= 5$y0pp?4+=xfc=}$cgWFglQ*vyNc,mJi   fitness= 64.280000
+   i=  7  ch= 5$y0ot>.2hxfc=}#cgWGglQ*q/ZE=YeS   fitness= 64.220000
+   i=  8  ch= 5$y0ot>.2hxgc=}#cgWFglQ*q/YE=YeS   fitness= 64.200000
+   i=  9  ch= @^&n"t>._ysX7+b!DOFGD+mM&QQT]NKB   fitness= 63.600000
+
+STABLE_SIZE = 10
+ORIG_SIZE   = 0
+SIZE        = 10
+BEST        = 0
+
+BEST = 0  (fitness = 69.000000)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The final solution with score 69.000000 was:
+@^&n"u>.2ixfc=}#cgWErgLYvyNc,mn\
+

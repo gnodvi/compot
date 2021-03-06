@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="GAUL Documentation: Compatible Platforms">
+   <meta name="keywords" content="Linux, FreeBSD, Solaris, IRIX, installation, GAUL, QNX, BSD, platforms, POSIX">
+   <meta name="author" content="Stewart Adcock">
+   <meta name="copyright" content="© Stewart Adcock">
+   <meta name="generator" content="vi">
+   <meta http-equiv="Content-Language" content="en">
+   <title>GAUL: Genetic Algorithm Utility Library</title>
+</head>
+<body text="#000000" bgcolor="#D8D8FF" link="#222288" vlink="#222288" alink="#9999FF">
+
+<a NAME="top"></a>
+<center>
+<script language="JavaScript">
+<!--
+google_ad_client = 'pub-0728071010451673';
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = '468x60_as';
+google_ad_channel ="8508682197";
+// -->
+</script>
+<script language="JavaScript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">GAUL Documentation: Platforms</font></b></td>
+  </tr>
+</table>
+
+<p><a NAME="intro"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+<tr>
+<td>
+
+<p><b>Development Platform:</b></p>
+<p>Nearly all of the GAUL development is undertaken on either x86-based running <a href="http://fedora.redhat.com/">Fedora Linux</a> or Alpha-based hardware running <a href="http://redhat.com/">RedHat Linux</a>.  These computers are therefore guaranteed to be supported.  Requests for alternative ports are likely to be taken very seriously, although they are subject to the relevant system being available.</p>
+
+<p><b>Potentially Supported Platforms:</b></p>
+<ul>
+<li>Linux and other (mostly) POSIX-compliant UNIX OSs on any sensible hardware.  e.g. *BSD, IRIX, Solaris.</li>
+<li>Non-toy OSs which are POSIX-compliant.  e.g. BeOS, QNX, Syllable.</li>
+</ul>
+
+<p>MS Windows is supported either by using the <a href="http://www.cygwin.com">Cygwin</a> environment, or via compilation with the <a href="http://www.bloodshed.net/dev/devcpp.html">Dev-C++</a> IDE.  Native support for Windows and MSVC is an ongoing develpment aim.</p>
+
+<p><b>Table of Supported Platforms:</b></p>
+<p>The release numbers indicate the most recent tested version although it is likely that once GAUL has compiled on a platform once, all future versions will compile too.  If you have attempted to compile GAUL on any alternative platform, I would be extremely happy to hear whether you were successful <i>or not</i>.</p>
+
+<table border=1 cellspacing=0 cellpadding=1 width="100%">
+  <tr>
+    <td>OS</td>
+    <td>OS Version</td>
+    <td>Compiler</td>
+    <td>Processor<br>Type</td>
+    <td>Most Recent GAUL<br>Release Tested</td>
+    <td>Result</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 6.2</td>
+    <td>gcc</td>
+    <td>x86</td>
+    <td>0.1833</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.0</td>
+    <td>gcc</td>
+    <td>x86</td>
+    <td>0.1833</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.2</td>
+    <td>gcc 2.96</td>
+    <td>x86</td>
+    <td>0.1841</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.3</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1842</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 8.0</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 9</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>Fedora FC1</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>Source Mage pre-1.0</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>Gentoo Linux 2004.0</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.1</td>
+    <td>Portland pgcc version 3.3-1</td>
+    <td>x86</td>
+    <td>0.1840</td>
+    <td><font color="#00CC00"><B>Success</B></font> (automake -i ; ./configure --disable-cvs-deps ; make)</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.2</td>
+    <td>Intel C/C++ version 5.0</td>
+    <td>x86</td>
+    <td>0.1837</td>
+    <td><font color="#00CC00"><B>Success</B></font> (automake -i ; ./configure --disable-cvs-deps ; make)</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.2</td>
+    <td>Intel C/C++ version 6.0</td>
+    <td>x86</td>
+    <td>0.1839</td>
+    <td><font color="#00CC00"><B>Success</B></font> (automake -i ; ./configure --disable-cvs-deps ; make)</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 9</td>
+    <td>Intel C/C++ version 7.1</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>Debian 2.2</td>
+    <td>gcc 3.2</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 6.2</td>
+    <td>gcc</td>
+    <td>Alpha EV56</td>
+    <td>0.1831</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.1</td>
+    <td>gcc</td>
+    <td>Alpha EV56</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>Debian 3.0</td>
+    <td>gcc</td>
+    <td>Alpha</td>
+    <td>0.1842</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>Debian 3.0</td>
+    <td>gcc</td>
+    <td>Sparc</td>
+    <td>0.1842</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>RedHat 7.1</td>
+    <td>Compaq's ccc</td>
+    <td>Alpha EV67</td>
+    <td>0.1841</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>MS Windows with Cygwin</td>
+    <td>?</td>
+    <td>Cygwin gcc</td>
+    <td>x86</td>
+    <td>0.1840</td>
+    <td><font color="#00CC00"><B>Success</B></font> (Cross-compiled from linux)</td>
+  </tr>
+  <tr>
+    <td>MS Windows</td>
+    <td>Server 2003</td>
+    <td>Dev-C++, gcc</td>
+    <td>x86</td>
+    <td>0.1846</td>
+    <td><font color="#00CC00"><B>Success</B></font> (Needs a set of projects to be defined)</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>4.3</td>
+    <td>gcc</td>
+    <td>x86</td>
+    <td>0.1833</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>4.7-STABLE</td>
+    <td>gcc</td>
+    <td>x86</td>
+    <td>0.1842</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td>2.7</td>
+    <td>gcc</td>
+    <td>Sparc</td>
+    <td>0.1836</td>
+    <td><font color="#00CC00"><B>Success</B></font> (SLang support not tested)</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td>2.8</td>
+    <td>Sun Forte Developer 6 'cc'</td>
+    <td>Sparc</td>
+    <td>0.1838</td>
+    <td><font color="#00CC00"><B>Success</B></font> (SLang support not tested. Need to use GNU make)</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td>8.0</td>
+    <td>gcc</td>
+    <td>Sparc</td>
+    <td>0.1842</td>
+    <td><font color="#00CC00"><B>Success</B></font> (Need to use &quot;./configure --enable-memory-chunks=no&quot;)</td>
+  </tr>
+  <tr>
+    <td>IRIX</td>
+    <td>6.5.6</td>
+    <td>gcc</td>
+    <td>MIPS R10K</td>
+    <td>0.1833</td>
+    <td><font color="#00CC00"><B>Success</B></font> (Need to use &quot;gmake&quot;)</td>
+  </tr>
+  <tr>
+    <td>IRIX</td>
+    <td>6.5.6</td>
+    <td>MIPSPro cc</td>
+    <td>MIPS R10K</td>
+    <td>0.1833</td>
+    <td><font color="#00CC00"><B>Success</B></font> (Need to use &quot;gmake&quot;)</td>
+  </tr>
+  <tr>
+    <td>HP-UX</td>
+    <td>11.00</td>
+    <td>?</td>
+    <td>?</td>
+    <td>0.1836</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>AIX</td>
+    <td>5.1</td>
+    <td>VisualAge 5</td>
+    <td>powerpc</td>
+    <td>0.1838</td>
+    <td><font color="#00CC00"><B>Success</B></font> (Need to use &quot;automake -i ; ./configure --disable-cvs-deps ; gmake&quot;)  (S-Lang support not tested)</td>
+  </tr>
+  <tr>
+    <td>AIX</td>
+    <td>5.1</td>
+    <td>gcc</td>
+    <td>powerpc</td>
+    <td>0.1838</td>
+    <td><font color="#00CC00"><B>Success</B></font>  (S-Lang support not tested)</td>
+  </tr>
+  <tr>
+    <td>QNX Neutrino</td>
+    <td>6.2.0</td>
+    <td>gcc</td>
+    <td>x86</td>
+    <td>0.1843</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+  <tr>
+    <td>MacOS X</td>
+    <td>?</td>
+    <td>gcc</td>
+    <td>?</td>
+    <td>0.1839</td>
+    <td><font color="#00CC00"><B>Success</B></font></td>
+  </tr>
+</table>
+
+</td></tr></table>
+
+<p><a NAME="footer"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+
+<!--   Footer, Links etc.  -->
+<table BORDER=0 CELLSPACING=2 CELLPADDING=5 WIDTH="100%">
+  <tr>
+    <td width="20%" ALIGN=CENTER></td>
+    <td width="20%" ALIGN=CENTER>Hosted by:<br><A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=25766" width="88" height="31" border="0" alt="SourceForge Logo"></A></td>
+    <td width="20%" ALIGN=CENTER><A href="http://gaul.sourceforge.net/"><IMG src="images/gaul_button.png" width="88" height="31" border="0" alt="GAUL Button"></A></td>
+    <td width="20%" ALIGN=CENTER><a href="http://validator.w3.org/check/referer"><img border="0" src="./images/valid-html401.png" alt="Valid HTML 4.01!" width="88" height="31"></a></td>
+    <td width="20%" ALIGN=CENTER></td>
+  </tr>
+</table>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr><td><hr noshade width="100%"></td></tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>&copy; 2001-2004, &quot;Stewart Adcock" &lt;<a href="MAILTO:stewart_DOESNOTLIKESPAM@linux-domain.com">stewart@linux-domain.com</a>&gt; All rights reserved.</font></td>
+  </tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>All trademarks on this page are probably owned by their respective companies.  You can insert you own favourite disclaimer here.</font></td>
+  </tr>
+</table>
+
+</body>
+</html>
+

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="GAUL Documentation: Tabu-Search">
+   <meta name="keywords" content="tabu, taboo, tabu-list, taboo-list, genetic algorithm, GA, tutorial, examples, documentation, GAUL">
+   <meta name="author" content="Stewart Adcock">
+   <meta name="copyright" content="© Stewart Adcock">
+   <meta name="generator" content="vi">
+   <meta http-equiv="Content-Language" content="en">
+   <title>GAUL: Genetic Algorithm Utility Library</title>
+</head>
+<body text="#000000" bgcolor="#D8D8FF" link="#222288" vlink="#222288" alink="#9999FF">
+
+<a NAME="top"></a>
+
+<center>
+<script language="JavaScript">
+<!--
+google_ad_client = 'pub-0728071010451673';
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = '468x60_as';
+google_ad_channel ="8508682197";
+// -->
+</script>
+<script language="JavaScript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="../index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="../documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="../news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="../resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="../downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">GAUL Documentation: Tabu-Search</font></b></td>
+  </tr>
+</table>
+
+<p><a NAME="intro"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+<tr>
+<td>
+<p><b>Very Brief Tabu-Search Primer</b></p>
+<p>The Tabu search has been proven effective at solving many search and optimisation problems.  It is a heuristic method which guides a local search procedure to explore the search space in such a way that entrapment in local minima is avoided.  Unlike simple hill-climbing search techniques, but like simulated annealling, the Tabu search often moves from a current solution to one which is worse, with the expectation that this move will eventually lead to an even better solution.  The basic Tabu search algorithm is illustrated below, along with a number of important terms:</p>
+
+<ul>
+	<li><b>Local move</b>: The process of generating a feasible solution to the problem which is related to the current solution.</li>
+	<li><b>Tabu list</b>: A list of previous solutions.</li>
+	<li><b>Tabu conditions</b>: A set of rules which are used to derive, from the Tabu list, regions of the search space from which any solutions are forbidden.</li>
+	<li><b>Aspiration conditions</b>: A set of rules which override the Tabu conditions, to ensure that certian favourable local moves are accepted.</li>
+</ul>
+<ol>
+	<li>Start with the <b>current</b> solution.</li>
+	<li>If the <b>current</b> solution better than the <b>best</b> solution so far, store it as the new <b>best</b> solution.</li>
+	<li>Add the <b>current</b> solution to the Tabu list, remove the oldest item on the Tabu list if it contains more than <b>N</b> items.</li>
+	<li>Apply the local move <b>M</b> times to generate <b>M</b> <b>putative</b> solutions.</li>
+	<li>Rank the <b>putative</b> solutions by fitness.</li>
+	<li>If the highest ranked <b>putative</b> solution is the better than the <b>current</b> solution and jump to step 8.</li>
+	<li>Eliminate those <b>putative</b> solutions which satisfy the Tabu conditions, unless they also satisfy the aspiration conditions.</li>
+	<li>Select the highest ranked <b>putative</b> solution that was not eliminated as the new <b>current</b> solution, unless all <b>putative</b> solutions where eliminated.</li>
+	<li>If the terminantion criterion is not satisfied, repeat from step 2.</li>
+</ol>
+<p>In the above algorithm, <b>N</b> and <b>M</b> are both adjustable parameters.</p>
+
+<p><b>Further Information About Tabu-Search</b></p>
+<p>A <a href="http://www.google.com/search?q=Tabu+search&sourceid=mozilla-search&start=0&start=0">Google search</a>.</p>
+
+<p><b>Tabu-Search Implemented in GAUL</b></p>
+<p>The Tabu search is implemented in GAUL and demonstrated in examples/<a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/gaul/gaul-examples/src/pingpong_tabu.c?only_with_tag=HEAD&amp;view=markup">pingpong_tabu.c</a> and examples/<a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/~checkout~/gaul/gaul-examples/src/pingpong_tabu.c?content-type=text/plain&amp;only_with_tag=MAIN">pingpong_tabu2.c</a>.</p>
+<p>The fitness evaluation function defined for use by the evolutionary algorithms is also utilised by the Tabu search routine.  The local moves are generated by using the mutation operator.  Note that performance may be enhanced greatly if this mutation operator contains a local search procedure, but this must be implemented by the programmer if desired.  The additional parameters that are required are specified using the &quot;ga_population_set_tabu_parameters()&quot; function.  The optimisation is initiated by the &quot;ga_tabu()&quot; function.</p>
+<pre>
+  ga_population_set_tabu_parameters(
+       pop,                     /* population           *pop */
+       ga_tabu_check_integer,   /* GAtabu_accept        tabu acceptance criterion */
+       50,                      /* const int            tabu list length */
+       20                       /* const int            tabu neighbourhood search count */
+         );
+</pre>
+<p>The &quot;GAtabu_accept&quot; parameter is a function that applies the Tabu and aspiration criteria, given a single <b>putative</b> solution and single <b>tabu</b> solution.  Simple functions are provided by GAUL for its built-in chromosome types.  The use of custom, problem specific, versions is strongly recommended.</p>
+<p>The third and fourth parameters should be selected on a problem-by-problem basis to facilitate efficient, but effective, optimisation.  They relate to <b>M</b> and <b>N</b>, respectively, in the above algorithm.</p>
+<pre>
+ga_tabu(
+       pop,                     /* population           *pop */
+       solution,                /* entity               *initial */
+       50                       /* const int            max_iterations */
+         );
+</pre>
+<p>&quot;ga_tabu()&quot; takes a single entity as its second argument.  This is used as the initial solution.  Passing NULL is valid; a NULL entity parameter causes a random solution to be generated by applying the seed operator.  The initial solution will be overwritten by the results of the Tabu search procedure.</p>
+
+</td>
+</tr>
+</table>
+
+<p>[ <a href="#top">BACK TO TOP</a> | <a href="simplex.html">NEXT SECTION OF TUTORIAL</a> ]</p>
+
+<p><a NAME="footer"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="../index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="../documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="../news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="../resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="../downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+
+<!--   Footer, Links etc.  -->
+<table BORDER=0 CELLSPACING=2 CELLPADDING=5 WIDTH="100%">
+  <tr>
+    <td width="20%" ALIGN=CENTER></td>
+    <td width="20%" ALIGN=CENTER>Hosted by:<br><A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=25766" width="88" height="31" border="0" alt="SourceForge Logo"></A></td>
+    <td width="20%" ALIGN=CENTER><A href="http://gaul.sourceforge.net/"><IMG src="../images/gaul_button.png" width="88" height="31" border="0" alt="GAUL Button"></A></td>
+    <td width="20%" ALIGN=CENTER><a href="http://validator.w3.org/check/referer"><img border="0" src="../images/valid-html401.png" alt="Valid HTML 4.01!" width="88" height="31"></a></td>
+    <td width="20%" ALIGN=CENTER></td>
+  </tr>
+</table>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr><td><hr noshade width="100%"></td></tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>&copy; 2002-2003, &quot;Stewart Adcock" &lt;<a href="MAILTO:stewart_DOESNOTLIKESPAM@linux-domain.com">stewart@linux-domain.com</a>&gt; All rights reserved.</font></td>
+  </tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>All trademarks on this page are probably owned by their respective companies.  You can insert you own favourite disclaimer here.</font></td>
+  </tr>
+</table>
+
+</body>
+</html>
+

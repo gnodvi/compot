@@ -1,0 +1,92 @@
+ga_population_set_parameters ... 
+
+   i = 0  ch= 07 02 08 00 03 04 01 05 06 
+   i = 1  ch= 08 05 02 04 06 07 00 01 03 
+   i = 2  ch= 01 04 02 05 06 07 08 00 03 
+   i = 3  ch= 03 06 00 01 07 05 08 02 04 
+   i = 4  ch= 06 01 07 08 00 02 04 05 03 
+
+
+GENERATION LOOP ......... generation = 0
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 1
+
+   i=  0  ch= 01 04 02 05 06 07 08 00 03    fitness= -52.489796
+   i=  1  ch= 03 06 00 01 07 05 08 02 04    fitness= -222.880000
+   i=  2  ch= 08 05 02 04 06 07 00 01 03    fitness= -265.333333
+   i=  3  ch= 06 01 07 08 00 02 04 05 03    fitness= -572.000000
+   i=  4  ch= 07 02 08 00 03 04 01 05 06    fitness= -757.333333
+
+STABLE_SIZE = 5
+ORIG_SIZE   = 5
+SIZE        = 5
+BEST        = 0
+
+BEST = 0  (fitness = -52.489796)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gaul_crossover : (select_two_proc = ga_select_two_randomrank)
+
+ga_select_two_randomrank: 
+orig_size = 5   select_state = 1
+  mom =01 04 02 05 06 07 08 00 03 
+  dad =03 06 00 01 07 05 08 02 04 
+  dau =01 04 02 05 06 07 08 00 03 
+  son =03 06 00 01 07 05 08 02 04 
+
+ga_select_two_randomrank: 
+orig_size = 5   select_state = 2
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 1
+
+   i=  0  ch= 01 04 02 05 06 07 08 00 03    fitness= -52.489796
+   i=  1  ch= 03 06 00 01 07 05 08 02 04    fitness= -222.880000
+   i=  2  ch= 08 05 02 04 06 07 00 01 03    fitness= -265.333333
+   i=  3  ch= 06 01 07 08 00 02 04 05 03    fitness= -572.000000
+   i=  4  ch= 07 02 08 00 03 04 01 05 06    fitness= -757.333333
+   i=  5  ch= 03 06 00 01 07 05 08 02 04    fitness= GA_MIN_FITNESS
+   i=  6  ch= 01 04 02 05 06 07 08 00 03    fitness= GA_MIN_FITNESS
+
+STABLE_SIZE = 5
+ORIG_SIZE   = 5
+SIZE        = 7
+BEST        = 0
+
+BEST = 0  (fitness = -52.489796)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gaul_mutation : 
+
+
+GENERATION LOOP ......... generation = 1
+
+
+FINAL RESULT: 
+
+~~~~~~~~~~~~~~~~~~~~~~ POPULATION PRINT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generation = 1
+
+   i=  0  ch= 01 04 02 05 06 07 08 00 03    fitness= -52.489796
+   i=  1  ch= 01 04 02 05 06 07 08 00 03    fitness= -52.489796
+   i=  2  ch= 03 06 00 01 07 05 08 02 04    fitness= -222.880000
+   i=  3  ch= 03 06 00 01 07 05 08 02 04    fitness= -222.880000
+   i=  4  ch= 08 05 02 04 06 07 00 01 03    fitness= -265.333333
+
+STABLE_SIZE = 5
+ORIG_SIZE   = 5
+SIZE        = 5
+BEST        = 0
+
+BEST = 0  (fitness = -52.489796)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The final solution with found was: (seed = 0):
+1 4 2 5 6 7 8 0 3
+With score = -52.489796
+

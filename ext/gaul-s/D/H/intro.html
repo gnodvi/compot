@@ -1,0 +1,353 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="GAUL Introduction to Genetic Algorithms">
+   <meta name="keywords" content="genetic algorithm, GA, tutorial, examples, AI, Neural Nets, neural network, EP, Evolution, Evolutionary Computation, Evolutionary Programming, artificial intelligence, GAUL">
+   <meta name="author" content="Stewart Adcock">
+   <meta name="copyright" content="© Stewart Adcock">
+   <meta name="generator" content="vi">
+   <meta http-equiv="Content-Language" content="en">
+   <title>GAUL: Genetic Algorithm Utility Library</title>
+</head>
+<body text="#000000" bgcolor="#D8D8FF" link="#222288" vlink="#222288" alink="#9999FF">
+
+<a NAME="top"></a>
+
+<center>
+<script language="JavaScript">
+<!--
+google_ad_client = 'pub-0728071010451673';
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = '468x60_as';
+google_ad_channel ="8508682197";
+// -->
+</script>
+<script language="JavaScript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Introduction to Genetic Algorithms and GAUL</font></b></td>
+  </tr>
+</table>
+
+<p><a NAME="EC"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+<tr>
+<td ALIGN=CENTER>
+<p>This article provides a basic introduction to genetic algorithms.  These simple concepts must be understood if an understanding of GAUL is desired.</p>
+</td>
+</tr>
+  <tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Evolutionary Computation</font></b></td>
+  </tr>
+<tr>
+<td>
+<p>It is an appealling idea that the natural concepts of evolution may be borrowed for use as a computational optimisation tool.  A family of algorithms have been developed around this idea:</p>
+<ul>
+ <li>evolution strategies (ES)</li>
+ <li>evolutionary programming (EP)</li>
+ <li>genetic algorithms (GA)</li>
+ <li>genetic programming (GP)</li>
+</ul>
+<p>The fundamentals of genetic algorithms will be introduced in this document.  For an in depth discussion of Genetic Algorithms and the other related algorithms the interested reader is directed to the GAUL <a href="index.php#resources">resources list</a>.</p>
+<p>It should be highlighted that these evolutionary algorithms are not random searches for a very fit individuals (i.e. the solutions to problems).  Evolutionary algorithms use stochastic processes to produce a search behaviour which is much better than random.</p>
+<p></p>
+</td>
+</tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Genetic Algorithms for search and optimisation</font></b></td>
+</tr>
+
+<tr>
+<td>
+<p>Genetic algorithms are now widely applied in science and engineering as adaptive algorithms for solving practical problems.  Certian classes of problem are particularly suited to being tackled using a GA based approach.</p>
+
+<p>The general acceptance is that GAs are particularly suited to multidimensional global search problems where the search space potentially contains multiple local minima.  Unlike other search methods, correlation between the search variables is not generally a problem.  The basic GA does not require extensive knowledge of the search space, such as likely solution bounds or functional derivatives.  A task for which simple GAs are not suited is rapid local optimisation, however, coupling the GA with other search techniques to overcome this problem is trivial.  Whenever multidimensional systematic searching would be technique of choice, except that the large number of comparisons make that approach intractable, a GA should be considered for the reasons outlined in the sections below.</p>
+
+<p>GAs were first introduced by John Holland for the formal investigation of the mechanisms of natural adaptation[<a href="#holland1975">Holland 1975</a>], but the algorithms have been since modified to solve computational search problems.  Modern GAs deviate greatly from the original form proposed by Holland, but their linage is clear.  There is no single firm definition for a genetic algorithm, and the computational system is highly simplified compared to the actual situation in nature.  Therefore, we must first define a few terms and show how they relate between modern GAs and more traditional evolutionary theory.</p>
+<p></p>
+
+</td>
+</tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">GA Fundamentals and terminology</font></b></td>
+</tr>
+
+<tr>
+<td>
+
+<p>In nature all living organisms contain a set of genetic data, termed a "genome".  Somehow, this genetic data encodes all of the physical characteristics of the organism, known as the "phenome".  A particular set of genetic information is a "genotype", and likewise a particular set of physical characteristics, or "traits", is a "phenotype".  There may, or may not, be a direct one-to-one mapping of genotypes to phenotypes.  These physical characteristics determine how well suited to its environment a particular organism is.  The suitability of a given organism to its environment is usually measured as its "fitness".  Computationally, it is usual to evaluate the "fitness" of an organism directly, without considering any kind of phenome.</p>
+
+<p>The idea of "Survival of the fittest", as introduced by Darwin[<a href="#darwin1859">Darwin 1859</a>], is well known.  Where in nature the "fitness" relates to the ability of the organism to survive and to reproduce, in genetic algorithms the "fitness" is the evaluated result of some "objective function".  Organisms with a better "fitness" score are more likely to be selected for reproduction either through some mechanism of competition to mate, or as a result of the least fit organisms dying.  In this way genes which encode beneficial characteristics are propagated through subsequent generations of the population at the expense of genes which encode detrimental characteristics.</p>
+
+<p>The genome is stored in the form of DNA in nature.  On computers there is more flexibility, but it is common that the main factor controlling whether a particular search problem is successfully resolved, or not, depends upon how the problem was encoded into the genome.  In John Holland's original work, a single binary "bitstring" was used.  This had computational advantages in terms of efficiency, but with modern computer hardware the balance between raw efficiency and applicability to a given task has swung toward the latter.  Many different methods for encoding the genetic information are in common use today; Tree encoding, real-valued arrays, permutations, Gray encoding and so on.</p>
+
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Fitness Functions</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>Putative solutions to the target problem are evaluated using "Fitness functions", otherwise known as "Objective functions".  Based upon the result of such functions, evolutionary pressures may be applied to a set of solutions.  The objective function will obviously be problem specific, but there are certain features which should be avoided for the effective application of a GA.  Such unfavourable objective functions are discussed below, but often the problems may be alleviated by choosing a different encoding scheme, by normalising the input parameters, or by rebasing the function.  An advantage of GAs over many search or optimisation algorithms is that derivatives of this function are not required.  This fact ensures that GAs may be readily applied on fitness landscapes (or potential surfaces) which contain discontinuities or singularities without any special treatments.</p>
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Generations</font></b></td>
+</tr>
+<tr>
+  <td>
+
+<p>There are two distinct classes of GA:</p>
+<ul>
+<li>Those which have no concept of a generation, known as steady-state GAs. [<a href="images/generationbasedflow.png">figure</a>]</li>
+<li>Those which do follow the concept of generations, known as generational, or generation-based, GAs. [<a href="images/steadystateflow.png">figure</a>]</li>  
+</ul>
+
+<p>It should be noted that there is some flexibility in the schemes.  For example, some people prefer to apply the mutation operator only to new individuals rather than a selection from the entire population.  There is no agreement in the GA community over which is the preferred variation, their relative performance is dependant upon the particular problem.  An advantage of the generation-based variant is its natural suitability for parallelisation; it allows more efficient parallelisation on computer platforms with high latency between processors, e.g. a Beowulf-style cluster [<a href="#sterling1995">Sterling 1995</a>].  Various versions of these evolutionary algorithms are provided by GAUL, and the tools are available for custom algorithms to be developed if desired.</p>
+
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Selection</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>GA selection operators perform the equivalent role to natural selection.  The overall effect is to bias the gene set in following generations to those genes which belong to the most fit individuals in the current generation.</p>
+
+<p>There are numerous selection schemes described in the literature; "Roulette wheel" selection, tournament selection, random selection, stochastic sampling.  These, in essence, mimic the processes involved in natural selection.</p>
+
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Crossover</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>There is also a multitude of methods to create a coherent set of genes from two parent sets.  If following the schema formalism, crossover is the process by which good schema get combined.  The most commonly used forms are shown in the figures below.  Another alternative is chromosome mixing, where intact chromsomes are randomly swapped, which is highly advantageous in some applications.</p>
+
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Mutation</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>The exact purpose of the mutation operations depends upon who you talk to.  Mutations enable the GA to maintain diversity whilst also introducing some random search behaviour.  As for crossover, many types of mutation operator may be conceived depending upon the details of the problem and the chromosomal representation of solutions to that problem.</p>
+
+<img src="images/ga_single.png" alt="single-point mutation and crossover figure">
+<img src="images/ga_double.png" alt="double-point mutation and crossover figure">
+
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Inversion</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>Correct linkage is essential for single-point crossover to work well, so to overcome the problems associated with this, Holland proposed an "inversion" operator.  This operator aims to mimic the property from nature that, in general, the function of a gene is independent of its location on the chromosome.  The original proposal reordered genes through inversion of a portion of the genome.  With the more sophisticated crossover operators used nowadays, inversion is usually unnecessary.</p>
+
+<p></p>
+</td></tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">The Baldwin Effect and Lamarck's Hypothesis</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>If learning helps survival or procreation, then the individuals which are best able to learn will have the most offspring.  Therefore, the genes responsible for learning will be more frequent in future generations.  This concept is known as the Baldwin effect.</p>
+
+<p>The largely discredited, but well-known, Lamarckian hypothesis states that traits acquired during the lifetime of an organism may be genetically transmitted to its offspring.  Although the required mechanism for "reverse transcription" of acquired traits into the individual's genes does not exist in nature, computationally it may form the basis of very powerful optimisation procedures.</p>
+
+<p>In essence what these definitions mean computationally is:</p>
+<ul>
+<li>The "Darwin" variant simply decodes the chromosomes and then scores them.</li>
+<li>The "Lamarck" algorithm decodes the chromosomes and optimises obtained parameters, the phenome.  The optimised version is scored and the genetic data is reevaluated to encode this instead.</li>
+<li>The "Baldwin" variant decodes and optimises as with the "Lamarck" variant, the optimised phenome's score is applied, but the original genetic data is left intact.</li>
+</ul>
+
+<p>A published study [<a href="#hinton1987">Hinton 1987</a>] investigated how learning can reshape the fitness landscape, since an individual's fitness will consist of a genetic contribution and a learnt contribution.  If learnt traits have a significant impact on the fitness and if this contribution is fairly stable over time, then there will be a selective advantage to have a genetic predisposition for learning, and this may eventually lead to development of the learnt traits to be genetically encoded.  This can occur without the use of Lamarckian mechanisms, since the Darwinian selection pressure is sufficient.  This is effectively the Baldwinian effect in action.</p>
+
+<p></p>
+</td></tr>
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Sub-Populations</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>In order to effectively search the solution space, and to take full advantage of the inherent parallelism of GAs, the population needs to contain a diverse set of solutions.  Use of multiple, simultaneously evolved, populations with a small but non-zero migration of individuals between these populations helps to maintain diversity without hindering the optimisation efficiency.  It may be considered as the computational equivalent of an island archipelago, say the Galapagos Isles.  It is observed that the prevalence of speciation has resulted in a wide range of physical adaptations to overcome the same adverse environmental conditions.</p>
+
+<p>GAUL provides functions which implement the so-called island model GA.  A very desirable feature of this particular GA variant is that it is trivially parallel (i.e. very efficient for deployment on multiple processor computer systems).</p>
+
+<p></p>
+
+  </td>
+</tr>
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">How Genetic Algorithms Work</font></b></td>
+</tr>
+<tr>
+  <td>
+<p>The traditional theories behind GAs assume that GAs work by discovering, emphasising and recombining good "building blocks".  Their efficiency derives from the highly parallel fashion in which this occurs.  This idea requires that good solutions consist of good building blocks, that is particular combinations of parameters which relate to high fitness.</p>
+
+<p>There are several notable problematic issues with GAs.  It is easy to derive problems which GAs perform significantly worse than random searching, although in many of these cases an alternative encoding scheme may be found to improve performance.  Sometimes though, GAs are just totally unsuitable for the task in hand and alternative encoding schemes will not change that fact.</p>
+
+<p>There are problems to which applying a standard genetic algorithm is totally inappropriate.  Several attempts at characterising GAs mathematically have been derived, aiming to predict their behaviour.  The most notable being Schema processing [<a href="#holland1975">Holland 1975</a>, <a href="#vose1991">Vose 1991</a>] and a statistical mechanics-like approach [<a href="#prugelbennet1994">Prugel-Bennett 1994</a>].  However, these methods tend to provide detailed predictions about GA behaviour in idealised conditions which are exactly the situations in which a GA is unlikely to be applied since a domain specific algorithm will available.  GAs should be chosen when we have little analytical knowledge about the search domain, for example, when noisy, complex or dynamic, which are the cases which have not been satisfactorily described by any simple theories.  Schema processing is described <a href="http://mccammon.ucsd.edu/~adcock/manuals/why_GA_work.ps">here</a>.</p>
+
+<p></p>
+
+  </td>
+</tr>
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Related Algorithms</font></b></td>
+</tr>
+<tr>
+  <td>
+
+<p>As previously mentioned, genetic algorithms are just one computational model from the family of evolutionary algorithms.  GAUL may be applied to implement some of the other evolutionary algorithms, while future extentions are planned to allow the use of others.  The various evolutionary algorithms are descibed in some detail in part 2 of the <a href="http://mccammon.ucsd.edu/~adcock/gafaq/part2/">comp.ai.genetic FAQ</a> [<a href="#HHGTEC">HHGTEC</a>].</p>
+
+<ul>
+<li><font color="#2222AA">Evolutionary Programming (EP)</font> is a stochastic optimisation strategy which is very similar to GAs, except emphasis is instead placed on the linkage between parent solutions and their offspring.  EP typically does not use any crossover operator.</li>
+<li><font color="#2222AA">Evolution Strategies (ES)</font> is very similar to EP.  The main differences relate to details of the selection process.</li>
+<!-- <li><font color="#2222AA">Learning Classifier Systems (LCS)</font> are not currently thought to be supported by GAUL.</li> -->
+<li><font color="#2222AA">Genetic Programming (GP)</font> aims to evolve computer programs which encode the solution to the problem.</li>
+</ul>
+
+<p></p>
+
+  </td>
+</tr>
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Alternative Algorithms</font></b></td>
+</tr>
+<tr>
+  <td>
+
+<p>Numerous non-evolutionary heuristic/stochastic algorithms exist which may be considered as competitive approaches to the evolutionary algorithms described above.  For the purposes of comparison, or for local searches, some of these are provided within GAUL.  Although a full description of any of these would be beyond the scope of this document, a few of the more common algorithms is provided here, along with some links to more information for the interested reader.</p>
+
+<ul>
+<li><font color="#2222AA">Simulated Annealing (SA)</font> <a href="http://www.cs.sandia.gov/opt/survey/sa.html">Brief description</a>.</li>
+<li><font color="#2222AA">Tabu Search (TS)</font> <a href="http://www.cs.sandia.gov/opt/survey/ts.html">Brief description</a>.</li>
+<li><font color="#2222AA">Dead-End Elimination (DEE)</font></li>
+<li><font color="#2222AA">Simplex Method</font> <a href="http://www-fp.mcs.anl.gov/otc/Guide/CaseStudies/simplex/">Demonstration</a>.</li>
+<li><font color="#2222AA">Potential Smoothing</font></li>
+</ul>
+
+<p></p>
+
+  </td>
+</tr>
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">References</font></b></td>
+</tr>
+<tr>
+  <td>
+
+<ul>
+<li><a name="darwin1859">Darwin C. (1859) <i>The origin of species.</i> Murray, London.</a></li>
+<li><a name="HHGTEC">Heitkoetter, J. and Beasley,  D. eds. (2001) <i>The  Hitch-Hiker's Guide to Evolutionary Computation: A list of Frequently Asked Questions (FAQ)</i>, <a href="news:comp.ai.genetic">comp.ai.genetic</a>.  Available via anonymous FTP from <a href="ftp://rtfm.mit.edu/pub/usenet/news.answers/ai-faq/genetic/">rtfm.mit.edu/pub/usenet/news.answers/ai-faq/genetic/</a></a></li>
+<li><a name="hinton1987">Hinton, G. E. and Nowlan, S. J. (1987) <i>How learning can guide evolution.</i> Complex Systems 1:495-502</a></li>
+<li><a name="holland1975">Holland, J. H. (1975) <i>Adaptation in Natural and Artificial Systems.</i> University of Michigan Press.</a></li>
+<li><a name="prugelbennet1994">Prügel-Bennett, A. Shapiro, J.L. (1994) <i>An analysis of genetic algorithms using statistical mechanics.</i> Physical Review Letters 72:1305-1309</a></li>
+<li><a name="stirling1995">Sterling, T. and Becker, D. J. and Savarese, D. and Dorband, J. E. and Ranawake, U. A. and Packer, C. V. (1995) <i>Beowulf: A parallel workstation for scientific computation.</i> In proceedings of the international conference on parallel processing pgs 11-14</a></li>
+<li><a name="vose1991">Vose, M. D. (1991) <i>Generalizing the notion of schema in genetic algorithms.</i> Artificial Intelligence 50:385-396</a></li>
+</ul>
+
+</td></tr></table>
+
+<div align="center">
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2>
+<tr>
+<td ALIGN=CENTER BGCOLOR="#2222AA">
+<!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target="_top">
+<table border="0" bgcolor="#ffffff">
+<tr><td nowrap="nowrap" valign="top" align="left" height="32">
+<a href="http://www.google.com/">
+<img src="http://www.google.com/logos/Logo_25wht.gif"
+border="0" alt="Google"></img></a>
+</td>
+<td nowrap="nowrap">
+<input type="hidden" name="domains" value="gaul.sourceforge.net"></input>
+<input type="text" name="q" size="31" maxlength="255" value=""></input>
+<input type="submit" name="sa" value="Search"></input>
+</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td nowrap="nowrap">
+<table>
+<tr>
+<td>
+<input type="radio" name="sitesearch" value="" checked="checked"></input>
+<font size="-1" color="#000000">Web</font>
+</td>
+<td>
+<input type="radio" name="sitesearch" value="gaul.sourceforge.net"></input>
+<font size="-1" color="#000000">gaul.sourceforge.net</font>
+</td>
+</tr>
+</table>
+<input type="hidden" name="client" value="pub-0728071010451673"></input>
+<input type="hidden" name="forid" value="1"></input>
+<input type="hidden" name="channel" value="3137818657"></input>
+<input type="hidden" name="ie" value="ISO-8859-1"></input>
+<input type="hidden" name="oe" value="ISO-8859-1"></input>
+<input type="hidden" name="cof" value="GALT:#222288;GL:1;DIV:#2222AA;VLC:222288;AH:center;BGC:D8D8FF;LBGC:D8D8FF;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:31;LW:88;L:http://gaul.sourceforge.net/images/gaul_button.png;S:http://gaul.sourceforge.net;FORID:1;"></input>
+<input type="hidden" name="hl" value="en"></input>
+
+</td></tr></table>
+</form>
+<!-- SiteSearch Google -->
+</tr>
+</table>
+</div>
+
+
+<p><a NAME="footer"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+
+<!--   Footer, Links etc.  -->
+<table BORDER=0 CELLSPACING=2 CELLPADDING=5 WIDTH="100%">
+  <tr>
+    <td width="20%" ALIGN=CENTER></td>
+    <td width="20%" ALIGN=CENTER>Hosted by:<br><A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=25766" width="88" height="31" border="0" alt="SourceForge Logo"></A></td>
+    <td width="20%" ALIGN=CENTER><A href="http://gaul.sourceforge.net/"><IMG src="images/gaul_button.png" width="88" height="31" border="0" alt="GAUL Button"></A></td>
+    <td width="20%" ALIGN=CENTER><a href="http://validator.w3.org/check/referer"><img border="0" src="./images/valid-html401.png" alt="Valid HTML 4.01!" width="88" height="31"></a></td>
+    <td width="20%" ALIGN=CENTER></td>
+  </tr>
+</table>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr><td><hr noshade width="100%"></td></tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>&copy; 2001-2005, &quot;Stewart Adcock" &lt;<a href="MAILTO:stewart_DOESNOTLIKESPAM@linux-domain.com">stewart@linux-domain.com</a>&gt; All rights reserved.</font></td>
+  </tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>All trademarks on this page are probably owned by their respective companies.  You can insert you own favourite disclaimer here.</font></td>
+  </tr>
+</table>
+
+</body>
+</html>
+

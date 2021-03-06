@@ -1,0 +1,667 @@
+.\" .HS gaul tcl
+.\" .BS
+.TH "tcl-gaul" "n" "1.0" "Tcl-Extensions" ""
+.SH "NAME"
+tcl\-gaul \- A Tcl extension for genetic (or evolutionary) algorithm processing
+.SH "SYNOPSIS"
+package require gaul
+.PP 
+\fBgaul create \fIname size \fR?\-generation_hook \fIproc\fR? \fR?\-evaluate \fIproc\fR? \fR?\-seed \fIproc\fR? \fR?\-adapt \fIproc\fR? \fR?\-mutate \fIproc\fR? \fR?\-crossover \fIproc\fR? \fR?\-select_one \fBRANDOM\fR | \fBEVERY\fR | \fBRANDOMRANK\fR | \fBBESTOF2\fR | \fBBESTOF3\fR | \fBROULETTE\fR | \fB ROULETTE_REBASED\fR | \fBSUS\fR | \fBSUSSQ\fR | \fBAGGRESSIVE\fR | \fBBEST\fR | \fBLINEARRANK\fR | \fB ROUNDROBIN\fR?\fR \fR?\-select_two \fBRANDOM | EVERY | RANDOMRANK | BESTOF2 | BESTOF3 | ROULETTE | ROULETTE_REBASED\fR | \fBSUS\fR | \fBSUSSQ\fR | \fBAGGRESSIVE\fR | \fBBEST\fR | \fBLINEARRANK\fR?
+.PP 
+\fBgaul version\fR
+.PP 
+\fIname\fR \fBseed\fR
+.PP 
+\fIname\fR \fBparams\fR
+.PP 
+\fIname\fR \fBparams\fR ?\-scheme \fBdarwin\fR | \fBlamarck_parents\fR | \fBlamarck_children\fR | \fBlamarck_all\fR | \fBbaldwin_parents\fR | \fBbaldwin_children\fR | \fBbaldwin_all\fR | \fB lamarck_parents_baldwin_children\fR | \fBlamarck_children_baldwin_parents\fR? ?\-elitism \fBparents\fR | \fB one_parent\fR | \fBparents_die\fR | \fBrescore_parents\fR? ?\-crossover \fInum\fR? ?\-mutation \fInum\fR? ?\-migration \fInum\fR?
+.PP 
+\fIname\fR \fBevolve\fI generations\fR ?\-mpi | \-forked | \-threaded | \-steady_state?
+.PP 
+\fIname\fR \fBsolution\fR
+.PP 
+\fIname\fR \fBstats\fR
+.PP 
+\fIname\fR \fBlist\fR
+.PP 
+\fIname\fR \fBrank\fR
+.PP 
+\fIname\fR \fBdestroy\fR
+.PP 
+\fBrename \fIname\fR {}
+.SH "INTRODUCTION"
+A genetic algorithm (GA) is a search technique used in computing to find exact or approximate solutions to optimization and search problems. Genetic algorithms are categorized as global search heuristics. They are a particular class of evolutionary algorithms that use techniques inspired by evolutionary biology such as inheritance, mutation, selection, and crossover.
+.PP 
+For an introduction to genetic algorithms visit: http://gaul.sourceforge.net/intro.html
+.PP 
+This extension enables genetic algorithm processing in Tcl. It is using the GAUL (Genetic Algorithm Utility Library) library underneath. GAUL is a flexible programming library designed to aid in the development of applications that use genetic algorithms. Additional stochastic algorithms are provided by the library for comparison to the genetic algorithms.
+.PP 
+Tcl\-gaul supports:
+ * Darwinian, Lamarckian or Baldwinian evolutionary schemes.
+ * Both steady\-state and generation\-based GAs.
+ * Includes most of the usual selection operators.
+ * Custom seed, adapt, evaluation, crossover, and mutation operators.
+ * Provision for custom termination criteria.
+ * Display statistics and the population ranking.
+ * Support for multiprocessor calculations on various architectures:
+    * forks
+    * MPI
+    * OpenMP 2.0
+    * pthreads
+.SH "DESCRIPTION"
+\fBgaul create \fIname size \fR?\-generation_hook \fIproc\fR? \fR?\-destroy \fIproc\fR? \fR?\-evaluate \fIproc\fR? \fR?\-seed \fIproc\fR? \fR?\-adapt \fIproc\fR? \fR?\-mutate \fIproc\fR? \fR?\-crossover \fIproc\fR? \fR?\-select_one \fBRANDOM\fR | \fBEVERY\fR | \fBRANDOMRANK\fR | \fBBESTOF2\fR | \fBBESTOF3\fR | \fBROULETTE\fR | \fB ROULETTE_REBASED\fR | \fBSUS\fR | \fBSUSSQ\fR | \fBAGGRESSIVE\fR | \fBBEST\fR | \fBLINEARRANK\fR | \fB ROUNDROBIN\fR?\fR \fR?\-select_two \fBRANDOM | EVERY | RANDOMRANK | BESTOF2 | BESTOF3 | ROULETTE | ROULETTE_REBASED\fR | \fBSUS\fR | \fBSUSSQ\fR | \fBAGGRESSIVE\fR | \fBBEST\fR | \fBLINEARRANK\fR?
+.IP 
+Create a new population named \fIname\fR with size \fIsize\fR (number of members). The \-generation_hook, \-destroy, \-adapt, \-evaluate, \-seed, \-mutate, and \-crossover switches register callback Tcl procedures to be executed at certain events or times. The latter four callbacks should always be defined as they correspond to operators essential for the genetic algorithm to work.
+.TP 
+\-generation_hook \fIproc\fR
+This procedure is executed at the end of each generation, starting from 0. If it generates a Tcl error, the evolution process terminates prematurely; thus, it can be used to introduce custom termination criteria.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fIepoch\fR : The generation the population is currently in.
+.br 
+\fBReturns:\fR
+.br 
+Insignificant.
+.TP 
+\-destroy \fIproc\fR
+This procedure is executed just before a member of the population is deleted thanks to natural selection. It can be used to clean\-up memory/state associated with the member by the Tcl script.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fImember\fR : The member to be destroyed.
+.br 
+\fBReturns:\fR
+.br 
+Insignificant.
+.TP 
+\-evaluate \fIproc\fR
+This procedure determines the fitness of each member of the population. It must return a floating\-point number that indicates the fitness of the member. The higher this number, the greater the fitness.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fImember\fR : The member to be evaluated.
+.br 
+\fBReturns:\fR
+.br 
+A floating\-point number.
+.TP 
+\-seed \fIproc\fR
+This procedure is called before the evolution starts in order to initialize all the members of the population. It must return the newly initialized member.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fImember\fR : The member to be initialized.
+.br 
+\fBReturns:\fR
+.br 
+The initialized member.
+.TP 
+\-adapt \fIproc\fR
+This functionality is only available on Lamarckian and Baldwinian evolutionary schemes. The specified procedure is called for every member of the population in order to "adapt" it before it is evaluated at the end of the generation.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fImember\fR : The member to be adapted.
+.br 
+\fBReturns:\fR
+.br 
+The adapter member.
+.TP 
+\-mutate \fIproc\fR
+This procedure is executed to mutate a single member. The mutated member is expected to be returned.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fImember\fR : The member to be mutated.
+.br 
+\fBReturns:\fR
+.br 
+The mutated member.
+.TP 
+\-crossover \fIproc\fR
+This procedure is invoked to mate/breed two members. A list of two offsprings are expected to be returned by the procedure.
+.br 
+\fBArguments:\fR
+.br 
+\fIname\fR : The name given to the population in the \fBgaul create\fR command.
+.br 
+\fImother\fR : The first member.
+.br 
+\fIfather\fR : The second member.
+.br 
+\fBReturns:\fR
+.br 
+A list with two new members (the children).
+.PP 
+The \-select_one type is used when selecting members for mutation, whereas the \-select_two type is used in the crossover operator. Both switches accept one of a fixed number of selection operators:
+.TP 
+RANDOM
+Random selection of entities, irrespective of their fitnesses/ranks.
+.TP 
+EVERY
+Every entity (or combination of entities) will be systematically selected. The mutation and crossover ratios are ignored by these selection functions.
+.TP 
+RANDOMRANK
+Systematically select each entity in turn along with a random, more fit, entity. The select_one function doesn't return the systematically selected entity. 
+.TP 
+BESTOF2
+Simple pairwise tournament selection.
+.TP 
+BESTOF3
+Simple three\-way tournament selection.
+.TP 
+ROULETTE
+Standard roulette wheel selection.
+.TP 
+ROULETTE_REBASED
+Standard roulette wheel selection.
+.TP 
+SUS
+Universal stochastic sampling.
+.TP 
+SUSSQ
+Universal stochastic sampling.
+.TP 
+AGGRESSIVE
+Random selection, but heavily biased toward fit entities.
+.TP 
+BEST
+Select the single best entity only. The select_two function also selects a random entity.
+.TP 
+LINEARRANK
+Select an entity based on linear probability distribution with respect to rank.
+.TP 
+ROUNDROBIN
+Select entities using a round\-robin algorithm. Each entity is selected in turn, returning to the first once the last entity has been selected. This option is not available to \-select_two switch.
+.PP 
+The default value for both selection switches is SUS.
+
+.PP 
+\fBgaul version\fR
+.IP 
+Returns a Tcl dictionary describing the version of the underlying GAUL library.
+
+.PP 
+\fIname\fR \fBseed\fR
+.IP 
+Initialize the population.
+
+.PP 
+\fIname\fR \fBparams\fR ?\-scheme \fBdarwin\fR | \fBlamarck_parents\fR | \fBlamarck_children\fR | \fBlamarck_all\fR | \fBbaldwin_parents\fR | \fBbaldwin_children\fR | \fBbaldwin_all\fR | \fB lamarck_parents_baldwin_children\fR | \fBlamarck_children_baldwin_parents\fR? ?\-elitism \fBparents\fR | \fB one_parent\fR | \fBparents_die\fR | \fBrescore_parents\fR? ?\-crossover \fInum\fR? ?\-mutation \fInum\fR? ?\-migration \fInum\fR?
+.IP 
+Set population parameters. 
+.PP 
+The \-scheme switch sets the evolutionary scheme. The Darwinian scheme corresponds to the standard genetic algorithm, which only considers natural selection. On the other hand, the Baldwinian/Lamarckian schemes also consider the ability of each member to adapt (or improve on its own) giving higher survival chance to those members that can better adapt. 
+.PP 
+In the Baldwinian scheme the members are adapted and their new form is re\-evaluated. The greater the fitness of the adapted form, the higher the chances for its genes to appear in the next generation. However, the GA operators are performed on the previous/original form of the member (before the adaption). The Lamarckian scheme is like the Baldwinian, but the members retain the adapted form and the GA operators are perfomed on the adapted form. 
+.PP 
+In particular, the acceptable values for this switch are:
+.TP 
+dawrin
+This corresponds to the standard GA. No adaption is performed/considered in this case.
+.TP 
+lamarck_parents
+Lamarckian evolution for parents only performed immediately after "birth".
+.TP 
+lamarck_children
+Lamarckian evolution for children only performed immediately after "birth".
+.TP 
+lamarck_all
+Lamarckian evolution for the entire population at every generation, not just the parents or children at the moment of "birth". This allow ongoing adaptation or learning, rather than just a single chance immediately after "birth".
+.TP 
+baldwin_parents
+Baldwinian evolution for parents only performed immediately after "birth".
+.TP 
+baldwin_children
+Baldwinian evolution for children only performed immediately after "birth".
+.TP 
+baldwin_all
+Baldwinian evolution for entire population.
+.TP 
+lamarck_parents_baldwin_children
+Lamarckian evolution for the parents and baldwinian for the children.
+.TP 
+lamarck_children_baldwin_parents
+Baldwinian evolution for the parents and lamarckian for the children.
+.PP 
+The \-elitism switch sets the rules for the passage of parent individuals into subsequent generations. The meaning of the possible values is:
+.TP 
+parents
+All parents that rank sufficiently highly will pass to the next generation.
+.TP 
+one_parent
+The single fittest parent will pass to the next generation if it ranks sufficiently well.
+.TP 
+parents_die
+No parents pass to next generation, regardless of their fitness.
+.TP 
+rescore_parents
+All parents are re\-evalutated, and those that subsequently rank sufficiently highly will pass to the next generation.
+.PP 
+The \-mutation and \-crossover switches set the propability that a mutation/crossover will occur on a member of the population on every generation. It must be a flowating point number from 0 to 1. The default is 0.1 for mutation and 0.9 for crossover.
+
+.PP 
+\fIname\fR \fBparams\fR
+.IP 
+Get the current population parameters.
+
+.PP 
+\fIname\fR \fBevolve\fI generations\fR ?\-mpi | \-forked | \-threaded | \-steady_state?
+.IP 
+Evolve the population up to a maximum \fIgenerations\fR generations. By default the evolution process is single\-threaded, except if the underlying GAUL library is compiled with OpenMP enabled, in which case all GAUL code may, transparently, benefit without any further action by the user. Other supported models of parallelism are: MPI, process\-based and thread\-based. Some of these features might not be available, depending on compile\-time options and system configuration.
+.TP 
+\-mpi
+MPI\-based parallel evolution.
+.TP 
+\-forked
+The evolution is performed by multiple processes simultaneously. This option should be available on all installations. The MPI parallelism depends on the presense of an MPI library as well as compile\-time options.
+.TP 
+\-threaded
+The evolution is performed by multiple threads simultaneously. The thread\-based parallelism requires the pthreads library in addition to compile\-time options.
+.TP 
+\-steady_state
+Not a parallel evolution, but a different type of single\-threaded evolution. Consult GA literature for details.
+
+.PP 
+\fIname\fR \fBsolution\fR
+.IP 
+Returns the best solution so far.
+
+.PP 
+\fIname\fR \fBstats\fR
+.IP 
+Returns a dictionary with some statistics on the current state of the population. The statistic variables returned concern the fitness of the members of the population. In particular: Max, min, mean, median, variance, stddev, kurtosis, and skew values are returned.
+
+.PP 
+\fIname\fR \fBlist\fR
+.IP 
+Returns in a list all the members of the population. The members in the list are ordered from highest to lowest fitness.
+
+.PP 
+\fIname\fR \fBrank\fR
+.IP 
+Returns in a list all the members of the population along with their fitness. Every two items the list contains the member and its fitness. The touples in the list are ordered from highest to lowest fitness.
+
+.PP 
+\fIname\fR \fBdestroy\fR
+.br 
+\fBrename \fIname\fR {}
+.IP 
+Remove the Tcl command for the population and clean\-up all data.
+
+.SH "EXAMPLE"
+.nf 
+package require gaul
+puts "GAUL Library: [gaul version]\n"
+
+proc genrand {max num} {
+    set result [list]
+    for {set i 0} {$i < $num} {incr i} {
+        lappend result [expr {int($max * rand())}]
+    }
+    return $result
+}
+
+proc generation {name gen} {
+    puts "\nGeneration: $gen\n"
+}
+
+proc evaluate {name entity} {
+    global goal
+    set result [expr {100 * 10}]
+    for {set i 0} {$i < 10} {incr i} {
+        incr result [expr {\-1 * abs([lindex $goal $i] \- [lindex $entity $i])}]
+    }
+    return $result
+}
+
+proc seed {name entity} {
+    set seed [genrand 100 10]
+    return $seed
+}
+
+proc adapt {name entity} {
+    return $entity
+}
+
+proc mutate {name entity} {
+    lset entity [genrand 10 1] [genrand 100 1]
+    return $entity
+}
+
+proc crossover {name entity1 entity2} {
+    set cross [genrand 10 1]
+    set child1 [concat [lrange $entity1 0 $cross\-1] [lrange $entity2 $cross end]]
+    set child2 [concat [lrange $entity2 0 $cross\-1] [lrange $entity1 $cross end]]
+    return [list $child1 $child2]
+}
+
+set goal [genrand 100 10]
+
+gaul create pop 100 \\
+    \-generation_hook generation \\
+    \-evaluate evaluate \\
+    \-seed seed \\
+    \-adapt adapt \\
+    \-mutate mutate \\
+    \-crossover crossover \\
+    \-select_one SUS \\
+    \-select_two SUS
+
+pop params \-scheme lamarck_all \-elitism parents_die \-crossover 0.900000 \-mutation 0.100000 \-migration 0.100000
+puts "Params: [pop params]"
+
+pop seed
+pop evolve 50
+
+puts "======================================"
+puts "Goal:     $goal"
+puts "Solution: [pop solution]"
+puts "Stats: [pop stats]"
+foreach {member rank} [pop rank] {
+    puts "\t$rank\t$member"
+}
+
+pop destroy
+.fi 
+.SH "OUTPUT"
+.nf 
+GAUL Library: major 0 minor 1849 patch 0
+
+Params: \-scheme lamarck_all \-elitism parents_die \-crossover 0.900000 \-mutation 0.100000 \-migration 0.100000
+
+Generation 0: max 459.0 min 858.0 mean 649.98 median 658.5 variance 5679.319600000001 stddev 75.3612606051677 kurtosis 2.9207406751029166 skew 0.09516601413315064
+
+
+Generation 1: max 654.0 min 863.0 mean 718.05 median 758.5 variance 1911.0474999999997 stddev 43.71552927736321 kurtosis 3.447555360456811 skew 0.7457113187377609
+
+
+Generation 2: max 721.0 min 863.0 mean 760.77 median 792.0 variance 958.8771000000008 stddev 30.965740746831827 kurtosis 3.5479228177699884 skew 1.0368299598773918
+
+
+Generation 3: max 759.0 min 885.0 mean 796.46 median 822.0 variance 1041.248399999999 stddev 32.26838080846324 kurtosis 3.3547547068088783 skew 1.07936272652288
+
+
+Generation 4: max 796.0 min 915.0 mean 832.68 median 855.5 variance 762.5776 stddev 27.614807621998743 kurtosis 2.464071072723989 skew 0.6233040613560461
+
+
+Generation 5: max 837.0 min 927.0 mean 861.33 median 882.0 variance 420.64110000000005 stddev 20.509536806081215 kurtosis 3.7350366330506546 skew 1.0972795013828356
+
+
+Generation 6: max 863.0 min 936.0 mean 883.77 median 899.5 variance 269.7771000000002 stddev 16.42489269371341 kurtosis 3.235576190024203 skew 0.8349488460692618
+
+
+Generation 7: max 882.0 min 953.0 mean 904.28 median 917.5 variance 242.4216000000001 stddev 15.569894026614314 kurtosis 3.372569334160615 skew 0.8230657039857708
+
+
+Generation 8: max 901.0 min 953.0 mean 919.96 median 927.0 variance 181.03839999999968 stddev 13.455051096149717 kurtosis 2.2203490148254645 skew 0.4183803332268127
+
+
+Generation 9: max 916.0 min 955.0 mean 932.56 median 935.5 variance 119.70639999999972 stddev 10.941041997908595 kurtosis 1.9734838365261074 skew 0.2874963476168472
+
+
+Generation 10: max 932.0 min 964.0 mean 942.43 median 948.0 variance 65.88509999999994 stddev 8.116963718041367 kurtosis 2.4111029335485736 skew 0.6031910542925711
+
+
+Generation 11: max 941.0 min 966.0 mean 949.19 median 953.5 variance 34.03389999999985 stddev 5.833858071636629 kurtosis 2.714491942925497 skew 0.7130927841462207
+
+
+Generation 12: max 947.0 min 970.0 mean 955.09 median 958.5 variance 29.401899999999976 stddev 5.422351888249229 kurtosis 2.581060627237597 skew 0.602974953285199
+
+
+Generation 13: max 955.0 min 970.0 mean 960.18 median 962.5 variance 14.647599999999981 stddev 3.827218310992983 kurtosis 2.4330912354533085 skew 0.45602324853952114
+
+
+Generation 14: max 960.0 min 972.0 mean 964.06 median 966.0 variance 7.756400000000011 stddev 2.7850314181351727 kurtosis 2.759806722189022 skew 0.5936367107187382
+
+
+Generation 15: max 964.0 min 975.0 mean 966.74 median 969.5 variance 6.292399999999978 stddev 2.508465666498144 kurtosis 4.3377434740997085 skew 1.2687092157024076
+
+
+Generation 16: max 966.0 min 975.0 mean 969.34 median 970.5 variance 4.764400000000006 stddev 2.182750558355216 kurtosis 2.168957992751751 skew 0.4558882135654201
+
+
+Generation 17: max 969.0 min 978.0 mean 971.7 median 973.5 variance 4.810000000000002 stddev 2.1931712199461315 kurtosis 2.9941822519784425 skew 0.7883096919995383
+
+
+Generation 18: max 971.0 min 981.0 mean 974.07 median 976.0 variance 5.665100000000012 stddev 2.380147054280473 kurtosis 3.3106484505887686 skew 0.9359389096522497
+
+
+Generation 19: max 973.0 min 981.0 mean 976.18 median 977.0 variance 2.8676000000000106 stddev 1.693398948859958 kurtosis 2.4912911893537166 skew 0.507757137209828
+
+
+Generation 20: max 976.0 min 985.0 mean 978.02 median 980.5 variance 2.599600000000013 stddev 1.612327510154191 kurtosis 5.735231935619675 skew 1.2988517997702596
+
+
+Generation 21: max 978.0 min 985.0 mean 979.72 median 981.5 variance 3.2416000000000027 stddev 1.8004443895883047 kurtosis 3.9923302107157075 skew 1.2242124056152128
+
+
+Generation 22: max 979.0 min 989.0 mean 981.29 median 984.0 variance 3.865899999999999 stddev 1.966189207578965 kurtosis 4.252390377418288 skew 1.115929036888462
+
+
+Generation 23: max 981.0 min 989.0 mean 982.87 median 985.0 variance 2.673099999999995 stddev 1.6349617732534283 kurtosis 3.3251739098843442 skew 0.7309843660071947
+
+
+Generation 24: max 982.0 min 989.0 mean 984.31 median 985.5 variance 2.0139000000000076 stddev 1.4191194452899332 kurtosis 6.01650999114932 skew 1.26918364749434
+
+
+Generation 25: max 984.0 min 990.0 mean 985.39 median 987.0 variance 2.437900000000001 stddev 1.561377596867587 kurtosis 4.244307261727915 skew 1.5285340433089585
+
+
+Generation 26: max 985.0 min 990.0 mean 986.64 median 987.5 variance 3.1503999999999945 stddev 1.7749366185867017 kurtosis 1.4379154188035574 skew 0.4344048849740332
+
+
+Generation 27: max 986.0 min 990.0 mean 988.23 median 988.0 variance 1.5371000000000004 stddev 1.239798370703882 kurtosis 2.4959282384336783 skew \-0.820050825576884
+
+
+Generation 28: max 989.0 min 990.0 mean 989.17 median 989.5 variance 0.14109999999999986 stddev 0.3756327994198588 kurtosis 4.087172218285711 skew 1.7570350646148336
+
+
+Generation 29: max 989.0 min 990.0 mean 989.35 median 989.5 variance 0.22750000000000042 stddev 0.4769696007084733 kurtosis 1.3956043956042758 skew 0.6289709020330089
+
+
+Generation 30: max 989.0 min 990.0 mean 989.68 median 989.5 variance 0.21759999999999993 stddev 0.46647615158762396 kurtosis 1.595588235293787 skew \-0.7717436331409684
+
+
+Generation 31: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 32: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 33: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 34: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 35: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 36: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 37: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 38: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 39: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 40: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 41: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 42: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+
+Generation 43: max 990.0 min 991.0 mean 990.01 median 990.5 variance 0.009899999999999949 stddev 0.09949874371066174 kurtosis 98.01010101010613 skew 9.849370589540596
+
+
+Generation 44: max 990.0 min 991.0 mean 990.03 median 990.5 variance 0.029099999999999984 stddev 0.17058722109231975 kurtosis 31.364261168388403 skew 5.510377588549676
+
+
+Generation 45: max 990.0 min 991.0 mean 990.07 median 990.5 variance 0.06510000000000021 stddev 0.2551470164434619 kurtosis 12.360983102915787 skew 3.370605747178756
+
+
+Generation 46: max 990.0 min 991.0 mean 990.12 median 990.5 variance 0.10560000000000076 stddev 0.3249615361854396 kurtosis 6.469696969696751 skew 2.338738328607261
+
+
+Generation 47: max 990.0 min 991.0 mean 990.2 median 990.5 variance 0.16000000000000048 stddev 0.4000000000000006 kurtosis 3.2499999999993037 skew 1.4999999999996432
+
+
+Generation 48: max 990.0 min 991.0 mean 990.39 median 990.5 variance 0.23790000000000058 stddev 0.48774993593028854 kurtosis 1.2034468263976872 skew 0.451050802457683
+
+
+Generation 49: max 990.0 min 991.0 mean 990.73 median 990.5 variance 0.19709999999999986 stddev 0.4439594576084621 kurtosis 2.073566717402508 skew \-1.0361306468793359
+
+
+Generation 50: max 991.0 min 991.0 mean 991.0 median 991.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+
+======================================
+Goal:     86 39 19 36 12 95 84 18 17 8
+Solution: 86 39 21 39 11 94 84 18 16 9
+Stats: max 991.0 min 991.0 mean 991.0 median 991.0 variance 0.0 stddev 0.0 kurtosis \-NaN skew \-NaN
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 17 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+	991.0	86 39 21 39 11 94 84 18 16 9
+.fi 
+.SH "AUTHOR"
+Alexandros Stergiakis <sterg@kth.se>
+.SH "COPYRIGHT"
+.PP 
+Copyright (C) 2008  Alexandros Stergiakis
+.PP 
+This program is free software: you can redistribute it and/or 
+.br 
+modify it under the terms of the GNU General Public License as 
+.br 
+published by the Free Software Foundation, either version 3 of 
+.br 
+the License, or (at your option) any later version.
+.PP 
+This program is distributed in the hope that it will be useful,
+.br 
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+.br 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.br 
+GNU General Public License for more details.
+.PP 
+You should have received a copy of the GNU General Public License
+.br 
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

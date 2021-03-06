@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="GAUL Documentation: Reading and Writing Entities and Populations">
+   <meta name="keywords" content="read, write, save, load, population, genetic algorithm, GA, tutorial, examples, documentation, GAUL">
+   <meta name="author" content="Stewart Adcock">
+   <meta name="copyright" content="© Stewart Adcock">
+   <meta name="generator" content="vi">
+   <meta http-equiv="Content-Language" content="en">
+   <title>GAUL: Genetic Algorithm Utility Library</title>
+</head>
+<body text="#000000" bgcolor="#D8D8FF" link="#222288" vlink="#222288" alink="#9999FF">
+
+<a NAME="top"></a>
+
+<center>
+<script language="JavaScript">
+<!--
+google_ad_client = 'pub-0728071010451673';
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = '468x60_as';
+google_ad_channel ="8508682197";
+// -->
+</script>
+<script language="JavaScript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="../index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="../documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="../news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="../resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="../downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">GAUL Documentation: Reading and Writing Entities and Populations</font></b></td>
+  </tr>
+</table>
+
+<p><a NAME="intro"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+<tr>
+<td>
+<p><b>Storing populations and entities on disk</b></p>
+<p>Functions are provided by GAUL to store both individual entities and entire populations on disk in a binary format.  These might be useful for resuming previous evolutionary simulations.</p>
+<p>Currently, the binary format is not platform independant, but a portable XML-based format is likely to be used in the future.</p>
+
+<pre>
+boolean       ga_population_write(population *pop, char *filename);
+population   *ga_population_read(char *filename);
+
+boolean       ga_entity_write(population *pop, entity *entity, char *filename);
+entity       *ga_entity_read(population *pop, char *filename);
+</pre>
+
+<p>Look at <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/gaul/gaul-examples/src/saveload.c?only_with_tag=HEAD&amp;view=markup">saveload.c</a>, an example program which illustrates the use of the ga_population_read() and ga_population_write() functions.  As you can see, these functions are very straight-forward.  Use of the population read/write functions will automatically include all of the constituent entities.  I recommend experimentation with this example program, <a href="examples.html#saveload">saveload</a>.</p>
+
+<p><b>What is stored, and what isn't?</b></p>
+<p>Unfortunately, there are some portions of the entity and population structures which can not be recorded on disk.  While most hook functions are stored, custom functions can not be stored in a way that would allow restoration independent of platform and executable.  Consequently, the fitness evaluation function and any other custom code must be manually defined in any population structure read back from disk.  Also, the userdata fields of both population and entity structures must be redefined after restoration.</p>
+
+<p><b>What next?</b></p>
+<p>Well done, you have reached the end of the GAUL tutorial.  If you have comments, questions, or queries then please consider posting these on the GAUL mailing list.  Instructions for subscribing to, or posting on, this list are provided on the <a href="http://gaul.sourceforge.net/">GAUL homepage</a>.</p>
+
+</td>
+</tr>
+</table>
+
+<p>[ <a href="#top">BACK TO TOP</a> | <a href="simple.html">BACK TO START OF TUTORIAL</a> ]</p>
+
+<p><a NAME="footer"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="../index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="../documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="../news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="../resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="../downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+
+<!--   Footer, Links etc.  -->
+<table BORDER=0 CELLSPACING=2 CELLPADDING=5 WIDTH="100%">
+  <tr>
+    <td width="20%" ALIGN=CENTER></td>
+    <td width="20%" ALIGN=CENTER>Hosted by:<br><A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=25766" width="88" height="31" border="0" alt="SourceForge Logo"></A></td>
+    <td width="20%" ALIGN=CENTER><A href="http://gaul.sourceforge.net/"><IMG src="../images/gaul_button.png" width="88" height="31" border="0" alt="GAUL Button"></A></td>
+    <td width="20%" ALIGN=CENTER><a href="http://validator.w3.org/check/referer"><img border="0" src="../images/valid-html401.png" alt="Valid HTML 4.01!" width="88" height="31"></a></td>
+    <td width="20%" ALIGN=CENTER></td>
+  </tr>
+</table>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr><td><hr noshade width="100%"></td></tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>&copy; 2001-2003, &quot;Stewart Adcock" &lt;<a href="MAILTO:stewart_DOESNOTLIKESPAM@linux-domain.com">stewart@linux-domain.com</a>&gt; All rights reserved.</font></td>
+  </tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>All trademarks on this page are probably owned by their respective companies.  You can insert you own favourite disclaimer here.</font></td>
+  </tr>
+</table>
+
+</body>
+</html>
+

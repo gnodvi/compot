@@ -1,0 +1,60 @@
+#pop evolve 50 -mpi ;# XXX Not tested.
+pop evolve 50 -threaded ;# XXX Segmentation fault
+#pop evolve 50 -steady_state ;# FATAL ERROR: Dodgy replacement requested.
+
+== Multiple chromosomes
+
+== Multiple Populations: http://gaul.sourceforge.net/tutorial/island.html
+
+== Phenome handling functions
+
+== pop->replace
+
+== pop->rank
+
+== Built-in Replacement operators: ga_replace_by_fitness (used only in steady-state)
+
+== Built-in Ranking operators
+
+== Serialize / Deserialize
+
+== Alternative search functions
+
+A number of non-evolutionary search and optimization functions are provided. These are intended for use as local optimization methods or for comparison against the genetic algorithms. However, they may also be used in their own right. 
+All of the alternative functions are used in a similar way. A function named ga_population_set_XXX_parameters() is used to define appropriate run-time options, where XXX is the name of the optimization method. A separate function, generally similar to the ga_evolution() function, is used to perform the actual optimization. 
+
+* Tabu search
+* Simplex search
+* Deterministic crowding
+* Differential Evolution
+* Simulated annealling
+* Hill climbing
+* Gradient methods
+* Systematic search
+* Random search
+
+Heuristic search function operations
+A variety of miscellaneous functions are also used by the alternative, non-evolutionary, optimization or search functions that GAUL provides. 
+GAtabu_accept   Tabu-search tabu and aspiration criteria.
+  GAsa_accept   Simulated Annealing acceptance criteria.
+  GAmutate_allele   Mutate a single, specified, allele.
+  GAto_double   Map chromosomal data to double-precision float array.
+  GAfrom_double   Map chromosomal data from double-precision float array.
+  GAgradient   Return array of gradients.
+  GAscan_chromosome   Produce next permutation of genome.
+  GAcompare   Compare two entities (in either genomic or phenomic space) and return their mutual distance.
+  typedef boolean (*GAtabu_accept)(population *pop, entity *putative, entity *tabu);
+typedef boolean (*GAsa_accept)(population *pop, entity *current, entity *trial);
+typedef boolean (*GAmutate_allele)(population *pop, entity *parent, entity *child, const int chromosomeid, const int alleleid);
+typedef boolean (*GAto_double)(population *pop, entity *entity, double *darray);
+typedef boolean (*GAfrom_double)(population *pop, entity *entity, double *darray);
+typedef double  (*GAgradient)(population *pop, entity *entity, double *darray, double *varray);
+typedef boolean (*GAscan_chromosome)(population *pop, entity *entity, int enumeration_num);
+typedef double  (*GAcompare)(population *pop, entity *alpha, entity *beta);
+
+--------------
+
+Also:
+Look for "TODO" in the code.
+Or
+grep -R TODO *

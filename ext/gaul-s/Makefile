@@ -2,46 +2,33 @@
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-#MAIN_SRC_DIR = .
+MAIN_SRC_DIR = .
 
-include ../../Make.mak
+include $(MAIN_SRC_DIR)/Make.mak
 
 
-CAUL-S_DIR = ../gaul-s		
-CGPLIB_DIR = ../cgplib		
-PLOTER_DIR = ../ploter		
-##JIMTCL_DIR = ../jimtcl		
+GAUL-C_DIR  = $(MAIN_SRC_DIR)/gaul-c
+GAUL-L_DIR  = $(MAIN_SRC_DIR)/gaul-l
 
 #-------------------------------------------------------------------------------
 
 
-all:  CAUL-S__ CGPLIB__ PLOTER__ ##JIMTCL__  
+all:  GAUL-C__  GAUL-L__ 
 
 #-------------------------------------------------------------------------------
 
-CAUL-S__ :
-	(cd $(CAUL-S_DIR); make)
+GAUL-C__ :
+	(cd $(GAUL-C_DIR); make)
 
-CGPLIB__ :
-	(cd $(CGPLIB_DIR); make)
-
-PLOTER__ :
-	(cd $(PLOTER_DIR); make)
-
-##JIMTCL__ :
-##	(cd $(JIMTCL_DIR); make)
+GAUL-L__ :
+	(cd $(GAUL-L_DIR); make)
 
 #-------------------------------------------------------------------------------
-test:
-	M
 
-#-------------------------------------------------------------------------------
 
 clean : 
-	(cd $(CAUL-S_DIR); make clean)
-	(cd $(CGPLIB_DIR); make clean)
-	(cd $(PLOTER_DIR); make clean)
-##	(cd $(JIMTCL_DIR); make clean)
+	(cd $(GAUL-C_DIR); make clean)
+	(cd $(GAUL-L_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

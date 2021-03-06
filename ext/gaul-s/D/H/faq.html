@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="GAUL Frequently Asked Questions">
+   <meta name="keywords" content="FAQ, genetic algorithm, GA, GAUL, genetic algorithms, GALib">
+   <meta name="author" content="Stewart Adcock">
+   <meta name="copyright" content="© Stewart Adcock">
+   <meta name="generator" content="vi">
+   <meta http-equiv="Content-Language" content="en">
+   <title>GAUL: Genetic Algorithm Utility Library</title>
+</head>
+<body text="#000000" bgcolor="#D8D8FF" link="#222288" vlink="#222288" alink="#9999FF">
+
+<a NAME="top"></a>
+<center>
+<script language="JavaScript">
+<!--
+google_ad_client = 'pub-0728071010451673';
+google_ad_width = 468;
+google_ad_height = 60;
+google_ad_format = '468x60_as';
+google_ad_channel ="8508682197";
+// -->
+</script>
+<script language="JavaScript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">GAUL Frequently Asked Questions</font></b></td>
+  </tr>
+</table>
+
+<p><a NAME="EC"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+<tr>
+<td ALIGN=CENTER>
+<!-- 
+	<p><font face="Arial,Helvetica" color="#FF0000"><i>Please be aware that this FAQ is incomplete.  If you have any suggestions about what should be included, please email them to the GAUL mailing list.</i></font></p>
+<p></p>
+ -->
+</td>
+</tr>
+
+  <tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Introduction</font></b></td>
+  </tr>
+<tr>
+<td>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">What is a GA?  What is evolutionary computation?</font></b></p>
+  <p>The basics of evolutionary computation and genetic algorithms are covered on the <a href="intro.html">website</a>.</p>
+  <p>For in depth discussions of Genetic Algorithms and the other related algorithms the interested reader is directed to the GAUL <a href="index.php#resources">resources list</a>.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">What is GAUL?</font></b></p>
+ <p>The Genetic Algorithm Utility Library (or, GAUL for short) is an open source programming library designed to assist in the development of code requiring genetic algorithms.  The steady-state, generation based and the island model of evolution are supported, using the Darwinian, Lamarckian or Baldwinian evolutionary schemes.  Standard mutation, crossover and selection operators are provided, while code hooks additionally allow custom operators.  It provides data structures and functions for handling and manipulation of the data required for a genetic algorithm.   Additional stochastic algorithms are provided for comparison to the genetic algorithms. Much of the functionality is also available through a simple <a href="http://www.s-lang.org/">S-Lang</a> interface.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Why don't I have to pay for GAUL?</font></b></p>
+  <p>This version of GAUL is freely distributed under the terms of the GNU <a href="licence.html">General Public License</a>, which in essence means that you can obtain it for free, and pass it to your friends with, or without, modifications.</p>
+  <p>The author accepts that the GNU General Public License is incompatible with certain commercial requirements or third-party license stipulations.  Consequently, GAUL may be licensed under alternative terms on an individual case-by-case basis by contacting the author at <a href="mailto:gaul@linux-domain.com">gaul@linux-domain.com</a>.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">I think I've found a bug, what can I do?</font></b></p>
+  <p>Please send details of your system, the version of GAUL that you are using and concise instructions for reproducing the crash, or erroneous result, to <a href="mailto:gaul-devel@lists.sourceforge.net">gaul-devel@lists.sourceforge.net</a>.  Alternatively, use SourceForge's <a href="http://sourceforge.net/tracker/?atid=385145&group_id=25766&func=browse">bug submission</a> facility.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">I've read the entire FAQ and my question wasn't answered, where can I get more help?</font></b></p>
+  <p>All available documentation may be accessed at <a href="http://gaul.sourceforge.net/documentation.html">http://gaul.sourceforge.net/documentation.html</a>, but be warned that some of this documentation is still being written.  Your questions are likely to be answered if you post them on the GAUL mailing list, <a href="mailto:gaul-devel@lists.sourceforge.net">gaul-devel@lists.sourceforge.net</a>, hosted by SourceForge. You may find information about this mailing list through a web interface at <a href="http://lists.sourceforge.net/lists/listinfo/gaul-devel">http://lists.sourceforge.net/lists/listinfo/gaul-devel</a>, or by sending an email with just the word `help' as subject or in the body, to <a href="mailto:gaul-devel-request@lists.sourceforge.net">gaul-devel-request@lists.sourceforge.net</a>.</p>
+  <p></p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Can I get commercial support?</font></b></p>
+  <p>Stewart is prepared to produce custom modifications and extensions (especially after receiving donations to support GAUL development).  Commercial support and consultancy are also available.  References are available upon request.</p>
+  <p>A great way to support the on-going development of GAUL is to re-license it for propriety use.</p>
+  <p>Payments are accepted in $ (USD), &pound; (GBP) and beer.</p>
+  <p></p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Who developed GAUL?</font></b></p>
+  <p>The majority of GAUL was developed by <a href="http://saa.dyndns.org/">Stewart Adcock</a>. Since being released as open source, numerous patches have been submitted for includion, by a variety of talented coders.</p>
+  <p></p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Is GAUL OSI certified software?</font></b></p>
+  <p>Yes.</p>
+  <p></p>
+  </td>
+</tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Installing GAUL</font></b></td>
+  </tr>
+<tr>
+  <td>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">What are the hardware requirements?</font></b></p>
+  <p>Linux, UNIX and other POSIX-compliant OSs on any sensible hardware will be supported.  A list of platforms on which GAUL is known to work is provided on the <a href="http://gaul.sourceforge.net/platforms.html">website</a>.  The details of the optimisation that is being performed is more critical than any hardware requirements of GAUL.  GAUL will run on and is able to utilise multiple processors, including those on Beowulf-style clusters and more traditional supercomputers.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">What are the software requirements?</font></b></p>
+  <p>Compilation of GAUL requires a fairly modern C/C++ compiler.  Its compilation is much simpler with the GNU maketools although it is possible to complete a successful compilation without these.  Prior installation of the S-Lang scripting engine is advised, but not essential.  There are no other requirements.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Does GAUL work on MS Windows?</font></b></p>
+  <p>Yes, but not fully and without a certain amount of hassle.  Without changes, GAUL compiles successfully with the <a href="http://www.cygwin.com">Cygwin</a> environment on Windows.  GAUL also compiles and runs successfully with the <a href="http://www.bloodshed.net/devcpp.html">Dev-C++</a> IDE and Microsoft Visual C++, albeit with a few features disabled.</p>
+  <p>Full native support for Windows is a current development aim, and this is progressing well.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Which operating systems does GAUL support?</font></b></p>
+  <p>GAUL is known to work on several UNIX and UNIX-like operating systems, including several versions of Linux.  It should compile successfully on any POSIX compliant OS, but this has not been confirmed.  A list of tested systems is provided on the <a href="http://gaul.sourceforge.net/platforms.html">website</a>.  Pre-compiled binaries are available for several platforms.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">From where may I download GAUL?</font></b></p>
+  <p>Full instructions are provided on the <a href="http://gaul.sourceforge.net/downloads.html">website</a>.  You'll probably want to visit the sourceforge <a href="http://sourceforge.net/project/showfiles.php?group_id=25766">project page</a> for the latest version, and many earlier versions.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">How is GAUL installed?</font></b></p>
+  <p>The simple approach is to type &quot;./configure ; make&quot; in the top-level gaul directory.  Full instructions are provided on the <a href="http://gaul.sourceforge.net/installation.html">website</a>.</p>
+  <p></p>
+  </td>
+</tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Using GAUL</font></b></td>
+  </tr>
+<tr>
+  <td>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">How do I get started?</font></b></p>
+  <p>You are recommended to work though the <a href="http://gaul.sourceforge.net/tutorial/simple.html">tutorial</a> initially.  Once you understand the basics of the GAUL API, you can find further information in the <a href="http://gaul.sourceforge.net/gaul_reference_guide.html">reference guide</a>.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">What scripting languages are supported?</font></b></p>
+  <p>Only <a href="http://www.s-lang.org/">S-Lang</a> is supported in the current GAUL releases.  However, a wrapper for interfacing GAUL to <a href="http://www.chemcomp.com/">SVL</a> does exist.  Ask <a href="mailto:gaul@linux-domain.com">Stewart</a> if you are interested in using this.</p>
+  <p>Prototype Perl wrappers have been developed by Stewart and at least one other by an <a href="http://voltar.org/PerlModules/">external developer</a>.  Stewart can provide his version upon <a href="mailto:gaul@linux-domain.com">request</a>.</p>
+  <p>Third-party wrappers exist for tcl, Ruby, and Lua, at various levels of completeness.</p>
+  <p></p>
+  </td>
+</tr>
+
+<tr>
+  <td ALIGN=CENTER BGCOLOR="#2222AA"><b><font face="Arial,Helvetica" color="#FFFFFF">Modifying and extending GAUL</font></b></td>
+  </tr>
+<tr>
+  <td>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Can I modify the source code?</font></b></p>
+  <p>Yes! In fact, I would even encourage you to poke around in the source code.  There is probably no better way to learn about how GAUL, in particular, and GAs, in general, work.  This version of GAUL is distributed using the GNU General Public License.  The spirit of this license is to encourage people to freely modify and subsequently distribute the software.  I would be grateful to receive improvements and additions, but you are under no obligation to provide them to me if they are only intended for your own use.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">How can I find more about the source code internals?</font></b></p>
+  <p>GAUL is entirely composed of simple and portable C.</p>
+  <p>The distribution's directory structure is fairly straightforward.  The main GAUL source is located in the &quot;src/&quot; subdirectory.  In this directory all code relating to evolutionary algorithms and population handling is located.  General utility code, including a pseudo-random number generator, linked lists, and timing routines, is found in the &quot;util/&quot; directory.  All code which is not directly related to evolutionary computation will be found in there.  Most of that code is common to other software projects.  Test code, as much as currently exists, is in the &quot;test/&quot; directory.  The &quot;example/&quot; directory contains some illustrative programs which rely on GAUL and the code relating to the tutorials.  Each directory contains a README file which presents the contents of that directory.</p>
+  <p><b><font face="Arial,Helvetica" color="#2222AA">Why was GAUL written in C?</font></b></p>
+  <p>Originally, the choices of either C or C++ were available in order to meet efficiency and portability requirements.  I choose C, mainly, because I think it is more fun.  Several very good C++ GA toolkits already existed, but in my humble opinion the available C toolkits all sucked in one way or another.  One advantage of C is that it is trivial to use its functions from within C++, while the reverse is not so true.</p>
+  <p></p>
+  </td>
+</tr>
+</table>
+
+<div align="center">
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2>
+<tr>
+<td ALIGN=CENTER BGCOLOR="#2222AA">
+<!-- SiteSearch Google -->
+<form method="get" action="http://www.google.com/custom" target="_top">
+<table border="0" bgcolor="#ffffff">
+<tr><td nowrap="nowrap" valign="top" align="left" height="32">
+<a href="http://www.google.com/">
+<img src="http://www.google.com/logos/Logo_25wht.gif"
+border="0" alt="Google"></img></a>
+</td>
+<td nowrap="nowrap">
+<input type="hidden" name="domains" value="gaul.sourceforge.net"></input>
+<input type="text" name="q" size="31" maxlength="255" value=""></input>
+<input type="submit" name="sa" value="Search"></input>
+</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td nowrap="nowrap">
+<table>
+<tr>
+<td>
+<input type="radio" name="sitesearch" value="" checked="checked"></input>
+<font size="-1" color="#000000">Web</font>
+</td>
+<td>
+<input type="radio" name="sitesearch" value="gaul.sourceforge.net"></input>
+<font size="-1" color="#000000">gaul.sourceforge.net</font>
+</td>
+</tr>
+</table>
+<input type="hidden" name="client" value="pub-0728071010451673"></input>
+<input type="hidden" name="forid" value="1"></input>
+<input type="hidden" name="channel" value="3137818657"></input>
+<input type="hidden" name="ie" value="ISO-8859-1"></input>
+<input type="hidden" name="oe" value="ISO-8859-1"></input>
+<input type="hidden" name="cof" value="GALT:#222288;GL:1;DIV:#2222AA;VLC:222288;AH:center;BGC:D8D8FF;LBGC:D8D8FF;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;LH:31;LW:88;L:http://gaul.sourceforge.net/images/gaul_button.png;S:http://gaul.sourceforge.net;FORID:1;"></input>
+<input type="hidden" name="hl" value="en"></input>
+
+</td></tr></table>
+</form>
+<!-- SiteSearch Google -->
+</tr>
+</table>
+</div>
+
+
+<p><a NAME="footer"></a></p>
+<table BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="100%">
+  <tr>
+    <td ALIGN=CENTER BGCOLOR="#000000"><font face="Arial,Helvetica" color="#FFFFFF"> [ <a href="index.php"><font face="Arial,Helvetica" color="#FFFFFF"><b>Home</b></font></a> | <a href="documentation.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Docs</b></font></a> | <a href="news.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>News</b></font></a> | <a href="resources.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Resources</b></font></a> | <a href="downloads.html"><font face="Arial,Helvetica" color="#FFFFFF"><b>Download</b></font></a>] </font></td>
+  </tr>
+</table>
+
+<!--   Footer, Links etc.  -->
+<table BORDER=0 CELLSPACING=2 CELLPADDING=5 WIDTH="100%">
+  <tr>
+    <td width="20%" ALIGN=CENTER></td>
+    <td width="20%" ALIGN=CENTER>Hosted by:<br><A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=25766" width="88" height="31" border="0" alt="SourceForge Logo"></A></td>
+    <td width="20%" ALIGN=CENTER><A href="http://gaul.sourceforge.net/"><IMG src="images/gaul_button.png" width="88" height="31" border="0" alt="GAUL Button"></A></td>
+    <td width="20%" ALIGN=CENTER><a href="http://validator.w3.org/check/referer"><img border="0" src="./images/valid-html401.png" alt="Valid HTML 4.01!" width="88" height="31"></a></td>
+    <td width="20%" ALIGN=CENTER></td>
+  </tr>
+</table>
+
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <tr><td><hr noshade width="100%"></td></tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>&copy; 2001-2009, &quot;Stewart Adcock" &lt;<a href="MAILTO:stewart_DOESNOTLIKESPAM@linux-domain.com">stewart@linux-domain.com</a>&gt; All rights reserved.</font></td>
+  </tr>
+  <tr>
+    <td ALIGN=CENTER><font face="Arial,Helvetica" size=-1>All trademarks on this page are probably owned by their respective companies.  You can insert you own favourite disclaimer here.</font></td>
+  </tr>
+</table>
+
+</body>
+</html>
+

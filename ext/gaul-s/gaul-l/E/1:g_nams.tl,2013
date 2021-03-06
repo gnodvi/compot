@@ -1,0 +1,563 @@
+Seed: 1
+Seed: 2
+Seed: 3
+Seed: 4
+Seed: 5
+Seed: 6
+Seed: 7
+Seed: 8
+Seed: 9
+Seed: 10
+Evaluate: 1
+Evaluate: 2
+Evaluate: 3
+Evaluate: 4
+Evaluate: 5
+Evaluate: 6
+Evaluate: 7
+Evaluate: 8
+Evaluate: 9
+Evaluate: 10
+
+Generation 0
+
+10 9 8 7 6 5 4 3 2 1
+Crossover: 9 & 9
+Crossover: 9 & 9
+Crossover: 9 & 9
+Crossover: 6 & 10
+Crossover: 5 & 7
+Crossover: 8 & 8
+Crossover: 9 & 5
+Crossover: 3 & 10
+Crossover: 10 & 10
+Mutate: 3
+Evaluate: 9
+Evaluate: 9
+Evaluate: 9
+Evaluate: 9
+Evaluate: 9
+Evaluate: 9
+Evaluate: 10
+Evaluate: 6
+Evaluate: 7
+Evaluate: 5
+Evaluate: 8
+Evaluate: 8
+Evaluate: 5
+Evaluate: 9
+Evaluate: 10
+Evaluate: 3
+Evaluate: 10
+Evaluate: 10
+Evaluate: 3
+Destroy: 1
+Destroy: 2
+Destroy: 3
+Destroy: 3
+Destroy: 3
+Destroy: 4
+Destroy: 5
+Destroy: 5
+Destroy: 5
+Destroy: 6
+Destroy: 6
+Destroy: 7
+Destroy: 7
+Destroy: 8
+Destroy: 8
+Destroy: 8
+Destroy: 9
+Destroy: 9
+Destroy: 9
+
+Generation 1
+
+10 10 10 10 10 9 9 9 9 9
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 9 & 10
+Crossover: 9 & 9
+Crossover: 9 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 9
+Evaluate: 9
+Evaluate: 9
+Evaluate: 10
+Evaluate: 9
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 9
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 2
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 3
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 4
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 5
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 6
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 7
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 8
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 9
+
+10 10 10 10 10 10 10 10 10 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Crossover: 10 & 10
+Mutate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Evaluate: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+
+Generation 10
+
+10 10 10 10 10 10 10 10 10 10
+
+---------------------------------------------------------
+
+Params: -scheme darwin -elitism parents -crossover 0.900000 -mutation 0.100000 -migration 0.100000
+
+10 10.0 10 10.0 10 10.0 10 10.0 10 10.0 10 10.0 10 10.0 10 10.0 10 10.0 10 10.0
+
+---------------------------------------------------------
+
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10
+Destroy: 10

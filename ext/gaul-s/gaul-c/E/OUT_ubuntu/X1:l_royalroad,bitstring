@@ -1,0 +1,115 @@
+Running Holland's Royal Road test problem with a genome that
+is 240 bits long with 16 blocks.  The parameters are:
+  block size: 8
+  gap size  : 7
+  m*        : 4
+  u*        : 1.000000
+  u         : 0.300000
+  v         : 0.020000
+
+Random number seed is 12345678
+
+generation = 0 best score = 1.740000 highestlevel = 0
+generation = 1 best score = 1.780000 highestlevel = 0
+generation = 2 best score = 2.940000 highestlevel = 1
+generation = 3 best score = 3.240000 highestlevel = 1
+generation = 4 best score = 3.420000 highestlevel = 1
+generation = 5 best score = 3.820000 highestlevel = 1
+generation = 6 best score = 4.200000 highestlevel = 1
+generation = 7 best score = 4.980000 highestlevel = 2
+generation = 8 best score = 5.940000 highestlevel = 2
+generation = 9 best score = 6.500000 highestlevel = 2
+generation = 10 best score = 6.780000 highestlevel = 2
+generation = 11 best score = 7.560000 highestlevel = 2
+generation = 12 best score = 9.600000 highestlevel = 3
+generation = 13 best score = 9.600000 highestlevel = 3
+generation = 14 best score = 9.600000 highestlevel = 3
+generation = 15 best score = 9.640000 highestlevel = 3
+generation = 16 best score = 9.860000 highestlevel = 3
+generation = 17 best score = 9.860000 highestlevel = 3
+generation = 18 best score = 9.860000 highestlevel = 3
+generation = 19 best score = 9.860000 highestlevel = 3
+generation = 20 best score = 9.860000 highestlevel = 3
+generation = 21 best score = 9.860000 highestlevel = 3
+generation = 22 best score = 9.860000 highestlevel = 3
+generation = 23 best score = 9.860000 highestlevel = 3
+generation = 24 best score = 9.860000 highestlevel = 3
+generation = 25 best score = 9.860000 highestlevel = 3
+generation = 26 best score = 9.860000 highestlevel = 3
+generation = 27 best score = 9.860000 highestlevel = 3
+generation = 28 best score = 9.860000 highestlevel = 3
+generation = 29 best score = 9.860000 highestlevel = 3
+generation = 30 best score = 9.860000 highestlevel = 3
+generation = 31 best score = 9.860000 highestlevel = 3
+generation = 32 best score = 9.860000 highestlevel = 3
+generation = 33 best score = 9.860000 highestlevel = 3
+generation = 34 best score = 9.860000 highestlevel = 3
+generation = 35 best score = 9.860000 highestlevel = 3
+generation = 36 best score = 9.860000 highestlevel = 3
+generation = 37 best score = 9.860000 highestlevel = 3
+generation = 38 best score = 9.860000 highestlevel = 3
+generation = 39 best score = 9.860000 highestlevel = 3
+generation = 40 best score = 9.860000 highestlevel = 3
+generation = 41 best score = 9.860000 highestlevel = 3
+generation = 42 best score = 9.860000 highestlevel = 3
+generation = 43 best score = 9.860000 highestlevel = 3
+generation = 44 best score = 9.860000 highestlevel = 3
+generation = 45 best score = 9.860000 highestlevel = 3
+generation = 46 best score = 9.860000 highestlevel = 3
+generation = 47 best score = 9.860000 highestlevel = 3
+generation = 48 best score = 9.860000 highestlevel = 3
+generation = 49 best score = 9.860000 highestlevel = 3
+generation = 50 best score = 9.860000 highestlevel = 3
+generation = 51 best score = 9.860000 highestlevel = 3
+generation = 52 best score = 9.860000 highestlevel = 3
+generation = 53 best score = 9.860000 highestlevel = 3
+generation = 54 best score = 9.860000 highestlevel = 3
+generation = 55 best score = 9.860000 highestlevel = 3
+generation = 56 best score = 9.860000 highestlevel = 3
+generation = 57 best score = 9.860000 highestlevel = 3
+generation = 58 best score = 9.860000 highestlevel = 3
+generation = 59 best score = 9.860000 highestlevel = 3
+generation = 60 best score = 9.860000 highestlevel = 3
+generation = 61 best score = 9.860000 highestlevel = 3
+generation = 62 best score = 9.860000 highestlevel = 3
+generation = 63 best score = 9.860000 highestlevel = 3
+generation = 64 best score = 9.860000 highestlevel = 3
+generation = 65 best score = 9.860000 highestlevel = 3
+generation = 66 best score = 9.860000 highestlevel = 3
+generation = 67 best score = 9.860000 highestlevel = 3
+generation = 68 best score = 9.860000 highestlevel = 3
+generation = 69 best score = 9.860000 highestlevel = 3
+generation = 70 best score = 9.860000 highestlevel = 3
+generation = 71 best score = 9.860000 highestlevel = 3
+generation = 72 best score = 9.860000 highestlevel = 3
+generation = 73 best score = 9.860000 highestlevel = 3
+generation = 74 best score = 9.860000 highestlevel = 3
+generation = 75 best score = 9.860000 highestlevel = 3
+generation = 76 best score = 9.860000 highestlevel = 3
+generation = 77 best score = 9.860000 highestlevel = 3
+generation = 78 best score = 9.860000 highestlevel = 3
+generation = 79 best score = 9.860000 highestlevel = 3
+generation = 80 best score = 9.860000 highestlevel = 3
+generation = 81 best score = 9.860000 highestlevel = 3
+generation = 82 best score = 9.860000 highestlevel = 3
+generation = 83 best score = 9.860000 highestlevel = 3
+generation = 84 best score = 9.860000 highestlevel = 3
+generation = 85 best score = 9.860000 highestlevel = 3
+generation = 86 best score = 9.860000 highestlevel = 3
+generation = 87 best score = 9.860000 highestlevel = 3
+generation = 88 best score = 9.860000 highestlevel = 3
+generation = 89 best score = 9.860000 highestlevel = 3
+generation = 90 best score = 9.860000 highestlevel = 3
+generation = 91 best score = 9.860000 highestlevel = 3
+generation = 92 best score = 9.860000 highestlevel = 3
+generation = 93 best score = 9.860000 highestlevel = 3
+generation = 94 best score = 9.860000 highestlevel = 3
+generation = 95 best score = 9.860000 highestlevel = 3
+generation = 96 best score = 9.860000 highestlevel = 3
+generation = 97 best score = 9.860000 highestlevel = 3
+generation = 98 best score = 9.860000 highestlevel = 3
+generation = 99 best score = 9.860000 highestlevel = 3
+generation = 100 best score = 9.860000 highestlevel = 3
+The final solution with seed = 12345678 was: 
+111111110000001111111111000101111111111110010111111111100011111111111111111111111110010101111111110001101111111110110001111111110100100111111110100111010111001010110111111111100111111111110001010111111110000111010010111000001111111110010001
+score = 9.860000 highestlevel = 3

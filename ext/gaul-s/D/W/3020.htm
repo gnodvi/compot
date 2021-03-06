@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Genetic Algorithms</title>
+
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="3020_files/wikit_screen.css" media="screen" type="text/css" title="With TOC">
+	<link rel="alternate stylesheet" href="3020_files/wikit_screen_notoc.css" media="screen" type="text/css" title="Without TOC">
+	<link rel="stylesheet" href="3020_files/wikit_print.css" media="print" type="text/css">
+	<link rel="stylesheet" href="3020_files/wikit_handheld.css" media="handheld" type="text/css">
+	<link rel="stylesheet" href="3020_files/tooltips.css" type="text/css">
+
+	<script type="text/javascript" src="3020_files/sh_main.js"></script>
+	<script type="text/javascript" src="3020_files/sh_tcl.js"></script>
+	<script type="text/javascript" src="3020_files/sh_c.js"></script>
+	<script type="text/javascript" src="3020_files/sh_cpp.js"></script>
+	<link type="text/css" rel="stylesheet" href="3020_files/sh_style.css">
+
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="http://wiki.tcl.tk/rss.xml">
+	<script type="text/javascript">/* <![CDATA[ */
+
+	    function init() {
+		// quit if this function has already been called
+		if (arguments.callee.done) return;
+
+		// flag this function so we don't do the same thing twice
+		arguments.callee.done = true;
+
+		try {
+		    hide_discussions()
+		} catch (err) {
+		    /* nothing */
+		}
+	    };
+
+	    /* for Mozilla */
+	    if (document.addEventListener) {
+		document.addEventListener("DOMContentLoaded", init, false);
+	    }
+
+	    // for Internet Explorer (using conditional comments)
+	    /*@cc_on @*/
+	    /*@if (@_win32)
+	    document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+	    var script = document.getElementById("__ie_onload");
+	    script.onreadystatechange = function() {
+		if (this.readyState == "complete") {
+		    init(); // call the onload handler
+		}
+	    };
+	    /*@end @*/
+	  
+	    /* for other browsers */
+	    window.onload = init;
+	
+/* ]]> */
+</script>
+	<meta name="verify-v1" content="89v39Uh9xwxtWiYmK2JcYDszlGjUVT1Tq0QX+7H8AD0=">
+    </head>
+<body onload="sh_highlightDocument();">
+
+	<div class="container">
+	<div class="header">
+	    <div class="logo"><a href="http://wiki.tcl.tk/" class="logo">wiki.tcl.tk</a><a href="http://wiki.tcl.tk/"><img class="logo" alt="" src="3020_files/plume.png"></a></div>
+	    <div id="title" class="title"><a href="http://wiki.tcl.tk/_/ref?N=3020" title="click to see reference to this page">Genetic Algorithms</a></div>
+	    <div id="updated" class="updated">Updated 2013-02-24 00:31:08 by <a href="http://wiki.tcl.tk/25979">RLE</a> <a href="http://wiki.tcl.tk/_/diff?N=3020#diff0" class="delta">▲</a></div>
+	</div>
+    
+	    
+	    <div id="wrapper"><div id="content"><p></p>tcl-gaul [<a rel="nofollow" href="http://sourceforge.net/projects/tcl-gaul/">1<img src="3020_files/extbrk.png"></a>] is a Tcl extension that enables genetic algorithm processing in Tcl. It is using the GAUL [<a rel="nofollow" href="http://gaul.sourceforge.net/">2</a>] C library.<hr><p></p><a href="http://wiki.tcl.tk/2158">davidw</a> - check this Tcl environment out: <a rel="nofollow" href="http://www.sprave.com/Ease/Ease.html">http://www.sprave.com/Ease/Ease.html<img src="3020_files/ext.png"></a> looks pretty interesting<hr><p></p><a href="http://wiki.tcl.tk/2199">Arjen Markus</a>
+ Following up on a discussion on the newsgroup, I translated a simple 
+implementation of genetic algorithms from Fortran into Tcl (the original
+ can be found at: [<a rel="nofollow" href="http://www.coyotegulch.com/">3</a>] and was written by Scott Robert Ladd).<p></p>I
+ make no claim to correctness (even though for the listed test case it 
+does seem to work) or to performance (even though it does not turn out 
+that bad, judging from my tests).<hr><p></p>Drawbacks of this implementation:<p></p><ul><li>The interface needs improvements (no way to examine the population)</li><li>The
+ fitness function has to take care of scaling the input parameters from 
+"GA-typical" data (32-bits integers) to real-world values (in the test 
+case: floating-point numbers between 0 and 1)</li><li>A few items were left out (quadratic weighing for instance)</li><li>A
+ few uncertainties with regard to the range of the generated integers 
+(does the sign-bit get set? What if we have a 1s-complement machine?)</li></ul><hr><p></p><a href="http://wiki.tcl.tk/8943">TS</a> Converting the hardcoded constants using int2bits from <a href="http://wiki.tcl.tk/1591">Binary representation of numbers</a> on my Pentium4/WinXP/Tcl8.4a4 led to  - at least for me - surprising results<pre class=""> % int2bits -2147483647 32 (should be all bits set)
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+ % int2bits 2147483000 32 (used for chromosome initialisation)
+ 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 0 1 1 1 1 0 0 0</pre><p></p><a href="http://wiki.tcl.tk/6266">Lars H</a>: Which <b>int2bits</b>
+ are you talking about here? There are oodles of them on that page, and 
+several of them assume non-negative input (e.g. have main loops<pre class="">  while {$i&gt;0} {</pre><p></p>).
+ Also, it is in 32-bit 1's complement notation that -2147483647 has all 
+bits set. Tcl bit operations work with 2's complement notation, in which
+ it is always -1 that has all bits set.<hr><pre class="sh_tcl sh_sourceCode"><span class="sh_comment">  # genetic_alg.tcl --</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  #    Package for implementing simple genetic algorithms</span>
+<span class="sh_comment">  #    (Tcl-only version)  </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Notes:</span>
+<span class="sh_comment">  #    This package is shamelessly modelled after a publically</span>
+<span class="sh_comment">  #    available program by Scott Robert Ladd (http://www.coyotegulch.com)</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Version information:</span>
+<span class="sh_comment">  #    version 0.1: initial implementation, february 2002</span>
+
+  <a class="sh_keyword" href="http://wiki.tcl.tk/package">package</a> provide GeneticAlgorithms <span class="sh_number">0.1</span>
+
+  <a class="sh_keyword" href="http://wiki.tcl.tk/namespace">namespace</a> <a class="sh_keyword" href="http://wiki.tcl.tk/eval">eval</a> <span class="sh_symbol">::</span>GeneticAlgorithms <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> crossover  <span class="sh_number">0.5</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> mutation   <span class="sh_number">0.1</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> elitism    <span class="sh_number">1</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> quadweight <span class="sh_number">0</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> best_guess <span class="sh_cbracket">{}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> population <span class="sh_cbracket">{}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> child_pop  <span class="sh_cbracket">{}</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/namespace">namespace</a> export setting optimise optimiseStep
+
+<span class="sh_comment">  # limitvalue</span>
+<span class="sh_comment">  #    Limit the argument between two bounds  </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #    value    New value (if not present, return current value)</span>
+<span class="sh_comment">  #    minimum  Minimum bound</span>
+<span class="sh_comment">  #    maximum  Maximum bound  </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    Value or one of the bounds </span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> limitvalue <span class="sh_cbracket">{</span>value minimum maximum<span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$value</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$minimum</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/return">return</a> <span class="sh_variable">$minimum</span>
+     <span class="sh_cbracket">}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$value</span> <span class="sh_symbol">&gt;</span> <span class="sh_variable">$maximum</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/return">return</a> <span class="sh_variable">$maximum</span>
+     <span class="sh_cbracket">}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/return">return</a> <span class="sh_variable">$value</span>
+  <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">  # setting</span>
+<span class="sh_comment">  #    Set/get the settings</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #    name     Name of a variable to set or get</span>
+<span class="sh_comment">  #    value    New value (if not present, return current value) </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    New value for given variable</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Side effects:</span>
+<span class="sh_comment">  #    Sets given variable to new value</span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> setting <span class="sh_cbracket">{</span>name <span class="sh_cbracket">{</span>value NONE<span class="sh_cbracket">}</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> <span class="sh_variable">$name</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$value</span> <span class="sh_symbol">!=</span> <span class="sh_string">"NONE"</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/switch">switch</a> <span class="sh_symbol">--</span> <span class="sh_variable">$name</span> <span class="sh_cbracket">{</span>
+        <span class="sh_string">"crossover"</span>  <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> <span class="sh_variable">$name</span> <span class="sh_symbol">[</span>limitvalue <span class="sh_variable">$value</span> <span class="sh_number">0.0</span> <span class="sh_number">1.0</span><span class="sh_symbol">]</span> <span class="sh_cbracket">}</span>
+        <span class="sh_string">"mutation"</span>   <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> <span class="sh_variable">$name</span> <span class="sh_symbol">[</span>limitvalue <span class="sh_variable">$value</span> <span class="sh_number">0.0</span> <span class="sh_number">1.0</span><span class="sh_symbol">]</span> <span class="sh_cbracket">}</span>
+        <span class="sh_string">"elitism"</span>    <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> <span class="sh_variable">$name</span> <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_variable">$value</span><span class="sh_symbol">!=</span><span class="sh_number">0</span><span class="sh_symbol">]</span> <span class="sh_cbracket">}</span>
+        <span class="sh_string">"quadweight"</span> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> <span class="sh_variable">$name</span> <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_variable">$value</span><span class="sh_symbol">!=</span><span class="sh_number">0</span><span class="sh_symbol">]</span> <span class="sh_cbracket">}</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/default">default</a>      <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/error">error</a> <span class="sh_string">"setting: unknown parameter $name"</span> <span class="sh_cbracket">}</span>
+        <span class="sh_cbracket">}</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> <span class="sh_variable">$name</span>
+     <span class="sh_cbracket">}</span>
+  <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">  # optimise --</span>
+<span class="sh_comment">  #    Optimise the given function using a genetic algorithm  </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #    pop_size   Size of the population</span>
+<span class="sh_comment">  #    max_gen    Maximum number of generations</span>
+<span class="sh_comment">  #    no_genes   Number of "genes" - degrees of freedoms</span>
+<span class="sh_comment">  #    fitness    Function of the degrees of freedom, returns the fitness</span>
+<span class="sh_comment">  #               of the solution (as a non-negative number!)</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    Best guess of degrees of freedom, as a list</span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> optimise <span class="sh_cbracket">{</span> pop_size max_gen no_genes fitness <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> best_guess
+
+     optimiseInit <span class="sh_variable">$pop_size</span> <span class="sh_variable">$no_genes</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/for">for</a> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> i <span class="sh_number">0</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <span class="sh_variable">$i</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$max_gen</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> i <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        optimiseStep <span class="sh_variable">$pop_size</span> <span class="sh_variable">$no_genes</span> <span class="sh_variable">$fitness</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/puts">puts</a> <span class="sh_string">"$best_guess - [$fitness $best_guess]"</span>
+     <span class="sh_cbracket">}</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/return">return</a> <span class="sh_variable">$best_guess</span>
+  <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">  # optimiseInit --</span>
+<span class="sh_comment">  #    Initialise the population</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #    pop_size   Size of the population</span>
+<span class="sh_comment">  #    no_genes   Number of "genes" - degrees of freedoms </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    None</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Side effects:</span>
+<span class="sh_comment">  #    Initialised list variable population</span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> optimiseInit <span class="sh_cbracket">{</span> pop_size no_genes <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> population
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> child_pop
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> population <span class="sh_cbracket">{}</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/for">for</a> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> i <span class="sh_number">0</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <span class="sh_variable">$i</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$pop_size</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> i <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> member <span class="sh_cbracket">{}</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/for">for</a> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> j <span class="sh_number">0</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <span class="sh_variable">$j</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$no_genes</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> j <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> member <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span>int<span class="sh_symbol">(</span><span class="sh_number">2147483000.0</span><span class="sh_symbol">*</span>rand<span class="sh_symbol">())</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+        <span class="sh_cbracket">}</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> population <span class="sh_variable">$member</span>
+     <span class="sh_cbracket">}</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> child_pop <span class="sh_variable">$population</span>
+  <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">  # optimiseStep --</span>
+<span class="sh_comment">  #    Perform a single step in the optimisation </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #    pop_size   Size of the population</span>
+<span class="sh_comment">  #    no_genes   Number of "genes" - degrees of freedoms</span>
+<span class="sh_comment">  #    fitness    Function for determining the fitness</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    None  </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Side effects:</span>
+<span class="sh_comment">  #    New population, best_guess set</span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> optimiseStep <span class="sh_cbracket">{</span> pop_size no_genes fitness <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> population
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> child_pop
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> best_guess
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> mutation
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> crossover
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> quadweight
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> elitism
+
+<span class="sh_comment">     #</span>
+<span class="sh_comment">     # Copy the child population</span>
+<span class="sh_comment">     #</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> population <span class="sh_variable">$child_pop</span>
+
+<span class="sh_comment">     #</span>
+<span class="sh_comment">     # Determine the fitness per member</span>
+<span class="sh_comment">     #</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> high_fit <span class="sh_symbol">-</span><span class="sh_number">1</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> tot_fit   <span class="sh_number">0.0</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> pop_fit  <span class="sh_cbracket">{}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/foreach">foreach</a> member <span class="sh_variable">$population</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> fit <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/eval">eval</a> <span class="sh_variable">$fitness</span> <span class="sh_variable">$member</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$high_fit</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$fit</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> high_fit <span class="sh_variable">$fit</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> best_guess <span class="sh_variable">$member</span>
+        <span class="sh_cbracket">}</span>
+
+        <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> pop_fit <span class="sh_variable">$fit</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> tot_fit <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$tot_fit</span><span class="sh_symbol">+</span><span class="sh_variable">$fit</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+     <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">     #</span>
+<span class="sh_comment">     # Scale the fitness (quadratic weight)</span>
+<span class="sh_comment">     #</span>
+<span class="sh_comment">     # PM</span>
+
+<span class="sh_comment">     #</span>
+<span class="sh_comment">     # Elitism: keep the best in any case</span>
+<span class="sh_comment">     #</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> child_pop <span class="sh_cbracket">{}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> no_child  <span class="sh_variable">$pop_size</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$elitism</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> child_pop <span class="sh_variable">$best_guess</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> no_child <span class="sh_symbol">-</span><span class="sh_number">1</span>
+     <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">     #</span>
+<span class="sh_comment">     # Breed the children</span>
+<span class="sh_comment">     #</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/for">for</a> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> i <span class="sh_number">0</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <span class="sh_variable">$i</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$no_child</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span> <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> i <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> selection <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$tot_fit</span><span class="sh_symbol">*</span>rand<span class="sh_symbol">()</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> father     <span class="sh_number">0</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> father_fit <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/lindex">lindex</a> <span class="sh_variable">$pop_fit</span> <span class="sh_variable">$father</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/while">while</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$selection</span> <span class="sh_symbol">&gt;</span> <span class="sh_variable">$father_fit</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> selection <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$selection</span><span class="sh_symbol">-</span><span class="sh_variable">$father_fit</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> father
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> father_fit <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/lindex">lindex</a> <span class="sh_variable">$pop_fit</span> <span class="sh_variable">$father</span><span class="sh_symbol">]</span>
+        <span class="sh_cbracket">}</span>
+
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> selection <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$tot_fit</span><span class="sh_symbol">*</span>rand<span class="sh_symbol">()</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> mother     <span class="sh_number">0</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> mother_fit <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/lindex">lindex</a> <span class="sh_variable">$pop_fit</span> <span class="sh_variable">$mother</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/while">while</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$selection</span> <span class="sh_symbol">&gt;</span> <span class="sh_variable">$mother_fit</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> selection <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$selection</span><span class="sh_symbol">-</span><span class="sh_variable">$mother_fit</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/incr">incr</a> mother
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> mother_fit <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/lindex">lindex</a> <span class="sh_variable">$pop_fit</span> <span class="sh_variable">$mother</span><span class="sh_symbol">]</span>
+        <span class="sh_cbracket">}</span>
+
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> child <span class="sh_symbol">[</span>combineGenes <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/lindex">lindex</a> <span class="sh_variable">$population</span> <span class="sh_variable">$mother</span><span class="sh_symbol">]</span> <span class="sh_symbol">\</span>
+                                <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/lindex">lindex</a> <span class="sh_variable">$population</span> <span class="sh_variable">$father</span><span class="sh_symbol">]</span> <span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> child <span class="sh_symbol">[</span>mutateGenes <span class="sh_variable">$child</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> child_pop <span class="sh_variable">$child</span>
+     <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">     #puts $population</span>
+<span class="sh_comment">     #puts $pop_fit</span>
+  <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">  # combineGenes --</span>
+<span class="sh_comment">  #    Combine the genes of the two parents (using cross-over)  </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #    mother     Genes of the first parent</span>
+<span class="sh_comment">  #    father     Genes of the second parent</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    Genes of the child  </span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> combineGenes <span class="sh_cbracket">{</span> mother father <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> crossover
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> all_bits_set <span class="sh_symbol">-</span><span class="sh_number">2147483647</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> child <span class="sh_cbracket">{}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/foreach">foreach</a> first <span class="sh_variable">$mother</span> second <span class="sh_variable">$father</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> bit_no  <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> int<span class="sh_symbol">(</span><span class="sh_number">32.0</span><span class="sh_symbol">*</span>rand<span class="sh_symbol">())]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> bitmask <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_symbol">(</span><span class="sh_variable">$all_bits_set</span><span class="sh_symbol">&gt;&gt;</span><span class="sh_variable">$bit_no</span><span class="sh_symbol">)&lt;&lt;</span><span class="sh_variable">$bit_no</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> newgene <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$first</span><span class="sh_symbol">&amp;</span><span class="sh_variable">$bitmask</span><span class="sh_symbol">|</span><span class="sh_variable">$second</span><span class="sh_symbol">&amp;~</span><span class="sh_variable">$bitmask</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+
+        <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> child <span class="sh_variable">$newgene</span>
+     <span class="sh_cbracket">}</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/return">return</a> <span class="sh_variable">$child</span>
+  <span class="sh_cbracket">}</span>
+
+<span class="sh_comment">  # mutateGenes --</span>
+<span class="sh_comment">  #    Mutate the genes of a child (flip a bit) </span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Arguments:</span>
+<span class="sh_comment">  #     child      Genes of the child to be mutated</span>
+<span class="sh_comment">  #</span>
+<span class="sh_comment">  # Result:</span>
+<span class="sh_comment">  #    Mutated genes</span>
+<span class="sh_comment">  #</span>
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> mutateGenes <span class="sh_cbracket">{</span> child <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/variable">variable</a> mutation
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> newgenes <span class="sh_cbracket">{}</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/foreach">foreach</a> gene <span class="sh_variable">$child</span> <span class="sh_cbracket">{</span>
+        <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span>rand<span class="sh_symbol">()</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span> <span class="sh_symbol">&lt;</span> <span class="sh_variable">$mutation</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> bit_no  <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span>int<span class="sh_symbol">(</span><span class="sh_number">32.0</span><span class="sh_symbol">*</span>rand<span class="sh_symbol">())</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> bitmask <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_number">1</span><span class="sh_symbol">&lt;&lt;</span><span class="sh_variable">$bit_no</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> bitset  <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_symbol">(</span><span class="sh_variable">$gene</span><span class="sh_symbol">&amp;</span><span class="sh_variable">$bitmask</span><span class="sh_symbol">)</span> <span class="sh_symbol">!=</span> <span class="sh_number">0</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/if">if</a> <span class="sh_cbracket">{</span> <span class="sh_variable">$bitset</span> <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+              <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> newgene <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$gene</span><span class="sh_symbol">&amp;~</span><span class="sh_variable">$bitmask</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <span class="sh_cbracket">}</span> <a class="sh_keyword" href="http://wiki.tcl.tk/else">else</a> <span class="sh_cbracket">{</span>
+              <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> newgene <span class="sh_symbol">[</span><a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_variable">$gene</span><span class="sh_symbol">|</span><span class="sh_variable">$bitmask</span><span class="sh_cbracket">}</span><span class="sh_symbol">]</span>
+           <span class="sh_cbracket">}</span>
+        <span class="sh_cbracket">}</span> <a class="sh_keyword" href="http://wiki.tcl.tk/else">else</a> <span class="sh_cbracket">{</span>
+           <a class="sh_keyword" href="http://wiki.tcl.tk/set">set</a> newgene <span class="sh_variable">$gene</span>
+        <span class="sh_cbracket">}</span>
+
+        <a class="sh_keyword" href="http://wiki.tcl.tk/lappend">lappend</a> newgenes <span class="sh_variable">$newgene</span>
+     <span class="sh_cbracket">}</span>
+
+     <a class="sh_keyword" href="http://wiki.tcl.tk/return">return</a> <span class="sh_variable">$newgenes</span>
+  <span class="sh_cbracket">}</span>
+
+  <span class="sh_cbracket">}</span> <span class="sh_comment">;# End of namespace</span>
+
+<span class="sh_comment">  #namespace import ::GeneticAlgorithms::*</span>
+
+  <a class="sh_keyword" href="http://wiki.tcl.tk/proc">proc</a> testFunc <span class="sh_cbracket">{</span> var <span class="sh_cbracket">}</span> <span class="sh_cbracket">{</span>
+     <a class="sh_keyword" href="http://wiki.tcl.tk/expr">expr</a> <span class="sh_cbracket">{</span><span class="sh_number">1.0</span><span class="sh_symbol">-</span>abs<span class="sh_symbol">(</span><span class="sh_variable">$var</span><span class="sh_symbol">/</span><span class="sh_number">2147483647.0-0.5</span><span class="sh_symbol">)</span><span class="sh_cbracket">}</span>
+  <span class="sh_cbracket">}</span>
+
+  <a class="sh_keyword" href="http://wiki.tcl.tk/puts">puts</a> <span class="sh_symbol">[::</span>GeneticAlgorithms<span class="sh_symbol">::</span>optimise <span class="sh_number">100</span> <span class="sh_number">40</span> <span class="sh_number">1</span> testFunc<span class="sh_symbol">]</span></pre><hr><p></p>['Nother keyword I want to discuss eventually:  <a href="http://wiki.tcl.tk/3836">Simulated annealing</a>.]<hr><p></p><a href="http://wiki.tcl.tk/1683">RS</a> did not look at all code in detail, but the very first proc struck him - could be written very much more concisely:<pre class=""> proc limitValue {val min max} {
+     expr {$val&lt;$min? $min: $val&gt;$max? $max: $val}
+ }</pre><p></p><a href="http://wiki.tcl.tk/2199">Arjen Markus</a> I would go for proper min/max functions in <a href="http://wiki.tcl.tk/583">expr</a>:<pre class=""> proc limitValue {val min max} {
+    expr {min($max,max($min,$val))}
+ }</pre><p></p>which is even more concise: every variable appears but once!<p></p>But I agree: my first objective was to get things working, and I did not want to think to much on the syntax of ?:<p></p><a href="http://wiki.tcl.tk/73">Donal Fellows</a> - It doesn't make much difference in recent versions of Tcl anyway; the bytecode out the back should be pretty similar...<hr><pre class=""> What: GAGS
+ Where: <a rel="nofollow" href="http://kal-el.ugr.es/gags.html">http://kal-el.ugr.es/gags.html<img src="3020_files/ext.png"></a>
+        <a rel="nofollow" href="ftp://kal-el.ugr.es/GAGS/GAGS-0.94e.tar.gz">ftp://kal-el.ugr.es/GAGS/GAGS-0.94e.tar.gz<img src="3020_files/ext.png"></a>
+        <a rel="nofollow" href="http://kal-el.ugr.es/GAGS/gags-paper-html/gags-paper-html.html">http://kal-el.ugr.es/GAGS/gags-paper-html/gags-paper-html.html<img src="3020_files/ext.png"></a>
+        <a rel="nofollow" href="http://kal-el.ugr.es/GAGS/gags-tutorial/gags-tutorial.html">http://kal-el.ugr.es/GAGS/gags-tutorial/gags-tutorial.html<img src="3020_files/ext.png"></a>
+        <a rel="nofollow" href="ftp://kal-el.ugr.es/GAGS/gags-tutorial.ps.gz">ftp://kal-el.ugr.es/GAGS/gags-tutorial.ps.gz<img src="3020_files/ext.png"></a>
+        <a rel="nofollow" href="ftp://kal-el.ugr.es/GAGS/gags-examples.tar.gz">ftp://kal-el.ugr.es/GAGS/gags-examples.tar.gz<img src="3020_files/ext.png"></a>
+ Description: A Genetic algorithm application generator and C++ class library
+        which uses a Tcl/Tk graphical interface.  Note however that
+        the Tcl/Tk interface was dropped after 0.94e
+        Includes classes for Chromosomes, genetic operators, views, and
+        populations.
+        Runs on Unix with at least GCC, SGI or Sun C compiler.
+ Updated: 10/1997
+ Contact: <a rel="nofollow" href="mailto:jmerelo@kal-el.ugr.es">mailto:jmerelo@kal-el.ugr.es<img src="3020_files/ext.png"></a>  (J.J. Merelo Guervos)</pre><p></p><a href="http://wiki.tcl.tk/4880">AGS</a><hr><p></p><a href="http://wiki.tcl.tk/3533">AM</a>
+ (4 april 2005) Witnessed a rather nice application of genetic 
+programming the other day - a method to approximate complicated 
+functions by combining and mutating expression trees. Because you do not
+ prescribe the family of functions to try, as with more classical 
+approaches, there is a lot of freedom in the final result. With a bit of
+ insight in the corresponding physical problem, the people who performed
+ this study were able to come up with a concise formula that made some 
+physical sense.<p></p><hr><div class="centered"><p></p><table class="wikit_categories"><tbody><tr><td><a href="http://wiki.tcl.tk/8832">Category Dev. Tools</a></td></tr></tbody></table></div><p></p></div></div>
+	
+	<div id="menu_area"><div id="wiki_menu"><ul id="menu">
+<li><a href="http://wiki.tcl.tk/">Home</a></li><li><a href="http://wiki.tcl.tk/_/recent">Recent changes</a></li><li><a href="http://wiki.tcl.tk/Help">Help</a></li><li><a href="http://wiki.tcl.tk/_/whoami">WhoAmI</a>/<a href="http://wiki.tcl.tk/_/logout">Logout</a></li><li><a href="http://wiki.tcl.tk/_/new">Create new page</a></li><li><a href="http://wiki.tcl.tk/_/random">Random page</a></li><li><a href="http://wiki.tcl.tk/_/previouspage">Previous page</a></li><li><a href="http://wiki.tcl.tk/_/nextpage">Next page</a></li><li><br></li><li><a href="http://wiki.tcl.tk/_/edit?N=3020&amp;A=1">Add comments</a></li><li><a href="http://wiki.tcl.tk/_/edit?N=3020">Edit</a></li><li><a href="http://wiki.tcl.tk/_/history?N=3020">History</a></li><li><a href="http://wiki.tcl.tk/_/summary?N=3020">Edit summary</a></li><li><a href="http://wiki.tcl.tk/_/ref?N=3020">References</a></li></ul></div>
+	<form method="get" action="/_/search" id="searchform"><input id="searchtxt" onfocus="clearSearch();" onblur="setSearch();" name="S" value="Search" tabindex="1" type="text">
+	    <input name="_charset_" value="" tabindex="2" type="hidden"></form>
+    <div class="navigation"><div id="page_toc"></div></div><div class="extra"><div id="wiki_toc"><div class="toc1">Getting started
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/299">What is Tcl?</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/487">What is Tk?</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20786">Getting Tcl/Tk</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20788">Getting help</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20789">Learning Tcl</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20790">Tcl Dev Xchange</a></div>
+<div class="toc3"><a class="toc" href="http://wiki.tcl.tk/20791">About the Wiki</a></div>
+</div>
+<div class="toc1">Community
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/590">Advocacy</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/828">Conferences</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20792">Chat, news, lists</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20794">History</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/17182">Humor</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/10681">People</a></div>
+<div class="toc3"><a class="toc" href="http://wiki.tcl.tk/20810">Tcl websites</a></div>
+</div>
+<div class="toc1">Reference
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/1887">Companies</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20788">Getting help</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20795">Online books</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20796">Online tutorials</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/3109">Manual pages</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20797">Tcl roadmap</a></div>
+<div class="toc3"><a class="toc" href="http://wiki.tcl.tk/49">Acronyms</a></div>
+</div>
+<div class="toc1">Tcl software
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20798">Applications</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20799">The Tcl core</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20800">Development tools</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/11485">Documentation</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/940">Extensions</a></div>
+<div class="toc3"><a class="toc" href="http://wiki.tcl.tk/20801">Toys and games</a></div>
+</div>
+<div class="toc1">Tcl in the wild
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20802">Major applications</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20803">Businesses</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20804">Education</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20805">Engineering</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20806">Government</a></div>
+<div class="toc2"><a class="toc" href="http://wiki.tcl.tk/20811">Medical</a></div>
+<div class="toc3"><a class="toc" href="http://wiki.tcl.tk/20809">Other</a></div>
+</div>
+</div></div></div>
+    
+	<div class="footer"><p id="footer"><a href="http://wiki.tcl.tk/">Home</a> • <a href="http://wiki.tcl.tk/_/recent">Recent changes</a> • <a href="http://wiki.tcl.tk/Help">Help</a> • <a href="http://wiki.tcl.tk/_/new">Create new page</a> • <a href="http://wiki.tcl.tk/_/searchp">Search</a> • <a href="http://wiki.tcl.tk/_/edit?N=3020&amp;A=1">Add comments</a> • <a href="http://wiki.tcl.tk/_/edit?N=3020">Edit</a></p></div>
+    </div>
+    <script type="text/javascript" src="3020_files/wiki.js"></script>
+
+
+</body></html>

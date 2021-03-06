@@ -1,0 +1,3397 @@
+<!-- Creator     : groff version 1.18.1 -->
+<!-- CreationDate: Sun Sep 14 02:40:04 2008 -->
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta name="Content-Style" content="text/css">
+<title>tcl-gaul</title>
+</head>
+<body>
+
+<h1 align=center>tcl-gaul</h1>
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#INTRODUCTION">INTRODUCTION</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#EXAMPLE">EXAMPLE</a><br>
+<a href="#OUTPUT">OUTPUT</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#COPYRIGHT">COPYRIGHT</a><br>
+
+<hr>
+<a name="NAME"></a>
+<h2>NAME</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>tcl&minus;gaul &minus; A Tcl extension for genetic (or
+evolutionary) algorithm processing</p>
+</td>
+</table>
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>package require gaul</p>
+<!-- INDENTATION -->
+<p><b>gaul create</b> <i>name size</i>
+?&minus;generation_hook <i>proc</i>? ?&minus;evaluate
+<i>proc</i>? ?&minus;seed <i>proc</i>? ?&minus;adapt
+<i>proc</i>? ?&minus;mutate <i>proc</i>? ?&minus;crossover
+<i>proc</i>? ?&minus;select_one <b>RANDOM</b> | <b>EVERY</b>
+| <b>RANDOMRANK</b> | <b>BESTOF2</b> | <b>BESTOF3</b> |
+<b>ROULETTE</b> | <b>ROULETTE_REBASED</b> | <b>SUS</b> |
+<b>SUSSQ</b> | <b>AGGRESSIVE</b> | <b>BEST</b> |
+<b>LINEARRANK</b> | <b>ROUNDROBIN</b>? ?&minus;select_two
+<b>RANDOM | EVERY | RANDOMRANK | BESTOF2 | BESTOF3 |
+ROULETTE | ROULETTE_REBASED</b> | <b>SUS</b> | <b>SUSSQ</b>
+| <b>AGGRESSIVE</b> | <b>BEST</b> | <b>LINEARRANK</b>?</p>
+<!-- INDENTATION -->
+<p><b>gaul version</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>seed</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>params</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>params</b> ?&minus;scheme <b>darwin</b> |
+<b>lamarck_parents</b> | <b>lamarck_children</b> |
+<b>lamarck_all</b> | <b>baldwin_parents</b> |
+<b>baldwin_children</b> | <b>baldwin_all</b> |
+<b>lamarck_parents_baldwin_children</b> |
+<b>lamarck_children_baldwin_parents</b>? ?&minus;elitism
+<b>parents</b> | <b>one_parent</b> | <b>parents_die</b> |
+<b>rescore_parents</b>? ?&minus;crossover <i>num</i>?
+?&minus;mutation <i>num</i>? ?&minus;migration
+<i>num</i>?</p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>evolve</b> <i>generations</i> ?&minus;mpi
+| &minus;forked | &minus;threaded | &minus;steady_state?</p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>solution</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>stats</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>list</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>rank</b></p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>destroy</b></p>
+<!-- INDENTATION -->
+<p><b>rename</b> <i>name</i> {}</p>
+</td>
+</table>
+<a name="INTRODUCTION"></a>
+<h2>INTRODUCTION</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>A genetic algorithm (GA) is a search technique used in
+computing to find exact or approximate solutions to
+optimization and search problems. Genetic algorithms are
+categorized as global search heuristics. They are a
+particular class of evolutionary algorithms that use
+techniques inspired by evolutionary biology such as
+inheritance, mutation, selection, and crossover.</p>
+<!-- INDENTATION -->
+<p>For an introduction to genetic algorithms visit:
+http://gaul.sourceforge.net/intro.html</p>
+<!-- INDENTATION -->
+<p>This extension enables genetic algorithm processing in
+Tcl. It is using the GAUL (Genetic Algorithm Utility
+Library) library underneath. GAUL is a flexible programming
+library designed to aid in the development of applications
+that use genetic algorithms. Additional stochastic
+algorithms are provided by the library for comparison to the
+genetic algorithms.</p>
+<!-- INDENTATION -->
+<p>Tcl&minus;gaul supports: * Darwinian, Lamarckian or
+Baldwinian evolutionary schemes. * Both steady&minus;state
+and generation&minus;based GAs. * Includes most of the usual
+selection operators. * Custom seed, adapt, evaluation,
+crossover, and mutation operators. * Provision for custom
+termination criteria. * Display statistics and the
+population ranking. * Support for multiprocessor
+calculations on various architectures: * forks * MPI *
+OpenMP 2.0 * pthreads</p>
+</td>
+</table>
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>gaul create</b> <i>name size</i>
+?&minus;generation_hook <i>proc</i>? ?&minus;destroy
+<i>proc</i>? ?&minus;evaluate <i>proc</i>? ?&minus;seed
+<i>proc</i>? ?&minus;adapt <i>proc</i>? ?&minus;mutate
+<i>proc</i>? ?&minus;crossover <i>proc</i>?
+?&minus;select_one <b>RANDOM</b> | <b>EVERY</b> |
+<b>RANDOMRANK</b> | <b>BESTOF2</b> | <b>BESTOF3</b> |
+<b>ROULETTE</b> | <b>ROULETTE_REBASED</b> | <b>SUS</b> |
+<b>SUSSQ</b> | <b>AGGRESSIVE</b> | <b>BEST</b> |
+<b>LINEARRANK</b> | <b>ROUNDROBIN</b>? ?&minus;select_two
+<b>RANDOM | EVERY | RANDOMRANK | BESTOF2 | BESTOF3 |
+ROULETTE | ROULETTE_REBASED</b> | <b>SUS</b> | <b>SUSSQ</b>
+| <b>AGGRESSIVE</b> | <b>BEST</b> | <b>LINEARRANK</b>?</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Create a new population named <i>name</i> with size
+<i>size</i> (number of members). The &minus;generation_hook,
+&minus;destroy, &minus;adapt, &minus;evaluate, &minus;seed,
+&minus;mutate, and &minus;crossover switches register
+callback Tcl procedures to be executed at certain events or
+times. The latter four callbacks should always be defined as
+they correspond to operators essential for the genetic
+algorithm to work.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;generation_hook <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This procedure is executed at the end of each generation,
+starting from 0. If it generates a Tcl error, the evolution
+process terminates prematurely; thus, it can be used to
+introduce custom termination criteria.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+epoch</i> : The generation the population is currently
+in.<b><br>
+Returns:</b><br>
+Insignificant.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;destroy <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This procedure is executed just before a member of the
+population is deleted thanks to natural selection. It can be
+used to clean&minus;up memory/state associated with the
+member by the Tcl script.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+member</i> : The member to be destroyed.<b><br>
+Returns:</b><br>
+Insignificant.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;evaluate <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This procedure determines the fitness of each member of
+the population. It must return a floating&minus;point number
+that indicates the fitness of the member. The higher this
+number, the greater the fitness.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+member</i> : The member to be evaluated.<b><br>
+Returns:</b><br>
+A floating&minus;point number.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;seed <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This procedure is called before the evolution starts in
+order to initialize all the members of the population. It
+must return the newly initialized member.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+member</i> : The member to be initialized.<b><br>
+Returns:</b><br>
+The initialized member.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;adapt <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This functionality is only available on Lamarckian and
+Baldwinian evolutionary schemes. The specified procedure is
+called for every member of the population in order to
+&quot;adapt&quot; it before it is evaluated at the end of
+the generation.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+member</i> : The member to be adapted.<b><br>
+Returns:</b><br>
+The adapter member.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;mutate <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This procedure is executed to mutate a single member. The
+mutated member is expected to be returned.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+member</i> : The member to be mutated.<b><br>
+Returns:</b><br>
+The mutated member.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;crossover <i>proc</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>This procedure is invoked to mate/breed two members. A
+list of two offsprings are expected to be returned by the
+procedure.<b><br>
+Arguments:</b><i><br>
+name</i> : The name given to the population in the <b>gaul
+create</b> command.<i><br>
+mother</i> : The first member.<i><br>
+father</i> : The second member.<b><br>
+Returns:</b><br>
+A list with two new members (the children).</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The &minus;select_one type is used when selecting members
+for mutation, whereas the &minus;select_two type is used in
+the crossover operator. Both switches accept one of a fixed
+number of selection operators:</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="3" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="10%">
+
+<p>RANDOM</p>
+</td>
+<td width="77%">
+
+<p>Random selection of entities, irrespective of their
+fitnesses/ranks.</p>
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="10%">
+
+<p>EVERY</p>
+</td>
+<td width="77%">
+
+<p>Every entity (or combination of entities) will be
+systematically selected. The mutation and crossover ratios
+are ignored by these selection functions.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>RANDOMRANK</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Systematically select each entity in turn along with a
+random, more fit, entity. The select_one function
+doesn&rsquo;t return the systematically selected entity.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>BESTOF2</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Simple pairwise tournament selection.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>BESTOF3</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Simple three&minus;way tournament selection.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>ROULETTE</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Standard roulette wheel selection.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>ROULETTE_REBASED</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Standard roulette wheel selection.</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="5" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+<p>SUS</p>
+</td>
+<td width="10%"></td>
+<td width="47%">
+
+<p>Universal stochastic sampling.</p>
+</td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+<p>SUSSQ</p>
+</td>
+<td width="10%"></td>
+<td width="47%">
+
+<p>Universal stochastic sampling.</p>
+</td>
+<td width="23%">
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>AGGRESSIVE</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Random selection, but heavily biased toward fit
+entities.</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="5%">
+
+<p>BEST</p>
+</td>
+<td width="4%"></td>
+<td width="77%">
+
+<p>Select the single best entity only. The select_two
+function also selects a random entity.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>LINEARRANK</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Select an entity based on linear probability distribution
+with respect to rank.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>ROUNDROBIN</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Select entities using a round&minus;robin algorithm. Each
+entity is selected in turn, returning to the first once the
+last entity has been selected. This option is not available
+to &minus;select_two switch.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The default value for both selection switches is SUS.</p>
+<!-- INDENTATION -->
+<p><b>gaul version</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Returns a Tcl dictionary describing the version of the
+underlying GAUL library.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>seed</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Initialize the population.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>params</b> ?&minus;scheme <b>darwin</b> |
+<b>lamarck_parents</b> | <b>lamarck_children</b> |
+<b>lamarck_all</b> | <b>baldwin_parents</b> |
+<b>baldwin_children</b> | <b>baldwin_all</b> |
+<b>lamarck_parents_baldwin_children</b> |
+<b>lamarck_children_baldwin_parents</b>? ?&minus;elitism
+<b>parents</b> | <b>one_parent</b> | <b>parents_die</b> |
+<b>rescore_parents</b>? ?&minus;crossover <i>num</i>?
+?&minus;mutation <i>num</i>? ?&minus;migration
+<i>num</i>?</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Set population parameters.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The &minus;scheme switch sets the evolutionary scheme.
+The Darwinian scheme corresponds to the standard genetic
+algorithm, which only considers natural selection. On the
+other hand, the Baldwinian/Lamarckian schemes also consider
+the ability of each member to adapt (or improve on its own)
+giving higher survival chance to those members that can
+better adapt.</p>
+<!-- INDENTATION -->
+<p>In the Baldwinian scheme the members are adapted and
+their new form is re&minus;evaluated. The greater the
+fitness of the adapted form, the higher the chances for its
+genes to appear in the next generation. However, the GA
+operators are performed on the previous/original form of the
+member (before the adaption). The Lamarckian scheme is like
+the Baldwinian, but the members retain the adapted form and
+the GA operators are perfomed on the adapted form.</p>
+<!-- INDENTATION -->
+<p>In particular, the acceptable values for this switch
+are:</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="3" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="13%"></td>
+<td width="8%">
+
+<p>dawrin</p>
+</td>
+<td width="77%">
+
+<p>This corresponds to the standard GA. No adaption is
+performed/considered in this case.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>lamarck_parents</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Lamarckian evolution for parents only performed
+immediately after &quot;birth&quot;.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>lamarck_children</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Lamarckian evolution for children only performed
+immediately after &quot;birth&quot;.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>lamarck_all</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Lamarckian evolution for the entire population at every
+generation, not just the parents or children at the moment
+of &quot;birth&quot;. This allow ongoing adaptation or
+learning, rather than just a single chance immediately after
+&quot;birth&quot;.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>baldwin_parents</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Baldwinian evolution for parents only performed
+immediately after &quot;birth&quot;.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>baldwin_children</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Baldwinian evolution for children only performed
+immediately after &quot;birth&quot;.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>baldwin_all</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Baldwinian evolution for entire population.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>lamarck_parents_baldwin_children</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Lamarckian evolution for the parents and baldwinian for
+the children.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>lamarck_children_baldwin_parents</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Baldwinian evolution for the parents and lamarckian for
+the children.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The &minus;elitism switch sets the rules for the passage
+of parent individuals into subsequent generations. The
+meaning of the possible values is:</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>parents</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>All parents that rank sufficiently highly will pass to
+the next generation.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>one_parent</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>The single fittest parent will pass to the next
+generation if it ranks sufficiently well.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>parents_die</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>No parents pass to next generation, regardless of their
+fitness.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>rescore_parents</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>All parents are re&minus;evalutated, and those that
+subsequently rank sufficiently highly will pass to the next
+generation.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The &minus;mutation and &minus;crossover switches set the
+propability that a mutation/crossover will occur on a member
+of the population on every generation. It must be a
+flowating point number from 0 to 1. The default is 0.1 for
+mutation and 0.9 for crossover.</p>
+<!-- INDENTATION -->
+<p><i>name</i> <b>params</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Get the current population parameters.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>evolve</b> <i>generations</i> ?&minus;mpi
+| &minus;forked | &minus;threaded | &minus;steady_state?</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Evolve the population up to a maximum <i>generations</i>
+generations. By default the evolution process is
+single&minus;threaded, except if the underlying GAUL library
+is compiled with OpenMP enabled, in which case all GAUL code
+may, transparently, benefit without any further action by
+the user. Other supported models of parallelism are: MPI,
+process&minus;based and thread&minus;based. Some of these
+features might not be available, depending on
+compile&minus;time options and system configuration.</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="5" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="5%">
+
+<p>&minus;mpi</p>
+</td>
+<td width="13%"></td>
+<td width="42%">
+
+<p>MPI&minus;based parallel evolution.</p>
+</td>
+<td width="26%">
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;forked</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>The evolution is performed by multiple processes
+simultaneously. This option should be available on all
+installations. The MPI parallelism depends on the presense
+of an MPI library as well as compile&minus;time options.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;threaded</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>The evolution is performed by multiple threads
+simultaneously. The thread&minus;based parallelism requires
+the pthreads library in addition to compile&minus;time
+options.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>&minus;steady_state</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Not a parallel evolution, but a different type of
+single&minus;threaded evolution. Consult GA literature for
+details.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>solution</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Returns the best solution so far.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>stats</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Returns a dictionary with some statistics on the current
+state of the population. The statistic variables returned
+concern the fitness of the members of the population. In
+particular: Max, min, mean, median, variance, stddev,
+kurtosis, and skew values are returned.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>list</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Returns in a list all the members of the population. The
+members in the list are ordered from highest to lowest
+fitness.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>rank</b></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Returns in a list all the members of the population along
+with their fitness. Every two items the list contains the
+member and its fitness. The touples in the list are ordered
+from highest to lowest fitness.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> <b>destroy<br>
+rename</b> <i>name</i> {}</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>Remove the Tcl command for the population and
+clean&minus;up all data.</p>
+</td>
+</table>
+<a name="EXAMPLE"></a>
+<h2>EXAMPLE</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<pre>package require gaul
+puts &quot;GAUL Library: [gaul version]0
+
+proc genrand {max num} {
+    set result [list]
+    for {set i 0} {$i &lt; $num} {incr i} {
+        lappend result [expr {int($max * rand())}]
+    }
+    return $result
+}
+
+proc generation {name gen} {
+    puts &quot;0eneration: $gen0
+}
+
+proc evaluate {name entity} {
+    global goal
+    set result [expr {100 * 10}]
+    for {set i 0} {$i &lt; 10} {incr i} {
+        incr result [expr {&minus;1 * abs([lindex $goal $i] &minus; [lindex $entity $i])}]
+    }
+    return $result
+}
+
+proc seed {name entity} {
+    set seed [genrand 100 10]
+    return $seed
+}
+
+proc adapt {name entity} {
+    return $entity
+}
+
+proc mutate {name entity} {
+    lset entity [genrand 10 1] [genrand 100 1]
+    return $entity
+}
+
+proc crossover {name entity1 entity2} {
+    set cross [genrand 10 1]
+    set child1 [concat [lrange $entity1 0 $cross&minus;1] [lrange $entity2 $cross end]]
+    set child2 [concat [lrange $entity2 0 $cross&minus;1] [lrange $entity1 $cross end]]
+    return [list $child1 $child2]
+}
+
+set goal [genrand 100 10]
+
+gaul create pop 100 \
+    &minus;generation_hook generation \
+    &minus;evaluate evaluate \
+    &minus;seed seed \
+    &minus;adapt adapt \
+    &minus;mutate mutate \
+    &minus;crossover crossover \
+    &minus;select_one SUS \
+    &minus;select_two SUS
+
+pop params &minus;scheme lamarck_all &minus;elitism parents_die &minus;crossover 0.900000 &minus;mutation 0.100000 &minus;migration 0.100000
+puts &quot;Params: [pop params]&quot;
+
+pop seed
+pop evolve 50
+
+puts &quot;======================================&quot;
+puts &quot;Goal:     $goal&quot;
+puts &quot;Solution: [pop solution]&quot;
+puts &quot;Stats: [pop stats]&quot;
+foreach {member rank} [pop rank] {
+    puts &quot;$rank$member&quot;
+}
+
+pop destroy
+</pre>
+</td>
+</table>
+<a name="OUTPUT"></a>
+<h2>OUTPUT</h2>
+<!-- INDENTATION -->
+
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<pre>GAUL Library: major 0 minor 1849 patch 0
+
+Params: &minus;scheme lamarck_all &minus;elitism parents_die &minus;crossover 0.900000 &minus;mutation 0.100000 &minus;migration 0.100000
+
+Generation 0: max 459.0 min 858.0 mean 649.98 median 658.5 variance 5679.319600000001 stddev 75.3612606051677 kurtosis 2.9207406751029166 skew 0.09516601413315064
+
+Generation 1: max 654.0 min 863.0 mean 718.05 median 758.5 variance 1911.0474999999997 stddev 43.71552927736321 kurtosis 3.447555360456811 skew 0.7457113187377609
+
+Generation 2: max 721.0 min 863.0 mean 760.77 median 792.0 variance 958.8771000000008 stddev 30.965740746831827 kurtosis 3.5479228177699884 skew 1.0368299598773918
+
+Generation 3: max 759.0 min 885.0 mean 796.46 median 822.0 variance 1041.248399999999 stddev 32.26838080846324 kurtosis 3.3547547068088783 skew 1.07936272652288
+
+Generation 4: max 796.0 min 915.0 mean 832.68 median 855.5 variance 762.5776 stddev 27.614807621998743 kurtosis 2.464071072723989 skew 0.6233040613560461
+
+Generation 5: max 837.0 min 927.0 mean 861.33 median 882.0 variance 420.64110000000005 stddev 20.509536806081215 kurtosis 3.7350366330506546 skew 1.0972795013828356
+
+Generation 6: max 863.0 min 936.0 mean 883.77 median 899.5 variance 269.7771000000002 stddev 16.42489269371341 kurtosis 3.235576190024203 skew 0.8349488460692618
+
+Generation 7: max 882.0 min 953.0 mean 904.28 median 917.5 variance 242.4216000000001 stddev 15.569894026614314 kurtosis 3.372569334160615 skew 0.8230657039857708
+
+Generation 8: max 901.0 min 953.0 mean 919.96 median 927.0 variance 181.03839999999968 stddev 13.455051096149717 kurtosis 2.2203490148254645 skew 0.4183803332268127
+
+Generation 9: max 916.0 min 955.0 mean 932.56 median 935.5 variance 119.70639999999972 stddev 10.941041997908595 kurtosis 1.9734838365261074 skew 0.2874963476168472
+
+Generation 10: max 932.0 min 964.0 mean 942.43 median 948.0 variance 65.88509999999994 stddev 8.116963718041367 kurtosis 2.4111029335485736 skew 0.6031910542925711
+
+Generation 11: max 941.0 min 966.0 mean 949.19 median 953.5 variance 34.03389999999985 stddev 5.833858071636629 kurtosis 2.714491942925497 skew 0.7130927841462207
+
+Generation 12: max 947.0 min 970.0 mean 955.09 median 958.5 variance 29.401899999999976 stddev 5.422351888249229 kurtosis 2.581060627237597 skew 0.602974953285199
+
+Generation 13: max 955.0 min 970.0 mean 960.18 median 962.5 variance 14.647599999999981 stddev 3.827218310992983 kurtosis 2.4330912354533085 skew 0.45602324853952114
+
+Generation 14: max 960.0 min 972.0 mean 964.06 median 966.0 variance 7.756400000000011 stddev 2.7850314181351727 kurtosis 2.759806722189022 skew 0.5936367107187382
+
+Generation 15: max 964.0 min 975.0 mean 966.74 median 969.5 variance 6.292399999999978 stddev 2.508465666498144 kurtosis 4.3377434740997085 skew 1.2687092157024076
+
+Generation 16: max 966.0 min 975.0 mean 969.34 median 970.5 variance 4.764400000000006 stddev 2.182750558355216 kurtosis 2.168957992751751 skew 0.4558882135654201
+
+Generation 17: max 969.0 min 978.0 mean 971.7 median 973.5 variance 4.810000000000002 stddev 2.1931712199461315 kurtosis 2.9941822519784425 skew 0.7883096919995383
+
+Generation 18: max 971.0 min 981.0 mean 974.07 median 976.0 variance 5.665100000000012 stddev 2.380147054280473 kurtosis 3.3106484505887686 skew 0.9359389096522497
+
+Generation 19: max 973.0 min 981.0 mean 976.18 median 977.0 variance 2.8676000000000106 stddev 1.693398948859958 kurtosis 2.4912911893537166 skew 0.507757137209828
+
+Generation 20: max 976.0 min 985.0 mean 978.02 median 980.5 variance 2.599600000000013 stddev 1.612327510154191 kurtosis 5.735231935619675 skew 1.2988517997702596
+
+Generation 21: max 978.0 min 985.0 mean 979.72 median 981.5 variance 3.2416000000000027 stddev 1.8004443895883047 kurtosis 3.9923302107157075 skew 1.2242124056152128
+
+Generation 22: max 979.0 min 989.0 mean 981.29 median 984.0 variance 3.865899999999999 stddev 1.966189207578965 kurtosis 4.252390377418288 skew 1.115929036888462
+
+Generation 23: max 981.0 min 989.0 mean 982.87 median 985.0 variance 2.673099999999995 stddev 1.6349617732534283 kurtosis 3.3251739098843442 skew 0.7309843660071947
+
+Generation 24: max 982.0 min 989.0 mean 984.31 median 985.5 variance 2.0139000000000076 stddev 1.4191194452899332 kurtosis 6.01650999114932 skew 1.26918364749434
+
+Generation 25: max 984.0 min 990.0 mean 985.39 median 987.0 variance 2.437900000000001 stddev 1.561377596867587 kurtosis 4.244307261727915 skew 1.5285340433089585
+
+Generation 26: max 985.0 min 990.0 mean 986.64 median 987.5 variance 3.1503999999999945 stddev 1.7749366185867017 kurtosis 1.4379154188035574 skew 0.4344048849740332
+
+Generation 27: max 986.0 min 990.0 mean 988.23 median 988.0 variance 1.5371000000000004 stddev 1.239798370703882 kurtosis 2.4959282384336783 skew &minus;0.820050825576884
+
+Generation 28: max 989.0 min 990.0 mean 989.17 median 989.5 variance 0.14109999999999986 stddev 0.3756327994198588 kurtosis 4.087172218285711 skew 1.7570350646148336
+
+Generation 29: max 989.0 min 990.0 mean 989.35 median 989.5 variance 0.22750000000000042 stddev 0.4769696007084733 kurtosis 1.3956043956042758 skew 0.6289709020330089
+
+Generation 30: max 989.0 min 990.0 mean 989.68 median 989.5 variance 0.21759999999999993 stddev 0.46647615158762396 kurtosis 1.595588235293787 skew &minus;0.7717436331409684
+
+Generation 31: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 32: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 33: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 34: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 35: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 36: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 37: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 38: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 39: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 40: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 41: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 42: max 990.0 min 990.0 mean 990.0 median 990.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+Generation 43: max 990.0 min 991.0 mean 990.01 median 990.5 variance 0.009899999999999949 stddev 0.09949874371066174 kurtosis 98.01010101010613 skew 9.849370589540596
+
+Generation 44: max 990.0 min 991.0 mean 990.03 median 990.5 variance 0.029099999999999984 stddev 0.17058722109231975 kurtosis 31.364261168388403 skew 5.510377588549676
+
+Generation 45: max 990.0 min 991.0 mean 990.07 median 990.5 variance 0.06510000000000021 stddev 0.2551470164434619 kurtosis 12.360983102915787 skew 3.370605747178756
+
+Generation 46: max 990.0 min 991.0 mean 990.12 median 990.5 variance 0.10560000000000076 stddev 0.3249615361854396 kurtosis 6.469696969696751 skew 2.338738328607261
+
+Generation 47: max 990.0 min 991.0 mean 990.2 median 990.5 variance 0.16000000000000048 stddev 0.4000000000000006 kurtosis 3.2499999999993037 skew 1.4999999999996432
+
+Generation 48: max 990.0 min 991.0 mean 990.39 median 990.5 variance 0.23790000000000058 stddev 0.48774993593028854 kurtosis 1.2034468263976872 skew 0.451050802457683
+
+Generation 49: max 990.0 min 991.0 mean 990.73 median 990.5 variance 0.19709999999999986 stddev 0.4439594576084621 kurtosis 2.073566717402508 skew &minus;1.0361306468793359
+
+Generation 50: max 991.0 min 991.0 mean 991.0 median 991.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+
+======================================
+Goal:     86 39 19 36 12 95 84 18 17 8
+Solution: 86 39 21 39 11 94 84 18 16 9
+Stats: max 991.0 min 991.0 mean 991.0 median 991.0 variance 0.0 stddev 0.0 kurtosis &minus;NaN skew &minus;NaN
+</pre>
+</td>
+</table>
+<!-- TABS -->
+
+<table width="100%" border=0 rules="none" frame="void"
+       cols="5" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 17 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+</td>
+<tr valign="top" align="left">
+<td width="7%"></td>
+<td width="7%">
+
+<p>991.0</p>
+</td>
+<td width="7%"></td>
+<td width="7%"></td>
+<td width="70%">
+
+<p>86 39 21 39 11 94 84 18 16 9</p>
+</td>
+</table>
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>Alexandros Stergiakis &lt;sterg@kth.se&gt;</p>
+</td>
+</table>
+<a name="COPYRIGHT"></a>
+<h2>COPYRIGHT</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>Copyright (C) 2008 Alexandros Stergiakis</p>
+<!-- INDENTATION -->
+<p>This program is free software: you can redistribute it
+and/or<br>
+modify it under the terms of the GNU General Public License
+as<br>
+published by the Free Software Foundation, either version 3
+of<br>
+the License, or (at your option) any later version.</p>
+<!-- INDENTATION -->
+<p>This program is distributed in the hope that it will be
+useful,<br>
+but WITHOUT ANY WARRANTY; without even the implied warranty
+of<br>
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+the<br>
+GNU General Public License for more details.</p>
+<!-- INDENTATION -->
+<p>You should have received a copy of the GNU General Public
+License<br>
+along with this program. If not, see
+&lt;http://www.gnu.org/licenses/&gt;.</p>
+</td>
+</table>
+<hr>
+</body>
+</html>

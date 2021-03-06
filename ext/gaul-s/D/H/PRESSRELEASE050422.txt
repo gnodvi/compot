@@ -1,0 +1,55 @@
+New release of open-source GAUL with support for Differential Evolution 
+======================================================================= 
+ 
+Reading, UK, April 22, 2005 -- The GAUL project is proud to announce 
+the latest release of GAUL(TM) - the Genetic Algorithm Utility Library, 
+a leading open-source programming library for evolutionary computation. 
+GAUL 0.1849 contains enhancements to portability and scalability along 
+with several new features. 
+ 
+The most significant new feature is an efficient implementation of 
+Price and Storn's Differential Evolution algorithm. Differential 
+Evolution is a population-based, stochastic function optimiser using 
+vector differences for perturbing the population. See 
+http://www.icsi.berkeley.edu/~storn/code.html for further details. 
+ 
+"GAUL's implementation of Differential Evolution offers a powerful 
+method for optimising vectors. Differential Evolution often exhibits a 
+compelling performance advantage over conventional genetic algorithms," 
+says Stewart Adcock, Lead Developer of the GAUL project. "These new 
+routines fit neatly within the pre-existing, simple and consistent API." 
+ 
+GAUL is fully supported on UNIX and UNIX-like operating systems, and all 
+core features are available on Microsoft Windows environments. GAUL is 
+able to utilise a wide range of computer platforms including 
+Beowulf-style clusters and supercomputers with support for the MPI and 
+OpenMP parallel programming standards, the forked-process model, and the 
+pthreads programming interface. 
+ 
+GAUL is already applied in many valuable domains, including protein 
+structure prediction and rational drug discovery. With this release, 
+GAUL solidifies its position as one of the premier frameworks for 
+evolutionary computation being freely available to all research 
+scientists and software developers. 
+ 
+About GAUL: The Genetic Algorithm Utility Library is an OSI certified
+[ http://www.opensource.org/ ] programming library for evolutionary
+computation. It is deployed in numerous academic institutions and
+corporations, on hardware ranging from low-end desktop PCs through to
+top supercomputers, in North America, Europe and Japan. Further
+information is available on the GAUL website
+[ http://gaul.sourceforge.net/ ], hosted by SourceForge.net
+[ http://sourceforge.net/ ]. Commercial licensing with professional
+support is available. 
+ 
+GAUL is a copyrighted work released under the terms of the 
+GNU General Public License [ http://www.fsf.org/copyleft/gpl.html ]. 
+ 
+GAUL and the GAUL logo are trademarks of Stewart Adcock. UNIX is a 
+registered trademark of The Open Group in the United States and other 
+countries. Microsoft and MS Windows are registered trademarks of the 
+Microsoft Corporation, Inc. in the United States and other countries. 
+OpenMP is a trademark of Silicon Graphics, Inc., in the United States 
+and other countries worldwide. Other product or brand names are 
+trademarks or registered trademarks of their respective holders.
+

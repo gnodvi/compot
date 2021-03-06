@@ -1,0 +1,2093 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<style>
+body { margin: 0px; padding: 4px; color: black; font-size:100%;}
+pre { margin: 0px; padding: 4px; color: black; font-size:80%;}
+</style>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="description" content="GAUL: Genetic Algorithm Utility Library - Refernce Guide">
+  <meta name="keywords" content="genetic algorithm, genetic algorithms, GAUL">
+  <meta name="author" content="Stewart Adcock">
+  <meta name="copyright" content="(c) Stewart Adcock">
+  <meta name="generator" content="vi">
+  <meta http-equiv="Content-Language" content="en">
+  <title>GAUL: Genetic Algorithm Utility Library - Reference Guide</title>
+</head>
+<body>
+<h1>Reference Guide for GAUL: The Genetic Algorithm Utility Library</h1>
+<p>GAUL is Copyright &copy; 2000-2009, "Stewart A. Adcock" &lt;gaul@linux-domain.com&gt;<br>
+This document is &copy; 2004-2009, <a href="http://saa.dyndns.org/">Stewart Adcock</a>.<br>
+All rights reserved.
+
+<h2>Preface</h2>
+
+<p>This <b>draft</b> document is intended as the definitive reference guide for the GAUL
+evolutionary computation library.  It currently corresponds to GAUL version 0.1850-0.
+
+<p>All existing documentation, including a tutorial and a FAQ, is available on
+the the website.
+You are welcome to join the mailing list,
+gaul-devel@lists.sourceforge.net, where all of your questions can be answered.
+Visit <a href="http://lists.sourceforge.net/lists/listinfo/gaul-devel">http://lists.sourceforge.net/lists/listinfo/gaul-devel</a> to register for this mailing list.
+
+<p>
+<table width=100%>
+	<tr><td>Homepage:</td><td><a href="http://gaul.sourceforge.net/">http://gaul.sourceforge.net/</a></td></tr>
+	<tr><td>Documentation:</td><td><a href="http://gaul.sourceforge.net/documentation.html">http://gaul.sourceforge.net/documentation.html</a></td></tr>
+	<tr><td>Development homepage:</td><td><a href="http://sourceforge.net/projects/gaul/">http://sourceforge.net/projects/gaul/</a></td></tr>
+	<tr><td>Download page:</td><td><a href="http://gaul.sourceforge.net/downloads.html">http://gaul.sourceforge.net/downloads.html</a></td></tr>
+</table>
+
+<p>The reader is assumed to be familiar with evolutionary computation in
+general, and genetic algorithms in particular.  The reader is referred to
+<a href="http://gaul.sourceforge.net/intro.html">http://gaul.sourceforge.net/intro.html</a> for a basic introduction to evolutionary computation.
+
+<p>This document should be used in concert with the online tutorial starting at <a href="http://gaul.sourceforge.net/tutorial/simple.html">http://gaul.sourceforge.net/tutorial/simple.html</a>.
+
+<p>The reader may notice that a few functions are described only with the phrase "Deliberately undocumented at present".  The form or behaviour of such functions are not deemed to be finalized at this time.  Use these functions with extreme caution.
+
+<h2>Contents</h2>
+
+<p>
+1. Preface<br>
+2. Introduction to GAUL<br>
+3. Obtaining GAUL<br>
+4. Installation<br>
+5. Bug Submission<br>
+6. Using GAUL<br>
+6.1. Data structures<br>
+6.1.1. Entity and population structures<br>
+6.1.2. Enumerated types<br>
+6.2. Callback functions<br>
+6.2.1. Analysis and termination functions<br>
+6.2.2. Standard GA operator functions<br>
+6.2.3. Genome handling functions<br>
+6.2.4. Phenome handling functions<br>
+6.2.5. Heuristic search function operations<br>
+6.3. Functions available through the public API<br>
+6.3.1. Basic entity handling functions<br>
+6.4. Basic population handling functions<br>
+6.5. Evolution functions<br>
+6.6. MPI specific functions<br>
+6.7. Disk I/O functions<br>
+6.8. Built-in Selection operators<br>
+6.9. Built-in Crossover operators<br>
+6.10. Built-in Mutation operators<br>
+6.11. Built-in Genesis operators<br>
+6.12. Built-in Replacement operators<br>
+6.13. Built-in Rank operators<br>
+6.14. Genesis functions<br>
+6.15. Miscellaneous support functions<br>
+6.16. Statistics functions<br>
+6.17. Chromosome definition functions<br>
+6.18. Bitstring functions<br>
+6.19. Genome comparison functions<br>
+7. Alternative search functions<br>
+7.1. Tabu search<br>
+7.2. Simplex search<br>
+7.3. Deterministic crowding<br>
+7.4. Differential evolution<br>
+7.5. Simulated annealling<br>
+7.6. Hill climbing<br>
+7.7. Gradient methods<br>
+7.8. Systematic search<br>
+7.9. Random search<br>
+8. Environment variables<br>
+9. S-Lang scripting<br>
+10. Perl Scripting<br>
+11. Support functions<br>
+11.1. List datastructure<br>
+11.2. Tree datastructure<br>
+11.3. Memory handling<br>
+11.4. Portable, Stateful, Pseudo-Random Number Generator<br>
+11.5. Log functions<br>
+11.6. Indexed table datastructure<br>
+11.7. Timer functions<br>
+11.8. Compatibility Functions<br>
+12. Example programs<br>
+12.1. "Pingpong" problem solver<br>
+12.2. Simple polynomial solver<br>
+12.3. "Wildfires" problem solver<br>
+12.4. Goldberg's Examples<br>
+12.5. Holland's Royal Road Problem<br>
+12.6. The Struggle for Existence<br>
+12.7. Neural Network Evolution<br>
+12.8. Reading and Writing Population Data<br>
+
+<h2>Introduction to GAUL</h2>
+
+<p>The Genetic Algorithm Utility Library (or, GAUL for short) is a flexible
+programming library designed to aid in the development of applications
+that use evolutionary algorithms. It provides data structures
+and functions for handling and manipulation of the data required for 
+various serial and parallel genetic algorithms. A number of alternative non-evolutionary algorithms are additionally provided for
+comparison to the genetic algorithms. Much of the functionality is also
+available through a simple S-Lang interface.
+
+<p>GAUL is OSI Certified Open Source Software.
+
+<p>Current features include:
+<ul>
+ <li> Darwinian, Lamarckian or Baldwinian evolutionary schemes.
+ <li> Both steady-state and generation-based GAs included.
+ <li> The island model of evolution is available.
+ <li> Additional optimization algorithms for local optimization or comparative purposes:
+ <ul>
+     <li> Hill climbing (Random ascent and Next ascent).
+     <li> Tabu Search.
+     <li> Simulated annealling (and Monte Carlo).
+     <li> Simplex Search.
+     <li> Gradient methods (Steepest Ascents).
+     <li> Deterministic Crowding.
+     <li> Differential Evolution.
+ </ul>
+ <li> Chromosome datatype agnostic. Built-in chromosome types include:
+ <ul>
+    <li> integer arrays
+    <li> double-precision floating-point arrays
+    <li> character arrays
+    <li> boolean arrays
+    <li> bitstrings (either binary code or Gray code)
+ </ul>
+ <li> Includes most of the usual crossover, mutation and selection operators.
+ <li> Allows user-defined GA operators, including:
+<ul>
+    <li> crossover.
+    <li> mutation.
+    <li> selection.
+    <li> adaptation.
+    <li> replacement.
+</ul>
+ <li> Availability of multiple chromosome genomes.
+ <li> Full support for multiple, simultaneously evolved, populations.
+ <li> Choice of high-level or low-level interface functions.
+ <li> Trivial to extend using external code via the built-in code hooks.
+ <li> May be driven by, or extended by, simple yet powerful S-Lang scripts.
+ <li> Support for multiprocessor calculations on various architectures:
+<ul>
+     <li> MPI
+     <li> OpenMP 2.0
+     <li> pthreads
+     <li> forked-process model
+</ul>
+ <li> Written using highly portable C code.
+ <li> Distributed with a large set of example programs.
+</ul>
+
+<p>The main development platform for GAUL is Linux with the gcc compiler,
+but it is trivial to use GAUL on any POSIX compliant
+systems.  Recent versions of GAUL have been successfully used with a variety
+of operating systems, including RedHat Linux, FreeBSD, Sun's Solaris and
+SGI's IRIX.  Full use is made of the GNU maketools to aid portability
+issues.  A table of platforms known to be fully is located at
+<a href="http://gaul.souceforge.net/platforms.html">http://gaul.souceforge.net/platforms.html</a>.
+
+<p>This version of GAUL is distributed under the terms of the GNU <a href="http://gaul.souceforge.net/licence.html">General Public License</a>.  See the file <tt>./COPYING</tt> for full details.  A professionally
+supported version is also available.
+
+<h2>Obtaining GAUL</h2>
+
+<p>The most recent, publicly released, version of GAUL is always available at <a href="http://gaul.sourceforge.net/downloads.html">http://gaul.sourceforge.net/downloads.html</a>.
+
+<p>Alternatively, the latest "bleeding-edge" source code (which may, or may not, be entirely stable or even compile) is always available via anonymous CVS hosted by SourceForge.  To download, follow these instructions:
+
+<ol>
+	<li>Set the CVSROOT environment variable:
+	<ul>
+		<li>Using <tt>csh</tt> or <tt>tcsh</tt>, type:<br><tt>setenv CVSROOT :pserver:anonymous@cvs.gaul.sourceforge.net:/cvsroot/gaul</tt></li>
+
+		<li>Using <tt>sh</tt> or <tt>bash</tt>, type:<br><tt>CVSROOT=:pserver:anonymous@cvs.gaul.sourceforge.net:/cvsroot/gaul<br>export CVSROOT</tt></li>
+	</ul></li>
+	<li>To log in to CVS, type:<br>
+	<tt>cvs login</tt> - just press the 'Enter' key when prompted for a password.</li>
+	<li>To obtain the latest code, type:<br>
+	<tt>cvs -z3 co gaul-devel</tt><br>
+	This will update your gaul directory under the current directory with the
+	changes to CVS since your last "checkout".</li>
+	<li>To compile, type <tt>./configure ; make</tt> while in the GAUL directory.</li>
+</ol>
+
+<h2>Installation</h2>
+
+<p>See file <tt>./INSTALL</tt> or visit <a href="http://gaul.sourceforge.net/installation.html">http://gaul.sourceforge.net/installation.html</a> for detailed instructions.
+
+<p>On most UNIX or UNIX-like systems, the typical user would want to type:
+
+<pre>
+./configure &amp;&amp; make &amp;&amp; make install
+</pre>
+
+<h2>Bug Submission</h2>
+
+<p>If you find a bug, please send details of your system, the version of
+GAUL that you are using and concise instructions for reproducing the
+crash or erroneous result to <a href="mailto:gaul@linux-domain.com?Subject=GAUL bug report">gaul@linux-domain.com</a>.
+
+<h2>Using GAUL</h2>
+
+<p>Assuming that GAUL is correctly installed and configured, programs utilizing
+its features should link to libgaul, libgaul_util, and depending upon the
+system and compile-time options, to libm, libmpi and/or libpthread.  If the built-in S-Lang support is compiled, then libslang must be linked too.
+
+<p>libgaul_util provides portable programming routines and may be used
+separately.  These functions are described later in this guide.
+
+<p>The GAUL header needs to be referenced in the source code before any GAUL functions may be used, i.e.
+<pre>
+#include "gaul.h"
+</pre>
+
+<p>This is fully discussed in the GAUL tutorial available on the website.  The
+GAUL header defines the GAUL datatypes and all publicly accessible functions.
+
+<h3>Data structures</h3>
+
+<h4>Entity and population structures</h4>
+
+<p>The <tt>entity</tt> datatype is used for the storage of single individuals.  The <tt>population</tt> datatype stores multiple individuals (entities) in addition to all run-time parameters required for their evolution.  These are the fundamental datatypes used by the GAUL library.
+
+<h4>Enumerated types</h4>
+
+<p>Enumerated types are used to define particular variants of the GA algorithms.
+These are used as parameters to certain functions.
+
+<p>The evolutionary mode is specified using the <tt>ga_scheme_type_t</tt> type.  This
+enumerated type is defined as shown below.  Evolutionary mode indicates the
+form of adaptation that should be used.  <tt>GA_SCHEME_DARWIN</tt> relates to a
+standard GA, while the others relate to so-called hybrid genetic algorithms.
+The composite options
+<tt>GA_SCHEME_LAMARCK_PARENTS|GA_SCHEME_BALDWIN_CHILDREN</tt> and
+<tt>GA_SCHEME_LAMARCK_CHILDREN|GA_SCHEME_BALDWIN_PARENTS</tt> are also acceptable,
+albeit unusual, choices.
+
+<pre>
+typedef enum ga_scheme_type_t
+  {
+  GA_SCHEME_DARWIN = 0,
+  GA_SCHEME_LAMARCK_PARENTS = 1,
+  GA_SCHEME_LAMARCK_CHILDREN = 2,
+  GA_SCHEME_LAMARCK_ALL = 3,
+  GA_SCHEME_BALDWIN_PARENTS = 4,
+  GA_SCHEME_BALDWIN_CHILDREN = 8,
+  GA_SCHEME_BALDWIN_ALL = 12
+  } ga_scheme_type;
+</pre>
+
+<p>Like the evolutionary mode, the elitism mode is specified via an enumerated
+type.  This is used to control the form of elitism used by the GA, that is the
+pattern of survival from one generation to the next.
+
+The enumerated constants <tt>GA_ELITISM_PARENTS_SURVIVE</tt>, <tt>GA_ELITISM_ONE_PARENT_SURVIVES</tt>, and
+<tt>GA_ELITISM_PARENTS_DIE</tt> indicate whether all (subject to fitness), one or zero entities survive, respectively, into the next generation.  <tt>GA_ELITISM_RESCORE_PARENTS</tt> is a special-case alternative to <tt>GA_ELITISM_PARENTS_SURVIVE</tt> where the fitness of every parent entity is recalculated. These parents will survive if, but only if, they are sufficiently fit after rescoring.  This option is useful for applying aging to the population or, more commonly, for reassessing fitness when it has a stochastic component.
+
+<pre>
+typedef enum ga_elitism_type_t
+  {
+  GA_ELITISM_UNKNOWN = 0,
+  GA_ELITISM_NULL = 0,
+  GA_ELITISM_PARENTS_SURVIVE=1,
+  GA_ELITISM_ONE_PARENT_SURVIVES=2,
+  GA_ELITISM_PARENTS_DIE=3,
+  GA_ELITISM_RESCORE_PARENTS=4
+  } ga_elitism_type;
+</pre>
+
+<h3>Callback functions</h3>
+
+<p>GAUL makes extensive use of so-called callback functions.  These are
+user-definable functions which provide certain functionality for the core GAUL
+routines.
+
+<p>Most callback function types have several built-in examples distributed in GAUL.  The user is free
+to use these or, at their option, provide custom functions.  This is the chief source of flexibility of
+the GAUL library.
+
+<p>Many callback functions are suitable only for particular chromosome types.  In such cases, this is clear from the functions' names.
+
+<h4>Analysis and termination functions</h4>
+
+<pre>
+typedef boolean (*GAgeneration_hook)(const int generation, population *pop);
+</pre>
+
+<p><tt>GAgeneration_hook</tt> is called at the beginning of each generation by
+all evolutionary functions.  If this callback function returns <tt>FALSE</tt> the evolution will terminate.
+
+<pre>
+typedef boolean (*GAiteration_hook)(const int iteration, entity *entity);
+</pre>
+
+<p><tt>GAiteration_hook</tt> is called at the beginning of each iteration by
+all non-evolutionary search or optimization functions.  If this callback function returns <tt>FALSE</tt> the evolution will terminate.
+
+<h4>Standard GA operator functions</h4>
+
+<p>The standard GA operators are all defined though callbacks.  A large set of common and standard operators are built-in to the GAUL library.  Any of these may be substituted with user-provided functions instead.
+
+<pre>
+typedef boolean (*GAevaluate)(population *pop, entity *entity);
+</pre>
+
+<p><tt>GAevaluate</tt> determines the fitness of an entity.
+
+<pre>
+typedef boolean	(*GAseed)(population *pop, entity *adam);
+</pre>
+
+<p><tt>GAseed</tt> initializes the genomic contents of an entity.
+
+<pre>
+typedef entity *(*GAadapt)(population *pop, entity *child);
+</pre>
+
+<p><tt>GAadapt</tt> optimizes/performs learning for an entity.
+
+<pre>
+typedef boolean (*GAselect_one)(population *pop, entity **mother);
+</pre>
+
+<p><tt>GAselect_one</tt> selects a single entity from the population, e.g. for mutation or migration.
+
+<pre>
+typedef boolean (*GAselect_two)(population *pop, entity **mother, entity **father);
+</pre>
+
+<p><tt>GAselect_two</tt> selects a pair of entities from the population, e.g. for crossover.
+
+<pre>
+typedef void    (*GAmutate)(population *pop, entity *mother, entity *daughter);
+</pre>
+
+<p><tt>GAmutate</tt> introduces a mutation into an entity.
+
+<pre>
+typedef void    (*GAcrossover)(population *pop, entity *mother, entity *father, entity *daughter, entity *son);
+</pre>
+
+<p><tt>GAcrossover</tt> produces two new sets of chromosomes from two parent sets.
+
+<pre>
+typedef void    (*GAreplace)(population *pop, entity *child);
+</pre>
+
+<p><tt>GAreplace</tt> inserts a new entity into the population.
+
+<pre>
+typedef int     (*GArank)(population *popalpha, entity *alpha, population *popbeta, entity *beta);
+</pre>
+
+<p><tt>GArank</tt> determines relative ranking for two entities.
+
+<h4>Genome handling functions</h4>
+
+<p>A set of callback functions are used to define chromosome types.  These enable the user to develop their own, task specific, chromosome types within the GAUL framework.  These are fully described in the online GAUL tutorial.
+
+<p>Note that these functions will only be required by more advanced applications
+of GAUL.
+
+<pre>
+typedef boolean (*GAchromosome_constructor)(const population *pop, entity *entity);
+</pre>
+<p><tt>GAchromosome_constructor</tt> is used to allocate single chromosomes.
+
+<pre>
+typedef void    (*GAchromosome_destructor)(const population *pop, entity *entity);
+</pre>
+<p><tt>GAchromosome_destructor</tt> is used to deallocate single chromosomes.
+
+<pre>
+typedef void    (*GAchromosome_replicate)(const population *pop, entity *parent, entity *child, const int chromosomeid);
+</pre>
+<p><tt>GAchromosome_replicate</tt> is used to clone single chromosomes.
+
+<pre>
+typedef unsigned int    (*GAchromosome_to_bytes)(const population *pop, entity *joe, byte **bytes, unsigned int *max_bytes);
+</pre>
+<p><tt>GAchromosome_to_bytes</tt> is used to pack genomic data into a contiguous block of memory.
+
+<pre>
+typedef void    (*GAchromosome_from_bytes)(const population *pop, entity *joe, byte *bytes);
+</pre>
+<p><tt>GAchromosome_from_bytes</tt> is used to unpack genomic data from a contiguous block of memory.
+
+<pre>
+typedef char    *(*GAchromosome_to_string)(const population *pop, const entity *joe, char *text, size_t *textlen);
+</pre>
+<p><tt>GAchromosome_to_string</tt> is used to generate a human readable representation of genomic data.
+
+<h4>Phenome handling functions</h4>
+
+<p>GAUL provides a powerful data handling system - a general purpose data cache.  This is 
+deliberately undocumented at present.  It is termed "phenomic data" to mirror the terms used in the study of natural evolution.
+
+<pre>
+typedef void    (*GAdata_destructor)(vpointer data);
+</pre>
+
+<p><tt>GAdata_destructor</tt> is used to deallocate phenomic data.
+
+<pre>
+typedef void    (*GAdata_ref_incrementor)(vpointer data);
+</pre>
+
+<p><tt>GAdata_ref_incrementor</tt> is used for reference counting of phenomic data.
+
+<h4>Heuristic search function operations</h4>
+
+<p>A variety of miscellaneous functions are also used by the alternative, non-evolutionary, optimization or search functions that GAUL provides.
+ 
+<p>
+<table width=100%>
+	<tr><td><tt>GAtabu_accept</tt>      </td><td>Tabu-search tabu and aspiration criteria.</td></tr>
+	<tr><td><tt>GAsa_accept</tt>        </td><td>Simulated Annealing acceptance criteria.</td></tr>
+	<tr><td><tt>GAmutate_allele</tt>    </td><td>Mutate a single, specified, allele.</td></tr>
+	<tr><td><tt>GAto_double</tt>        </td><td>Map chromosomal data to double-precision float array.</td></tr>
+	<tr><td><tt>GAfrom_double</tt>      </td><td>Map chromosomal data from double-precision float array.</td></tr>
+	<tr><td><tt>GAgradient</tt>         </td><td>Return array of gradients.</td></tr>
+	<tr><td><tt>GAscan_chromosome</tt>  </td><td>Produce next permutation of genome.</td></tr>
+	<tr><td><tt>GAcompare</tt>          </td><td>Compare two entities (in either genomic or phenomic space) and return their mutual distance.</td></tr>
+</table>
+
+<pre>
+typedef boolean	(*GAtabu_accept)(population *pop, entity *putative, entity *tabu);
+typedef boolean	(*GAsa_accept)(population *pop, entity *current, entity *trial);
+typedef boolean	(*GAmutate_allele)(population *pop, entity *parent, entity *child, const int chromosomeid, const int alleleid);
+typedef boolean	(*GAto_double)(population *pop, entity *entity, double *darray);
+typedef boolean	(*GAfrom_double)(population *pop, entity *entity, double *darray);
+typedef double	(*GAgradient)(population *pop, entity *entity, double *darray, double *varray);
+typedef boolean	(*GAscan_chromosome)(population *pop, entity *entity, int enumeration_num);
+typedef double	(*GAcompare)(population *pop, entity *alpha, entity *beta);
+</pre>
+
+<p>Each of these is discussed more fully in the part of this guide which covers the relevant heuristic search function.
+
+<h3>Functions available through the public API</h3>
+
+<p>Not all public functions are described below.  However, you are advised to use
+extreme caution when using any function not listed below since such functions
+might be modified, or might be removed, in future versions of GAUL.
+
+<p>All public functions are defined in the <tt>gaul.h</tt> header file.
+
+<h4>Basic entity handling functions</h4>
+
+<p>Internally, the entities in a population are referenced via unique integer
+identifiers.  These are exposed via the public API and may be used in your
+programs, although they are really intended for use by scripting language
+wrappers.  ( If you are familiar with the Daylight toolkit then you might be comfortable using these identifiers.  See http://www.daylight.com/ )
+
+<p>These identifiers are not unique between multiple populations.
+
+<pre>
+boolean	ga_entity_seed(population *pop, entity *e);
+</pre>
+
+<p>Generates the chromosome(s) in an entity. the method used to generate the
+chromosome(s) is dependent upon the properties of the population structure.
+
+<p>The entity does not need to be from the passed population, but the populations
+need to be compatible (not necessary identical).
+
+<pre>
+double	ga_entity_evaluate(population *pop, entity *entity);
+</pre>
+
+<p>Evaluates the fitness of an entity. the fitness function
+is dependent upon the properties of the population structure.
+
+<p>The entity does not need to be from the passed population, but the populations
+need to be compatible (not necessary identical).
+
+<pre>
+int ga_get_entity_rank(population *pop, entity *e);
+</pre>
+
+<p>Return the rank of the entity in its population.  This function will only yield
+the correct result after evolution or after a sorting function is called.
+
+<pre>
+int ga_get_entity_id(population *pop, entity *e);
+</pre>
+
+<p>Return the unique internal identifier of the entity in its population.
+This identifier is only unique within the specific population.
+
+<pre>
+entity *ga_get_entity_from_id(population *pop, const unsigned int id);
+</pre>
+
+<p>Return the entity structure with the passed identifier, or NULL on
+error.
+
+<pre>
+entity *ga_get_entity_from_rank(population *pop, const unsigned int rank);
+</pre>
+
+<p>Return the entity structure with the passed rank, or NULL on error.
+
+<pre>
+int	ga_get_entity_rank_from_id(population *pop, int id);
+</pre>
+
+<p>Return the rank of the entity with the passed identifier.
+
+<pre>
+int	ga_get_entity_id_from_rank(population *pop, int rank);
+</pre>
+
+<p>Return the unique internal identifier of the entity with the passed rank.
+
+<pre>
+boolean ga_entity_dereference(population *p, entity *dying);
+</pre>
+
+<p>This removes the specified entity from the population structure and deallocates all associated memory.  Also, reduces the population size.
+
+<pre>
+boolean	ga_entity_dereference_by_rank(population *pop, int rank);
+</pre>
+
+<p>This removes the specified entity from the population structure and deallocates all associated memory.  Also, reduces the population
+size.
+
+<pre>
+boolean ga_entity_dereference_by_id(population *pop, int id);
+</pre>
+
+<p>This removes the specified entity from the population structure and deallocates all associated memory.  Also, reduces the population
+size.
+
+<pre>
+void ga_entity_clear_data(population *p, entity *entity, const int chromosome);
+</pre>
+
+<p>Erases the entity's user data associated with the specified chromosome.
+
+<pre>
+entity *ga_get_free_entity(population *pop);
+</pre>
+
+<p>Returns pointer to an unused entity structure in the population.  Increments population size too.
+
+<pre>
+void ga_entity_blank(population *p, entity *entity);
+</pre>
+
+<p>This is an efficient alternative to calling <tt>ga_entity_dereference()</tt> immediately followed by <tt>ga_get_free_entity()</tt>.
+
+<pre>
+boolean ga_copy_data(population *pop, entity *dest, entity *src, const int chromosome);
+</pre>
+
+<p>Copy the userdata from one chromosome of an entity to another entity.  The destination chromosomes must be filled in order.  If these entities are in differing populations, no problems will occur provided that the chromosome properties are identical.
+
+<pre>
+boolean ga_entity_copy_all_chromosomes(population *pop, entity *dest, entity *src);
+</pre>
+
+<p>Copy all genetic data between entity structures.  If these entities are in differing populations, no problems will occur provided that the chromosome properties are identical.  Any userdata is also copied.
+
+<pre>
+boolean ga_entity_copy_chromosome(population *pop, entity *dest, entity *src, int chromo);
+</pre>
+
+<p>Copy one chromosome between entities.  If these entities are in differing populations, no problems will occur provided that the chromosome datatypes match up.  Any userdata is also copied.
+
+<pre>
+boolean ga_entity_copy(population *pop, entity *dest, entity *src);
+</pre>
+
+<p>Copy entire entity structure.  This is safe for copying between populations, provided that they are compatible.  Any userdata is also copied.
+
+<pre>
+entity	*ga_entity_clone(population *pop, entity *parent);
+</pre>
+
+<p>Clone an existing entity structure into a newly allocated entity structure.  Safe for cloning into a different population, provided that the populations are compatible.
+
+<pre>
+double	ga_entity_get_fitness(entity *e);
+boolean	ga_entity_set_fitness(entity *e, double fitness);
+</pre>
+
+<p>Functions for accessing and setting the fitness of entities.
+
+<pre>
+boolean ga_entity_set_data(population *pop, entity *e, SLList *data);
+SLList	*ga_entity_get_data(population *pop, entity *e);
+</pre>
+
+<p>Functions for accessing and setting entity-specific data. Deliberately undocumented at present.
+
+<h3>Basic population handling functions</h3>
+
+<pre>
+population *ga_population_new(	const int stable_size,
+				const int num_chromosome,
+				const int len_chromosome);
+</pre>
+
+<p>Allocate and initialize a population structure.  <tt>stable_size</tt> specifies the
+size of the population at the end of each generation.  <tt>num_chromosome</tt> and
+<tt>len_chromosome</tt> specifies the number of chromosomes in each entity and the
+length of those chromosomes.  Depending upon the particular chromosome type
+used, the length parameter might be ignored but it is honoured by all of the
+built-in chromosome types.
+
+<p>Except in advanced applications, this function is generally not needed.
+
+<pre>
+population *ga_population_clone_empty( population *pop );
+</pre>
+
+<p>Allocates a new population and copy all contents except the constituent
+entities from an existing population.
+
+<pre>
+population *ga_population_clone( population *pop );
+</pre>
+
+<p>Allocates a new population and copy all contents including the constituent
+entities from an existing population.  The internal entity identifiers will
+not correspond between the original population and the clone.
+
+<pre>
+boolean ga_population_seed(population *pop);
+</pre>
+
+<p>Allocate and initialize entities in a population.  A number of entities equal to the <tt>stable_size</tt> population parameter will be initialized.  The previously specified seed function will be used to seed each of these entities.  The fitness of each entity is <b>not</b> determined.
+
+<pre>
+boolean	ga_population_score_and_sort(population *pop);
+</pre>
+
+<p>Score all unscored entities in a population and then sort the population by
+fitness.
+
+<pre>
+boolean	ga_population_sort(population *pop);
+</pre>
+
+<p>Sort all entities in a population by fitness.  The fitness of each entity must
+have been previously determined.  This is the case after any evolution has
+been performed.
+
+<pre>
+void	ga_population_set_parameters(  population            *pop,
+		                       const ga_scheme_type  scheme,
+		                       const ga_elitism_type elitism,
+		                       const double          crossover,
+		                       const double          mutation,
+		                       const double          migration);
+void	ga_population_set_scheme(    population *pop, const ga_scheme_type  scheme );
+void	ga_population_set_elitism(   population *pop, const ga_elitism_type elitism );
+void	ga_population_set_crossover( population *pop, const double          crossover );
+void	ga_population_set_mutation(  population *pop, const double          mutation );
+void	ga_population_set_migration( population *pop, const double          migration );
+void	ga_population_set_allele_mutation_prob(  population *pop, const double          probability );
+double ga_population_get_crossover(population       *pop);
+double ga_population_get_mutation(population       *pop);
+double ga_population_get_migration(population       *pop);
+double ga_population_get_allele_mutation_prob(population       *pop);
+ga_scheme_type ga_population_get_scheme(population       *pop);
+ga_elitism_type ga_population_get_elitism(population       *pop);
+</pre>
+
+<p>Functions for accessing and setting population-specific optimization parameters.  In typical use, these functions must be called prior to successful use of any evolution function.  It is, however, acceptable to set these functions at any time, including during evolution.  This enables dynamic modification of the crossover ratio, for example.
+
+<p>The exact meaning of the crossover, mutation and migration parameters depends upon the particular GA operators being used.  User-defined operators are even free to ignore these parameters entirely.  The default values for all newly created populations are 0.9, 0.1 and 0.1 for crossover, mutation and migration, respectively.
+
+<p>The <tt>ga_population_set_allele_mutation_prob()</tt> function may be used to specify the probability of each individual allele being mutated in the &quot;multipoint&quot; mutation operators.  The default probability is 0.2 for all newly created populations.
+
+<p>All of these parameters may take any value, including values greater than one, or even values less than zero.  Depending upon the specific GA operators being used such values might not be meaningful, however.
+
+<pre>
+int	ga_population_get_stablesize(population *pop);
+int	ga_population_get_size(population *pop);
+int	ga_population_get_maxsize(population *pop);
+boolean	ga_population_set_stablesize(population *pop, int stable_size);
+</pre>
+
+<p>Additional population parameters are available through these functions.  <tt>stablesize</tt> refers to the number of entities in the population at the end of each generation.  <tt>size</tt> refers to the current number of entities at the point that the function is called.  <tt>maxsize</tt> refers to the maximum number of entities that the population can currently hold.  This parameter is dynamically adjusted as the actual population size grows.
+
+<p>It is acceptable to set these functions at any time, including during evolution.
+ This enables dynamic resizing of the population's stablesize, for example.
+
+<pre>
+int ga_population_get_allele_min_integer( population *pop );
+int ga_population_get_allele_max_integer( population *pop );
+double ga_population_get_allele_min_double( population *pop );
+double ga_population_get_allele_max_double( population *pop );
+
+void ga_population_set_allele_min_integer( population *pop, const int value);
+void ga_population_set_allele_max_integer( population *pop, const int value);
+void ga_population_set_allele_min_double( population *pop, const double value);
+void ga_population_set_allele_max_double( population *pop, const double value);o</pre>
+
+<p>These functions allow ranges for the double and integer chromosomes to be imposed or inspected.  They work with the current built-in operators (seed, mutation, etc.).
+
+<pre>
+population *ga_transcend(unsigned int id);
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<pre>
+unsigned int ga_resurect(population *pop);
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<pre>
+boolean ga_extinction(population *extinct);
+</pre>
+
+<p>Fully clean and deallocate a population, including all of its constituent entities.
+
+<pre>
+boolean ga_genocide(population *pop, int target_size);
+</pre>
+
+<p>Reduce the size of the population to the specified number of most fit entities.  All additional entities are deallocated.
+
+<pre>
+boolean ga_genocide_by_fitness(population *pop, double target_fitness);
+</pre>
+
+<p>Deallocate all entities with a fitness equal to or worse than the specified value.
+
+<pre>
+boolean ga_population_set_data(population *pop, vpointer data);
+vpointer ga_population_get_data(population *pop);
+</pre>
+
+<p>Define or inspect population specific data.
+
+<pre>
+int	ga_population_get_generation(population *pop);
+</pre>
+
+<p>Returns the current generation number for the population.  After an evolutionary function has completed, this returns the number of generations completed.  This will return zero prior to any evolution.  This value is reset to zero whenever any evolutionary function is called with this population.  It is safe to call this function at any time, including inside the various selection, mutation, etc. functions.
+
+<pre>
+int	ga_population_get_island(population *pop);
+</pre>
+
+<p>Returns the current island number for the population.  After an evolutionary function has completed, this returns the island during the previous island-model evolutionary function.  This will return -1 prior to any evolution.  This value is not adjusted by any non-island-based evolutionary function.  It is safe to call this function at any time, including inside the various selection, mutation, etc. functions.
+
+<pre>
+int	ga_get_num_populations(void);
+population *ga_get_population_from_id(unsigned int id);
+unsigned int ga_get_population_id(population *pop);
+unsigned int *ga_get_all_population_ids(void);
+population **ga_get_all_populations(void);
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<pre>
+void	ga_init_openmp( void );
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<pre>
+int	ga_funclookup_ptr_to_id(void *func);
+int	ga_funclookup_label_to_id(char *funcname);
+void	*ga_funclookup_label_to_ptr(char *funcname);
+void	*ga_funclookup_id_to_ptr(int id);
+char	*ga_funclookup_id_to_label(int id);
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<h3>Evolution functions</h3>
+
+<p>A variety of functions exist for performing evolution.  Note that some of these functions are not compiled, by default, on all computer platforms.
+
+<pre>
+int	ga_evolution(          population *pop, const int max_generations );
+int	ga_evolution_mpi(      population *pop, const int max_generations );
+int	ga_evolution_forked(   population *pop, const int max_generations );
+int	ga_evolution_threaded( population *pop, const int max_generations );
+
+int	ga_evolution_steady_state( population *pop, const int max_iterations );
+
+int	ga_evolution_archipelago(          const int num_pops, population **pops, const int max_generations );
+int	ga_evolution_archipelago_mpi(      const int num_pops, population **pops, const int max_generations );
+int	ga_evolution_archipelago_forked(   const int num_pops, population **pops, const int max_generations );
+int	ga_evolution_archipelago_threaded( const int num_pops, population **pops, const int max_generations );
+</pre>
+
+<p>The purposes and actions of the the above functions are discussed in some detail in the online tutorial.
+
+<p>The following two functions should be considered being deprecated and will be removed in a future version of GAUL:
+
+<pre>
+int	ga_evolution_mp( population *pop, const int max_generations );
+int	ga_evolution_archipelago_mp( const int num_pops, population **pops, const int max_generations );
+</pre>
+
+<h3>MPI specific functions</h3>
+			
+<pre>
+void	 ga_attach_mpi_slave( population *pop );
+void	 ga_detach_mpi_slaves(void);
+</pre>
+
+<p>These functions are used only in MPI-based parallel code.  They are demonstrated in the distributed examples/struggle_mpi.c and examples/struggle5_mpi.c examples.
+
+<h3>Disk I/O functions</h3>
+
+<p>Functions are provided for reading and writing populations or entities to disk.
+These functions are not guaranteed to produce cross-platform data files.
+
+<p><tt>fname</tt> is the filename to use.
+
+<p>Note that some data can not be stored to disk at present.
+
+<pre>
+boolean ga_population_write(population *pop, char *fname);
+population *ga_population_read(char *fname);
+boolean ga_entity_write(population *pop, entity *entity, char *fname);
+entity *ga_entity_read(population *pop, char *fname);
+</pre>
+
+<h3>Built-in Selection operators</h3>
+
+<p>The selection operator to be used in GAUL is defined through a callback
+mechanism. Several common types of selection have been implemented, and it is
+easy to add your own.
+
+<p>In GAUL there are two classes of selection operator - those which select only
+one individual (i.e. for mutation and migration), and those which select two non-identical 
+individuals (i.e. for crossover). The advantage of having a specialist
+operator for selecting two individuals is that it may optionally include
+incest control - that is prevent pairs of closely related individuals from
+being selected.
+
+<p>These follow the <tt>GAselect_one</tt> or <tt>GAselect_two</tt> function prototypes, as
+appropriate.
+
+<p>These functions return <tt>TRUE</tt> when sufficient selections have been made with respect to the mutation or crossover parameter, as appropriate.  This indicates to the core routines that the evolutionary algorithm should proceed to the next step and no more selections will occur until the next generation.  The selected entities, may occasionally be NULL, indicating that no entity was successfully chosen.
+
+<pre>
+boolean ga_select_one_random(population *pop, entity **mother);
+boolean ga_select_two_random(population *pop, entity **mother, entity **father);
+</pre>
+
+<p>Random selection of entities, irrespective of their fitnesses/ranks.
+
+<pre>
+boolean ga_select_one_every(population *pop, entity **mother);
+boolean ga_select_two_every(population *pop, entity **mother, entity **father);
+</pre>
+
+<p>Every entity (or combination of entities) will be systematically selected.  The mutation and crossover ratios are ignored by these selection functions.
+
+<pre>
+boolean	ga_select_one_randomrank(population *pop, entity **mother);
+boolean ga_select_two_randomrank(population *pop, entity **mother, entity **father);
+</pre>
+
+<p>Systematically select each entity in turn along with a random, more fit, entity.  The select_one function doesn't return the systematically selected entity.
+
+<pre>
+boolean ga_select_one_bestof2(population *pop, entity **mother);
+boolean ga_select_two_bestof2(population *pop, entity **mother, entity **father);
+</pre>
+
+<p>Simple pairwise tournament selection.
+
+<pre>
+boolean ga_select_one_bestof3(population *pop, entity **mother);
+boolean ga_select_two_bestof3(population *pop, entity **mother, entity **father);
+</pre>
+
+<p>Simple three-way tournament selection.
+
+<pre>
+boolean	ga_select_one_roulette( population *pop, entity **mother );
+boolean	ga_select_two_roulette( population *pop, entity **mother, entity **father );
+boolean	ga_select_one_roulette_rebased( population *pop, entity **mother );
+boolean	ga_select_two_roulette_rebased( population *pop, entity **mother, entity **father );
+</pre>
+
+<p>Standard roulette wheel selection.
+
+<pre>
+boolean	ga_select_one_sus( population *pop, entity **mother );
+boolean	ga_select_two_sus( population *pop, entity **mother, entity **father );
+boolean	ga_select_one_sussq( population *pop, entity **mother );
+boolean	ga_select_two_sussq( population *pop, entity **mother, entity **father );
+</pre>
+
+<p>Universal stochastic sampling.
+
+<pre>
+boolean	ga_select_one_aggressive( population *pop, entity **mother );
+boolean	ga_select_two_aggressive( population *pop, entity **mother, entity **father );
+</pre>
+
+<p>Random selection, but heavily biased toward fit entities.
+
+<pre>
+boolean	ga_select_one_best( population *pop, entity **mother );
+boolean	ga_select_two_best( population *pop, entity **mother, entity **father );
+</pre>
+
+<p>Select the single best entity only.  The select_two function also selects a random entity.
+
+<pre>
+boolean ga_select_one_linearrank( population *pop, entity **mother );
+boolean ga_select_two_linearrank( population *pop, entity **mother, entity **father );
+</pre>
+
+<p>Select an entity based on linear probability distribution with respect to rank.
+
+<pre>
+boolean ga_select_one_roundrobin( population *pop, entity **mother );
+</pre>
+
+<p>Select entities using a round-robin algorithm.  Each entity is selected in turn, returning to the first once the last entity has been selected.
+
+<h3>Built-in Crossover operators</h3>
+
+<p>The crossover operator to be used in GAUL is defined through a callback
+mechanism. Several common types of crossover have been implemented, and it is
+easy to add your own. Crossover operators are specific to particular
+chromosome types.
+
+<p>These follow the <tt>GAcrossover</tt> function prototype.
+
+<p>Crossover operators take two parent entities and mixes their chromosomes to
+create two offspring entities.
+
+<p>
+<table width=100%>
+	<tr><td>Operator</td>                   <td>Action</td></tr>
+	<tr><td><tt>..._singlepoints</tt></td><td>       Single-point crossover</td></tr>
+	<tr><td><tt>..._doublepoints</tt></td><td>       Two-point crossover</td></tr>
+	<tr><td><tt>..._mean</tt></td><td>               Allele averaging</td></tr>
+	<tr><td><tt>..._mixing</tt></td><td>             Random reassignment of whole chromosomes</td></tr>
+	<tr><td><tt>..._allele_mixing</tt></td><td>      Random reassignment of individual alleles (uniform selection)</td></tr>
+</table>
+ 
+<pre>
+void	ga_crossover_integer_singlepoints(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_integer_doublepoints(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_integer_mean(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_integer_mixing(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_integer_allele_mixing( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_boolean_singlepoints(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_boolean_doublepoints(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_boolean_mixing(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_boolean_allele_mixing( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_char_singlepoints( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_char_doublepoints( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_char_mixing(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_char_allele_mixing( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_double_singlepoints( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_double_doublepoints( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_double_mean(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_double_mixing(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_double_allele_mixing( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+void	ga_crossover_bitstring_singlepoints(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_bitstring_doublepoints(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_bitstring_mixing(population *pop, entity *father, entity *mother, entity *son, entity *daughter);
+void	ga_crossover_bitstring_allele_mixing( population *pop, entity *father, entity *mother, entity *son, entity *daughter );
+</pre>
+
+<h3>Built-in Mutation operators</h3>
+
+<p>The mutation operator to be used in GAUL is defined through a callback
+mechanism. Several common types of mutation have been implemented, and it is
+easy to add your own. Mutation operators are specific to particular chromosome
+types.
+
+<p>These follow the GAmutate function prototype.
+
+<p>Mutation operators perturb an entities chromosomes randomly to create a new
+entity.
+
+<p>
+<table width=100%>
+	<tr><td>Operator</td>                   <td>Action</td></tr>
+	<tr><td><tt>..._singlepoint_drift</tt></td>       <td>Single allele tweak mutation</td></tr>
+	<tr><td><tt>..._singlepoint_randomize</tt></td>   <td>Single allele reassignment mutation</td></tr>
+	<tr><td><tt>..._multipoint</tt></td>              <td>Allele reassignment mutation at multiple sites (currently 20% of alleles)</td></tr>
+	<tr><td><tt>..._allpoint</tt></td>               <td>Allele tweak mutation at all alleles</td></tr>
+</table>
+
+<p>These functions, and any user-defined replacements, should return <tt>FALSE</tt> on failure or <tt>TRUE</tt> otherwise.  If they do fail, GAUL will handle this gracefully.  In reality, most of these function never fail.
+
+<pre>
+void	ga_mutate_integer_singlepoint_drift(population *pop, entity *father, entity *son);
+void	ga_mutate_integer_singlepoint_randomize(population *pop, entity *father, entity *son);
+void	ga_mutate_integer_multipoint(population *pop, entity *father, entity *son);
+void	ga_mutate_integer_allpoint(population *pop, entity *father, entity *son);
+void	ga_mutate_boolean_singlepoint(population *pop, entity *father, entity *son);
+void	ga_mutate_boolean_multipoint(population *pop, entity *father, entity *son);
+void	ga_mutate_char_singlepoint_drift(population *pop, entity *father, entity *son);
+void	ga_mutate_char_singlepoint_randomize(population *pop, entity *father, entity *son);
+void	ga_mutate_char_allpoint(population *pop, entity *father, entity *son);
+void	ga_mutate_char_multipoint(population *pop, entity *father, entity *son);
+void	ga_mutate_printable_singlepoint_drift(population *pop, entity *father, entity *son);
+void	ga_mutate_printable_singlepoint_randomize(population *pop, entity *father, entity *son);
+void	ga_mutate_printable_allpoint(population *pop, entity *father, entity *son);
+void	ga_mutate_printable_multipoint(population *pop, entity *father, entity *son);
+void	ga_mutate_bitstring_singlepoint(population *pop, entity *father, entity *son);
+void	ga_mutate_bitstring_multipoint(population *pop, entity *father, entity *son);
+void	ga_mutate_double_singlepoint_drift( population *pop, entity *father, entity *son );
+void	ga_mutate_double_singlepoint_randomize( population *pop, entity *father, entity *son );
+void	ga_mutate_double_multipoint(population *pop, entity *father, entity *son);
+void	ga_mutate_double_allpoint(population *pop, entity *father, entity *son);
+</pre>
+
+<h3>Built-in Genesis operators</h3>
+
+<p>The genesis (or seed) operator to be used in GAUL is defined through a callback
+mechanism.  These operators are used to initialize the actual contents of chromosomes.
+Several common types of genesis have been implemented, and it is
+easy to add your own.  Genesis operators are specific to particular chromosome
+types.
+
+<p>These follow the <tt>GAseed</tt> function prototype.
+
+<p>
+<table width=100%>
+	<tr><td>Operator</td>                   <td>Action</td></tr>
+	<tr><td><tt>..._random</tt></td>                 <td>Random assignment</td></tr>
+	<tr><td><tt>..._zero</tt></td>                   <td>Assign zero (0 or 0.0, as appropriate)</td></tr>
+	<tr><td><tt>..._random_unit_gaussian</tt></td>   <td>Random assignment from a normal distribution.  Average of 0.0, Standard deviation of 1.0.</td></tr>
+</table>
+
+<pre>
+boolean	ga_seed_boolean_random(              population *pop, entity *adam );
+boolean ga_seed_boolean_zero(                population *pop, entity *adam );
+boolean	ga_seed_integer_random(              population *pop, entity *adam );
+boolean	ga_seed_integer_zero(                population *pop, entity *adam );
+boolean	ga_seed_double_random(               population *pop, entity *adam );
+boolean	ga_seed_double_zero(                 population *pop, entity *adam );
+boolean	ga_seed_double_random_unit_gaussian( population *pop, entity *adam );
+boolean	ga_seed_char_random(                 population *pop, entity *adam );
+boolean	ga_seed_printable_random(            population *pop, entity *adam );
+boolean	ga_seed_bitstring_random(            population *pop, entity *adam );
+boolean	ga_seed_bitstring_zero(              population *pop, entity *adam );
+</pre>
+
+<h3>Built-in Replacement operators</h3>
+
+<p>Replacement operators are only meaningful for steady-state (i.e. non-generational) evolutionary algorithms.
+
+<p>These follow the <tt>GAreplace</tt> function prototype.
+
+<pre>
+void	ga_replace_by_fitness(population *pop, entity *child);
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<h3>Built-in Ranking operators</h3>
+
+<p>Ranking operators are used for assigning relative rank between two entities (e.g. for sorting population).
+
+<p>These follow the <tt>GArank</tt> function prototype.
+
+<pre>
+int	ga_replace_by_fitness(population *popalpha, entity *alpha, population *popbeta, entity *beta);
+</pre>
+
+<p>Deliberately undocumented at present.
+
+<h3>Genesis functions</h3>
+
+<p>The following functions are the recommended means for creating and
+initializing new population structures.  They are fully discussed in the
+online GAUL tutorial.  They primarily specify the set of callback functions to be used with a newly created and fully set-up population.
+
+<p>A separate function exists for each of the built-in chromosome types.
+
+<pre>
+population *ga_genesis_integer( const int           population_size,
+                        const int               num_chromo,
+                        const int               len_chromo,
+                        GAgeneration_hook       generation_hook,
+                        GAiteration_hook        iteration_hook,
+                        GAdata_destructor       data_destructor,
+                        GAdata_ref_incrementor  data_ref_incrementor,
+                        GAevaluate              evaluate,
+                        GAseed                  seed,
+                        GAadapt                 adapt,
+                        GAselect_one            select_one,
+                        GAselect_two            select_two,
+                        GAmutate                mutate,
+                        GAcrossover             crossover,
+                        GAreplace               replace,
+			vpointer		userdata );
+population *ga_genesis_boolean( const int               population_size,
+                        const int               num_chromo,
+                        const int               len_chromo,
+                        GAgeneration_hook       generation_hook,
+                        GAiteration_hook        iteration_hook,
+                        GAdata_destructor       data_destructor,
+                        GAdata_ref_incrementor  data_ref_incrementor,
+                        GAevaluate              evaluate,
+                        GAseed                  seed,
+                        GAadapt                 adapt,
+                        GAselect_one            select_one,
+                        GAselect_two            select_two,
+                        GAmutate                mutate,
+                        GAcrossover             crossover,
+                        GAreplace               replace,
+			vpointer		userdata );
+population *ga_genesis_char( counts int               population_size,
+                        const int               num_chromo,
+                        const int               len_chromo,
+                        GAgeneration_hook       generation_hook,
+                        GAiteration_hook        iteration_hook,
+                        GAdata_destructor       data_destructor,
+                        GAdata_ref_incrementor  data_ref_incrementor,
+                        GAevaluate              evaluate,
+                        GAseed                  seed,
+                        GAadapt                 adapt,
+                        GAselect_one            select_one,
+                        GAselect_two            select_two,
+                        GAmutate                mutate,
+                        GAcrossover             crossover,
+                        GAreplace               replace,
+			vpointer		userdata );
+population *ga_genesis_double( const int               population_size,
+                        const int               num_chromo,
+                        const int               len_chromo,
+                        GAgeneration_hook       generation_hook,
+                        GAiteration_hook        iteration_hook,
+                        GAdata_destructor       data_destructor,
+                        GAdata_ref_incrementor  data_ref_incrementor,
+                        GAevaluate              evaluate,
+                        GAseed                  seed,
+                        GAadapt                 adapt,
+                        GAselect_one            select_one,
+                        GAselect_two            select_two,
+                        GAmutate                mutate,
+                        GAcrossover             crossover,
+                        GAreplace               replace,
+			vpointer		userdata );
+population *ga_genesis_bitstring( const int               population_size,
+                        const int               num_chromo,
+                        const int               len_chromo,
+                        GAgeneration_hook       generation_hook,
+                        GAiteration_hook        iteration_hook,
+                        GAdata_destructor       data_destructor,
+                        GAdata_ref_incrementor  data_ref_incrementor,
+                        GAevaluate              evaluate,
+                        GAseed                  seed,
+                        GAadapt                 adapt,
+                        GAselect_one            select_one,
+                        GAselect_two            select_two,
+                        GAmutate                mutate,
+                        GAcrossover             crossover,
+                        GAreplace               replace,
+			vpointer		userdata );
+</pre>
+
+<h3>Miscellaneous support functions</h3>
+
+<pre>
+void    ga_diagnostics( void ); 
+</pre>
+
+<p>Writes various diagnostic data to the console.
+
+<pre>
+int	ga_get_major_version( void );
+int	ga_get_minor_version( void );
+int	ga_get_patch_version( void );
+</pre>
+
+<p>Return version information.
+
+<p>If the GAUL version is 0.1846-8, for example, then these functions will return 0, 1846 and 8, respectively.
+
+<h3>Statistics functions</h3>
+
+<p>Some simple statistics functions are available.  They may be safely called at
+any time.  But the results are likely to only be meaningful during or after evolution.
+
+<p>These functions should return <tt>TRUE</tt> on success and <tt>FALSE</tt> should they ever fail.
+
+<pre>
+boolean ga_fitness_mean( population *pop, double *average );
+boolean ga_fitness_mean_stddev( population *pop,
+                             double *average, double *stddev );
+boolean ga_fitness_stats( population *pop,
+                          double *max, double *min,
+                          double *mean, double *median,
+                          double *variance, double *stddev,
+                          double *kurtosis, double *skew );
+</pre>
+
+<p>These functions may be used on-line or off-line (i.e. during and after evolution).
+
+<h3>Chromosome definition functions</h3>
+
+<p>The core GAUL code is datatype agnostic, this means any representation for the
+chromosomes may be defined and used. The user is encouraged to use whichever chromosome
+type would be most appropriate for the search or optimization task being
+considered. For convenience, code for several of the more common chromosome
+types is built into GAUL:
+
+<ul>
+    <li> integer array
+    <li> double-precision floating-point array
+    <li> character array
+    <li> boolean array
+    <li> bitstring (binary code or Gray code)
+</ul>
+
+<p>If none of the above chromosome types are appropriate, it is a simple matter
+to create a new datatype for use with GAUL. The calling program just needs to
+define a handful a functions which are then used as callback functions.
+Instructions for such user-defined chromosomes are provided.
+
+<p>It is even possible to mix chromosome types, for example you could use an
+integer-valued array chromosome and a Gray coded bitstring chromosome
+simultaneously. Although this would require slightly more creativity to be displayed by the
+programmer.  This process is demonstrated in the distributed examples/mixed.c example.
+
+<p>GAUL is extensively, and routinely, used with more exotic chromosome
+types including trees and molecular graphs.
+
+<h3>Bitstring functions</h3>
+
+<p>Some low-level bitstring handling functions are made available through the public API for convenience.
+
+<pre>
+byte *ga_bit_new( int length );
+void ga_bit_free( byte *bstr );
+void ga_bit_set( byte *bstr, int n );
+void ga_bit_clear( byte *bstr, int n );
+void ga_bit_invert( byte *bstr, int n );
+boolean ga_bit_get( byte *bstr, int n );
+void ga_bit_randomize( byte *bstr, int n );
+void ga_bit_copy( byte *dest, byte *src, int ndest, int nsrc, int length );
+size_t ga_bit_sizeof( int length );
+byte *ga_bit_clone( byte *dest, byte *src, int length );
+
+/* Integer conversion. */
+unsigned int ga_bit_decode_binary_uint( byte *bstr, int n, int length );
+void ga_bit_encode_binary_uint( byte *bstr, int n, int length, unsigned int value );
+int ga_bit_decode_binary_int( byte *bstr, int n, int length );
+void ga_bit_encode_binary_int( byte *bstr, int n, int length, int value );
+int ga_bit_decode_gray_int( byte *bstr, int n, int length );
+unsigned int ga_bit_decode_gray_uint( byte *bstr, int n, int length );
+void ga_bit_encode_gray_uint( byte *bstr, int n, int length, unsigned int value);
+
+/* Real conversion. */
+double ga_bit_decode_binary_real( byte *bstr, int n, int mantissa, int exponent);
+void ga_bit_encode_binary_real( byte *bstr, int n, int mantissa, int exponent, double value );
+double ga_bit_decode_gray_real( byte *bstr, int n, int mantissa, int exponent );
+void ga_bit_encode_grayy_real( byte *bstr, int n, int mantissa, int exponent, double value );
+
+/* Test. */
+boolean ga_bit_test( void );
+</pre>
+
+<p>todo
+
+<h3>Genome comparison functions</h3>
+
+<p>This is a set of functions for computing the similarity between two entities' genomes.
+
+<pre>
+double ga_compare_char_hamming(        population *pop, entity *alpha, entity *beta );
+double ga_compare_char_euclidean(      population *pop, entity *alpha, entity *beta );
+double ga_compare_integer_hamming(     population *pop, entity *alpha, entity *beta );
+double ga_compare_integer_euclidean(   population *pop, entity *alpha, entity *beta );
+double ga_compare_double_hamming(      population *pop, entity *alpha, entity *beta );
+double ga_compare_double_euclidean(    population *pop, entity *alpha, entity *beta );
+double ga_compare_boolean_hamming(     population *pop, entity *alpha, entity *beta );
+double ga_compare_boolean_euclidean(   population *pop, entity *alpha, entity *beta );
+double ga_compare_bitstring_hamming(   population *pop, entity *alpha, entity *beta );
+double ga_compare_bitstring_euclidean( population *pop, entity *alpha, entity *beta );
+</pre>
+
+<p>The genome comparison functions either return the Hamming distance or the Euclidean distance between all chromosomes in the two entities.
+
+<p>These functions are typically used as comparison operator callbacks in the Deterministic Crowding algorithm, but my be used seperately in any code.
+
+<h2>Alternative search functions</h2>
+
+<p>A number of non-evolutionary search and optimization functions are provided.  These are intended for use as local optimization methods or for comparison against the genetic algorithms.  However, they may also be used in their own right.
+
+<p>All of the alternative functions are used in a similar way.  A function named <tt>ga_population_set_XXX_parameters()</tt> is used to define appropriate run-time options, where XXX is the name of the optimization method.  A separate function, generally similar to the <tt>ga_evolution()</tt> function, is used to perform the actual optimization.
+
+<h3>Tabu search</h3>
+
+<p>The Tabu search has been proven effective at solving many search and optimization problems. It is a heuristic method which guides a local search procedure to explore the search space in such a way that entrapment in local minima is avoided. Unlike simple hill-climbing search techniques, but like simulated annealling, the Tabu search often moves from a current solution to one which is worse, with the expectation that this move will eventually lead to an even better solution.
+
+<pre>
+void ga_population_set_tabu_parameters( population *pop,
+	               GAtabu_accept tabu_accept, const int list_length, const int search_count);
+int ga_tabu( population *pop, entity *initial, const int max_iterations );
+</pre>
+
+<p><tt>ga_tabu()</tt> is called to perform a tabu search.  The <tt>initial</tt> entity parameter may be <tt>NULL</tt>, in which case the standard seed operator is used to create a starting solution for the search.  <tt>max_iterations</tt> specifies the maximum number of iterations to perform.  The actual number of iterations performed is returned.
+
+<p>As with the usual evolutionary optimization functions, the optimization may be terminated earlier.  One difference is that the <tt>GAiteration_hook</tt> callback defined in the population structure is used instead of <tt>GAgeneration_hook</tt>.
+
+<p>Before <tt>ga_tabu()</tt> may be used, the population must be initialized and <tt>ga_population_set_tabu_parameters()</tt> must be called to specify the tabu search parameters.
+
+<p>The <tt>list_length</tt> parameter specifies to maximum length of the tabu list.  <tt>search_count</tt> is the number of search moves to make at each step, or iteration.  The best choice of values for these two parameters are highly problem dependent.
+
+<p><tt>tabu_accept</tt> is a callback function that is used to perform the necessary tabu and aspiration checks.  Five built-in functions are provided for use with the built-in chromosome types.
+
+<pre>
+boolean ga_tabu_check_integer(   population *pop, entity *putative, entity *tabu );
+boolean ga_tabu_check_boolean(   population *pop, entity *putative, entity *tabu );
+boolean ga_tabu_check_char(      population *pop, entity *putative, entity *tabu );
+boolean ga_tabu_check_double(    population *pop, entity *putative, entity *tabu );
+boolean ga_tabu_check_bitstring( population *pop, entity *putative, entity *tabu );
+</pre>
+
+<p>The search moves are made using any of the standard mutation operators.
+
+<h3>Simplex search</h3>
+
+<p>The simplex algorithm is commonly applied to solve linear programming problems. It is relatively effective on noisy fitness landscapes but often does not sample the entire search space.
+
+A canonical simplex search algorithm places N+1 points randomly in the N dimensional search space. The worst point is reflected across the plane defined by the other N points. Then the points are contracted or expanded according to the characteristics of the search space that they cover. These two steps are repeated until some convergence criteria are satisfied. In two or three dimensional space, the set of points resemble an amoeba creeping around to the global maximum.
+
+<pre>
+void ga_population_set_simplex_parameters( population *pop,
+                     const int dimensions, const double step,
+                     const GAto_double to_double, const GAfrom_double from_double );
+int ga_simplex( population *pop, entity *initial, const int max_iterations );
+int ga_simplex_double( population *pop, entity *initial, const int max_iterations );
+</pre>
+
+<p>todo
+
+<h3>Deterministic crowding</h3>
+
+<p>Functions are included for performing an optimization using the method known as deterministic crowding.
+This approach is useful when you desire a significant amount of diversity in the resulting population.  This was originally conceived as as a niching algorithm rather than a true optimization algorithm.
+
+<p>In this implementation, children potentially replace their parents as soon as they are created rather than replacing them at the end of the generation.  Thus, this differs slightly from the canonical deterministic crowding algorithm.
+
+<pre>
+void ga_population_set_deterministiccrowding_parameters( population *pop, const GAcompare compare );
+int ga_deterministiccrowding( population *pop, const int max_generations );
+</pre>
+
+<p>The deterministic crowding function can almost be used as a drop in replacement for the standard GA function, except that <tt>ga_population_set_deterministiccrowding_parameters()</tt> must be called to specify a chromosome comparison function.  This comparison function is specific to the chromosome datatype and it defines the required distance metric.  The built-in genome comparison functions may be used here, or the programmer might wish to create task specific comparison functions.
+
+<h3>Differential Evolution</h3>
+
+<p>Functions are included for performing an optimization using the Differential Evolution algorithm.
+
+<p>Differential Evolution (DE) is a population-based, stochastic function optimiser using vector differences for perturbing the population.  DE often exhibits a compelling performance advantage over conventional genetic algorithms.  GAUL's implementation of DE thus offers a powerful method for optimising vectors.  The crucial idea behind DE is the scheme for generating trial parameter vectors that adds the weighted difference between vectors in the population to a selected vector.
+
+<pre>
+void ga_population_set_differentialevolution_parameters( population *pop,
+                                                         const ga_de_strategy_type strategy,
+                                                         const ga_de_crossover_type crossover,
+                                                         const int num_perturbed,
+                                                         const double weighting_min,
+                                                         const double weighting_max,
+                                                         const double crossover_factor );
+int ga_differentialevolution( population *pop, const int max_generations );
+</pre>
+
+<p>The deterministic crowding function can almost be used as a drop in replacement for the standard GA function, except that <tt>ga_population_set_differentialevolution_parameters()</tt> must be called prior to <tt>ga_differentialevolution()</tt>.
+
+<p><tt>strategy</tt> can take the values <tt>GA_DE_STRATEGY_BEST</tt>, <tt>GA_DE_STRATEGY_RAND</tt> or <tt>GA_DE_STRATEGY_RANDTOBEST</tt> and this determines the selection strategy.
+
+<p><tt>crossover</tt> can take the values <tt>GA_DE_CROSSOVER_BINOMIAL</tt> or <tt>GA_DE_CROSSOVER_EXPONENTIAL</tt> and this determines the crossover strategy.
+
+<p><tt>num_perturbed</tt> specifies the number of selected solutions for each perturbation.  This may take values of 1, 2 or 3 for <tt>GA_DE_STRATEGY_BEST</tt> or <tt>GA_DE_STRATEGY_RAND</tt> and 1 or 2 for <tt>GA_DE_STRATEGY_RANDTOBEST</tt>.
+
+<p><tt>weighting_min</tt> and <tt>weighting_max</tt> correspond to the F parameter (and also the K parameter in some cases) in the original published description of the algorithm.  If these share the same value, they relate to the weighting of perturbations exactly as originally described.  If these have different values, they impose bounds for a random selection of weighting factor at the beginning of each generation.
+
+<p><tt>crossover_factor</tt> corresponds to the CR parameter in the original published description of the algorithm.  This relates to the proportion of alleles that are perturbed in a selected solution.
+
+<h3>Simulated annealling</h3>
+
+<p>Simulated annealling techniques have been applied to a wide variety of optimization problems, including the clustering problem and the job scheduling problem.
+
+<p>Annealing techniques simulate the physical annealling process in which metals are heated and then slowly cooled, with the result being a solid having a state of lower energy than the original solid. In an annealling process a solid is heated until liquefied, and slowly cooled sifficiently slowly that the system is, at any time, approximately at thermodynamic equilibrium. As cooling proceeds, the system becomes more ordered and approaches a state of lowest energy. Systems that are slowly cooled (annealled) may reach a global minimum in energy, as opposed to becoming solidified in a local minima because the process of slow cooling allows the constituent molecules time to reorder themselves in states of progressively less energy.
+
+<p>The simulated annealling routines in GAUL are sufficiently flexible to enable Monte Carlo simulations to be performed too.
+
+<pre>
+boolean ga_sa_boltzmann_acceptance(population *pop, entity *original, entity *new);
+boolean ga_sa_linear_acceptance(population *pop, entity *original, entity *new);
+void ga_population_set_sa_temperature(population *pop, const double temp);
+double ga_population_get_sa_temperature(population *pop);
+void ga_population_set_sa_parameters(population *pop,
+                 GAsa_accept sa_accept,
+		 const double initial_temp, const double final_temp, const double temp_step, const int temp_freq);
+int ga_sa(population *pop, entity *initial, const int max_iterations);
+</pre>
+
+<p>todo
+
+<h3>Hill climbing</h3>
+
+<p>A couple of hill climbing heuristic algorithms are provided in GAUL for local searches and for comparison to GAs.  The basic concept of all hill climbing algorithms is very simple. Individual alleles are modified in such a way that the overall fitness is maximized. Hill climbing algorithms are typically very efficient at locating local maxima although this leads to their major deficiency; they tend to get stuck at local maxima rather than continuing to the proper global maximum.
+
+<pre>
+void ga_population_set_hillclimbing_parameters(population *pop, GAmutate_allele mutate_allele);
+int ga_next_ascent_hillclimbing(population *pop, entity *initial, const int max_iterations);
+int ga_random_ascent_hillclimbing(population *pop, entity *initial, const int max_iterations);
+</pre>
+
+<p>todo
+
+<h3>Gradient methods</h3>
+
+<p>Routines for local search and optimization using non-evolutionary methods.  These methods are all first-order, that is, they require first derivatives.
+
+<p>Note that, these algorithms require that chromosomes may be reversibly mapped to arrays of double-precision floating-point array chromosomes.  If this is not possible, ten these functions can not be used.
+
+<p>It is often important to think carefully about the appropriate convergence criteria.
+
+<pre>
+void ga_population_set_gradient_parameters( population *pop,
+                   const GAto_double to_double, const GAfrom_double from_double, const GAgradient gradient,
+                   const int dimensions, const double step_size);
+int ga_steepestascent( population *pop, entity *initial, const int max_iterations );
+int ga_steepestascent_double( population *pop, entity *initial, const int max_iterations );
+</pre>
+
+<p><tt>ga_steepestascent()</tt> performs optimization on the passed entity by using a steepest ascents method (i.e., steepest descent, except maximizing the fitness function).  The passed entity will have its data overwritten.  The remainder of the population will be let untouched.  Note that it is safe to pass a <tt>NULL</tt> initial structure, in which case a random starting structure will be generated, however the final solution will not be available to the caller in any obvious way.
+
+<p><tt>ga_steepestascent_double()</tt> is a version that does not require definition of the <tt>to_double</tt>, <tt>from_double</tt> and <tt>dimensions</tt> parameters.  These may be specified as <tt>NULL</tt>, <tt>NULL</tt> and <tt>0</tt> to the <tt>ga_population_set_gradient_parameters()</tt> function.  It is, however, restricted to populations with a single double-array chromosome.
+
+<p>todo
+
+<h3>Systematic search</h3>
+
+<p>A function that implements a systematic search procedure.
+
+<pre>
+void ga_population_set_search_parameters( population *pop, GAscan_chromosome scan_chromosome );
+int ga_search( population *pop, entity *initial );
+</pre>
+
+<p>todo
+
+<h3>Random search</h3>
+
+<p>Unlike the other search methods, this does not require prior definition of any parameters.
+
+<pre>
+int ga_random_search( population *pop, entity *initial, const int max_iterations );
+</pre>
+
+<p>This performs a random search procedure by repeatedly calling the seed and evaluation operators.  The passed entity will have its data overwritten.  The remainder of the population will be let untouched.  Note that it is safe to pass a <tt>NULL</tt> initial structure, in which case a random starting structure will be generated, however the final solution will not be available to the caller in any obvious way.
+
+<p>It is strongly recommended that this function is only used for benchmarking purposes!
+
+<h2>Environment variables</h2>
+
+<p>GAUL respects the values of a number of environment variables.  These are listed and described below, but not that the actual names of the variables may been altered at compile time.
+
+<p>
+<table width=100%>
+	<tr><td><tt>GAUL_NUM_PROCESSES</tt></td><td>The maximum number of processes to spawn at one time in <tt>ga_evolution_forked()</tt>.</td></tr>
+	<tr><td><tt>GAUL_NUM_THREADS</tt></td><td>The maximum number of threads to use at any one time.</td></tr>
+</table>
+
+<h2>S-Lang scripting</h2>
+
+<p>To do.  For now see the <a href="http://gaul.sourceforge.net/tutorial/S-Lang.html">S-Lang tutorial</a> for GAUL.
+
+<h2>Perl Scripting</h2>
+
+<p>Perl wrapper for GAUL are in an experimental stage.  Interested readers are referred to the CVS archive for the current freely available code.
+
+<h2>Support functions</h2>
+
+<p>Several libraries of utility functions are distributed with the GAUL source
+code. These were written for rapid and easy development of portable C code.
+
+<p>Any of these functions may be used independently of GAUL. Many of them are routinely used in several projects,
+both licensed under the GPL and propriety. They are generally very
+simple to use. These sets of functions include:
+
+<p>
+<table width=100%>
+   <tr><td>linkedlist</td><td>Single-link and double-link list datastructures.</td></tr>
+   <tr><td>avltree</td><td>Adel'son-Velskii and Landis tree (or, height-balanced 1-tree) datastructure.</td></tr>
+   <tr><td>memory_util</td><td>Memory handling routines.</td></tr>
+   <tr><td>random_util</td><td>Stateful-pseudo-random number generation routines.</td></tr>
+   <tr><td>log_util</td><td>Multithread/Multiprocessor-safe logging routines routines.</td></tr>
+   <tr><td>table_util</td><td>Indexed data table routines.</td></tr>
+   <tr><td>timer_util</td><td>Simple timer routines.</td></tr>
+   <tr><td>compatibility</td><td>Compatibility functions.</td></tr>
+</table>
+
+<h3>List datastructure</h3>
+
+<p>Linked lists are very powerful, yet simple, container structures. Two versions
+are implemented.
+
+<ul>
+    <li> util/linkedlist.c
+    <li> util/gaul/linkedlist.h
+</ul>
+
+<p>Wrappers are also provided to mimic the glib list functions.  These can,
+generally, be used as a drop in replacement.
+
+<pre>
+typedef int     (*LLCompareFunc)(constvpointer data1, constvpointer data2);
+typedef boolean (*LLForeachFunc)(vpointer data, vpointer userdata);
+typedef void    (*LLDestructorFunc)(vpointer data);
+
+typedef struct DLList_t
+  {
+  struct DLList_t *next;        /* Next element. */
+  struct DLList_t *prev;        /* Prev element. */
+  vpointer data;                /* Data stored in this element. */
+  } DLList;
+
+typedef struct SLList_t
+  {
+  struct SLList_t *next;        /* Next element. */
+  vpointer data;                /* Data stored in this element. */
+  }
+
+void    linkedlist_init_openmp(void);
+SLList  *slink_new(void);
+void    slink_free_all(SLList *list);
+void    slink_free(SLList *list);
+SLList  *slink_append(SLList *list, vpointer data);
+SLList  *slink_prepend(SLList *list, vpointer data);
+SLList  *slink_insert_next(SLList *list, vpointer data);
+SLList  *slink_insert_index(SLList *list, vpointer data, int index);
+SLList  *slink_delete_data(SLList *list, vpointer data);
+SLList  *slink_delete_all_data(SLList *list, vpointer data);
+SLList  *slink_delete_link(SLList *list, SLList *link);
+SLList  *slink_clone(SLList *list);
+SLList  *slink_reverse(SLList *list);
+SLList  *slink_nth(SLList *list, const int index);
+vpointer        slink_nth_data(SLList *list, const int index);
+SLList  *slink_find(SLList *list, vpointer data);
+SLList  *slink_find_custom(SLList *list, vpointer data, LLCompareFunc func);
+int     slink_index_link(SLList *list, SLList *link);
+int     slink_index_data(SLList *list, vpointer data);
+SLList  *slink_last(SLList *list);
+int     slink_size(SLList *list);
+boolean slink_foreach(SLList *list, LLForeachFunc func, vpointer userdata);
+SLList  *slink_sort_merge (SLList *l1, SLList *l2, LLCompareFunc compare_func);
+SLList  *slink_sort(SLList *list, LLCompareFunc compare_func);
+DLList  *dlink_new(void);
+void    dlink_free_all(DLList *list);
+void    dlink_free(DLList *list);
+DLList  *dlink_append(DLList *list, vpointer data);
+DLList  *dlink_prepend(DLList *list, vpointer data);
+DLList  *dlink_insert_next(DLList *list, vpointer data);
+DLList  *dlink_insert_prev(DLList *list, vpointer data);
+DLList  *dlink_insert_index(DLList *list, vpointer data, int index);
+DLList  *dlink_delete_all_data(DLList *list, vpointer data);
+DLList  *dlink_delete_data(DLList *list, vpointer data);
+DLList  *dlink_delete_link(DLList *list, DLList *link);
+DLList  *dlink_clone(DLList *list);
+DLList  *dlink_reverse(DLList *list);
+DLList  *dlink_nth(DLList *list, const int index);
+DLList  *dlink_pth(DLList *list, const int index);
+vpointer        dlink_nth_data(DLList *list, const int index);
+vpointer        dlink_pth_data(DLList *list, const int index);
+DLList  *dlink_find(DLList *list, vpointer data);
+DLList  *dlink_find_custom(DLList *list, vpointer data, LLCompareFunc func);
+int     dlink_index_link(DLList *list, DLList *link);
+int     dlink_index_data(DLList *list, vpointer data);
+DLList  *dlink_last(DLList *list);
+DLList  *dlink_first(DLList *list);
+int     dlink_size(DLList *list);
+boolean dlink_foreach(DLList *list, LLForeachFunc func, vpointer userdata);
+boolean dlink_foreach_reverse(DLList *list, LLForeachFunc func, vpointer userdata);
+DLList  *dlink_sort_merge(DLList *l1, DLList *l2, LLCompareFunc compare_func);
+DLList  *dlink_sort(DLList *list, LLCompareFunc compare_func);
+void	linkedlist_diagnostics(void);
+</pre>
+
+<p>todo
+
+<h3>Tree datastructure</h3>
+
+<p>Tree structures are discussed in all good programming textbooks. This is an
+efficient implementation of the AVL tree structure.
+
+<ul>
+    <li> util/avltree.c
+    <li> util/gaul/avltree.h
+</ul>
+
+<pre>
+typedef AVLKey  (*AVLKeyFunc)(constvpointer data);
+typedef boolean (*AVLTraverseFunc)(AVLKey key, vpointer data, vpointer userdata);
+typedef boolean (*AVLMatchFunc)(constvpointer data, vpointer userdata);
+typedef int     (*AVLSearchFunc)(constvpointer data, vpointer userdata);
+typedef void    (*AVLDestructorFunc)(vpointer data);
+
+typedef struct AVLTree_t
+  {
+  struct AVLNode_t      *root;  /* opaque from hereonin. */
+  AVLKeyFunc            key_generate_func;
+  } AVLTree;
+
+void            avltree_init_openmp(void);
+AVLTree         *avltree_new(AVLKeyFunc key_generate_func);
+void            avltree_delete(AVLTree *tree);
+void            avltree_destroy(AVLTree *tree, AVLDestructorFunc free_func);
+boolean         avltree_insert(AVLTree *tree, vpointer data);
+vpointer        avltree_remove(AVLTree *tree, vpointer data);
+vpointer        avltree_remove_key(AVLTree *tree, AVLKey key);
+vpointer        avltree_lookup(AVLTree *tree, vpointer data);
+vpointer        avltree_lookup_lowest(AVLTree *tree);
+vpointer        avltree_lookup_highest(AVLTree *tree);
+vpointer        avltree_lookup_key(AVLTree *tree, AVLKey key);
+vpointer        avltree_ordered_search(AVLTree *tree, AVLSearchFunc search_func, vpointer userdata);
+vpointer        avltree_search(AVLTree *tree, AVLMatchFunc search_func, vpointer userdata);
+void            avltree_traverse(AVLTree *tree, AVLTraverseFunc traverse_func, vpointer userdata);
+int             avltree_height(AVLTree *tree);
+int             avltree_num_nodes(AVLTree *tree);
+void            avltree_diagnostics(void);
+</pre>
+
+<p>todo
+
+<h3>Memory handling</h3>
+
+<p>Flexible wrapper around the standard <tt>malloc()</tt> routines, along with an
+efficient memory pool implementation.
+
+<ul>
+    <li> util/memory_util.c
+    <li> util/memory_chunks.c
+    <li> util/gaul/memory_util.h
+    <li> util/gaul/memory_chunks.h
+</ul>
+
+<p>memory_util.c is intended as a general purpose, portable, memory tracking
+package that replaces the system calls <tt>realloc()</tt>, <tt>calloc()</tt>, <tt>realloc()</tt>, <tt>strdup()</tt> and <tt>free()</tt>
+with "safer" routines while keeping track of all the memory currently
+allocated. Additional facilities to enable array overflow checks are included.
+
+<p>The neat thing about all this is that it can sit over the top of any other
+memory debugging library which replaces the standard malloc routines,
+transparently.
+
+<p>Has an easy-to-use memory chunk implementation. Chunks are created/destroyed
+using <tt>mem_chunk_new()</tt> and <tt>mem_chunk_destroy()</tt>. Individual atoms are
+created/destroyed using <tt>mem_chunk_alloc()</tt> and <tt>mem_chunk_free()</tt>. This may be
+disabled by defining <tt>MEMORY_NO_CHUNKS</tt> at compile time.
+
+<p>Compile the code with <tt>MEMORY_ALLOC_SAFE</tt> for simple wrappers around the
+standard system allocation memory routines. Compile with <tt>MEMORY_ALLOC_DEBUG</tt>
+for fully auditing wrappers. Compile with neither for the standard routines
+only. When <tt>MEMORY_ALLOC_DEBUG</tt> is defined or <tt>MEMORY_NO_CHUNKS</tt> is not defined,
+my AVL tree implementation is required.
+
+<p>FAQ:<br>
+Q. Why not just use Purify?<br>
+A. I can't afford it.<br>
+Q. Well, ElectricFence is free - so why not use that?<br>
+A. It is horrendously slow, and a huge memory hog.<br>
+
+<pre>
+s_malloc(X)
+s_calloc(X,Y)
+s_realloc(X,Y)
+s_malloc_labelled(X, Y)
+s_strdup(X)
+s_strndup(X, Y)
+s_free(X)
+</pre>
+
+<pre>
+typedef struct MemChunk_t MemChunk;
+
+void            mem_chunk_init_openmp(void);
+
+MemChunk        *mem_chunk_new(size_t atom_size, unsigned int num_atoms);
+MemChunk        *mem_chunk_new_unfreeable(size_t atom_size, unsigned int num_atoms);
+boolean         mem_chunk_has_freeable_atoms(MemChunk *mem_chunk);
+boolean         mem_chunk_isempty(MemChunk *mem_chunk);
+void            mem_chunk_destroy(MemChunk *mem_chunk);
+void            *mem_chunk_alloc(MemChunk *mem_chunk);
+void            mem_chunk_free(MemChunk *mem_chunk, void *mem);
+void            mem_chunk_clean(MemChunk *mem_chunk);
+void            mem_chunk_reset(MemChunk *mem_chunk);
+boolean         mem_chunk_test(void);
+boolean         mem_chunk_check_all_bounds(MemChunk *mem_chunk);
+boolean         mem_chunk_check_bounds(MemChunk *mem_chunk, void *mem);
+void            mem_chunk_diagnostics(void);
+</pre>
+
+<p>todo
+
+<h3>Portable, Stateful, Pseudo-Random Number Generator</h3>
+
+<p>Routines for random number generation.
+
+<ul>
+    <li> util/random_util.c
+    <li> util/gaul/random_util.h
+</ul>
+
+<p>Portable routines for generating pseudo random numbers with the following
+features:
+
+<ul>
+    <li> Useful interface functions. (can specify ranges or specific distributions)
+    <li> System independent. (Generated numbers are reproducible across system types.)
+    <li> Enables saving and restoring state.
+    <li> S-Lang intrinsic function wrappers are provided (if not disabled at compile time, i.e. the <tt>HAVE_SLANG</tt> constant is set to 1).
+</ul>
+
+<p>The algorithm used is the Mitchell and Moore variant of the standard additive
+number generator. The required array of numbers is populated by a using single
+seed value by using a linear congruential pseudo random number generator.
+
+<p>This routines have been tested and provide the same output (within the limits of computational precision) on (at least) the following platforms:
+
+<ul>
+    <li> Intel x86 (Linux, OpenBSD, FreeBSD)
+    <li> AMD x86-64 (Linux, FreeBSD)
+    <li> IBM Power3 (AIX)
+    <li> IBM PowerPC (Linux)
+    <li> MIPS R4K, R10K, R12K (IRIX)
+    <li> Alpha EV56 (Tru64), EV7 (Linux)
+    <li> SPARC Ultra-4 (Solaris)
+</ul>
+
+<p>Usage:
+
+<ul>
+    <li> First call random_init().
+    <li> Call random_seed() to seed the PRNG (like srand()). Alternatively, call random_tseed() to use the system clock for the seed value.
+    <li> random_rand() is a rand() replacement, which is available for use but I would recommend the wrapper functions: random_int(), random_int_range() etc.
+    <li> random_get_state() and random_set_state() may be used to set, save, restore, and query the current state.
+</ul>
+
+<pre>
+typedef struct random_state_t
+  {
+  unsigned int  v[RANDOM_NUM_STATE_VALS];
+  int           j, k, x;
+  } random_state;
+
+unsigned int     random_rand(void);
+void    random_seed(const unsigned int seed);
+void    random_tseed(void);
+void    random_init(void);
+boolean random_isinit(void);
+char    *random_get_state_str(void);
+unsigned int random_get_state_str_len(void);
+void    random_set_state_str(char *state);
+random_state    random_get_state(void);
+void    random_set_state(random_state state);
+boolean random_boolean(void);
+boolean random_boolean_prob(const double prob);
+unsigned int    random_int(const unsigned int max);
+int     random_int_range(const int min, const int max);
+double  random_double_full(void);
+double  random_double(const double max);
+double  random_double_range(const double min, const double max);
+double  random_double_1(void);
+double  random_unit_uniform(void);
+double  random_gaussian(const double mean, const double stddev);
+double  random_unit_gaussian(void);
+void    random_diagnostics(void);
+boolean random_test(void);
+
+float   random_float_full(void);
+float   random_float(const float max);
+float   random_float_range(const float min, const float max);
+float   random_float_1(void);
+float   random_float_unit_uniform(void);
+float   random_float_gaussian(const float mean, const float stddev);
+float   random_float_unit_gaussian(void);
+float   random_float_cauchy(void);
+float   random_float_exponential(void);
+
+void    random_int_permutation(const int size, int *iarray, int *oarray);
+</pre>
+
+<p>todo
+
+<h3>Log functions</h3>
+
+<p>Flexible log handling.
+
+<ul>
+    <li> util/log_util.c
+    <li> util/gaul/log_util.h
+</ul>
+
+<pre>
+enum log_level_type {
+  LOG_NONE=0,   /* No messages - I recommend that this isn't used! */
+  LOG_FATAL,    /* Fatal errors only */
+  LOG_WARNING,  /* Warning messages */
+  LOG_QUIET=3,  /* Normal messages */
+  LOG_NORMAL=3, /*  - " - */
+  LOG_VERBOSE,  /* Verbose messages */
+  LOG_FIXME,    /* Development reminders */
+  LOG_DEBUG     /* Debugging messages */
+  };
+
+typedef void    (*log_func)(const enum log_level_type level,
+                          const char *func_name,
+                          const char *file_name,
+                          const int line_num,
+                          const char *message);
+
+void    log_init(enum log_level_type level, char *fname, log_func func,
+boolean date);
+void    log_set_level(enum log_level_type level);
+void    log_set_file(const char *fname);
+extern  enum log_level_type      log_get_level(void);
+void    log_output( const enum log_level_type level,
+                          const char *func_name,
+                          const char *file_name,
+                          const int line_num,
+                          const char *format, ... );
+void plog( const enum log_level_type level, const char *format, ... );
+</pre>
+
+<p>todo
+
+<h3>Indexed table datastructure</h3>
+
+<p>Simple indexed table implementation.
+
+<ul>
+    <li> util/table_util.c
+    <li> util/gaul/table_util.h
+</ul>
+
+<pre>
+typedef struct TableStruct_t
+  {
+  vpointer              *data;
+  unsigned int          *unused;
+  unsigned int          size;
+  unsigned int          numfree;
+  unsigned int          next;
+  } TableStruct;
+
+TableStruct     *table_new(void);
+void            table_destroy(TableStruct *table);
+boolean         table_set_size(TableStruct *table, unsigned int size);
+vpointer        table_remove_index(TableStruct *table, unsigned int index);
+unsigned int    table_remove_data(TableStruct *table, vpointer data);
+unsigned int    table_remove_data_all(TableStruct *table, vpointer data);
+vpointer        table_get_data(TableStruct *table, unsigned int index);
+vpointer        *table_get_data_all(TableStruct *table);
+unsigned int    *table_get_index_all(TableStruct *table);
+unsigned int    table_lookup_index(TableStruct *table, vpointer data);
+unsigned int    table_add(TableStruct *table, vpointer data);
+unsigned int    table_count_items(TableStruct *table);
+void            table_diagnostics(void);
+</pre>
+
+<p>todo
+
+<h3>Timer functions</h3>
+
+<p>Simple timer routines. S-Lang intrinsic function wrappers are provided.
+
+<ul>
+    <li> util/timer_util.c
+    <li> util/gaul/timer_util.h
+</ul>
+
+<pre>
+typedef struct
+  {
+  clock_t       begin_clock, save_clock;
+  time_t        begin_time, save_time;
+  } chrono_t;
+
+void    timer_diagnostics(void);
+void    timer_start(chrono_t *t);
+double  timer_check(chrono_t *t);
+</pre>
+
+<p>todo
+
+<h3>Compatibility Functions</h3>
+
+<p>Functions and wrappers used to simplify porting efforts. These may be used
+to overcome the problem of functions used being missing on certain target
+platforms.
+
+<ul>
+    <li> util/compatibility.c
+    <li> util/gaul/compatibility.h
+</ul>
+
+<pre>
+int ipow(int n, int e);
+double dpow(double n, int e);
+size_t strlen(const char *str);
+int strcmp(const char *str1, const char *str2);
+int strncmp(const char *str1, const char *str2, size_t len);
+char *strcpy(char *str1, const char *str2);
+char *strncpy(char *str1, const char *str2, size_t len);
+char *strpbrk(const char *s, const char *accept);
+char *strsep(char **str, const char *delim);
+int strcasecmp(const char *str0, const char *str1);
+int strncasecmp(const char *str0, const char *str1, size_t n);
+void usleep(unsigned long usec);
+void memcpy(char *dest, const char *src, size_t len);
+char *strdup(const char *str);
+char *strndup(const char *str, size_t n);
+void dief(const char *format, ...);
+size_t strspn(const char *string, const char *accept);
+size_t strcspn(const char *string, const char *reject);
+pid_t waitpid(pid_t pid, int *pstatus, int options);
+int min(int a, int b);
+int max(int a, int b);
+void sincos( double radians, double *s, double *c );
+int gethostname(char *name, size_t len);
+</pre>
+
+<p>Each of these functions are missing on at least one of the systems on which GAUL might be used.  Most of these functions might be considered standard and are replicated to faciliate porting of GAUL.  <tt>dief()</tt> is an unusual function that is used by GAUL in case of a fatal error.
+
+<h2>Example programs</h2>
+
+<p>Numerous example programs are distributed with GAUL.  Some of these are
+discussed or annotated in the online tutorial.
+
+<h3>"Pingpong" problem solver</h3>
+
+<p>Solves the table-tennis championship problem presented in: Dennis E. Shasha,
+"Dr Ecco's Omniheurist Corner: Foxy", Dr Dobb's Journal, 323:148-149 (2001).
+Uses a single 25 integer chromosome with custom mutation and crossover
+operators. This is a perturbation problem. Equivalent, non-GA, versions are
+also given for the purpose of demonstarating and comparing the built-in search
+heuristics.
+
+<ul>
+    <li> examples/pingpong.c - Version that uses a simple GA.
+    <li> examples/pingpong.h
+    <li> examples/pingpong_sa.c - Version that uses simulated annealling.
+    <li> examples/pingpong_tabu.c - Version that uses a Tabu-search.
+    <li> examples/pingpong_tabu2.c - Alternative version that uses a Tabu-search.
+</ul>
+
+<h3>Simple polynomial solver</h3>
+
+<p>Solves a function of the form <i>(0.75-A)+(0.95-B)^2+(0.23-C)^3+(0.71-D)^4 = 0</i>.  Equivalent, non-GA, versions are also given for the purpose of demonstrating and comparing the built-in search heuristics.
+
+<ul>
+    <li> examples/polynomial_ga.c - Version that uses a simple GA.
+    <li> examples/polynomial_sa.c - Version that uses simulated annealling.
+    <li> examples/polynomial_sd.c - Version that uses steepest ascents.
+    <li> examples/polynomial_simplex.c - Version that uses the simplex algorithm.
+    <li> examples/polynomial_de.c - Version that uses the differential evolution algorithm.
+</ul>
+
+<h3>"Wildfires" problem solver</h3>
+
+<p>Solves the fire-fighting problem presented in: Dennis E. Shasha, "Dr Ecco's
+Omniheurist Corner: Wildfires", Dr Dobb's Journal, 320:193-194 (2001). Uses a
+single boolean array chromosome.
+
+<ul>
+    <li> examples/wildfire.c - Version that uses a sequential-processing GA.
+    <li> examples/wildfire.h
+    <li> examples/wildfire_forked.c - Version that uses a parallel-processing GA.
+</ul>
+
+<h3>Goldberg's Examples</h3>
+
+<p>Ports of the examples from Goldberg's book. Note that I have never read
+Goldberg's book, so I can't check these. If someone wants to donate the book
+to me then I would be very grateful ;)
+
+<ul>
+    <li> examples/goldberg1.c - Example One, a 10-bit chromosome is used to solve f(x) = x10.
+    <li> examples/goldberg1.h
+    <li> examples/goldberg2.c - Example Two.
+    <li> examples/goldberg2.h
+</ul>
+
+<h3>Holland's Royal Road Problem</h3>
+
+<p>John Holland's Royal Road problem.
+
+<ul>
+    <li> examples/royalroad.c - Generational GA.
+    <li> examples/royalroad_ss.c - Steady State GA.
+    <li> examples/royalroad_mutation_prob_demo.c - Demonstration program (Generational GA).
+</ul>
+
+<h3>The Struggle for Existence</h3>
+
+<p>This is a set of examples, each adds or modifies procedures from the previous
+ones as explained in detail in the GAUL tutorial. These programs aim to
+generate the final sentence from Chapter 3 of Darwin's "The Origin of
+Species", entitled "Struggle for Existence". They all use a basic
+character-valued array chromosome.
+
+<ul>
+    <li> examples/struggle.c - A fairly fairly lean example, showing how little application code is needed when using GAUL.
+    <li> examples/struggle_ss.c - A steady state version of struggle.
+    <li> examples/struggle_mpi.c - Extends struggle to use multiple MPI processes.
+    <li> examples/struggle_forked.c - Extends struggle to use multiple forked processes.
+    <li> examples/struggle_threaded.c - Extends struggle to use multiple threads.
+    <li> examples/struggle2.c - Performs Darwinian, Lamarckian and Baldwinian evolution on separate populations.
+    <li> examples/struggle3.c - Applies only the Lamarckian version, but adds custom termination rules and some simple statistics.
+    <li> examples/struggle4.c - Uses low-level functions and demonstrates a custom crossover operator.
+    <li> examples/struggle5.c - Multiple population, "Island model" version.
+</ul>
+
+<h3>Neural Network Evolution</h3>
+
+<p>This example evolves a fixed topology neural network. Although the topology of
+the network is fixed, certain learning parameters are evolved along with the
+weights. The genome consists of a single chromosome which is simply a
+datastructure containing the neural network. This is an example where
+<tt>population-&gt;len_chromosome</tt> is ignored. Both crossover and mutation rates are
+comparatively low, whilst the Lamarckian adaptation affects all members of the
+population by performing standard back-propagation with momentum.
+
+<ul>
+    <li> examples/nnevolve.c
+    <li> util/nn_util.c
+    <li> util/gaul/nn_util.h
+</ul>
+
+<h3>Reading and Writing Population Data</h3>
+
+<p>An adaptation of the struggle example to illustrate the <tt>ga_population_read()</tt>
+and <tt>ga_population_write()</tt> functions for storing data in files.
+
+<ul>
+    <li> examples/saveload.c
+</ul>
+
+<p>This program may be used as follows. When a population is read back from disk,
+evolution will continue from the point at which it finished prior to being
+saved to disk.
+
+<pre>
+saveload [-n INTEGER] [-i FILENAME] -o FILENAME
+  -o FILENAME   Write a population file to FILENAME.
+  -i FILENAME   Read population from FILENAME, otherwise create a new
+population.
+  -n INTEGER    Number of generations to perform.  [default=10]
+</pre>
+
+<p><i>Last Updated 5th April, 2009 by Stewart Adcock.</i><!-- Unless he forgot to update this note! -->
+<p><A href="http://sourceforge.net"><IMG src="http://sourceforge.net/sflogo.php?group_id=25766" width="88" height="31" border="0" alt="SourceForge Logo"></A>
+</body>
+</html>

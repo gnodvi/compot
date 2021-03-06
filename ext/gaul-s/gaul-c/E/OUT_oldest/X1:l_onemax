@@ -1,0 +1,7 @@
+This is an implementation of the trivial "onemax" GA test using GAUL.
+The chromosome contains 64 bits.
+
+Random number seed is 12345678
+
+The final solution with seed = 12345678 had score 64
+1111111111111111111111111111111111111111111111111111111111111111

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Tclers wiki'>
+<meta name='author' content=''>
+<link rel='icon' href='/img/favicon.ico'>
+<title>Genetic Algorithms</title>
+
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+<link rel='stylesheet' href='/css/nikit.css' type='text/css'>
+<link rel='stylesheet' href='/css/sh_style.css' type='text/css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/css/theme.bootstrap_3.min.css' type='text/css'>
+<script src='//cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js'></script>
+</head>
+<body onload='sh_highlightDocument(); nikitUser();'>
+<nav class='navbar navbar-fixed-top navbar-inverse'>
+<div class='container'>
+<div class='navbar-header'>
+<button type='button' class='navbar-toggle' data-toggle='collapse' data-target='#myNavbar'>
+<span class='icon-bar'></span>
+<span class='icon-bar'></span>
+<span class='icon-bar'></span>
+</button>
+<ul class='nav navbar-nav'>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'>&nbsp;Tcler&#39;s Wiki<span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a href='/welcome'>Home</a></li>
+<li><a rel='nofollow' href='/recent'>Changes</a></li>
+<li><a rel='nofollow' href='/_random'>Random page</a></li>
+<li><a rel='nofollow' href='/_new'>New page</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class='collapse navbar-collapse' id='myNavbar'>
+<ul class='nav navbar-nav'>
+<li class='dropdown' id='li_idPageEdit' style='display:none'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_idPageEdit>Page</span><span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/_edit/Genetic+Algorithms?A=1'>Comment</a></li>
+<li><a rel='nofollow' hidden='true' href='/_edit/Genetic+Algorithms'>Edit</a></li>
+<li><a rel='nofollow' href='/_upload/Genetic+Algorithms'>Upload</a></li>
+<li><a rel='nofollow' href='/ref/Genetic+Algorithms'>References</a></li>
+<li><a rel='nofollow' href='/history/Genetic+Algorithms'>History</a></li>
+</ul>
+</li>
+<li class='dropdown' id='li_idPageNoEdit' style='display:none'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_idPageNoEdit>Page</span><span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/ref/Genetic+Algorithms'>References</a></li>
+<li><a rel='nofollow' href='/history/Genetic+Algorithms'>History</a></li>
+</ul>
+</li>
+<li><a href="/page/Tcl+Tutorial+Lesson+0">Tutorial</a></li>
+<li><a href="/page/Articles">Articles</a></li>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'>&nbsp;Help<span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/page/Help'>Page Markup</a></li>
+<li><a rel='nofollow' href='/page/How+do+Wiki+Categories+work'>Wiki Categories</a></li>
+<li><a rel='nofollow' href='/page/Contents'>Topics</a></li>
+<li><a rel='nofollow' target='_blank' href='https://chiselapp.com/user/stevel/repository/nikit/ticket'>Report Problems</a></li>
+<li><a rel='nofollow' href='/privacy'>Privacy</a></li>
+<li><a rel='nofollow' href='/license'>License</a></li>
+</ul>
+</li>
+</ul>
+<ul class='nav navbar-nav navbar-right'>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_SMenu>User</span><span class='caret'></span></a>
+<ul class='dropdown-menu' id='ul_SMenu'>
+</ul>
+</li>
+</ul>
+<form class='navbar-form navbar-right' method='post' action='/search' id='searchform'>
+<input name='Q' type='text' class='form-control' placeholder='Search...' />
+<input type="hidden" name="sites" value="wiki.tcl-lang.org" />
+</form>
+</div>
+</div>
+</nav>
+<div class='container'>
+<div class='row'>
+<div class='col-xs-12'>
+<h2>Genetic Algorithms</h2>
+</div>
+</div>
+<div class='row'>
+<div class='col-xs-12'>
+<p class='mkup_p'>tcl-gaul [<a rel='nofollow' class='mkup_a' href="https://sourceforge.net/projects/tcl-gaul/">L1 <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a>] is a Tcl extension that enables genetic algorithm processing in Tcl. It is using the GAUL [<a rel='nofollow' class='mkup_a' href='http://gaul.sourceforge.net/'>L2 <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a>] C library.</p><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/davidw'>davidw</a> - check this Tcl environment out: <a rel='nofollow' class='mkup_a' href='http://www.sprave.com/Ease/Ease.html'>http://www.sprave.com/Ease/Ease.html <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a> looks pretty interesting</p><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Arjen+Markus'>Arjen Markus</a> Following up on a discussion on the newsgroup, I translated a simple implementation of genetic algorithms from Fortran into Tcl (the original can be found at: [<a rel='nofollow' class='mkup_a' href='http://www.coyotegulch.com'>L3 <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a>] and was written by Scott Robert Ladd). </p><p class='mkup_p'>I make no claim to correctness (even though for the listed test case it does seem to work) or to performance (even though it does not turn out that bad, judging from my tests).</p><hr class='mkup_hr'><p class='mkup_p'>Drawbacks of this implementation:</p><UL class='mkup_UL'><li class='mkup_li'>The interface needs improvements (no way to examine the population)</li><li class='mkup_li'>The fitness function has to take care of scaling the input parameters from &quot;GA-typical&quot; data (32-bits integers) to real-world values (in the test case: floating-point numbers between 0 and 1)</li><li class='mkup_li'>A few items were left out (quadratic weighing for instance)</li><li class='mkup_li'>A few uncertainties with regard to the range of the generated integers (does the sign-bit get set? What if we have a 1s-complement machine?)</li></UL><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/TS'>TS</a> Converting the hardcoded constants using int2bits from <a class='mkup_a mkup_known' href='/page/Binary+representation+of+numbers'>Binary representation of numbers</a> on my Pentium4/WinXP/Tcl8.4a4 led to - at least for me - surprising results</p><pre class='mkup_pre'> % int2bits -2147483647 32 (should be all bits set)
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+ % int2bits 2147483000 32 (used for chromosome initialisation)
+ 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 0 1 1 1 1 0 0 0</pre><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Lars+H'>Lars H</a>: Which <b class='mkup_b'>int2bits</b> are you talking about here? There are oodles of them on that page, and several of them assume non-negative input (e.g. have main loops</p><pre class='mkup_pre'>  while {$i&gt;0} {</pre><p class='mkup_p'>). Also, it is in 32-bit 1's complement notation that -2147483647 has all bits set. Tcl bit operations work with 2's complement notation, in which it is always -1 that has all bits set.</p><hr class='mkup_hr'><div class='sh_sourceCode'><button class='copybtn btn pull-right' data-clipboard-target='#mkup_code_0' title='Click to copy code snippet to clipboard'><span class='glyphicon glyphicon-copy' aria-hidden='true'></span></button><pre id='mkup_code_0' class='sh_tcl sh_sourceCode'>  # genetic_alg.tcl --
+  #
+  #    Package for implementing simple genetic algorithms
+  #    (Tcl-only version)  
+  #
+  # Notes:
+  #    This package is shamelessly modelled after a publically
+  #    available program by Scott Robert Ladd (http://www.coyotegulch.com)
+  #
+  # Version information:
+  #    version 0.1: initial implementation, february 2002
+
+  package provide GeneticAlgorithms 0.1
+
+  namespace eval ::GeneticAlgorithms {
+     variable crossover  0.5
+     variable mutation   0.1
+     variable elitism    1
+     variable quadweight 0
+
+     variable best_guess {}
+     variable population {}
+     variable child_pop  {}
+
+     namespace export setting optimise optimiseStep
+
+  # limitvalue
+  #    Limit the argument between two bounds  
+  #
+  # Arguments:
+  #    value    New value (if not present, return current value)
+  #    minimum  Minimum bound
+  #    maximum  Maximum bound  
+  #
+  # Result:
+  #    Value or one of the bounds 
+  #
+  proc limitvalue {value minimum maximum} {
+     if { $value &lt; $minimum } {
+        return $minimum
+     }
+     if { $value &gt; $maximum } {
+        return $maximum
+     }
+     return $value
+  }
+
+  # setting
+  #    Set/get the settings
+  #
+  # Arguments:
+  #    name     Name of a variable to set or get
+  #    value    New value (if not present, return current value) 
+  #
+  # Result:
+  #    New value for given variable
+  #
+  # Side effects:
+  #    Sets given variable to new value
+  #
+  proc setting {name {value NONE} } {
+     variable $name
+     if { $value != &quot;NONE&quot; } {
+        switch -- $name {
+        &quot;crossover&quot;  { set $name [limitvalue $value 0.0 1.0] }
+        &quot;mutation&quot;   { set $name [limitvalue $value 0.0 1.0] }
+        &quot;elitism&quot;    { set $name [expr $value!=0] }
+        &quot;quadweight&quot; { set $name [expr $value!=0] }
+        default      { error &quot;setting: unknown parameter $name&quot; }
+        }
+        set $name
+     }
+  }
+
+  # optimise --
+  #    Optimise the given function using a genetic algorithm  
+  #
+  # Arguments:
+  #    pop_size   Size of the population
+  #    max_gen    Maximum number of generations
+  #    no_genes   Number of &quot;genes&quot; - degrees of freedoms
+  #    fitness    Function of the degrees of freedom, returns the fitness
+  #               of the solution (as a non-negative number!)
+  #
+  # Result:
+  #    Best guess of degrees of freedom, as a list
+  #
+  proc optimise { pop_size max_gen no_genes fitness } {
+     variable best_guess
+
+     optimiseInit $pop_size $no_genes
+
+     for { set i 0 } { $i &lt; $max_gen } { incr i } {
+        optimiseStep $pop_size $no_genes $fitness
+        puts &quot;$best_guess - [$fitness $best_guess]&quot;
+     }
+
+     return $best_guess
+  }
+
+  # optimiseInit --
+  #    Initialise the population
+  #
+  # Arguments:
+  #    pop_size   Size of the population
+  #    no_genes   Number of &quot;genes&quot; - degrees of freedoms 
+  #
+  # Result:
+  #    None
+  #
+  # Side effects:
+  #    Initialised list variable population
+  #
+  proc optimiseInit { pop_size no_genes } {
+     variable population
+     variable child_pop
+
+     set population {}
+
+     for { set i 0 } { $i &lt; $pop_size } { incr i } {
+        set member {}
+        for { set j 0 } { $j &lt; $no_genes } { incr j } {
+           lappend member [expr {int(2147483000.0*rand())}]
+        }
+        lappend population $member
+     }
+
+     set child_pop $population
+  }
+
+  # optimiseStep --
+  #    Perform a single step in the optimisation 
+  #
+  # Arguments:
+  #    pop_size   Size of the population
+  #    no_genes   Number of &quot;genes&quot; - degrees of freedoms
+  #    fitness    Function for determining the fitness
+  #
+  # Result:
+  #    None  
+  #
+  # Side effects:
+  #    New population, best_guess set
+  #
+  proc optimiseStep { pop_size no_genes fitness } {
+     variable population
+     variable child_pop
+     variable best_guess
+     variable mutation
+     variable crossover
+     variable quadweight
+     variable elitism
+
+     #
+     # Copy the child population
+     #
+     set population $child_pop
+
+     #
+     # Determine the fitness per member
+     #
+     set high_fit -1
+     set tot_fit   0.0
+     set pop_fit  {}
+     foreach member $population {
+        set fit [eval $fitness $member]
+        if { $high_fit &lt; $fit } {
+           set high_fit $fit
+           set best_guess $member
+        }
+
+        lappend pop_fit $fit
+        set tot_fit [expr {$tot_fit+$fit}]
+     }
+
+     #
+     # Scale the fitness (quadratic weight)
+     #
+     # PM
+
+     #
+     # Elitism: keep the best in any case
+     #
+     set child_pop {}
+     set no_child  $pop_size
+     if { $elitism } {
+        lappend child_pop $best_guess
+        incr no_child -1
+     }
+
+     #
+     # Breed the children
+     #
+     for { set i 0 } { $i &lt; $no_child } { incr i } {
+        set selection [expr {$tot_fit*rand()}]
+        set father     0
+        set father_fit [lindex $pop_fit $father]
+        while { $selection &gt; $father_fit } {
+           set selection [expr {$selection-$father_fit}]
+           incr father
+           set father_fit [lindex $pop_fit $father]
+        }
+
+        set selection [expr {$tot_fit*rand()}]
+        set mother     0
+        set mother_fit [lindex $pop_fit $mother]
+        while { $selection &gt; $mother_fit } {
+           set selection [expr {$selection-$mother_fit}]
+           incr mother
+           set mother_fit [lindex $pop_fit $mother]
+        }
+
+        set child [combineGenes [lindex $population $mother] \
+                                [lindex $population $father] ]
+        set child [mutateGenes $child]
+        lappend child_pop $child
+     }
+
+     #puts $population
+     #puts $pop_fit
+  }
+
+  # combineGenes --
+  #    Combine the genes of the two parents (using cross-over)  
+  #
+  # Arguments:
+  #    mother     Genes of the first parent
+  #    father     Genes of the second parent
+  #
+  # Result:
+  #    Genes of the child  
+  #
+  proc combineGenes { mother father } {
+     variable crossover
+
+     set all_bits_set -2147483647
+
+     set child {}
+     foreach first $mother second $father {
+        set bit_no  [expr int(32.0*rand())]
+        set bitmask [expr {($all_bits_set&gt;&gt;$bit_no)&lt;&lt;$bit_no}]
+        set newgene [expr {$first&amp;$bitmask|$second&amp;~$bitmask}]
+
+        lappend child $newgene
+     }
+
+     return $child
+  }
+
+  # mutateGenes --
+  #    Mutate the genes of a child (flip a bit) 
+  #
+  # Arguments:
+  #     child      Genes of the child to be mutated
+  #
+  # Result:
+  #    Mutated genes
+  #
+  proc mutateGenes { child } {
+     variable mutation
+
+     set newgenes {}
+     foreach gene $child {
+        if { [expr {rand()}] &lt; $mutation } {
+           set bit_no  [expr {int(32.0*rand())}]
+           set bitmask [expr {1&lt;&lt;$bit_no}]
+           set bitset  [expr {($gene&amp;$bitmask) != 0}]
+           if { $bitset } {
+              set newgene [expr {$gene&amp;~$bitmask}]
+           } else {
+              set newgene [expr {$gene|$bitmask}]
+           }
+        } else {
+           set newgene $gene
+        }
+
+        lappend newgenes $newgene
+     }
+
+     return $newgenes
+  }
+
+  } ;# End of namespace
+
+  #namespace import ::GeneticAlgorithms::*
+
+  proc testFunc { var } {
+     expr {1.0-abs($var/2147483647.0-0.5)}
+  }
+
+  puts [::GeneticAlgorithms::optimise 100 40 1 testFunc]</pre></div>
+<hr class='mkup_hr'><p class='mkup_p'>['Nother keyword I want to discuss eventually: <a class='mkup_a mkup_known' href='/page/Simulated+annealing'>Simulated annealing</a>.]</p><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/RS'>RS</a> did not look at all code in detail, but the very first proc struck him - could be written very much more concisely:</p><pre class='mkup_pre'> proc limitValue {val min max} {
+     expr {$val&lt;$min? $min: $val&gt;$max? $max: $val}
+ }</pre><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Arjen+Markus'>Arjen Markus</a> I would go for proper min/max functions in <a class='mkup_a mkup_known' href='/page/expr'>expr</a>:</p><pre class='mkup_pre'> proc limitValue {val min max} {
+    expr {min($max,max($min,$val))}
+ }</pre><p class='mkup_p'>which is even more concise: every variable appears but once!</p><p class='mkup_p'>But I agree: my first objective was to get things working, and I did not want to think to much on the syntax of ?:</p>
+<p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Donal+Fellows'>Donal Fellows</a> - It doesn't make much difference in recent versions of Tcl anyway; the bytecode out the back should be pretty similar...</p><hr class='mkup_hr'>
+<pre class='mkup_pre'> What: GAGS
+ Where: http://kal-el.ugr.es/gags.html 
+        ftp://kal-el.ugr.es/GAGS/GAGS-0.94e.tar.gz 
+        http://kal-el.ugr.es/GAGS/gags-paper-html/gags-paper-html.html 
+        http://kal-el.ugr.es/GAGS/gags-tutorial/gags-tutorial.html 
+        ftp://kal-el.ugr.es/GAGS/gags-tutorial.ps.gz 
+        ftp://kal-el.ugr.es/GAGS/gags-examples.tar.gz 
+ Description: A Genetic algorithm application generator and C++ class library
+        which uses a Tcl/Tk graphical interface.  Note however that
+        the Tcl/Tk interface was dropped after 0.94e
+        Includes classes for Chromosomes, genetic operators, views, and
+        populations.
+        Runs on Unix with at least GCC, SGI or Sun C compiler.
+ Updated: 10/1997
+ Contact: mailto:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="600a0d0512050c0f200b010c4d050c4e1507124e0513">[email&#160;protected]</a>  (J.J. Merelo Guervos)</pre><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/AGS'>AGS</a></p><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/AM'>AM</a> (4 april 2005) Witnessed a rather nice application of genetic programming the other day - a method to approximate complicated functions by combining and mutating expression trees. Because you do not prescribe the family of functions to try, as with more classical approaches, there is a lot of freedom in the final result. With a bit of insight in the corresponding physical problem, the people who performed this study were able to come up with a concise formula that made some physical sense.</p><hr class='mkup_hr'><p class='mkup_p'><a rel='nofollow' class='mkup_a' href='http://yak.net/repos/lithium/doc/'>Lithium Genetic Programming Toolkit <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a>: a framework for experimenting with Genetic Programming. Written in C++ with Tcl bindings.</p><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/AM'>AM</a> (20 november 2018) While this may not be the most appropriate page, it is at least related to the subject I want to share. I have worked on a number of probabilistic algorithms to minimize or maximize functions:</p><UL class='mkup_UL'><li class='mkup_li'>Particle swarm optimisation (PSO; two variants)</li><li class='mkup_li'>Differential evolution (DE)</li><li class='mkup_li'>Shuffled complex evolution (SCE-UA)</li><li class='mkup_li'>Lipschitz optimisation (LIPO; two variants)</li></UL><p class='mkup_p'>These algorithms have in common that they use some kind of random selection of the candidate points and a decision method to improve on these points that does not use much properties of the function in question. Another thing they seem to have in common is that their proponents consider their pet methods better than any other methods ;). Whatever you may think of such claims, the implementations are there, but they await some streamlining and documentation. </p><hr><div class='mkup_centered'><table class='mkup_categories'><tr><td class='mkup_td'><a class='mkup_a' href='/page/Category+Dev%2E+Tools'>Category Dev. Tools</a></td></tr></table></div>
+</div>
+</div>
+<div class='row'>
+<div class='col-xs-12'>
+<div class='Footer'>Updated 2018-11-20 08:57:14</div>
+</div>
+</div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.combined.js'></script>
+
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+<script type='text/javascript' src='/scripts/nikit.js'></script>
+<script type='text/javascript' src='/scripts/sh_main.js'></script>
+<script type='text/javascript' src='/scripts/sh_tcl.js'></script>
+<script type='text/javascript' src='/scripts/sh_c.js'></script>
+<script type='text/javascript' src='/scripts/sh_cpp.js'></script>
+
+<script src='https://hcaptcha.com/1/api.js'></script>
+<script>var clipboard = new ClipboardJS('.copybtn', {
+  text: function(trigger) {
+    return document.querySelector(trigger.getAttribute('data-clipboard-target')).textContent + '\n';
+  }
+});
+sort_tables();
+</script>
+</body>
+</html>
