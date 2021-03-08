@@ -2683,6 +2683,7 @@ proc make_prgpop {task randpop_proc
     puts ""
     puts "[procname]: INIT POPULATION: \n"
     puts stderr "randpop_proc= $randpop_proc, population_size= $population_size, minlen= $minlen, maxlen= $maxlen gp_list= $gp_list, randinstr= $::randinstr, quotes_proc= $::quotes_proc"
+    puts ""
     puts "prgpop = $prgpop"
     puts ""
     #pop_print_B  $prgpop 
@@ -2702,12 +2703,13 @@ proc make_itemlist {task randpop_proc
                 $population_size $len \
                 $is_print]
 
-  #   if {$is_print} {
-  #     puts ""
-  #     puts stderr "randpop_proc = $randpop_proc"
-  #     puts stderr "prgpop       = $prgpop"
-  #     puts ""
-  #   }
+  if {$::NEWS} {
+    puts ""
+    puts stderr "randpop_proc = $randpop_proc"
+    puts stderr "prgpop       = $prgpop"
+    puts ""
+    #exit
+  }
 
   # TODO:
   # 
@@ -6033,20 +6035,81 @@ proc make_mutant {task leader  mutprob} {
 #-------------------------------------------------------------------------------
 #  генерируем последнюю 1/3 популяции мутируя лидеров.
 #-------------------------------------------------------------------------------
-proc make_mutated_from_leaders {task leaders l mutprob} {
+proc make_mutated_from_items {task items l mutprob} {
 
 
   set mutated {} ;# сформируем список мутантов
   
+  set l_leaders [lrange $items 0 [- $l 1]] ;# это слишком примитивно 
 
-  set l_leaders [lrange $leaders 0 [- $l 1]]
 
   foreach leader $l_leaders {
 
     set leader_mutant [make_mutant  $task $leader $mutprob]
+
     lappend mutated $leader_mutant
   }
   
+  
+  return $mutated
+}
+#-------------------------------------------------------------------------------
+proc is_items_equal {item1 item2} {
+
+  set src1 [item_get_main_src $item1]
+  set src2 [item_get_main_src $item2]
+
+  # puts "is_items_equal: src1 = $src1, src2 = $src2"
+
+  if {$src1 == $src2} {
+    return 1
+  } else {
+    return 0
+  }     
+
+  #return 0
+}
+#-------------------------------------------------------------------------------
+proc is_this_mutant_unikum {mutant items} {
+
+  foreach i $items {
+
+    if {[is_items_equal $mutant $i]} {
+
+      # встретили идентичного итема, уходим на еще попытку
+      #exit
+      return 0
+    }
+  }
+
+  return 1
+}
+#-------------------------------------------------------------------------------
+proc make_mutated_from_items_NEWS {task items l mutprob} {
+
+
+  set mutated {} ;# сформируем список мутантов
+  
+  # а надо случайным выбором от всех
+
+  for {set i 0} {$i < $l} {incr i} {
+
+    set parent [lindex $items $i]
+  
+    # сделаем уникального мутанта
+    # 
+    while {1} {
+      
+      set mutant [make_mutant  $task $parent $mutprob]
+
+      if [is_this_mutant_unikum $mutant $items] {
+        break
+      }
+    }
+
+    lappend mutated $mutant
+  }
+
   
   return $mutated
 }
@@ -6237,19 +6300,17 @@ proc add_offspring {&offsprings offspring l} {
   return 1
 }
 #-------------------------------------------------------------------------------
-proc make_offsprings_from_leaders {leaders l} \
+proc make_offsprings_from_items {sorted_items l} \
 {
 
-  #set l [llength $leaders]
-
-  # генерируем другую 1/3  популяции отпрысками от случайных лидеров.
+  # генерируем l-штук детей от случайных родителей (всего списка).
   #
   set offsprings {}
   
   while 1 {
     
-    set parent0  [get_rand_offspring  $leaders $l]
-    set parent1  [get_rand_offspring  $leaders $l]
+    set parent0  [get_rand_offspring  $sorted_items $l]
+    set parent1  [get_rand_offspring  $sorted_items $l]
 
     set parent0_src [item_get_main_src $parent0]
     set parent1_src [item_get_main_src $parent1]
@@ -6260,16 +6321,11 @@ proc make_offsprings_from_leaders {leaders l} \
       \
       [gp_crossover  $parent0_src $parent1_src] break
     
-#     if {1} {
       set s0  [item_make $offspring0_src] 
       set s1  [item_make $offspring1_src] 
-#     } else {
-#       set s0  $offspring0_src 
-#       set s1  $offspring1_src
-#     }
 
     # добавляем отпрысков и смотрим превышение лимита = l:
-    # 
+    # TODO: не добавлять, если уже такоей есть 
 
     if {! [add_offspring  offsprings $s0  $l]} break
     if {! [add_offspring  offsprings $s1  $l]} break
@@ -6373,10 +6429,15 @@ proc works_on_gp_dict {sorted_items} {
   return
 }
 #-------------------------------------------------------------------------------
+
+set ::NEWS 0
+
+#-------------------------------------------------------------------------------
 proc gp_evolution_4 {pop task args} {
 
 
   set mutprob [dict_parse  $args "-mutprob" 0.1]
+
 
   set sorted_items [GET $pop "itemlist"]
 
@@ -6404,22 +6465,37 @@ proc gp_evolution_4 {pop task args} {
     works_on_gp_dict $leaders_items
   }
   #---------------------------------------
-  # 2)
+  # 2) CROSSOVER
   # генерируем другую 1/3  популяции отпрысками от случайных лидеров
  
   
-  set o $l ;# сгенерим столько же отпрысков от лидеров
+  if {$::NEWS} {
 
-  set offsprings_items  [make_offsprings_from_leaders  $sorted_items $o]
+    set o 0 ;# не будем кроссовить !!
+    set offsprings_items {}
+
+  } else {
+
+    set o $l ;# сгенерим столько же отпрысков от лидеров
+    set offsprings_items  [make_offsprings_from_items  $sorted_items $o]
+  }
  
   #---------------------------------------
-  # 3)
+  # 3) MUTATION
   # генерируем последнюю 1/3 популяции мутируя лидеров (?)
   
   
   set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
 
-  set mutated_items  [make_mutated_from_leaders  $task $sorted_items $m  $mutprob]
+ # puts "gp_evolution_4: l = $l, o = $o, m = $m"
+
+  if {$::NEWS} {
+
+    set mutated_items  [make_mutated_from_items_NEWS  $task $sorted_items $m  $mutprob]
+  } else {
+
+    set mutated_items  [make_mutated_from_items       $task $sorted_items $m  $mutprob]
+  }
 
   #dict_print_real_all_in_list  "[procname]"  $mutated_items
 
