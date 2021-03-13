@@ -14,14 +14,31 @@ package require compot::common
 
 puts ""
 
-puts ""
+#puts ""
 
 #-------------------------------------------------------------------------------
+
+#source "T_JKL.tl"
+
+puts ""
+
+run_numer_tests  n . E/OUT 
+
+puts ""
 
 run_numer_tests  l . E/OUT 
 
 puts ""
 
+run_numer_tests  j . E/OUT 
+
+puts ""
+
+#-------------------------------------------------------------------------------
+
+#source "T_FGH.tl"
+
+puts ""
 
 run_numer_tests  f . E/OUT 
 
@@ -32,6 +49,24 @@ run_numer_tests  g . E/OUT
 puts ""
 
 run_numer_tests  h . E/OUT 
+
+puts ""
+
+#-------------------------------------------------------------------------------
+
+#source "T_PRS.tl"
+
+puts ""
+
+run_numer_tests  p . E/OUT 
+
+puts ""
+
+run_numer_tests  r . E/OUT 
+
+puts ""
+
+run_numer_tests  s . E/OUT 
 
 puts ""
 

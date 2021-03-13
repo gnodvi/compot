@@ -87,6 +87,10 @@ proc getresult_prog_val {prog val} {
     push $val 
     push $val 
     push $val 
+    push $val 
+    push $val 
+    push $val 
+    push $val 
   }
 
   # выполняем программку
@@ -677,7 +681,7 @@ proc get_x_list {xmin xmax nums} {
   return $x_list
 }
 #-------------------------------------------------------------------------------
-proc x_subst {inp} {
+proc x_add_dollar {inp} {
 
   set lis [split $inp]
 
@@ -932,7 +936,9 @@ proc TEST_xx {} {
 
   #------------------------------------------------------
 
-
+  set func [x_add_dollar $func] 
+ 
+  puts "func = $func"
 
   #------------------------------------------------------
 
@@ -960,10 +966,6 @@ proc TEST_xx {} {
       randinstr    "randinstr_MAIN" \
       quotes_proc  "quotes_proc_NULL"
   }
-
-  set func [x_subst $func] 
- 
-  puts "func = $func"
 
   set task [task_create  \
               -fit_func "FITPROC_xx"  \
@@ -1116,13 +1118,9 @@ proc TEST_xx {} {
 #
 #
 
-# l~.tl TEST TEST_xx  -seed @ -lpop 200 -size 6 -nums 500 -vers ga_gp -runs 100 \
-                      -func 'x ** 3 + x ** 2 + x'
-#
-# Вариант попроще:
-# 
-#l~.tl TEST TEST_xx  -seed @ -lpop 50 -size 10 -nums 100 -vers ga_gp -runs 10 \
-                     -func 'x ** 3 + x ** 2 + x'
+# x^3 + x^2      :  dup dup dup * + * 
+# x^3 + x^2 + x  :  dup dup dup dup * nop + * + 
+
 #
 # TODO:
 
@@ -1135,9 +1133,22 @@ proc TEST_xx {} {
 #  
 #  
 
-# упростил пока (сразу заношу в стек X несколько раз (dup dup dup dup)
+# упростил пока (сразу заношу в стек X несколько раз (dup dup dup dup dup dup)
 
-# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -news 1 -func "x ** 3 + x ** 2 + x" -list "* +" -print 2
+# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -news 1 -func "" -list "* +" -print 2
+
+
+# Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  * + * + * +
+
+#         sin ( x ** 2 + x      )            =  * + sin      
+#         sin ( x ** 2 + x ** 2 )            =  + * sin      
+#         sin ( x ** 2 + x ** 3 )            =  * + * sin      
+# Test2:  sin ( x ** 2 + x ** 4 )            =  * * + * sin
+
+# Test3:  sin (exp(sin(exp(sin(x)))))        =  
+# Test4:  sin (x ** 3) + exp (x)             =  
+# Test5:  sin (2 * x) + 1/(x ** 2) - x ** 3  =  
+# Test6:  (x + 2) / exp (a * x - 5)          =  
 
 #-------------------------------------------------------------------------------
 
@@ -1149,30 +1160,6 @@ proc TEST_xx {} {
 # l~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
 
 #-------------------------------------------------------------------------------
-
-# ищем простую функцию x^2:
-#
-# l~.tl TEST TEST_xx  -seed @ -lpop 10 -size 6 -nums -1
-
-# ищем простую функцию x^3 + x^2:      dup dup dup * + * 
-#
-# l~.tl TEST TEST_xx  -seed 0 -lpop 50 -size 6 -nums -1 -vers 1 -print 1
-
-# ищем простую функцию x^3 + x^2 + x:  dup dup dup dup * nop + * + 
-#
-# l~.tl TEST TEST_xx  -seed @ -lpop 100 -size 6 -nums -1 -vers 1 -print 2
-
-# какой-то странный все же алгоритм, долго не сходится
-#
-# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -print 2 
-#                                     -func 'x ** 3 + x ** 2 + x'
-
-#-------------------------------------------------------------------------------
-
-#007)     best =    0.000 :   dup dup dup + nop + dup + + 
-
-#l~.tl TEST TEST_xx  -seed @ -lpop 200 -nums -1 -print 2 -vers 0 
-#                    -func 'x ** 3 + x ** 2 + x'
 
 #-------------------------------------------------------------------------------
 

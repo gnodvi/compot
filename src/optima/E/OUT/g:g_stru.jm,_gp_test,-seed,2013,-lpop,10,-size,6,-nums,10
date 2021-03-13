@@ -8,6 +8,7 @@ run_gp_evolution_for_task : seed = 2013 !!!!!!!!!!!
 
 make_prgpop: INIT POPULATION: 
 
+
 prgpop = {8 5} {6 6} {9 9} {9 6} {1 6} {6 7 5 5 6 5} {4 1 9 3} {4 3 2 2} {9 2 6 5 3 1} {8 5 1 2}
 
 000)     best =  -27.000 :   4 3 2 2 

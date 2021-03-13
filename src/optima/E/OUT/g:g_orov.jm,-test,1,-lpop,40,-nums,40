@@ -1,7 +1,6 @@
 
 
 num_test        = 1
-
 population_size = 40
 max_generations = 40
 

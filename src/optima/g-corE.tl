@@ -5943,11 +5943,14 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
   }
 
 
-
   # делаем мутацию
   # 
 
   if {$mode == 0} {
+    
+    if {[llength $program] <= 1} {
+      return ;# ничего не делаем, слишком уже короткая программа
+    }
 
     # удалим итем
     #
@@ -5987,8 +5990,7 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
 # вероятностью '$p'.
 # 
 #-------------------------------------------------------------------------------
-proc gp_joy_mutate {task program prob} \
-{
+proc gp_joy_mutate {task program prob} {
 
   # TODO: привести к общему виду с 
   # gaul_mutation {pop task}
@@ -6087,18 +6089,32 @@ proc is_this_mutant_unikum {mutant items} {
 #-------------------------------------------------------------------------------
 proc make_mutated_from_items_NEWS {task items l mutprob} {
 
-
+  set l_items [llength $items]
   set mutated {} ;# сформируем список мутантов
   
+  # сейчас берем первых l,
   # а надо случайным выбором от всех
+  # TODO !!!
 
-  for {set i 0} {$i < $l} {incr i} {
+  #for {set i 0} {$i < $l} {incr i} {}
+  #set i 0
 
-    set parent [lindex $items $i]
+  while {1} {
+
+    if {[llength $mutated] ==  $l} {break}
+
+    #if {1} {
+    set j [myrand_new 0 [- $l_items 1]] 
+    set parent [lindex $items $j]
+    #} else {
+    #  set parent [lindex $items $i]
+    #  incr i
+    #}
   
     # сделаем уникального мутанта
     # 
-    while {1} {
+    #while {1} {}
+    for {set i 0} {$i < 10} {incr i} {
       
       set mutant [make_mutant  $task $parent $mutprob]
 

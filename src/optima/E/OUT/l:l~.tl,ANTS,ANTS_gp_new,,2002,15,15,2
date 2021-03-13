@@ -3,6 +3,7 @@ run_gp_evolution_for_task : seed = 0 !!!!!!!!!!!
 
 make_prgpop: INIT POPULATION: 
 
+
 prgpop = {M R R M} {L R L M M L L R R L M L M} {L R R L M M R R M L M} {L L R M L} {M L} {M L L L M R R L} {R M L R L M M R M R L} {M L L R R} R {M L R L} {M L L L L L L L M R L R R} {R L M L R M M M M} {R L M L M L R R R L M M} {L M M L M M M} {R R M L L L M L}
 
 000)     best =    4.000 :   R L M L R M M M M 
