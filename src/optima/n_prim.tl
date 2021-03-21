@@ -16,35 +16,43 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 proc save_primes_to_file {primes max fname} {
 
-  #set fname "n_prim.tl.out"
-
-  set strng "#  The Prime Numbers less than  $max \n# \nset primes { \n"
-  
-  set strngLen 2
   set f [open $fname  w]
+
   
+  puts $f "#  The Prime Numbers less than  $max "
+  puts $f "#  "
+  puts $f "set ::primes_less_than  $max "
+  puts $f ""
+
+  set str2 "set primes { \n"
+  puts $f  $str2
+
+  set strng {}   ;# формируемая строка
+  set strngLen 0 ;# счетчик длины "напечатанной" строки
+  
+
   foreach n $primes {
 
     if {$strngLen > 75} {
-      puts $f $strng
-      set strng {}
-      set nLen [string length "$n "]
-      set strngLen $nLen 
 
-      append strng "$n "
+      puts $f $strng ;# строку уже пора выводить
 
-    } else {
+      set strng {} ;# и наченм новую
+      set strngLen 0 
 
-      set nLen [string length "$n "]
-      incr strngLen $nLen
+    } 
 
-      append strng "$n "
-    }
+    set str [format "%4s " $n]
+    append strng $str 
+
+    set nLen [string length $str]
+    incr strngLen $nLen
   }
 
-  append strng "\n}"
 
-  puts $f $strng
+  append strng "\n\n}\n"
+
+  puts $f $strng ;# и наконец выводим готовую строку
 
   close $f
  
@@ -91,7 +99,7 @@ proc primerrun {max} {
 
   #--------------------------------------------------  
   
-  save_primes_to_file  $primes $max "T/n_prim.tl.out"
+  save_primes_to_file  $primes $max "n_2357.tl"
 
   #--------------------------------------------------  
 
@@ -106,7 +114,7 @@ proc primerrun {max} {
 }
 #-------------------------------------------------------------------------------
 
-primerrun 200 ;# 2000
+primerrun 10000 ;# 2000
 
 #
 #-------------------------------------------------------------------------------

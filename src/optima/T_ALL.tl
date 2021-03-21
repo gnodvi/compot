@@ -26,13 +26,13 @@ run_numer_tests  n . E/OUT
 
 puts ""
 
-run_numer_tests  l . E/OUT 
+run_numer_tests  r . E/OUT 
 
 puts ""
 
-run_numer_tests  j . E/OUT 
+# run_numer_tests  j . E/OUT 
 
-puts ""
+# puts ""
 
 #-------------------------------------------------------------------------------
 
@@ -58,15 +58,15 @@ puts ""
 
 puts ""
 
-run_numer_tests  p . E/OUT 
+# run_numer_tests  r . E/OUT 
 
-puts ""
-
-run_numer_tests  r . E/OUT 
-
-puts ""
+# puts ""
 
 run_numer_tests  s . E/OUT 
+
+puts ""
+
+run_numer_tests  t . E/OUT 
 
 puts ""
 

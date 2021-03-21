@@ -11,14 +11,14 @@ TENSOR_DIR = ../tensor
 COMMON_DIR = ../common
 DIALOG_DIR = ../dialog
 
-OPTIMA_DIR = ../optima
+#OPTIMA_DIR = ../optima
 TEST-S_DIR = ../test-s/m
 ##LISPER_DIR = ../lisper
 
 #-------------------------------------------------------------------------------
 
 
-all:  COMMON__ TENSOR__ DIALOG__   OPTIMA__  TEST-S__  ##LISPER__   
+all:  COMMON__ TENSOR__ DIALOG__    TEST-S__  ##LISPER__  OPTIMA__  
 
 #-------------------------------------------------------------------------------
 
@@ -32,8 +32,8 @@ DIALOG__ :
 	(cd $(DIALOG_DIR); make)
 
 
-OPTIMA__ :
-	(cd $(OPTIMA_DIR); make)
+# OPTIMA__ :
+# 	(cd $(OPTIMA_DIR); make)
 
 TEST-S__ :
 	(cd $(TEST-S_DIR); make)
@@ -48,7 +48,7 @@ clean :
 	(cd $(COMMON_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
 
-	(cd $(OPTIMA_DIR); make clean)
+##	(cd $(OPTIMA_DIR); make clean)
 	(cd $(TEST-S_DIR); make clean)
 ##	(cd $(LISPER_DIR); make clean)
 

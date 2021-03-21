@@ -1051,9 +1051,17 @@ proc run_cmd_and_check {is_replasing dir_cmd rr i
   
   set cmd [string map {^ /} $rr]  ;# сначала (!) подменяем спец-символы директорий
 
+  #puts ""
+  #puts "rr = $rr"
+  #puts "cmd = $cmd"
+  #exit
+
   set map_list [list $raz2 " "]
-  set cmd [string map $map_list  $rr] ;# а потом спец-символы пробелов
+  ##set cmd [string map $map_list  $rr] ;# а потом спец-символы пробелов
+  set cmd [string map $map_list  $cmd] ;#  from cmd !!!
   
+  #puts "cmd = $cmd"
+
   # ---------------------------------------------------------
   #check_true_and_calc_begin "$i"
   # ---------------------------------------------------------

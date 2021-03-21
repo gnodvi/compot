@@ -69,14 +69,14 @@ for TRUE_FILE in ${DIR_TST}/*               # цикл по всем файлам в указанной ди
     #--------------!!!!!
 
     #CMD=$( echo ${RR//'^'/'/'} )   # сначала (!) подменяем спец-символы директорий
-    #CMD=`echo $RR | sed -e "s/^/\//g"` 
-    CMD=`echo $RR | sed -e "s/@/\//g"` 
+    CMD=`echo $RR | sed -e "s/^/\//g"` 
+    #CMD=`echo $RR | sed -e "s/@/\//g"` 
 
-#     echo ""
-#     echo "RR  ==== $RR"
-#     echo "CMD ==== $CMD"
-#     echo ""
-#     exit
+    echo ""
+    echo "RR  ==== $RR"
+    echo "CMD ==== $CMD"
+    echo ""
+    exit
 
     CMD=`echo $CMD | sed -e "s/,/ /g"` 
 

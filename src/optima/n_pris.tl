@@ -259,6 +259,7 @@ proc TEST_3 {} {
   # Print the first .. primes.
   
   proc printAllPrimes {num} {
+
     for {set i 1} {$i <= $num} {incr i} {
       puts [primes::get_next_prime]
     }

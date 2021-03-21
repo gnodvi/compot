@@ -32,7 +32,7 @@ proc TEST {} {
 #
 #-------------------------------------------------------------------------------
 
-set CUR_DIR "n"
+set CUR_DIR "u"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 

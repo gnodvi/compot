@@ -1,109 +1,150 @@
-# -*-   mode: tcl  ; coding: koi8   -*- ------------------------------------------
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
 #!/bin/sh
 # \
 exec tclsh "$0" ${1+"$@"}
-
-#-------------------------------------------------------------------------------
 #
-#set COMPOT "./COMPOT"
+#-------------------------------------------------------------------------------
 
-set auto_path [linsert $auto_path 0 "COMPOT/src"]
+
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+#lappend auto_path \
+  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+
 
 package require compot::common 
 
-# ;===============================================================================
-# ;
-# ;
-# ;===============================================================================
+package require tcltest
 
-# lappend auto_path \
-#   [file join [file dirname [info script]] "."] 
+# source "b-com0.tl"
+# source "b-com1.tl"
 
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc NEXT_sorted {} {
 
-set auto_path [linsert $auto_path 0 "COMPOT/src/optima"]
+  set res {{1 one} {3 three} {2 two}}
 
-package require compot::optima
+  # сортируем по 1-му элементу списков
 
-# ;===============================================================================
-# ;-------------------------------------------------------------------------------
-# (defun GENA (argus)
+  set sorted [lsort -integer -index 0 $res]
 
-#   (my_load "a-func.cl" CUR_DIR)
-#   (my_load "a-pops.cl" CUR_DIR)
-
-#   ;(my_load "l-gena.cl" CUR_DIR)
-#   (my_load "n-mgen.cl" CUR_DIR) 
- 
-#   (run_cdr_argus (first argus) argus " ..")
-# )
-# ;-------------------------------------------------------------------------------
-# (defun VALS (argus)
-  
-#   (my_load "a-func.cl" CUR_DIR)
-
-#   (my_load "a-pops.cl" CUR_DIR)
-#   ;(my_load "l-gena.cl" CUR_DIR)
-#   (my_load "n-mgen.cl" CUR_DIR)  
-#   (my_load "n-mbee.cl" CUR_DIR) 
- 
-#   (my_load "n_vals.li" CUR_DIR)
-
-#   (run_cdr_argus (first argus) argus "VALS ..")
-# )
-# ;-------------------------------------------------------------------------------
-# ;-------------------------------------------------------------------------------
-proc MINF {} {
-
-  
-  #source "a-func.tl"
-  #source "n-mbee.tl"
-  
-  #source "a-dict.tl"
-  source "COMPOT/src/common/b-mfor.tl" ;# для перебора
-
-  #source "m-gsl0.tl"
-
-  source "r-ogsl.tl"
-  
-  source "r-obot.tl"  
-  source "r-otst.tl"
-  
-
-  global argc argv
-  eval [lindex $argv 1] ;#
-
-  #   (run_cdr_argus (first argus) argus "MINF ..")
+  puts ""
+  puts "res origin = $res"
+  puts "res sorted = $sorted"
 
 }
-# ;===============================================================================
+#-------------------------------------------------------------------------------
+#
+#
+# ~/.pilot/s/compot/genpro$ j~.tl JOY2 TEST_main b__01.joy 
+#
+# OPEN_FNAME not find file TEST_main in all PATHS !!
+#
+# ------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc ALIB {} {
 
-# (READ_AND_CALL_ARGUS  CUR_DIR)
+  source "r_ants.tl"
+
+  global argc argv
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+proc ANTS {} {
+
+
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  ;# надо будет подключить и ко всем примерам!!
+  source "f-2222.tl"  ;
+  source "f-3333.tl"  ; #  ????? dict_create
+
+  #set dic4 [dict_create a b]
+  #puts stderr "dic4  = $dic4"
+  #puts stderr "dic4  = [set $dic4]"
+
+  source "g-corE.tl" 
+  source "r-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
+  source "r_ants.tl"
+
+
+  global argc argv
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+proc TEST {} {
+
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  ;# простой jOY 
+
+  source "g-corE.tl"
+  source "r-proJ.tl"  ; # тесты на JOY
+  
+  global argc argv
+
+  incr ::ind0
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+proc COMM {} {
+
+  source "g-corE.tl"
+  
+  global argc argv
+
+  incr ::ind0
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
 
 set CUR_DIR "r"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 
-# ; ==============================================================================
-# ; TODO: 
+puts "" 
 
-# ; - описаниe счeтных функций (в видe объeктов);
-# ; - выдeлить объeктно-сорeвноватeльную систeму из m-obot.cl;
-# ; - 
-# ; - нeсколько хромосом (и вообщe додeлать GA);
-# ; - провeрить на тeстах как в Матлабe;
-# ; - поиск с ограничeниями;
-# ; - соeдинить с пчeлиным поиском;
+#-------------------------------------------------------------------------------
 
-# ;===============================================================================
+# r:r~.tl,TEST,TEST_xx,,-seed,0,-lpop,5,-size,6,-nums,-1,-print,2 ................ PASSED
+# r:r~.tl,TEST,TEST_xx,,-seed,2013,,-lpop,10,-size,6,-nums,10 ................ PASSED
 
-# ; cl n~.cl VALS vals_find t5 0.1 1 5 @ GA 40 8 0.7 0.2
 
-#n~.tl BEES bees_test
+#-------------------------------------------------------------------------------
 
-#n~.tl MINF more_test -1
+# r~.tl TEST TEST_nn  2013 9 6 1 @  ???????
 
-#n~.tl MINF simp_test  
- 
+# -) Усложнить задачи. (ANTS) задавая более сложные рисунки в т.ч. и динамически 
+#    меняющиеся; а также  с постепенным усложнением; кроме того, сделать эвлюцию
+#    "жизни мурашей" в реальном времени;
 
-# ;===============================================================================
+#-------------------------------------------------------------------------------
+# 
+# r~.tl ANTS ANTS_test_shalito_joy 50
+# r~.tl ANTS ANTS_test_shalito_joy  0 - в интерактивном виде !!
+# r~.tl ANTS ANTS_test_simple_joy
+
+# r~.tl ANTS ANTS_gp @  10 15 2
+# 
+# r~.tl ANTS ANTS_t2
+
+# r~.tl ANTS ANTS_test_shalito_old
+# r~.tl ANTS ANTS_test_simple_old
+
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------

@@ -2,9 +2,6 @@
 
 #-------------------------------------------------------------------------------
 #
-#
-#
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 namespace eval ::joy {}
@@ -4293,7 +4290,7 @@ proc TEST_file_00 {} {
 
   #set ::joy::debug 1
 
-  run_joy_file "j__00.joy"
+  run_joy_file "F/j__00.joy"
 
   return
 }
@@ -4307,7 +4304,7 @@ proc TEST_file_01 {} {
 
   #set ::joy::debug 1
 
-  run_joy_file "j__01.joy"
+  run_joy_file "F/j__01.joy"
 
   return
 }
@@ -4319,7 +4316,7 @@ proc TEST_file_02 {} {
   
   puts ""
 
-  run_joy_file "j__02.joy"
+  run_joy_file "F/j__02.joy"
 
   return
 }
@@ -4331,7 +4328,7 @@ proc TEST_file_03 {} {
   
   puts ""
 
-  run_joy_file "j__03.joy"
+  run_joy_file "F/j__03.joy"
 
   return
 }
@@ -4343,7 +4340,7 @@ proc TEST_file_06 {} {
   
   puts ""
 
-  run_joy_file "j__06.joy"
+  run_joy_file "F/j__06.joy"
 
   return
 }
@@ -4355,7 +4352,7 @@ proc TEST_file_07 {} {
   
   puts ""
 
-  run_joy_file "j__07.joy"
+  run_joy_file "F/j__07.joy"
 
   return
 }
@@ -4546,16 +4543,16 @@ proc TEST_all_files_by_V3 {} {
 
   #run_joy_file "grmtst.joy"  
 
-  run_joy_file "j__00.joy"  
-  run_joy_file "j__01.joy"  
-  run_joy_file "j__02.joy"  
-  run_joy_file "j__03.joy"   ;# ARGGG 
+  run_joy_file "F/j__00.joy"  
+  run_joy_file "F/j__01.joy"  
+  run_joy_file "F/j__02.joy"  
+  run_joy_file "F/j__03.joy"   ;# ARGGG 
 
   puts ""
 
   # ERROR
   #
-  run_joy_file "joytut.joy"  
+  run_joy_file "J/joytut.joy"  
   #
   # {"time",		time_,		"->  I",
   # "Pushes the current time (in seconds since the Epoch)."},
