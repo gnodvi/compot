@@ -1,0 +1,1526 @@
+#!/bin/sh
+# \
+# the next line restarts using tclsh \
+exec wish "$0" "$0 $@"
+
+#-------------------------------------------------------------------------------
+# https://wiki.tcl-lang.org/page/Handwriting+Word+Recognizer
+#-------------------------------------------------------------------------------
+
+#      Tcler's Wiki
+
+# Handwriting Word Recognizer
+
+# Handwriting Word Recognizer
+
+# http://tkfp.sourceforge.net/sr.jpg
+
+#-------------------------------------------------------------------------------
+
+# This a modification of the "Mouse-stroke character recognizer" by Mike Hall,
+# which in turn borrows code from several other sources.
+
+# I am working on a medical records application for doctors. See - [L1 ] and [L2 ] .
+# I was intrigued by handwriting recognition, especially where the application can
+# be trained to read the average physician's human unreadable, but never the less 
+# consistent, chicken scratch. Illegible handwriting is a big problem in the medical 
+# field.
+
+# I was intrigued by the tablet PC's possible impact on the medical field, but was
+# dismayed to find that the HWR that comes with Windows on the tablet PC could not
+# be trained to recognized chicken scratch. It has a large library of data to
+# compare the user's handwriting against, but it must be fairly legible to have 
+# acceptable accuracy. I wanted something that could be trained.
+
+# Basically, I added more cells to the mouse stroke recognizer so that it can now 
+# recognize a whole word at a time, instead of just one letter. The recognized words 
+# are accumulated into a "sentence" that can be output to the app that calls the 
+# program using the Tk send command.
+
+# I have tried this on Linux using an Aiptek hyperpen tablet and it works amazingly 
+# well once you get enough samples. It takes about 10 - 15 samples of a word before 
+# you get consitent recognition. I have not tested it with a large number of words 
+# in it's database. It might get slow or start getting more duplications of words
+# if storing samples of thousands of words.
+
+# I finally got an Averatec C3500 Tablet PC, so now I can really try it out in the
+# medical application on live patients.
+
+# How to use
+
+#     - Select a user
+#     - Write the word on the text area. Must use continuous stroke. You can't 
+#       lift the pen to cross a t or dot an i
+#     - If word is not recognized, type it in the box on the lower right and 
+#       click the Def button then click the Save button to save the "features" 
+#       to the database.
+#     - I found it takes about 10-15 repetitions of the above sequence to start 
+#       getting consistent recognition of a word.
+#     - If recognized, the word will appear above the row of buttons and be 
+#       appended to the accumulated sentence.
+#     - Click Erase to clear for the next word or attempt.
+#     - If the program is called from a Tk app with the name of the app and a 
+#       variable as arguments, when you click the Done button, the sentence will 
+#       be sent to the calling app via the send command and stored in the variable.
+#     - The Read button reads into memory the database of "features" for all the 
+#       user's words that have been trained. The Save button saves the features
+#       to the disk.
+#     - The UnDef button undefines the current features from the word or letter
+#       in the lower right entry box.
+#     - The Output to? button sends the recognized sentence to a selected Tk app
+#       as the variable named sentence
+#     - Unset button unsets an existing definition
+#     - The Rec? and Recog buttons don't work - it was hoped to be able to turn 
+#       off the recognition until the Recog button was clicked in order to be 
+#       able to lift the pen to dot an "i" or cross a "t", but it is not yet 
+#       implemented. Your word must be one continuous stroke.
+#     - See below, I made a new version that allows discontinuous strokes so you 
+#       can dot an "i" or cross a "t".
+
+# Alex Caldwell M.D.
+
+#-------------------------------------------------------------------------------
+
+ #!/usr/local/bin/wish8.4
+
+ #
+ #        Mouse-stroke character recognizer,
+ #        major pieces stolen from other sources.
+ #        Mike Hall, mghall@enteract.com, 2000-12-23
+ #
+
+ #
+ #        mouse stroke collector, from page 484 of
+ #        Practical Programming in Tcl/Tk, Third Edition, 2000, Brent Welch
+ #
+
+
+ #  Modified by Alex Caldwell to try to allow recognizing whole words instead of
+ #  characters.
+ #
+ #      I Mainly increased the number of cells to 25 which seems to increase the
+ #   accuracy,  but it now takes more training for each word before recognition
+ #   gets consistent.
+ #
+ #     It seems to work surprisingly well, but might  get slow with a
+ #   very large collection of words in the ftrs array.
+ #
+ #     Allow multiple users to have their own features file
+ #
+ #   Collect the recognized words into "sentence" that can be output
+ #   to stdout or to another program - in this case using the Tk send command.
+ #
+ #     Added some lines to canvas like on school composition paper to help keep your
+ #   handwriting more consistent. It works well with a Cirque glidepoint mouse or an
+ #   Aiptek hyperpen pointing device.
+ #
+ #   alcald@psnw.com 12/21/2002
+
+ # sets up bindings on the canvas to collect mouse strokes. Could be used on other
+ # canvases too.
+
+ proc StrokeInit {w} {
+    bind $w <Button-1>          {StrokeBegin        %W %x %y}
+    bind $w <B1-Motion>          {Stroke        %W %x %y}
+    bind $w <ButtonRelease-1> {StrokeEnd        %W %x %y}
+    return
+ }
+
+ 
+
+ proc StrokeBegin {w x y} {
+    global stroke
+    catch {unset stroke}
+    # stroke(N) holds the no of points
+    set stroke(N) 0
+    # stroke(0) holes the coordin. of first point?
+    set stroke(0) [list $x $y]
+    msg "1 point ..."
+    return
+ }
+
+
+ proc Stroke {w x y} {
+    global stroke
+    
+    # get last point
+    set n $stroke(N)
+    foreach {ox oy} $stroke($n) {break}
+    
+    # filter? abs(dx) + abs(dy) > threshold
+    
+    # install latest point
+    incr n
+    set stroke(N) $n
+    set stroke($n) [list $x $y]
+    puts "$stroke($n)"
+    msg "$n points ..."
+    
+    #puts "[lsort [array get stroke]]"
+    
+    # draw latest segment
+    $w create line $ox $oy $x $y -width 2 -tag segments
+    return
+ }
+
+
+ proc StrokeEnd {w x y} {
+    global stroke
+    
+    set n $stroke(N)
+    msg "$n points"
+    
+    if {$n > 4} {
+        # arrow at end
+        foreach {ox oy} $stroke([expr {$n - 4}]) {break}
+        $w create line $ox $oy $x $y -arrow last -tag segments
+        
+        # if enough points, and rec_type == "auto", process it
+        # if rec type != auto will use the button on the toolbar instead.
+        
+        recog stroke_end
+        
+    }
+    
+    # dot at begin
+    foreach {ox oy} $stroke(0) {break}
+    set  x [expr {$ox + 4}]
+    set  y [expr {$oy + 4}]
+    set ox [expr {$ox - 4}]
+    set oy [expr {$oy - 4}]
+    $w create oval $ox $oy $x $y -fill white -tag segments
+    return
+ }
+ 
+
+
+
+
+ #
+ #        Get min/max x/y values of the stroke
+ #
+ proc get_min_max { } {
+    global stroke
+    global xl xh yl yh x1 x2 y1 y2 x3 y3 x4 y4
+    
+    # initialize from first point
+    foreach {xl yl} $stroke(0) {break}
+    set xh $xl
+    set yh $yl
+    
+    # adjust from remaining data
+    set n $stroke(N)
+    for {set i 1} {$i <= $n} {incr i} {
+        foreach {x y} $stroke($i) {break}
+        if {$x < $xl} {
+            set xl $x
+        } elseif {$x > $xh} {
+            set xh $x
+        }
+        if {$y < $yl} {
+            set yl $y
+        } elseif {$y > $yh} {
+            set yh $y
+        }
+    }
+    
+    # divide the box in thirds each way (25 sub boxes)
+    set x1 [expr {$xl + ($xh - $xl)/5.}]
+    set y1 [expr {$yl + ($yh - $yl)/5.}]
+    set x2 [expr {$xl + 2.*($xh - $xl)/5.}]
+    set y2 [expr {$yl + 2.*($yh - $yl)/5.}]
+    set x3 [expr {$xl + 3.*($xh - $xl)/5.}]
+    set y3 [expr {$yl + 3.*($yh - $yl)/5.}]
+    set x4 [expr {$xl + 4.*($xh - $xl)/5.}]
+    set y4 [expr {$yl + 4.*($yh - $yl)/5.}]
+    # check aspect (for vertical and horizontal strokes)
+    set dx [expr {abs($xh - $xl)}]
+    set dy [expr {abs($yh - $yl)}]
+    set thresh 6.0
+    if {$dy > [expr {$thresh * $dx}]} {
+        # vertical
+        set x1 $xl
+        set x2 $xh
+        
+    } elseif {$dx > [expr {$thresh * $dy}]} {
+        # horizontal
+        set y1 $yl
+        set y2 $yh
+    }
+    
+    return
+ }
+
+
+
+ #
+ #        Display the box outline and the interior dividers
+ #
+ proc show_boxes { } {
+    global stroke
+    global xl xh  yl yh  x1 x2  y1 y2  x3 y3  x4 y4
+    
+    # enclosing box
+    .c create rectangle [expr {$xl-1}] [expr {$yl-1}]  \
+            [expr {$xh+1}] [expr {$yh+1}] -tags boxes -outline blue
+    
+    # interior crossing lines
+    .c create line $xl $y1 $xh $y1 -tags boxes -fill red
+    .c create line $xl $y2 $xh $y2 -tags boxes -fill red
+    .c create line $xl $y3 $xh $y3 -tags boxes -fill red
+    .c create line $xl $y4 $xh $y4 -tags boxes -fill red
+    .c create line $x1 $yl $x1 $yh -tags boxes -fill red
+    .c create line $x2 $yl $x2 $yh -tags boxes -fill red
+    .c create line $x3 $yl $x3 $yh -tags boxes -fill red
+    .c create line $x4 $yl $x4 $yh -tags boxes -fill red
+    # label showing no of points in the stroke on upper left of enclosing box
+    .c create text $xl $yl -text "$stroke(N)" -anchor sw -fill blue \
+            -tags boxes
+    return
+ }
+
+
+ #
+ #        Convert from x/y coordinates to cell-values in the box
+ #
+ #        Normal                XOR crossings
+ #
+ #        0  1  2         3  4               0  1  3  5  7
+ #        5  6  7         8  9               8  9  11 13 15
+ #        10 11 12 13 14                    16 17 19 21 23
+ #   15 16 17 18 19      24 25 27 29 31
+ #   20 21 22 23 24      32 33 35 37 39
+
+ proc cell_value {x y} {
+    global x1 x2 y1 y2 x3 y3 x4 y4
+    
+    # get cell value for x coordinate
+    if {$x < $x1} {
+        set xv 0
+    } elseif {$x <= $x2} {
+        set xv 1
+    } elseif {$x <= $x3} {
+        set xv 2
+    } elseif {$x <= $x4} {
+        set xv 3
+    } else {
+        set xv 4
+    }
+    
+    # get cell value for y coordinate
+    if {$y < $y1} {
+        set yv 0
+    } elseif {$y <= $y2} {
+        set yv 4
+    } elseif {$y <= $y3} {
+        set yv 12
+    } elseif {$y <= $y4} {
+        set yv 24
+    } else {
+        set yv 32
+    }
+    
+    # overall cell value
+    return [expr {$xv + $yv}]
+ }
+
+
+
+ #
+ #        Reset crossing counts
+ #
+ proc init_crossing { } {
+    global crosses
+    foreach x {1 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 N} {
+        set crosses($x) 0
+    }
+    return
+ }
+
+ #
+ #        Track line-crossing counts from old-cell to new-cell
+ #
+ proc crossing {old new} {
+    global crosses
+    incr crosses(N)
+    set cn [expr {$new ^ $old}]
+    foreach bit {1 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32} {
+        if {$cn & $bit} {
+            incr crosses($bit)
+        }
+    }
+    return
+ }
+
+ #
+ #        Convert strokes to list of cells
+ #
+
+ proc box_cells { } {
+    global stroke
+    global cells
+    
+    # setup
+    catch {unset cells}
+    init_crossing
+    
+    # start first point
+    foreach {x y} $stroke(0) {break}
+    set ocv [cell_value $x $y]
+    set cells $ocv
+    puts "\$ocv == $ocv"
+    # convert rest of points
+    set n $stroke(N)
+    for {set i 1} {$i <= $n} {incr i} {
+        foreach {x y} $stroke($i) {break}
+        set cv [cell_value $x $y]
+        if {$cv != $ocv} {
+            # new cell, accumulate
+            lappend cells $cv
+            # track line crossings
+            crossing $ocv $cv
+            # new current cell value
+            set ocv $cv
+        }
+    }
+    return
+ }
+
+
+ #
+ #        Construct the resulting set of features
+ #                - first cell, last cell
+ #                - last crossing, last crossing
+ #                - four crossing counts (2 x-axis, 2 y-axis)
+ #
+ proc ftr { } {
+    global cells
+    puts "cells == $cells"
+    global crosses
+    puts "crosses == [array get crosses]"
+    
+    set c0 [lindex $cells 0]
+    set c1 [lindex $cells 1]
+    set cn [lindex $cells end]
+    set cp [lindex $cells [expr {[llength $cells]-2}]]
+    
+    set d1 [expr {$c0 ^ $c1}]
+    set dn [expr {$cn ^ $cp}]
+    
+    return "$c0 $cn $d1 $dn $crosses(1) $crosses(2) $crosses(4) $crosses(6) $crosses(8) \
+    $crosses(10) $crosses(12) $crosses(14) $crosses(16) $crosses(18) $crosses(20) \
+    $crosses(22) $crosses(24) $crosses(26) $crosses(28) $crosses(30) $crosses(32)"
+ }
+
+ proc show_ftr {f} {
+    global xl xh yl yh
+    global cells
+    global sentence
+    .c create text $xl $yh -text $f -anchor nw -fill red -tags boxes
+    set x [match $f]
+    if {$x == ""} {
+        set x unk
+    }
+    set x "[llength $cells] $x"
+    puts "Cells == $cells"
+    
+    msg $x
+    .c create text $xh $yl -text "$x" -anchor se -fill purple -tags boxes
+    if {[lindex $x 1] != "unk"} {
+        bell;bell
+        append sentence "[lindex $x 1] "
+        puts $sentence
+        .l configure -text "$sentence"
+        update idletasks
+        #This will convert text to speech if you have ViaVoice
+        catch {
+            exec /usr/lib/ViaVoiceOutloud/samples/cmdlinespeak/cmdlinespeak \
+           "I recognized the word [lindex $x 1]"
+            exec /usr/lib/ViaVoiceOutloud/samples/cmdlinespeak/cmdlinespeak \
+           "Your complete sentence now reads: $sentence"
+        } mistake
+        if [info exists mistake] {
+            if [regexp "no such file or directory" $mistake] {
+                puts "You don't have speach enabled on your system"
+                puts "\$mistake == $mistake"
+            } else {
+                puts "You seem to have Via Voice installed - that is good"
+            }
+        }
+    } else {
+        update idletasks
+        puts "I'm sorry, I don't recognise that word."
+        catch {
+            exec /usr/lib/ViaVoiceOutloud/samples/cmdlinespeak/cmdlinespeak "I'm sorry,
+ I don't understand that word. You can train me by typing it
+ in the box and then click the def button."
+            
+        } mistake
+        if [info exists mistake] {
+            if [regexp "no such file or directory" $mistake] {
+                puts "You don't have speach enabled on your system"
+                puts "\$mistake == $mistake"
+            } else {
+                puts "You seem to have Via Voice installed - that is good!"
+            }
+        }
+        
+    }
+    return
+ }
+
+ #
+ #        Recognize the stroke
+ #        Leeden recognizer, from page 204 of
+ #        Principles of Interactive Computer Graphics 2nd ed, 1979, Newman+Sproull
+ #
+ proc recog {from} {
+    global rec_type
+    
+    get_min_max
+    show_boxes
+    box_cells
+    if {$rec_type == "auto" && $from == "stroke_end"} {
+        set f [ftr]
+        puts "\$f == $f"
+        show_ftr $f
+    } elseif {$rec_type == "stroke_end" && $from == "button"} {
+        set f [ftr]
+        show_ftr $f
+    }
+    return
+ }
+
+ #
+ #        Clear the canvas, prepare for another run
+ #
+ proc clear { } {
+    global stroke
+    .c delete segments
+    .c delete boxes
+    unset stroke
+    return
+ }
+
+ #
+ #        Update the log message
+ #
+ proc msg {x} {
+    global msg
+    set msg $x
+    return
+ }
+
+ #
+ #        Lookup this stroke's features
+ #
+ proc match {f} {
+    global ftrs
+    
+    if {[info exists ftrs($f)]} {
+        return $ftrs($f)
+    } else {
+        return ""
+    }
+ }
+
+ #
+ #        Set a new definition
+ #
+ proc set_def { } {
+    global ftrs char
+    
+    set f [ftr]
+    set x [match $f]
+    if {$x != ""} {
+        msg "Conflict: $ftrs($f) and $char"
+    } else {
+        set ftrs($f) $char
+        msg "set $char"
+    }
+    return
+ }
+
+
+
+ #
+ #        Unset an existing definition
+ #
+ proc unset_def { } {
+    global ftrs
+    
+    set f [ftr]
+    if {[info exists ftrs($f)]} {
+        set x $ftrs($f)
+        msg "Erasing $x $f"
+        unset ftrs($f)
+    }
+    return
+ }
+
+ #
+ #        Unset all definitions for a word
+ #
+ proc undef_char { } {
+    global ftrs char
+    foreach f [array names ftrs] {
+        if {$ftrs($f) == $char} {
+            unset ftrs($f)
+        }
+    }
+    return
+ }
+
+ #
+ #        Read the features
+ #
+ proc read_defs { } {
+    global ftrs
+    global ftrfile
+    
+    if {[catch {open $ftrfile r} fid] == 0} {
+        while {[gets $fid line] > 0} {
+            set ftrs([lrange $line 1 end]) [lindex $line 0]
+        }
+        close $fid
+        msg "read [array size ftrs] entries"
+    } else {
+        msg "No ftrs file"
+    }
+    return
+ }
+
+ #
+ #        Save the defined features
+ #
+ proc save_defs { } {
+    global ftrs
+    global ftrfile
+    
+    if {[catch {open $ftrfile w} fid] == 0} {
+        foreach {k v} [array get ftrs] {
+            # escape some special characters
+            if {[string match {[\{\[\" ]} $v]} {
+                puts $fid "\\$v $k"
+            } else {
+                puts $fid "$v $k"
+            }
+        }
+        close $fid
+    }
+    msg "saved [array size ftrs] entries"
+    return
+ }
+
+
+ #
+ #        Create the toplevel interface
+ #
+ proc main {} {
+    global msg char rec_type sentence user argv
+
+    wm title . "Word Recognizer"
+    
+    # drawing surface
+    canvas .c
+    
+    # label to show accumulated sentence
+    label .l -text "recognized words" -pady 0
+    
+    # row of controls
+    frame .b
+    # send the accumulated sentence to the text entry box from the other 
+    # program passed in as argument at startup of script
+    # program can be called from another Tk program like this:
+    # exec sr.tcl [tk appname] variable
+    # where variable is the name of a variable to store the output from
+    # the word recognizer.
+
+
+    button .b.d -text Done -pady 0 -command {
+           if {[lindex $argv 0] != ""} {
+               send [lindex $argv 0] "set [lindex $argv 1] \"$sentence\""
+           } elseif {$output_to != ""} {
+               send $output_to "set sentence \"$sentence\""
+           }
+        exit
+    }
+
+    menubutton .b.us -text User -pady 0 -relief raised -menu .b.us.menu
+    menu .b.us.menu
+    .b.us.menu add radiobutton -label "Default" -variable user -value Default \
+     -command {.b.us config -text "Default";set ftrfile ftrs.def.$user;read_defs}
+    .b.us.menu add radiobutton -label "Alex   " -variable user -value Alex \
+    -command {.b.us config -text "Alex   ";set ftrfile ftrs.def.$user;read_defs}
+    .b.us.menu add radiobutton -label "Kathy  " -variable user -value Kathy \
+    -command {.b.us config -text "Kathy  ";set ftrfile ftrs.def.$user;read_defs}
+    .b.us.menu add radiobutton -label "Becky  " -variable user -value Becky \
+    -command {.b.us config -text "Becky  ";set ftrfile ftrs.def.$user;read_defs}
+    button .b.r -text Read  -command read_defs -pady 0
+    button .b.s -text Save  -command save_defs -pady 0
+    button .b.c -text Erase -command clear -pady 0
+    button .b.u -text Unset -command unset_def -pady 0
+    button .b.f -text UnDef -command undef_char -pady 0
+    button .b.t -text Def   -command set_def -pady 0
+
+
+    # menu for selecting Tk app to send the output to using the Tk "send" command
+    # the output will go to where the current focus is in the application
+    menubutton .b.output -text "Output to?" -relief raised -pady 0 -menu .b.output.menu
+    menu .b.output.menu
+    foreach app [winfo interps] {
+    .b.output.menu add radiobutton -label $app -variable output_to
+    }
+
+    # if not called with an argument that gives a variable or list into which the output
+    # can be sent, the menubutton that enables selecting an app. can be used. If 
+    # arguments are passed in, disable the button.
+
+    if {$argv != "" } {
+      .b.output configure -state disabled
+    }
+
+
+
+    # make it so you can turn off recognition until later if desired
+    # was hoping add feature where you could collect more than one
+    # stroke like for the dot on the i or the cross on the t but not
+    # implemented yet.
+    set rec_type auto
+    menubutton .b.rec_type -text "Rec.?" -pady 0 -menu .b.rec_type.menu -relief raised
+    menu .b.rec_type.menu
+    .b.rec_type.menu add radiobutton -label "At end of strokes" -variable rec_type -value auto
+    .b.rec_type.menu add radiobutton -label "When recog button clicked" \
+    -variable rec_type -value stroke_end
+    button .b.rec -text Recog -command "recog button" -pady 0
+    entry  .b.e -width 20 -textvariable char
+    bind .b.e <Return> {set_def}
+    
+    label .b.msg -textvariable msg -width 20
+    pack .b.d .b.us .b.output .b.rec_type .b.r .b.s .b.c .b.u .b.f .b.rec .b.t  .b.e \
+    -side left -fill x
+    pack .b.msg -side right -fill x -expand 1
+    
+    # buttons along the bottom, canvas fills remainder
+    pack .b -side bottom -fill x
+    pack .c -side top -fill both -expand 1
+    for {set x 0} {$x < 850} {incr x 10} {
+        if {[expr $x % 20] == "0"} {
+            .c create line $x 75  [expr $x + 10] 75 -width 1 -fill black
+        }
+        
+    }
+    
+    
+    .c create line 0 150 850 150 -width 3 -fill black
+    # setup stroke collector
+    StrokeInit .c
+    pack .l -side top -fill x
+    return
+ }
+
+
+ frame .set_user
+ pack .set_user
+ wm geometry . +200+400
+ label .set_user.label -text "Plese select user. Each can\n have their own recog file."
+ menubutton .set_user.button -text "OK" -relief raised -indicatoron true -menu .set_user.button.menu
+ menu .set_user.button.menu
+ .set_user.button.menu add radiobutton -label "Default" -variable user -value Default
+ .set_user.button.menu add radiobutton -label "Alex   " -variable user -value Alex
+ .set_user.button.menu add radiobutton -label "Kathy  " -variable user -value Kathy
+ .set_user.button.menu add radiobutton -label "Becky  " -variable user -value Becky
+ pack .set_user.label .set_user.button
+ tkwait variable user
+ destroy .set_user
+
+
+
+
+ # initialize a variable to hold a "sentence" made up of the recognized words
+ # for the session. That value can be exported to another program.
+ set sentence ""
+
+ set ftrfile ftrs.def.$user
+
+ main
+
+ # adjust length of text on user button so the GUI doesn't resize every time you change
+ # users
+ set labeltext [set user]
+ for {set x 0} {$x < [expr 7 - [string length $user]]} {incr x} {
+    append labeltext " "
+ }
+ .b.us config -text "$labeltext"
+
+ read_defs
+
+#-------------------------------------------------------------------------------
+
+#  See also A minimal doodler explained, about how to scribble with the mouse.
+
+# TV Cool! I'll try later.
+
+# Alex Caldwell I made a new version after reading a discussion on Penpad. This 
+# one allows you to have a discontinuous stroke. That will allow you to cross a 
+# "t" or an "x" or dot an "i". There are some trade-offs to do this. I had to 
+# change the event bindings so you have to use a Double-Button-1 event to start 
+# the stroke and a Button-3 to complete the stroke. In this version, I had to use 
+# ButtonRelease-1, which formerly marked the end of a stroke, to help keep track 
+# of when the pen is lifted off the canvas. Another global variable was added that 
+# monitors the status of the pen, whether lifted or in contact with and moving on 
+# the canvas. Also you have to explicitly click the "Recog" button now when you are 
+# done with your word to trigger the recognition. I am keeping the original 
+# version above, because while you can not dot the "i" or cross the "t", it is 
+# much faster to use in practice, since the recognition is triggered automatically 
+# at stroke end. It also clears the canvas automatically when a word is recognized, 
+# and does not require the Double-Button-1 to start the stroke, which is more
+# natural.
+
+#-------------------------------------------------------------------------------
+
+ #!/usr/local/bin/wish8.4
+
+ #
+ #        Mouse-stroke character recognizer,
+ #        major pieces stolen from other sources.
+ #        Mike Hall, mghall@enteract.com, 2000-12-23
+ #
+
+ #
+ #        mouse stroke collector, from page 484 of
+ #        Practical Programming in Tcl/Tk, Third Edition, 2000, Brent Welch
+ #
+
+
+ #   Modified by Alex Caldwell to try to allow recognizing whole words instead of characters.
+ #      I Mainly increased the number of cells to 25 which seems to increase the
+ #   accuracy,  but it now takes more training for each word before recognition
+ #   gets consistent.
+ #     It seems to work surprisingly well, but will probably get slow with a
+ #   very large collection of words in the ftrs array
+ #     Allow multiple users to have their own features file
+ #     Collect the recognized words into "sentence" that can be output
+ #   to stdout or to another program - in this case using the Tk send command.
+ #   (on Windows I change this to copy the output into the clipboard so it can
+ #   just be pasted into another application)
+ #   Added some lines to canvas like on school composition paper to help keep your handwriting
+ #   more consistent. It works well with a Cirque glidepoint mouse or an Aiptek
+ #   hyperpen pointing device.
+ #
+ #   alcald2000@yahoo.com 12/21/2002
+
+ #   Revised 10/14/2006
+ #   alcald2000@yahoo.com
+
+ #   You can now have discontinuous strokes. 
+ #   So now you can now cross a "t" or dot an "i".
+ #   Bindings on canvas changed - Double-Button1 starts a stroke, Button-3 ends
+ #   a stroke, ButtonRelease1
+ #   now is used to track status of pen, whether in contact with screen making a
+ #   stroke vs. lifted as you
+ #   need to do to cross a "t" or dot an "i". You now need to click the "recog"
+ #   button to signal you are 
+ #   finished with word and want recognition triggered. 
+
+ #   Requires Bwidgets for a drop down pick list of a library of words it recognizes. 
+
+ # sets up bindings on the canvas to collect mouse strokes. Could be used on other canvases too.
+
+ proc StrokeInit {w} {
+    # global that checks whether the pen is lifted off the canvas or pressed
+    global lifted_status
+    set lifted_status neutral
+    
+    # bindings changed so that you can have discontinuous strokes
+    # like when you cross a t or an x or when you dot an i
+    bind $w <Double-Button-1>          {StrokeBegin        %W %x %y}
+    bind $w <B1-Motion>          {Stroke        %W %x %y;set lifted_status pressed}
+    bind $w <Button-3>    {StrokeEnd        %W %x %y}
+    bind $w <ButtonRelease-1> {set lifted_status lifted}
+    return
+ }
+
+ proc StrokeBegin {w x y} {
+    global stroke 
+    catch {unset stroke}
+    # stroke(N) holds the no of points
+    set stroke(N) 0
+    # stroke(0) holes the coordin. of first point?
+   
+    set stroke(0) [list $x $y]
+    msg "1 point ..."
+    return
+ }
+
+ proc Stroke {w x y} {
+    global stroke lifted_status
+    
+    # get last point
+    if [catch {
+        set n $stroke(N)
+    foreach {ox oy} $stroke($n) {break}
+    
+    # filter? abs(dx) + abs(dy) > threshold
+    
+    # install latest point
+    incr n
+    set stroke(N) $n
+    set stroke($n) [list $x $y]
+    puts "$stroke($n)"
+    msg "$n points ..."
+    
+    #puts "[lsort [array get stroke]]"
+    }] {
+            tk_dialog .error Error "Sorry, You have to use a Double Left Click to start a Word." error 0 OK
+            
+        }
+        
+    # draw latest segment
+    if {$lifted_status == "pressed"} {
+    $w create line $ox $oy $x $y -width 2 -tag segments
+    }
+    return
+ }
+
+ proc StrokeEnd {w x y} {
+    global stroke
+    
+    set n $stroke(N)
+    msg "$n points"
+    
+    if {$n > 4} {
+        # arrow at end
+        foreach {ox oy} $stroke([expr {$n - 4}]) {break}
+        $w create line $ox $oy $x $y -arrow last -tag segments
+        
+        # if enough points, and rec_type == "auto", process it for word recognition.
+        # if rec type != auto will use the button on the toolbar instead.
+        
+        recog stroke_end
+        
+    }
+    
+    # dot at begin
+    foreach {ox oy} $stroke(0) {break}
+    set  x [expr {$ox + 4}]
+    set  y [expr {$oy + 4}]
+    set ox [expr {$ox - 4}]
+    set oy [expr {$oy - 4}]
+    $w create oval $ox $oy $x $y -fill white -tag segments
+    return
+ }
+
+ #
+ #        Get min/max x/y values of the stroke
+ #
+ proc get_min_max { } {
+    global stroke
+    global xl xh yl yh x1 x2 y1 y2 x3 y3 x4 y4
+    
+    # initialize from first point
+    foreach {xl yl} $stroke(0) {break}
+    set xh $xl
+    set yh $yl
+    
+    # adjust from remaining data
+    set n $stroke(N)
+    for {set i 1} {$i <= $n} {incr i} {
+        foreach {x y} $stroke($i) {break}
+        if {$x < $xl} {
+            set xl $x
+        } elseif {$x > $xh} {
+            set xh $x
+        }
+        if {$y < $yl} {
+            set yl $y
+        } elseif {$y > $yh} {
+            set yh $y
+        }
+    }
+    
+    # divide the box in thirds each way (25 sub boxes)
+    set x1 [expr {$xl +    ($xh - $xl)/5.}]
+    set y1 [expr {$yl +    ($yh - $yl)/5.}]
+    set x2 [expr {$xl + 2.*($xh - $xl)/5.}]
+    set y2 [expr {$yl + 2.*($yh - $yl)/5.}]
+    set x3 [expr {$xl + 3.*($xh - $xl)/5.}]
+    set y3 [expr {$yl + 3.*($yh - $yl)/5.}]
+    set x4 [expr {$xl + 4.*($xh - $xl)/5.}]
+    set y4 [expr {$yl + 4.*($yh - $yl)/5.}]
+    # check aspect (for vertical and horizontal strokes)
+    set dx [expr {abs($xh - $xl)}]
+    set dy [expr {abs($yh - $yl)}]
+    set thresh 6.0
+    if {$dy > [expr {$thresh * $dx}]} {
+        # vertical
+        set x1 $xl
+        set x2 $xh
+        
+    } elseif {$dx > [expr {$thresh * $dy}]} {
+        # horizontal
+        set y1 $yl
+        set y2 $yh
+    }
+    
+    return
+ }
+
+ #
+ #        Display the box outline and the interior dividers
+ #
+ proc show_boxes { } {
+    global stroke
+    global xl xh  yl yh  x1 x2  y1 y2  x3 y3  x4 y4
+    
+    # enclosing box
+    .c create rectangle [expr {$xl-1}] [expr {$yl-1}]  \
+            [expr {$xh+1}] [expr {$yh+1}] -tags boxes -outline blue
+    
+    # interior crossing lines
+    .c create line $xl $y1 $xh $y1 -tags boxes -fill red
+    .c create line $xl $y2 $xh $y2 -tags boxes -fill red
+    .c create line $xl $y3 $xh $y3 -tags boxes -fill red
+    .c create line $xl $y4 $xh $y4 -tags boxes -fill red
+    .c create line $x1 $yl $x1 $yh -tags boxes -fill red
+    .c create line $x2 $yl $x2 $yh -tags boxes -fill red
+    .c create line $x3 $yl $x3 $yh -tags boxes -fill red
+    .c create line $x4 $yl $x4 $yh -tags boxes -fill red
+    # label showing no of points in the stroke on upper left of enclosing box
+    .c create text $xl $yl -text "$stroke(N)" -anchor sw -fill blue \
+            -tags boxes
+    return
+ }
+
+ #
+ #        Convert from x/y coordinates to cell-values in the box
+ #
+ #        Normal                XOR crossings
+ #
+ #        0  1  2         3  4               0  1  3  5  7
+ #        5  6  7         8  9               8  9  11 13 15
+ #        10 11 12 13 14                    16 17 19 21 23
+ #   15 16 17 18 19      24 25 27 29 31
+ #   20 21 22 23 24      32 33 35 37 39
+
+ proc cell_value {x y} {
+    global x1 x2 y1 y2 x3 y3 x4 y4
+    
+    # get cell value for x coordinate
+    if {$x < $x1} {
+        set xv 0
+    } elseif {$x <= $x2} {
+        set xv 1
+    } elseif {$x <= $x3} {
+        set xv 2
+    } elseif {$x <= $x4} {
+        set xv 3
+    } else {
+        set xv 4
+    }
+    
+    # get cell value for y coordinate
+    if {$y < $y1} {
+        set yv 0
+    } elseif {$y <= $y2} {
+        set yv 4
+    } elseif {$y <= $y3} {
+        set yv 12
+    } elseif {$y <= $y4} {
+        set yv 24
+    } else {
+        set yv 32
+    }
+    
+    # overall cell value
+    return [expr {$xv + $yv}]
+ }
+
+ #
+ #        Reset crossing counts
+ #
+ proc init_crossing { } {
+    global crosses
+    foreach x {1 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 N} {
+        set crosses($x) 0
+    }
+    return
+ }
+
+ #
+ #        Track line-crossing counts from old-cell to new-cell
+ #
+ proc crossing {old new} {
+    global crosses
+    incr crosses(N)
+    set cn [expr {$new ^ $old}]
+    foreach bit {1 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32} {
+        if {$cn & $bit} {
+            incr crosses($bit)
+        }
+    }
+    return
+ }
+
+ #
+ #        Convert strokes to list of cells
+ #
+
+ proc box_cells { } {
+    global stroke
+    global cells
+    
+    # setup
+    catch {unset cells}
+    init_crossing
+    
+    # start first point
+    foreach {x y} $stroke(0) {break}
+    set ocv [cell_value $x $y]
+    set cells $ocv
+    puts "\$ocv == $ocv"
+    # convert rest of points
+    set n $stroke(N)
+    for {set i 1} {$i <= $n} {incr i} {
+        foreach {x y} $stroke($i) {break}
+        set cv [cell_value $x $y]
+        if {$cv != $ocv} {
+            # new cell, accumulate
+            lappend cells $cv
+            # track line crossings
+            crossing $ocv $cv
+            # new current cell value
+            set ocv $cv
+        }
+    }
+    return
+ }
+
+ #
+ #        Construct the resulting set of features
+ #                - first cell, last cell
+ #                - last crossing, last crossing
+ #                - four crossing counts (2 x-axis, 2 y-axis)
+ #
+ proc ftr { } {
+    global cells
+    puts "cells == $cells"
+    global crosses
+    puts "crosses == [array get crosses]"
+    
+    set c0 [lindex $cells 0]
+    set c1 [lindex $cells 1]
+    set cn [lindex $cells end]
+    set cp [lindex $cells [expr {[llength $cells]-2}]]
+    
+    set d1 [expr {$c0 ^ $c1}]
+    set dn [expr {$cn ^ $cp}]
+    
+    return "$c0 $cn $d1 $dn $crosses(1) $crosses(2) $crosses(4) $crosses(6) $crosses(8) $crosses(10) $crosses(12) $crosses(14) $crosses(16) $crosses(18) $crosses(20) $crosses(22) $crosses(24) $crosses(26) $crosses(28) $crosses(30) $crosses(32)"
+ }
+
+ proc show_ftr {f} {
+    global xl xh yl yh
+    global cells
+    global sentence
+    .c create text $xl $yh -text $f -anchor nw -fill red -tags boxes
+    set x [match $f]
+    if {$x == ""} {
+        set x unk
+    }
+    set x "[llength $cells] $x"
+    puts "Cells == $cells"
+    
+    msg $x
+    .c create text $xh $yl -text "$x" -anchor se -fill purple -tags boxes
+    if {[lindex $x 1] != "unk"} {
+        bell;bell
+        append sentence "[lindex $x 1] "
+        puts $sentence
+        .l configure -text "$sentence"
+        after 2000 clear
+        update idletasks
+        #This will convert text to speech if you have ViaVoice
+        catch {
+            exec /usr/lib/ViaVoiceOutloud/samples/cmdlinespeak/cmdlinespeak "I recognized the word [lindex $x 1]"
+            exec /usr/lib/ViaVoiceOutloud/samples/cmdlinespeak/cmdlinespeak "Your complete sentence now reads: $sentence"
+        } mistake
+        if [info exists mistake] {
+            if [regexp "no such file or directory" $mistake] {
+                puts "You don't have speach enabled on your system"
+                puts "\$mistake == $mistake"
+            } else {
+                puts "You seem to have Via Voice installed - that is good"
+            }
+        }
+    } else {
+        update idletasks
+        puts "I'm sorry, I don't recognise that word."
+        catch {
+            exec /usr/lib/ViaVoiceOutloud/samples/cmdlinespeak/cmdlinespeak "I'm sorry,
+            I don't understand that word. You can train me by typing it in the box and then click the def button."
+            
+        } mistake
+        if [info exists mistake] {
+            if [regexp "no such file or directory" $mistake] {
+                puts "You don't have speach enabled on your system"
+                puts "\$mistake == $mistake"
+            } else {
+                puts "You seem to have Via Voice installed - that is good!"
+            }
+        }
+        
+    }
+    return
+ }
+
+ #
+ #        Recognize the stroke
+ #        Leeden recognizer, from page 204 of
+ #        Principles of Interactive Computer Graphics 2nd ed, 1979, Newman+Sproull
+ #
+ proc recog {from} {
+    global rec_type
+    
+    get_min_max
+    show_boxes
+    box_cells
+    if {$rec_type == "auto" && $from == "stroke_end"} {
+        set f [ftr]
+        puts "\$f == $f"
+        show_ftr $f
+    } elseif {$rec_type == "stroke_end" && $from == "button"} {
+        set f [ftr]
+        show_ftr $f
+    }
+    return
+ }
+
+ #
+ #        Clear the canvas, prepare for another run
+ #
+ proc clear { } {
+    global stroke
+    .c delete segments
+    .c delete boxes
+    unset stroke
+    return
+ }
+
+ #
+ #        Update the log message
+ #
+ proc msg {x} {
+    global msg
+    set msg $x
+    return
+ }
+
+ #
+ #        Lookup this stroke's features
+ #
+ proc match {f} {
+    global ftrs
+    
+    if {[info exists ftrs($f)]} {
+        return $ftrs($f)
+    } else {
+        return ""
+    }
+ }
+
+ #
+ #        Set a new definition
+ #
+ proc set_def { } {
+    global ftrs char
+    
+    set f [ftr]
+    set x [match $f]
+    if {$x != ""} {
+        msg "Conflict: $ftrs($f) and $char"
+    } else {
+        set ftrs($f) $char
+        msg "set $char"
+    }
+    return
+ }
+
+ #
+ #        Unset an existing definition
+ #
+ proc unset_def { } {
+    global ftrs
+    
+    set f [ftr]
+    if {[info exists ftrs($f)]} {
+        set x $ftrs($f)
+        msg "Erasing $x $f"
+        unset ftrs($f)
+    }
+    return
+ } 
+
+ #
+ #        Unset all definitions for a word
+ #
+ proc undef_char { } {
+    global ftrs char
+    foreach f [array names ftrs] {
+        if {$ftrs($f) == $char} {
+            unset ftrs($f)
+        }
+    }
+    return
+ }
+
+ #
+ #        Read the features
+ #
+ proc read_defs { } {
+    global ftrs
+    global ftrfile
+    
+    if {[catch {open $ftrfile r} fid] == 0} {
+        while {[gets $fid line] > 0} {
+            set ftrs([lrange $line 1 end]) [lindex $line 0]
+        }
+        close $fid
+        msg "read [array size ftrs] entries"
+    } else {
+        msg "No ftrs file"
+    }
+    return
+ }
+
+ #
+ #        Save the defined features
+ #
+ proc save_defs { } {
+    global ftrs
+    global ftrfile
+    
+    if {[catch {open $ftrfile w} fid] == 0} {
+        foreach {k v} [array get ftrs] {
+            # escape some special characters
+            if {[string match {[\{\[\" ]} $v]} {
+                puts $fid "\\$v $k"
+            } else {
+                puts $fid "$v $k"
+            }
+        }
+        close $fid
+    }
+    msg "saved [array size ftrs] entries"
+    return
+ }
+
+ # a proc to read dictionary of trained words and display them in a BWidget
+ # combo box
+
+ proc read_dictionary  {user} {
+    global dictionary
+    set f [open ftrs.def.$user r]
+    set data [read $f]
+    set question_counter 0
+    foreach recog [split $data "\n"] {
+        if {[lindex $recog 0] == "?" && $question_counter == "0"} {
+            lappend dictionary "?"
+            incr question_counter
+            continue
+        }  elseif { [lindex $recog 0] != "?" && ![regexp -nocase "[lindex $recog 0]" $dictionary]} {
+            lappend dictionary [lindex $recog 0]
+        }
+    }
+    
+    .b.combo configure -values [lsort -ascii $dictionary]
+    balloon .b.combo "Pops up a dictionary list\nof currently trained words."
+ }
+
+ # a tootips proc so you can remember what the buttons are for
+
+ proc balloon {w help} {
+    bind $w <Any-Enter> "after 1000 [list balloon:show %W [list $help]]"
+    bind $w <Any-Leave> "destroy %W.balloon"
+ }
+ proc balloon:show {w arg} {
+    if {[eval winfo containing  [winfo pointerxy .]]!=$w} {return}
+    set top $w.balloon
+    catch {destroy $top}
+    toplevel $top -bd 1 -bg black
+    wm overrideredirect $top 1
+    if {$::tcl_platform(platform) == "macintosh"} {
+        unsupported1 style $top floating sideTitlebar
+    }
+    pack [message $top.txt -aspect 10000 -bg lightyellow \
+            -font fixed -text $arg]
+    set wmx [winfo rootx $w]
+    set wmy [expr [winfo rooty $w]+[winfo height $w]]
+    wm geometry $top \
+            [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wmx+$wmy
+    raise $top
+ }
+
+ #
+ #        Create the toplevel interface
+ #
+
+
+ proc main {} {
+    global msg char rec_type sentence user dicionary sentence tcl_platform output_to argv
+    wm title . "Word Recognizer"
+    wm geometry . +200+200
+    # drawing surface
+    canvas .c
+    balloon .c "Scribble your word here.\n In this version, you can lift the pen to\ndot an \"i\" or cross a \"t\", but you have to use a Double Left Click to start a stroke and a right click to end it. Then click the Recog button to trigger recognition."
+    # label to show accumulated sentence
+    label .l -text "recognized words" -pady 0
+    balloon .l "Your accumulated sentence of recognized\nwords will appear here."
+    
+    # row of controls
+    frame .b
+    # send the accumulated sentence to the text entry box from the other program passed in as argument at startup of script
+    button .b.d -text Done -pady 0 -padx 0 -command {
+        if {$tcl_platform(os) == "Linux" && $argv != "" && $output_to == ""} {
+            send [lindex $argv 0] "set [lindex $argv 1] \"$sentence\""
+        } elseif {$tcl_platform(os) == "Linux" && $argv == "" && $output_to != ""} {
+            #send $output_to "clipboard append \" ${sentence}.\""
+            selection set " ${sentence}. "
+        } elseif {[regexp "Windows" $tcl_platform(os)]}  {
+            clipboard append " ${sentence}."
+        }
+        exit
+    }
+    balloon .b.d "Close and send accumulated \nsentence to note  generator."
+    set output_to ""
+    # menu for selecting Tk app to send the output to using the Tk "send" command
+    # the output will go to where the current focus is in the application
+    if {$tcl_platform(os) == "Linux"} {
+        menubutton .b.output -text "Output to?" -relief raised -pady 0 -padx 0 -menu .b.output.menu
+        menu .b.output.menu
+        foreach app [winfo interps] {
+            .b.output.menu add radiobutton -label $app -variable output_to
+        }
+        
+        # if not called with an argument that gives a variable or list into which the output
+        # can be sent, the menubutton that enables selecting an app. can be used. If
+        # arguments are passed in, disable the button.
+        
+        if {$argv != "" && $output_to == ""} {
+            .b.output configure -state disabled
+        }
+    }
+    
+    menubutton .b.us -text User -pady 0 -padx 0 -relief raised  -indicatoron true -menu .b.us.menu
+    menu .b.us.menu
+    .b.us.menu add radiobutton -label "Default" -variable user -value Default -command {.b.us config -text "Default";set ftrfile ftrs.def.$user;read_defs}
+    .b.us.menu add radiobutton -label "Alex   " -variable user -value Alex -command {.b.us config -text "Alex   ";set ftrfile ftrs.def.$user;read_defs}
+    .b.us.menu add radiobutton -label "Kathy  " -variable user -value Kathy -command {.b.us config -text "Kathy  ";set ftrfile ftrs.def.$user;read_defs}
+    .b.us.menu add radiobutton -label "Becky  " -variable user -value Becky -command {.b.us config -text "Becky  ";set ftrfile ftrs.def.$user;read_defs}
+    balloon .b.us "Shows current user.\n Menu allows choosing different user.\n Each user has own features file."
+    button  .b.r -text Read  -command read_defs -pady 0 -padx 0
+    balloon .b.r "Read in features file for current user.\nHappens automatically when new user selected."
+    button  .b.s -text Save  -command save_defs -pady 0 -padx 0
+    balloon .b.s "Save current users features file."
+    button  .b.c -text Erase -command clear -pady 0 -padx 0
+    balloon .b.c "Clear out current word \nfrom text pad. Prepare\n for new word."
+    button  .b.u -text Unset -command unset_def -pady 0 -padx 0
+    balloon .b.u "Unsets current scribble's definition\nfor the typed word in the box."
+    button  .b.f -text UnDef -command undef_char -pady 0 -padx 0
+    balloon .b.f "Unset ALL definitions for the word in the box"
+    button  .b.t -text Def   -command set_def -pady 0 -padx 0
+    balloon .b.t "Use if scribbled word is not recognized\nafter typing  the word in box."
+    # make it so you can turn of recognition until later if desired
+    # was hoping add feature where you could collect more than one
+    # stroke like for the dot on the i or the cross on the t but not
+    # implemented yet.
+    set rec_type stroke_end
+    menubutton .b.rec_type -text "Rec.?" -indicatoron true -pady 0 -padx 0 -menu .b.rec_type.menu -relief raised
+    balloon .b.rec_type "Recog button option delays recognition so you\n could dot an i or cross a t.\nIn this version, end of strokes option does not work."
+    menu .b.rec_type.menu
+    .b.rec_type.menu add radiobutton -label "At end of strokes" -variable rec_type -value auto
+    .b.rec_type.menu add radiobutton -label "When recog button clicked" -variable rec_type -value stroke_end
+    button  .b.rec -text Recog -command "recog button" -pady 0 -padx 0
+    balloon .b.rec "Also does not work yet."
+    entry   .b.e -width 20 -textvariable char
+    balloon .b.e "Type the word current \nscribble represents if it is\n not recognized then click\n Def button."
+    bind .b.e <Return> {set_def}
+    
+    package require BWidget
+    ComboBox .b.combo  -command {
+        append sentence " [.b.combo get]"
+        .l configure -text "$sentence"
+    }
+    
+    pack .b.combo -side right -fill x
+    read_dictionary $user
+    
+    label .b.msg -textvariable msg -width 20
+    if {$tcl_platform(os) == "Linux"} {
+        pack .b.d .b.us .b.output .b.rec_type .b.r .b.s .b.c .b.u .b.f .b.rec .b.t  .b.e -side left -fill x
+    } else  {
+        pack .b.d .b.us .b.rec_type .b.r .b.s .b.c .b.u .b.f .b.rec .b.t  .b.e -side left -fill x
+    }
+    
+    pack .b.msg -side right -fill x -expand 1
+    balloon .b.msg "Some helpful status messages appear here."
+    
+    # buttons along the bottom, canvas fills remainder
+    pack .b -side bottom -fill x
+    pack .c -side top -fill both -expand 1
+    for {set x 0} {$x < 950} {incr x 10} {
+        if {[expr $x % 20] == "0"} {
+            .c create line $x 75  [expr $x + 10] 75 -width 1 -fill black
+        }
+        
+    }
+    
+    .c create line 0 150 950 150 -width 3 -fill black
+    # setup stroke collector
+    StrokeInit .c
+    pack .l -side top -fill x
+    return
+ }
+
+ package require Tk
+ frame .set_user
+ pack  .set_user
+ wm geometry . +200+400
+ label .set_user.label -text "Plese select user. Each can\n have their own recog file."
+ menubutton .set_user.button -text "OK" -relief raised -indicatoron true -menu .set_user.button.menu
+ menu .set_user.button.menu
+ .set_user.button.menu add radiobutton -label "Default" -variable user -value Default
+ .set_user.button.menu add radiobutton -label "Alex   " -variable user -value Alex
+ .set_user.button.menu add radiobutton -label "Kathy  " -variable user -value Kathy
+ .set_user.button.menu add radiobutton -label "Becky  " -variable user -value Becky
+ pack .set_user.label .set_user.button
+ tkwait variable user
+ destroy .set_user
+
+ # initialize a variable to hold a "sentence" made up of the recognized words
+ # for the session. That value can be exported to another program.
+ set sentence ""
+
+ # a variable to hold a list of trained words in the dictionary
+ set dictionary ""
+
+ set ftrfile ftrs.def.$user
+
+ main
+
+ #adjust length of text on user button so the GUI doesn't resize every time you change users
+ set labeltext [set user]
+ for {set x 0} {$x < [expr 7 - [string length $user]]} {incr x} {
+    append labeltext " "
+ }
+ .b.us config -text "$labeltext"
+
+ read_defs
+
+#-------------------------------------------------------------------------------
+
+# Category Application	Category Handwriting Recognition
+# Updated 2011-07-13 22:14:16
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------

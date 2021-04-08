@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+   
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    
+    <meta name = "viewport" content = "width = 1080">
+    
+    <title>xdotool или как сделать что-то ничего не делая / Песочница / Хабрахабр</title>
+        
+    
+    
+    
+
+      <link href="/styles/1384446655/all.css" rel="stylesheet" media="all" />
+
+
+      <link href="/styles/1384446655/_parts/posts.css" rel="stylesheet" media="all" />
+  <link href="/styles/1384446655/highlight.css" rel="stylesheet" media="all" />
+  <link href="/styles/1384446655/forms.css" rel="stylesheet" media="all" />
+  
+    <link href="/styles/1384446655/printer.css" rel="stylesheet" media="print" />
+
+    
+    
+
+      <script type="text/javascript" src="/javascripts/1384446655/all.js"></script>
+    
+    
+    
+
+  
+  
+  
+  
+      <script type="text/javascript" src="/javascripts/1384446655/_parts/posts.js"></script>
+  <script type="text/javascript" src="/javascripts/1384446655/libs/jquery.form.js"></script>
+  <script type="text/javascript" src="/javascripts/1384446655/libs/highlight.js"></script>
+  <script type="text/javascript" src="/javascripts/1384446655/posts/all.js"></script>
+  <script type="text/javascript" src="/javascripts/1384446655/posts/sandbox.js"></script>
+
+
+
+  	<script type='text/javascript'>
+	  var crtg_nid="2580";
+	  var crtg_cookiename="cto_rtt";
+	  var crtg_varname="crtg_content";
+	  function crtg_getCookie(c_name){
+		  var i,x,y,ARRCookies=document.cookie.split(";");
+		  for(i=0;i<ARRCookies.length;i++){
+			  x=ARRCookies[i].substr(0,ARRCookies[i].indexOf("="));
+			  y=ARRCookies[i].substr(ARRCookies[i].indexOf("=")+1);
+			  x=x.replace(/^\s+|\s+$/g,"");
+			  if(x==c_name){return unescape(y);}
+		   }
+		return'';
+	   }
+	var crtg_content = crtg_getCookie(crtg_cookiename);var crtg_rnd=Math.floor(Math.random()*99999999999);
+		var crtg_url=location.protocol+'//rtax.criteo.com/delivery/rta/rta.js?netId='+escape(crtg_nid);crtg_url+='&cookieName='+escape(crtg_cookiename);crtg_url+='&rnd='+crtg_rnd;crtg_url+='&varName=' + escape(crtg_varname);
+		var crtg_script=document.createElement('script');crtg_script.type='text/javascript';crtg_script.src=crtg_url;crtg_script.async=true;
+		if(document.getElementsByTagName("head").length>0)document.getElementsByTagName("head")[0].appendChild(crtg_script);
+		else
+		if(document.getElementsByTagName("body").length>0)document.getElementsByTagName("body")[0].appendChild(crtg_script);
+	</script>
+
+      <script type="text/javascript" src="/javascripts/1384446655/adriver.core.2.js"></script>
+
+    
+        
+      <script type="text/javascript">
+      var _gaq = window._gaq || [];
+      window.onerror = function(msg, url, line) {
+          //var preventErrorAlert = true;
+          //_gaq.push(['_trackEvent', 'JS Error', msg, navigator.userAgent + ' -> ' + url + " : " + line]);
+          //return preventErrorAlert;
+      };
+      
+      jQuery.error = function (message) {
+          _gaq.push(['_trackEvent', 'jQuery Error', message, navigator.userAgent]);
+      }
+      </script>
+       
+  </head>
+
+  <body>
+   <div class="wrapper">
+      
+      <div id="layout">
+        <div id="header">
+    <div class="userpanel silver">
+      <a href="https://auth.habrahabr.ru/login/" class="login">войти через TM ID</a>
+  </div>
+  <a class="logo " href="http://habrahabr.ru/" title="На главную страницу"></a>
+  <div class="search">
+    <form id="search_form" name="search" method="get" action="//habrahabr.ru/search/" >
+      <input type="submit" value="" />
+      <input type="text" name="q" x-webkit-speech speech tabindex="1" >
+    </form>
+  </div>
+
+	<div class="main_menu">
+		<a href="http://habrahabr.ru/posts/top/" class="active">посты</a><a href="http://toster.ru/">q&amp;a</a><a href="http://habrahabr.ru/events/coming/">события</a><a href="http://habrahabr.ru/hubs/">хабы</a><a href="http://habrahabr.ru/companies/">компании</a>
+		<div class="banner_special">
+
+	
+		<!--  AdRiver code START. Type:135x35 Site: habrahabr PZ: 0 BN: 0 -->
+		<script language="javascript" type="text/javascript"><!--
+		var RndNum4NoCash = Math.round(Math.random() * 1000000000);
+		var ar_Tail='unknown'; if (document.referrer) ar_Tail = escape(document.referrer);
+		document.write(
+		'<iframe src="http://ad.adriver.ru/cgi-bin/erle.cgi?'
+		+ 'sid=176776&target=top&w=135&h=35&bt=25&pz=0&rnd=' + RndNum4NoCash + '&tail256=' + ar_Tail
+		+ '" frameborder=0 vspace=0 hspace=0 width=135 height=35 marginwidth=0'
+		+ ' marginheight=0 scrolling=no></iframe>');
+		//--></script>
+		<noscript>
+		<a href="http://ad.adriver.ru/cgi-bin/click.cgi?sid=176776&bt=25&pz=0&rnd=795668059" target=_top>
+		<img src="http://ad.adriver.ru/cgi-bin/rle.cgi?sid=176776&bt=25&pz=0&rnd=795668059" alt="-AdRiver-" border=0 width=135 height=35></a>
+		</noscript>
+
+		<!--  AdRiver code END  -->
+
+</div>
+		
+	</div>
+
+</div>
+
+
+
+        
+        	
+
+  <div class="content_left">
+	  
+
+
+
+
+<table class="menu">
+  <tr>
+      <td class="item all">
+        	<a href="http://habrahabr.ru/posts/top/"  ><span class="name">Лучшие</span></a>
+      </td>
+      <td class="item collective active">
+        	<a href="http://habrahabr.ru/posts/collective/"  ><span class="name">Тематические</span></a>
+      </td>
+      <td class="item corporative">
+        	<a href="http://habrahabr.ru/posts/corporative/"  ><span class="name">Корпоративные</span></a>
+      </td>
+  </tr>
+</table>
+<div class="submenu ">
+      <div class="item ">
+        <a href="http://habrahabr.ru/posts/collective/habred/" ><span class="name">Захабренные</span></a>
+      </div>
+      <div class="item ">
+        <a href="http://habrahabr.ru/posts/collective/new/" ><span class="name">Новые</span> <span class="count_new">+55</span></a>
+      </div>
+      <div class="item ">
+        <a href="http://habrahabr.ru/posts/collective/unhabred/" ><span class="name">Отхабренные</span></a>
+      </div>
+      <div class="item  active">
+        <a href="http://habrahabr.ru/sandbox/" ><span class="name">Песочница</span></a>
+      </div>
+</div>
+<div class="clear"></div>
+
+
+
+			
+  <div class="post" id="post_46514">
+  	<div class="published">27 июля 2012 в 05:18</div>
+    <h1 class="title">
+    
+        <span class="post_title">xdotool или как сделать что-то ничего не делая</span>
+      
+  		
+  	</h1>
+
+	
+
+    <div class="content html_format">
+      Доброй ночи Хабравчане, <br/>
+<br/>
+Ночь на дворе, вдали видно огни телевышки, работы почти нету, ну просто романтика. Вот я и решил написать статейку.<br/>
+<br/>
+На использование <a href="http://www.semicomplete.com/projects/xdotool/">xdotool</a> наткнулся случайно изобретая «велосипед». Причиной использования этой утилиты стала лень, да-да «лень двигатель прогреса». Чем меньше хочешь работать, тем больше выдумываешь всяких скриптов, чтобы они выполняли за тебя работу.<br/>
+<a name="habracut"></a><br/>
+Итак начнем.<br/>
+<br/>
+Работаю на одну хостинговую компанию (маленькую, сейчас 40+ серверов) и стало все больше лень заходить на сервера посредством набора команд «ssh root@IP». Так как сначала серверов было около 20, но время шло, а серверов ставало больше, а когда ты их мониторишь, то желательно, чтоб они все у тебя были «навиду». Так вот, проблема входа стала ребром, так как при пересменке надо было заходить на все серваки, дабы не случилось чего плохого. Посидев с сотрудниками подумали написать какой-то скрипт, чтобы он сам входил на все серваки. Так как я совсем не прогер, то за дело взялись сотрудники, которые шарят в программировании. И вот не прошло пару недель как родился скрипт:<br/>
+<br/>
+<code>
+screen -d -m gnome-terminal --profile=&quot;Default&quot; --tab -t &quot;s1&quot; -e &quot;ssh -t uateam@jump.server ssh -t root@server1&quot;
+</code><br/>
+<br/>
+P.S. не буду показывать весь скрипт, так как там почти одно и тоже.<br/>
+<br/>
+Ой, забыл сказать, не все так просто было. У нас есть так cказать «jump» сервер, только он имеет доступ к другим серверам используя пользователя root. То есть, чтобы попасть на нужный сервер надо было:<br/>
+1) Зайти на jump сервер<br/>
+2) С jump сервера зайти на нужный сервер<br/>
+<br/>
+Ключики все были, то есть пароли вводить не надо было и еще упустили пунк (1) путем прописния в настройках <b>gnome-terminal</b> команды, которая входить на jump сервер сразу же при открытии терминала и последующих его вкладоках.<br/>
+<br/>
+Все было хорошо, протестили с 5ма серверами, все заходит и работает просто отлично, но когда прописали все сервера наткнулись на «подводные камни».<br/>
+<br/>
+P.S. так как было 3 подвида серверов, то есть шаровые, реселлеры и ВПСы, мы открывали отдельно 3 окна терминала.<br/>
+<br/>
+И вот «камешком» стала опцыя в конфиге SSH'а на jump сервере (доступ к которому у нас был ограничен), которая ограничивала открытие терминалов &lt;=10 с одного запроса (уже не помню как точно называлась). Попробовали реализовать команду <a href="http://en.wikipedia.org/wiki/Sleep_(Unix)">sleep</a> в коде, дабы сделать задержку, но она почему-то не работала, как я понимаю это все изза того, что действие проходит уже из-под <b>gnome-terminal</b>. Ковыряли, но в результате так и забили, и начали использовать имеющий скрипт, который открывал по 10 серваков в одном терминале, а потом руками надо было мувать вкладки (ну конечно, кто хотел тот мувал, кто не хотел тот смотрел в 5 окон сразу).<br/>
+Но я упорно не хотел руками мувать вкладки и сам себя заставлял руками прописывать каждый раз ssh root@server#, дабы заставить себя найти решение той проблемы или написать свой скрипт.<br/>
+<br/>
+И тут в один прекрасный день я все же себя заставил поковыряться в том скрипте (наверное погода была хорошая). Убил 2 часа, но так и не нашел как решить проблему, потом случайно наткнулся на <a href="http://www.semicomplete.com/projects/xdotool/">xdotool</a> (да-да, об этом стаття). Прочитал, вроде все так просто, прописал строку и нажалась одна клавиша (сначала хотел чтобы печатались полные названия команд, а потом понял, что это очень геморно). Пошивилив извилинами включился режим «чем проще, тем лучше», и тут на мысль пришли горячие клавиши <b>gnome-terminal</b>. Так как я их раньше использовал для ручного ввода, то сильно не пришлось думать, какие наборы прописать в скрипте. И вот что родилось:<br/>
+<br/>
+<code>#!/bin/bash
+gnome-terminal;
+WID=`xprop -root | grep &quot;_NET_ACTIVE_WINDOW(WINDOW)&quot;| awk '{print $5}'`;
+export WID;
+xdotool windowfocus $WID;
+xdotool type &quot;ssh root@server&quot;;
+xdotool key Return;
+xdotool key &quot;ctrl+m&quot;;
+xdotool type s;
+xdotool key Return;</code><br/>
+<br/>
+Гордился сам собой все больше и больше по мере усовершенствования своего скрипта.<br/>
+<br/>
+В процессе написания столкнулся с проблемой клавиши Enter, то она работала, то она не работала, но в конце заработала так и не поняв в чем была причина.<br/>
+<br/>
+И вот первый тест с 10 серверами, запускаю скрипт, и вдруг мне захотелось вставить свою флэшку (не помню почему), открылось окно с содержимим флэшки и в нем же начали октрываться подобные вкладки (в мозге пролетела мысль: «прикольная шняжка»). И тут я зразу же понял, что xdotool работает с активным окном. Почесав репу дошел до того, чтобы запустить полноценный скрипт надо, чтобы в момент выполнение все программы, которые могли помешать (даже Skype с дилоговыми всплываниями) должны быть выключены. <br/>
+Тесты шли, работа шла, скрипт работал и я соответственно радовался. В конце концов родилось детище, которое открывало 19 серверов (соответствено за некоторое время):<br/>
+<br/>
+<code>
+#!/bin/bash
+#Shared Servers
+gnome-terminal;
+WID=`xprop -root | grep &quot;_NET_ACTIVE_WINDOW(WINDOW)&quot;| awk '{print $5}'`;
+export WID;
+for i in {1..19} 
+do
+WID=`xprop -root | grep &quot;_NET_ACTIVE_WINDOW(WINDOW)&quot;| awk '{print $5}'`;
+export WID;
+xdotool windowfocus $WID;
+xdotool type &quot;ssh root@server${i}&quot;;
+xdotool key Return;
+xdotool key &quot;ctrl+m&quot;;
+xdotool type s${i};
+xdotool key Return;
+sleep 1;
+WID=`xprop -root | grep &quot;_NET_ACTIVE_WINDOW(WINDOW)&quot;| awk '{print $5}'`;
+export WID;
+xdotool key &quot;ctrl+n&quot;
+sleep 2;
+done;
+sleep 2;
+xdotool key &quot;ctrl+d&quot;
+xdotool windowsize --usehints $WID 300% 100%
+</code><br/>
+<br/>
+Не знаю почему, но люблю когда все работает и выглядит красиво без особых затрат времени и усилий<br/>
+Может некоторые части скрипта вовсе и не надо, но на стадии теста я их ввел и выводить не собираюсь.<br/>
+Так как я не программист (хочу что-то писать, но не могу никак определиться что учить), хотя чесно говоря мне нравиться писать что-то свое, то мой скрипт на мое мнение не очень уж и плохой.
+
+  		<div class="clear"></div>
+    </div>
+		
+		<div class="tags">
+			linux, bash, xdotool, gnome-terminal
+		</div>
+		
+		
+		<div class="infopanel infopanel_sandbox" id="infopanel_post_46514">
+	
+	<div class="sandbox_author">
+		,,,(o_O),,,
+	</div>
+	
+		<div class="share">
+		<div class="twitter">
+			<a href="http://twitter.com/intent/tweet?text=xdotool+%D0%B8%D0%BB%D0%B8+%D0%BA%D0%B0%D0%BA+%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C+%D1%87%D1%82%D0%BE-%D1%82%D0%BE+%D0%BD%D0%B8%D1%87%D0%B5%D0%B3%D0%BE+%D0%BD%D0%B5+%D0%B4%D0%B5%D0%BB%D0%B0%D1%8F+%23habr+http://habr.ru/sandbox/46514/" title="Опубликовать ссылку в Twitter" target="_blank"></a>
+		</div>
+		<div class="vkontakte">
+			<a href="http://vkontakte.ru/share.php?url=http://habr.ru/sandbox/46514/" title="Опубликовать ссылку во ВКонтакте" onclick="window.open(this.href, 'Опубликовать ссылку во Вконтакте', 'width=800,height=300'); return false"></a>
+		</div>
+		<div class="facebook">
+			<a href="https://www.facebook.com/sharer/sharer.php?u=http://habr.ru/sandbox/46514/" title="Опубликовать ссылку в Facebook" onclick="window.open(this.href, 'Опубликовать ссылку в Facebook', 'width=640,height=436,toolbar=0,status=0'); return false"></a>
+		</div>
+		<div class="googleplus">
+			<a href="https://plus.google.com/share?url=http://habr.ru/sandbox/46514/" title="Опубликовать ссылку в Google Plus" onclick="window.open(this.href, 'Опубликовать ссылку в Google Plus', 'width=800,height=300'); return false"></a>
+		</div>
+		</div>
+	
+	
+</div>
+<div class="clear"></div>    
+		
+	</div>
+
+			
+  </div>
+  <div class="sidebar_right">
+			<div class="block sandbox_text sandbox_text_about">
+	<div class="title">Что происходит?</div>
+	<p>В «Песочницу» попадают топики от людей, желающих получить инвайт на Хабр. Написал хороший топик — получил инвайт.</p>
+
+	<p>Все публикации анонимны. Псевдонимы показываются случайным образом. Инвайт может дать тот, у кого он есть.</p>
+	
+</div>
+
+			<div class="block sandbox_text sandbox_text_moderation">
+	<div class="title">О модерации</div>
+	<p>В разделе действует премодерация: перед публикацией все материалы проходят через заботливые руки. </p>
+
+	<p>С большой вероятностью не пройдут премодерацию:</p>
+
+	<p>&mdash; новости и вопросы/просьбы;	</p>
+	
+	<p>&mdash; статьи, ранее опубликованные на других сайтах;</p>
+	
+	<p>&mdash; статьи без правильно расставленных знаков препинания, со смайликами, с обилием восклицательных знаков, выделением и другим бросающимся в глаза форматированием текста;</p>
+	
+	<p>&mdash; обзоры софта, железа, сервисов и т.п.;</p>
+	
+	<p>&mdash; жалобы на компании и предоставляемые услуги;</p>
+	
+	<p>&mdash; переводы других статей;</p>
+	
+	<p>&mdash; куски программного кода;</p>
+	
+	<p>&mdash; статьи, не имеющие ничего общего с IT-тематикой</p>
+	
+</div>
+
+  </div>
+  <div class="clear"></div>
+
+  
+        	
+	<div class="rotated_posts">
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/post/185492/" class="grey">Немного про UEFI и Secure Boot</a>
+			</div>
+			<div class="rotated_post ">
+				<a href="http://habrahabr.ru/post/193802/" class="grey">27 вещей, которые только разработчики найдут забавными</a>
+			</div>
+			<div class="rotated_post last">
+				<a href="http://habrahabr.ru/post/188020/" class="grey">Ученым удалось остановить свет на одну минуту</a>
+			</div>
+		<div class="clear"></div>
+	</div>
+
+        <div class="clear"></div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        // test gggg
+        // настройки всплывающих уведомлений
+        $.jGrowl.defaults.closerTemplate = '<div>Закрыть все уведомления</div>';         
+        
+        // настройки тултипов
+        $(".help-tip").tipTip({maxWidth: "300px", edgeOffset: 10});  
+        
+      });
+      // global vars
+      var g_base_url = 'habrahabr.ru';
+      var g_show_xpanel = false;
+      var g_base_fullurl = 'http://habrahabr.ru/';
+      var g_is_guest = false;
+    </script>
+    
+    <script type="text/javascript" src="/javascripts/1384446655/_parts/shortcuts.js"></script>
+    <script type="text/javascript" src="/javascripts/1384446655/_parts/to_top.js"></script>
+    <link href="/styles/1384446655/_parts/_to_top.css" rel="stylesheet" media="all" />
+
+    
+    <script type="text/javascript" src="/javascripts/1384446655/_parts/float_block.js"></script>
+    
+    <!-- <script type="text/javascript" src="/javascripts/1384446655/_parts/float_block.js"></script> //-->
+      <!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            w.yaCounter19919284 = new Ya.Metrika({id:19919284,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/19919284" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+<script type="text/javascript">
+	/*<![CDATA[*/
+	var ga = document.createElement('script');
+		ga.setAttribute('async', 'true');
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	/* ]]>*/
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(
+	    ['_setAccount', 'UA-726094-1'],
+	    ['_setDomainName', '.habrahabr.ru'],
+	    ["_addOrganic", "mail.ru", "q"],
+	    ["_addOrganic","rambler.ru", "words"],
+	    ["_addOrganic","nigma.ru", "s"],
+	    ["_addOrganic","blogs.yandex.ru", "text"],
+	    ["_addOrganic","webalta.ru", "q"],
+	    ["_addOrganic","aport.ru", "r"],
+	    ["_addOrganic","akavita.by", "z"],
+	    ["_addOrganic","meta.ua", "q"],
+	    ["_addOrganic","bigmir.net", "q"],
+	    ["_addOrganic","tut.by", "query"],
+	    ["_addOrganic","all.by", "query"],
+	    ["_addOrganic","i.ua", "q"],
+	    ["_addOrganic","online.ua", "q"],
+	    ["_addOrganic","a.ua", "s"],
+	    ["_addOrganic","ukr.net", "search_query"],
+	    ["_addOrganic","search.com.ua", "q"],
+	    ["_addOrganic","search.ua", "query"],
+	    ["_addOrganic","poisk.ru", "text"],
+	    ["_addOrganic","km.ru", "sq"],
+	    ["_addOrganic","liveinternet.ru", "ask"],
+	    ["_addOrganic","gogo.ru", "q"],
+	    ["_addOrganic","gde.ru", "keywords"],
+	    ["_addOrganic","quintura.ru", "request"],
+	    ['_trackPageview']
+	);
+	document.documentElement.firstChild.appendChild(ga);
+</script>	
+
+    <script type="text/javascript" src="/javascripts/1384446655/advertising.js"></script>
+    
+    
+    <div id="footer">
+			<dl>
+				<dd><a href="https://auth.habrahabr.ru/login/">Войти</a></dd>
+				<dd><a href="https://auth.habrahabr.ru/register/">Регистрация</a></dd>
+			</dl>
+			<dl>
+				<dt>Разделы</dt>
+
+				<!--dd><a href="http://habrahabr.ru/qa/">Q&A</a></dd-->
+				<dd><a href="http://habrahabr.ru/hubs/">Хабы</a></dd>
+				<dd><a href="http://habrahabr.ru/events/">События</a></dd>
+				<dd><a href="http://habrahabr.ru/companies/">Компании</a></dd>
+				<dd><a href="http://habrahabr.ru/users/">Пользователи</a></dd>
+			</dl>
+			<dl>
+				<dt>Посты</dt>
+				
+				<dd><a href="http://habrahabr.ru/posts/top/">Лучшие</a></dd>
+				<dd><a href="http://habrahabr.ru/posts/collective/">Тематические</a></dd>
+				<dd><a href="http://habrahabr.ru/posts/corporative/">Корпоративные</a></dd>
+				<dd><a href="http://habrahabr.ru/sandbox/">Песочница</a></dd>
+			</dl>
+			<dl>
+				<dt>Инфо</dt>
+				<dd><a href="http://habrahabr.ru/info/about/">О сайте</a></dd>
+				<dd><a href="http://habrahabr.ru/info/help/rules/">Правила</a></dd>
+				<dd><a href="http://habrahabr.ru/info/help/">Помощь</a></dd>
+				<dd><a href="http://habrahabr.ru/info/agreement/">Соглашение</a></dd>
+				<dd><a href="http://habrahabr.ru/info/stats/">Статистика</a></dd>
+			</dl>
+			<dl>
+				<dt>Услуги</dt>
+				<dd><a href="http://habrahabr.ru/info/advertising/">Реклама</a></dd>
+				<dd><a href="http://habrahabr.ru/info/advertising/corporate/">Корпоративные тарифы</a></dd>
+				<dd><a href="http://habrahabr.ru/info/advertising/workshops/">Семинары</a></dd>
+				<dd><a href="http://habrahabr.ru/special/">Спецпроекты</a></dd>
+				<dd><a href="http://habrahabr.ru/info/hello_startup/" style="color:green;">Помощь стартапам</a></dd>
+			</dl>
+      <div class="copyright">
+
+    		<div class="about">
+    		  <a href="http://tmtm.ru/">TM</a>
+    			© 2006&#8211;2013
+			<br><br>
+			<a href="http://habrahabr.ru/feedback/">Служба поддержки</a><br><br>
+			<a href="http://m.habrahabr.ru">Мобильная версия</a><br><br>
+			
+			
+			<div class="social_accounts">
+				<a href="https://twitter.com/habrahabr" class="tw"></a>
+				<a href="https://www.facebook.com/habrahabr.ru" class="fb"></a>
+				<a href="http://vk.com/habr" class="vk"></a>
+				<!-- <a href="" class="gp"></a> //-->
+			</div>
+			
+		</div>
+      </div>
+
+</div>    
+    <div class="footer_logos">
+		
+		<div class="project brainstorage">
+			<a href="http://brainstorage.ru" class="icon "></a>
+			<div class="text">Все мозги в одном месте</div>
+		</div>
+
+		<div class="project freelansim">
+			<a href="http://freelansim.ru" class="icon "></a>
+			<div class="text">Заказы для фрилансеров</div>
+		</div>
+		
+		
+		<div class="project hantim">
+			<a href="http://hantim.ru" class="icon "></a>
+			<div class="text">Вакансии для айтишников</div>
+		</div>
+		
+		<div class="project autokadabra">
+			<a href="http://autokadabra.ru" class="icon "></a>
+			<div class="text ">Уютная и дружелюбная</div>
+		</div>
+		
+</div>
+
+
+    
+    
+    
+  </body>
+</html>

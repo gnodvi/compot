@@ -4,32 +4,31 @@
 
 ORIGIN_DIR = ../origin
 
-RECOGN_DIR = ../recogn
+OTHERS_DIR = ../others
 
-SROBOT_DIR = ../srobot
+ZPOKER_DIR = ../zpoker
 
 #-------------------------------------------------------------------------------
 
 
-all:  RECOGN__ SROBOT__ ORIGIN__ 
+all:  ORIGIN__ # ZPOKER__ # OTHERS__ 
 
 #-------------------------------------------------------------------------------
 
 ORIGIN__ :
 	(cd $(ORIGIN_DIR); make)
 
-RECOGN__ :
-	(cd $(RECOGN_DIR); make)
+OTHERS__ :
+	(cd $(OTHERS_DIR); make)
 
-SROBOT__ :
-	(cd $(SROBOT_DIR); make)
+ZPOKER__ :
+	(cd $(ZPOKER_DIR); make)
 
 #-------------------------------------------------------------------------------
 
 clean : 
 	(cd $(ORIGIN_DIR); make clean)
-	(cd $(RECOGN_DIR); make clean)
-	(cd $(SROBOT_DIR); make clean)
-
+#	(cd $(ZPOKER_DIR); make clean)
+#	(cd $(OTHERS_DIR); make clean)
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

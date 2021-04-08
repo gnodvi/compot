@@ -1,0 +1,969 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html class="js" dir="ltr" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>xdotool: Script your mouse | TuxRadar Linux</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="shortcut icon" href="http://tuxradar.com/misc/favicon.ico" type="image/x-icon">
+<style type="text/css" media="all">@import "/modules/node/node.css";</style>
+<style type="text/css" media="all">@import "/modules/poll/poll.css";</style>
+<style type="text/css" media="all">@import "/modules/system/defaults.css";</style>
+<style type="text/css" media="all">@import "/modules/system/system.css";</style>
+<style type="text/css" media="all">@import "/modules/taxonomy_browser/taxonomy_browser.css";</style>
+<style type="text/css" media="all">@import "/modules/user/user.css";</style>
+<style type="text/css" media="all">@import "/modules/comment/comment.css";</style>
+
+<link rel="stylesheet" type="text/css" href="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/main.css">
+<link href="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/future_branding.css" rel="stylesheet" type="text/css">
+
+<!--DFP integration + audience_sci-->
+<script src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/gpt.js" type="text/javascript" async=""></script><script>var asi_segs=[];var segs_beg=document.cookie.indexOf("asi_segs=");if(segs_beg>=0){segs_beg=document.cookie.indexOf("=",segs_beg)+1;if(segs_beg>0){var segs_end=document.cookie.indexOf(";",segs_beg);if(segs_end==-1){segs_end=document.cookie.length}asi_segs=document.cookie.substring(segs_beg,segs_end).split("|")}}if((asi_segs==null)||(asi_segs.length==0)){asi_segs="null"};</script>
+<script>var googletag=googletag||{};googletag.cmd=googletag.cmd||[];(function(){var gads=document.createElement("script");gads.async=true;gads.type="text/javascript";var useSSL="https:"==document.location.protocol;gads.src=(useSSL?"https:":"http:")+"//www.googletagservices.com/tag/js/gpt.js";var node=document.getElementsByTagName("script")[0];node.parentNode.insertBefore(gads,node)})();</script>
+<script>googletag.cmd.push(function() {googletag.pubads().enableAsyncRendering();dfp_leaderboard = googletag.defineSlot('/8644/tech_linuxformat', [ [728,90] ], 'dfp-advert-1').addService(googletag.pubads()).setTargeting("format","roadblock").setTargeting("pos","1");dfp_mpu = googletag.defineSlot('/8644/tech_linuxformat', [ [300,250] ], 'dfp-advert-2').addService(googletag.pubads()).setTargeting("mpu","top").setTargeting("format","roadblock").setTargeting("pos","1");dfp_skyscraper = googletag.defineSlot('/8644/tech_linuxformat', [ [160,600] ], 'dfp-advert-3').addService(googletag.pubads()).setTargeting("mpu","bottom").setTargeting("pos","1");dfp_takeovertop_oop = googletag.defineOutOfPageSlot('/8644/tech_linuxformat', 'dfp-advert-4-oop').addService(googletag.pubads()).setTargeting("pos","1");dfp_takeover_oop = googletag.defineOutOfPageSlot('/8644/tech_linuxformat', 'dfp-advert-5-oop').addService(googletag.pubads()).setTargeting("format","roadblock").setTargeting("pos","2");googletag.pubads().setTargeting("asi", asi_segs);googletag.pubads().collapseEmptyDivs();googletag.enableServices();});</script>
+<!--END DFP integration + audience_sci-->
+
+<script type="text/javascript" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/jquery.js"></script>
+<script type="text/javascript" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/drupal.js"></script>
+<script type="text/javascript">var RecaptchaOptions = {theme : 'clean'};</script>
+
+<script src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/prettify.js" type="text/javascript"></script>
+
+<script src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/pubads_impl_31.js" type="text/javascript" async=""></script><style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px;padding:7px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{margin:auto;border:1px solid #dfdfdf!important}.recaptchatable a img{border:0}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{border:1px solid #dfdfdf!important;margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{font-size:11pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1em;border:1px solid #dfdfdf!important}.recaptcha_error_text{color:red}.recaptcha_only_if_privacy{float:right;text-align:right;margin-right:7px}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><script src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/osd.js" type="text/javascript"></script></head>
+
+<body onload="prettyPrint();">
+
+	
+<div id="masthead">
+	<div class="inner">
+		<div id="logo">
+			<a href="http://tuxradar.com/"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/tuxradar.png" alt="TuxRadar" title="TuxRadar"></a>
+		</div>
+
+		<div style="float: right; margin-top: 5px">
+
+<!--DFP Leaderboard -->
+<div id="dfp-advert-1"><script>googletag.cmd.push(function(){googletag.display('dfp-advert-1')});</script><div style="border: 0pt none;" id="google_ads_iframe_/8644/tech_linuxformat_0__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_0" id="google_ads_iframe_/8644/tech_linuxformat_0" frameborder="0" height="90" scrolling="no" width="728"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_0__hidden__" id="google_ads_iframe_/8644/tech_linuxformat_0__hidden__" frameborder="0" height="0" scrolling="no" width="0"></iframe></div>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="top_nav">
+	<div class="inner">
+		<div id="menubar">
+			<ul class="links"><li class="first $key"><a href="http://tuxradar.com/" class="menu-1-1-2">Latest News</a></li>
+<li class="$key"><a href="http://tuxradar.com/podcast" class="menu-1-2-2">Podcast</a></li>
+<li class="$key"><a href="http://tuxradar.com/features" class="menu-1-3-2">Features</a></li>
+<li class="$key"><a href="http://tuxradar.com/distros" class="menu-1-4-2">Distros</a></li>
+<li class="$key"><a href="http://tuxradar.com/code" class="menu-1-5-2">Code</a></li>
+<li class="$key"><a href="http://tuxradar.com/apps" class="menu-1-6-2">Apps</a></li>
+<li class="$key"><a href="http://tuxradar.com/content/open-ballot-have-you-converted-anyone-linux" class="menu-1-7-2">Convert Corner</a></li>
+<li class="last $key"><a href="http://tuxradar.com/content/distro-picker-0" title="Discover your perfect distro!" class="menu-1-8-2">Distro Picker</a></li>
+</ul>		&nbsp;&nbsp;&nbsp;<a href="http://www.tuxradar.com/rss"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/rss-small.png" style="border: 0;margin-top:16px;"></a>
+		</div>
+
+		<div id="search_box">
+			<form id="search-block-form" method="post" accept-charset="UTF-8" action="/search/node">
+				<input id="searchterm" name="keys" size="10" type="text">
+				<input name="form_token" id="edit-search-form-form-token" value="4ded1e8037e75b4a0dbbca945ab16837" type="hidden">
+				<input name="form_id" id="edit-search-form" value="search_form" type="hidden">
+				<input id="search_button" value="Search" type="submit">
+			</form>
+		</div>
+	</div>
+</div>
+
+<div id="topstories">
+	<div class="inner" style="text-align: center;">
+		<p>
+
+		<a href="https://play.google.com/store/magazines/details/Linux_Format?id=CAowwZ-hAQ"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/banner.png"></a>
+
+		</p>
+
+	</div>
+</div>
+
+<div id="content">
+	<div id="left" class="inner">
+		<div id="node-623" class="node">
+
+<h1>xdotool: Script your mouse</h1><div class="submitted">Posted at 3:13pm on Tuesday May 15th 2012</div><div class="content" style="clear: both;"><div style="float: left; text-align: center;"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/sysadmin.png" alt="Sysadmin" style="margin-bottom: 2px;"><br></div>
+	<div style="margin-left: 110px; margin-bottom: 40px;"><p> Back in the 
+day, we were all told that computers would make our lives easier. They’d
+ automate everything, and we’d have to give them only the minimum of 
+input to get extraordinary results. Well, the calendar on the wall of 
+LXF Towers says that it’s officially The Future(™) now, so how far have 
+we come? Oh wait, we’re still spending ages pushing a plastic box around
+ to move a cursor on the screen to point at fiddly little icons. For all
+ the advancements we’ve seen in GUI technologies over the years, we 
+still spend far too long clicking bits and bobs to get work done.</p>
+			<p style="text-align: center;">
+</p><div style="float: right; margin: 20px">
+<!-- begin ad tag
+//<script language="JavaScript" type="text/javascript">
+//if (typeof ord=='undefined') {ord=Math.random()*10000000000000000;}
+//document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/fut.gb.tuxradar/home;tile=3;sz=300x250;tile=;ord=' + ord + '?" type="text/javascript"><\/script>');
+//</script><noscript><a href="http://ad.doubleclick.net/jump/fut.gb.tuxradar/home;tile=3;sz=300x250;ord=123456789?" target="_blank"><img src="http://ad.doubleclick.net/ad/fut.gb.tuxradar/home;tile=3;sz=300x250;ord=123456789?" width="300" height="250" border="0" alt=""></a></noscript>
+ End ad tag -->
+</div>
+				<p></p>
+
+				
+
+
+
+<p>But there’s a solution, and it’s going to improve your productivity 
+massively by the end of this tutorial. The solution is called xdotool, 
+and according to the author’s description, it “simulates keyboard input 
+and mouse activity”. Sure, that doesn’t sound very exciting on its own, 
+but think of it this way: it’s a command-line tool that acts as a 
+virtual keyboard and mouse, letting you script together commands to 
+control your GUI apps. It can move the mouse cursor around, send clicks 
+to the display, select specific windows and even move windows between 
+desktops. Ultimately, it lets you bundle tasks that would take loads of 
+faffing around with the mouse and keyboard into a single script. </p>
+
+
+<h3> Getting started </h3>
+
+
+
+<p> Chances are that xdotool is available in your distribution’s package repositories – if not, you can grab it from 
+<a href="http://www.semicomplete.com/projects/xdotool">www.semicomplete.com/projects/xdotool</a>
+. The dependencies are just the usual X libraries, so it shouldn’t 
+be difficult to install. Once you have it, open up a terminal window and then hover the mouse pointer over an element 
+in the application, such as the Edit menu. Don’t click just yet though! Instead, enter this in the terminal: </p>
+
+
+<pre class="command">xdotool click 1
+</pre>
+
+
+<p> And voila, the Edit menu opens up, as if you’d pressed the real 
+mouse button. Here, xdotool is sending a click event to the X Window 
+System (the core graphical layer of the Linux desktop), and this is 
+possible because X was designed with great flexibility in mind. It isn’t
+ narrow-minded, and doesn’t think that clicks can come only from mice; 
+it knows that such events can be generated by touchpads, touchscreens, 
+graphics tablets and other devices. And it’s even flexible enough to 
+accept synthetic clicks generated by a program such as xdotool. </p>
+
+
+<p> So, this is a really simple example, but it already has some uses. 
+For instance, many people suffer from RSI, especially with the action of
+ clicking mouse buttons. Using xdotool, you could configure your desktop
+ environment or window manager so that a lesser-used key (eg backtick) 
+runs the command above, thereby letting you move the mouse with your 
+right hand and click with your left, sharing the load. Note that the 
+number 1 in the command refers to the mouse button here – 1 is the left,
+ 2 is the middle and 3 is the right. You can also use 4 as a virtual 
+mouse wheel up movement, and 5 for down. </p>
+
+
+<p> Let’s try something a bit more complex. xdotool lets you move the 
+mouse pointer around the screen, using the mousemove command. In X 
+Window System parlance, the start of the screen is the top-left corner, 
+which has the X and Y (horizontal and vertical) co-ordinates of 0 and 0.
+ If your screen resolution is 1024x768, then the co-ordinates for the 
+top right location are 1023 (X) and 0 (Y). The bottom-right is 1023 (X) 
+and 767 (Y), and so forth. </p>
+
+
+<p> We’re going to move the mouse pointer to the main menu button on our
+ desktop and click to open it. Your desktop layout may vary, so you’ll 
+need to change the co-ordinates to fit, but in our case we have Xubuntu 
+with the main menu in the top-left of the screen. Try this command: </p>
+
+
+<pre class="command">xdotool mousemove 0 0 click 1
+</pre>
+
+
+<p> Here, you can see that we’re stringing commands together – we have a
+ mousemove followed by the X and Y locations, and then a left-button 
+click. In our case, this opens up the main menu. We’re on our way to 
+automating our desktop! However, there’s something we have to bear in 
+mind. xdotool just performs actions in a sequence blindly, and doesn’t 
+know if it’s clicking on something that exists. You know when you fire 
+up your Linux box, and the main menu or program launcher can take a 
+couple of seconds to appear as it loads the icons and resources? Well, 
+these delays can have an impact on xdotool command. It’s tempting to 
+start writing awesome combinations of movements and clicks, but if 
+something on your system is being slow for whatever reason, it can get 
+out of sync. </p>
+
+
+<p> For instance, on our machine we want to automate the process of 
+getting the power status. Normally, that involves moving the mouse to 
+the battery icon in the system tray, right clicking it, and choosing the
+ Power Information entry in the Context menu. We could bunch together 
+various xdotool commands in one line to achieve this, but what happens 
+if the system is busy and the Context menu doesn’t come up immediately? 
+Well, we need to add sleep commands in between the calls to xdotool. 
+Here’s our script, which also includes some other new features: </p>
+
+<pre class="command">#!/bin/bash
+
+xdotool mousemove --sync 1000 10
+xdotool click 3
+sleep 1
+xdotool mousemove_relative --sync 0 80
+xdotool click 1
+</pre>
+
+
+<p> We’ve saved this as batinfo.sh in /usr/bin, so that we can use 
+Xfce’s keyboard settings to map a key combination (Ctrl+Alt+B) to run 
+this script. Most desktops and window managers let you associate key 
+combos with commands, eg for launching terminal windows, so you should 
+be able to do something similar in your setup. </p>
+
+
+<p> So, let’s see how this works. Our Power Management icon is in the 
+top panel, towards the right of the screen – with a bit of testing, 
+we’ve determined that the mouse should be at 1000 on the X axis and 10 
+on the Y axis to hover over it. Note here the --sync option for the 
+mousemove command, which says that we don’t just want to tell the X 
+Window System to move the mouse, but wait until it has sent back a 
+confirmation message that the move was successful. So it’s generally a 
+good idea to use --sync. </p>
+
+<div class="image">
+<img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/LXF154.jpg" alt="At its most basic level, xdotool lets you perform single actions, such as virtual mouse clicks.">
+<p>At its most basic level, xdotool lets you perform single actions, such as virtual mouse clicks.</p>
+</div>
+
+<p> We then send a right-click to open the Context menu, but then we 
+wait for one second using the sleep 1 command. This gives us a bit of 
+legroom if the system is busy – for instance, if you’re doing a load of 
+package updates in the background, the Context menu might not appear 
+immediately, as the processor and hard drive are busy. So we wait for a 
+second, to give Xfce chance to do its business. (On your specific setup,
+ you might want to change that to two or three seconds if your machine 
+is often swamped.) </p>							
+							<p align="CENTER">
+
+										
+<!--DFP MPU -->
+</p><div id="dfp-advert-2"><script>googletag.cmd.push(function(){googletag.display('dfp-advert-2')});</script><div style="border: 0pt none;" id="google_ads_iframe_/8644/tech_linuxformat_1__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_1" id="google_ads_iframe_/8644/tech_linuxformat_1" frameborder="0" height="250" scrolling="no" width="300"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_1__hidden__" id="google_ads_iframe_/8644/tech_linuxformat_1__hidden__" frameborder="0" height="0" scrolling="no" width="0"></iframe></div>
+
+							<p></p>
+				
+
+
+<p> Next, there’s a new command: mousemove_relative. 
+As the name suggests, this just moves the pointer relative to the 
+current position, and not to an absolute location on the screen. In our 
+case, the Power Information entry in the Context menu is 80 pixels down 
+from where we activated the menu, so we move to that point. This gives 
+us extra flexibility: if we move the Power icon to somewhere else in the
+ panel one day, we only have to change the first mousemove command as 
+everything else stays relative to it. </p>
+
+
+<h3> Advanced usage </h3>
+
+
+
+<p> Now, xdotool’s ability to click around at pre-programmed 
+co-ordinates is cool, but it’s not that useful if we have to manually 
+activate a window before we perform our actions. As an example, you 
+might have a really cool music player that you always run in the 
+background, and occasionally bring up from your window selector to 
+perform an operation 
+(eg switch to a different playlist).  </p>
+
+
+<p> Some media apps enable you to control them from the CLI, thereby 
+allowing you to map key combos in your window manager to commands, but 
+not all have this facility. Instead of bringing up your media player 
+each time manually and then running your xdotool script (at which point 
+you might as well just click manually), you can make xdotool 
+automatically switch to the appropriate window using the search and 
+windowactivate commands. </p>
+ 
+
+<p> For instance, we’ve just opened up the Parole media player on our 
+desktop, and left it running in the background while we type commands 
+into a terminal. We enter: </p>
+
+
+<pre class="command">xdotool Parole “Firefox” windowactivate
+</pre>
+
+
+<p> This makes Parole jump to the foreground. Try it on your machine, 
+replacing Parole with anything else you have running. Here, xdotool is 
+working with your window manager to find specific windows – it looks for
+ the first window with the word “Parole” in the title. You can replace 
+that with anything else, and if there’s no match, no actions will take 
+place. </p>
+
+
+<p> Of course, Parole’s window could be anywhere on the screen, and so 
+we can’t start our series of click actions at a fixed location. We need 
+to move the mouse cursor to where Parole is and start working from 
+there.  </p>
+
+<div class="boxout">
+<h2> 5 great uses for xdotool </h2>
+
+<div class="image">
+<img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/LXF154_004.jpg" alt="A script to click all the options we need on any fresh LibreOffice installation?">
+<p>A script to click all the options we need on any fresh LibreOffice installation?</p>
+</div>
+
+<p> With the power to control your mouse pointer through raw commands, 
+anything is possible (Well, perhaps apart from reducing the latency in 
+PulseAudio, but that’s a different story). Here’s some inspiration: </p>
+
+
+
+<p>  <strong>Settings simplification</strong><br>
+ Create a series of clicks to set up LibreOffice exactly as you want it, so that you’re able to run it on any new 
+Linux installation.
+ </p>
+
+
+<p>  <strong>Remote newbie training</strong><br>
+Write a script for a fresh Ubuntu 11.10 Unity installation that walks 
+through opening apps trying out features, changing settings etc. You 
+could even record an Ogg file of you talking to go along with it! </p>
+
+
+
+<p>  <strong> Desktop cleanup</strong> <br>
+ Drowning in windows? One quick script could let you move all terminal 
+windows scattered across multiple desktops to a single desktop. Hurrah. </p>
+
+
+
+<p>  <strong>Game boasting</strong><br>
+ Ever seen those tool-assisted speed-runs on YouTube, where people 
+appear to play games at light-speed using pre-programmed joypad presses?
+ You could head over to www.happypenguin.org and do the same (see 
+especially xdotool’s keydown and keyup commands). </p>
+
+
+
+<p>  <strong>Mail automation</strong><br>
+ With some clicks and the type command (see the virtual keyboard box), 
+you can quickly send off a flame mail to the Gnome Shell developers 
+every time you find something completely unintuitive. </p>
+
+
+
+<p> Got any more? Once you’ve worked through this tutorial and you’ve 
+built up your own collection of time-savers, you can share them with 
+other readers. Email us at lxf.letters@futurenet.com with your script, 
+and we’ll put a selection of them on a forthcoming LXFDVD. </p>
+
+</div>
+
+<p> As you’ll expect by now, xdotool’s authors have thought of this, so… </p>
+
+
+<pre class="command">xdotool search “Parole” windowactivate --sync mousemove
+--window %1 0 0
+</pre>
+
+
+<p> After locating and activating the Parole window, we perform a 
+mousemove command, but this time to a location in window number 1 of the
+ search results (ie the first window that had Parole in the title – 
+you’ll probably never need 
+any others).  </p>
+
+<div class="image">
+<img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/LXF154_003.jpg" alt="With just a few more mousemove_relative commands, you could create a robot that draws the Mona Lisa.">
+<p>With just a few more mousemove_relative commands, you could create a robot that draws the Mona Lisa.</p>
+</div>
+
+
+<p> We move the mouse to location 0 0, which is the X and Y co-ordinates
+ for the top-left of the window. Excellent! We can now write a script 
+using offset co-ordinates from the top-left, clicking buttons, opening 
+menu and checking boxes at will, regardless of where the program’s 
+window was originally set. </p>
+
+
+<p> If it pains you that your windows could be in arbitrary places, however, xdotool can move them for you. 
+Try this: </p>
+
+
+<pre class="command">xdotool search “Parole” windowactivate --sync windowmove
+100 200
+</pre>
+
+
+<p> This locates Parole and moves its windows to 100 pixels across the 
+screen, and 200 down.  
+You can take out the windowactivate --sync part and do the moves in the 
+background if you like. Another option is resizing windows:</p>
+
+
+<pre class="command">xdotool search “Parole” windowsize 500 200
+</pre>
+
+
+<p> This finds Parole and resizes it to 500 pixels wide, 200 high. You 
+can even move the window to another workspace/virtual desktop like this:
+ </p>
+
+
+<pre class="command">xdotool search “Parole” set_desktop_for_window 0
+</pre>
+
+
+<p> Just change the number at the end to whichever desktop you require, 
+and note that in typical programming fashion, 0 is the first desktop, 1 
+is the second, and so forth. </p>
+
+
+
+
+<div class="boxout">
+<h2> Like xdotool, but for the command line </h2>
+
+
+
+<p> All this talk of GUI automation is lovely, but it doesn’t work with 
+command-line apps. However, there’s a fantastic little tool that lets 
+you automate actions at the CLI called expect. The name here comes from 
+the program’s main feature: it expects a user-defined string to appear 
+on the screen, and then sends out the appropriate text in response. 
+expect is installed by default in many distros, or will almost certainly
+ be available in your distro’s default package repositories. Here’s an 
+example of how it works: </p>
+
+
+<pre class="command">expect “What is your name?”
+send “Rembrandt Q Einstein\n”
+</pre>
+
+
+<p> Here, we wait for a program to give us the What is your name? prompt
+ and then send a response. Note the \n bit at the end of the send 
+command – that says that we want to output a newline character, ie 
+simulating that the user has 
+hit Enter. </p>
+
+
+<p> The expect program is an interpreter, and you normally use it by 
+stringing together a series of commands. Here’s an example of using 
+expect to automate logging into an SFTP server and retrieving a file: </p>
+
+
+<pre class="command">#!/usr/bin/expect -f
+spawn sftp user@example.com
+expect “Password:”
+send “mypasshere\n”;
+expect “sftp&gt;”
+send “get myfile.txt\n”;
+expect “sftp&gt;”
+send “exit\n”;
+interact
+</pre>
+
+
+<p> In the first line, we supply the full path to the expect binary, and
+ use the -f flag to say that we want it to read the following commands, 
+rather than start in interactive mode.  </p>
+
+
+<p> Then we use the vitally important spawn function, which lets us run a
+ program and work with the output that it generates. Here we’re spawning
+ an SFTP process to log into a remote server. </p>
+
+
+<p> We expect the server to respond with a Password: prompt, so when 
+that happens we send our password with a newline character as described 
+above. Once the login is successful, we wait for an sftp&gt; prompt and 
+then perform our get command to retrieve a file. We wait for the prompt 
+to come back and then log out with exit. </p>
+
+
+<p> Note the interact line at the end – you must have this as the final 
+line in your expect script, otherwise nothing will happen. It just tells
+ expect to perform everything you’ve written so far. expect is an 
+amazingly versatile tool and can save you a huge amount of time, so have
+ a skim through the manual page to see what else it’s capable of. </p>
+</div>
+
+<h3> What a drag, dude </h3>
+
+
+<p> Clicking is all good and well, but what if we want to perform an 
+operation where the mouse button is always held down, such as a 
+click-and-drag?  </p>
+
+<div class="image">
+<img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/LXF154_002.jpg" alt="Have a peek at the manual page (man xdotool) to see a full list of available options.">
+<p>Have a peek at the manual page (man xdotool) to see a full list of available options.</p>
+</div>
+
+<p> Fortunately, xdotool caters for this by providing a more versatile 
+alternative to the click command: mousedown and mouseup. Let’s try this 
+out by firing up Gimp, going to 
+File &gt; New, and creating a new canvas of the default size 
+(its window title should have “Untitled” in it).  </p>
+
+
+<p> Select the Pencil tool from the Gimp Toolbox window, then open up a 
+terminal and enter the following into a file called test.sh: </p>
+
+
+<pre class="command">xdotool search “Untitled” windowactivate --sync mousemove
+ --window %1 100 100
+sleep 0.5
+xdotool mousedown 1
+sleep 0.5
+xdotool mousemove_relative --sync 200 200
+sleep 0.5
+xdotool mouseup 1
+</pre>
+
+
+<p> Here, we activate the Gimp canvas window, and move to location 100, 
+100 (X, Y) inside it. We then set the left mouse button to down, move 
+the mouse diagonally down-right by 100 pixels in each direction, and 
+then set the mouse button to up. In other words, we’ve created a robot 
+that draws a diagonal line – see the screenshot. As with the earlier 
+examples, we’ve included a few sleep commands here to make sure that we 
+don’t work too quickly for the window manager or Gimp to process. (If 
+your box is particularly snappy, you could change those sleep periods 
+from half a second to 0.1.) </p>
+
+
+<p> To wrap up, in this tutorial we’ve explored various different ways 
+to interact with the GUI: moving the mouse, sending virtual clicks and 
+drags, and finding specific windows.
+ Putting these actions together, and exploring more possibilities with 
+the xdotool manual page, you can automate pretty much everything on your
+ desktop, leaving you with more time to spend on important things. Fancy
+ a game of Frozen Bubble, anyone?     </p>
+
+
+
+
+
+<div class="boxout">
+<h2> Virtual keyboards </h2>
+
+
+
+<p> While we’ve focused on mouse events in this tutorial, xdotool can send virtual keystrokes as well. For example: </p>
+
+
+<pre class="command">xdotool key F1
+</pre>
+
+
+<p> This simply simulates pressing the F1 key. You can create combination keypresses with the plus sign like this: </p>
+
+
+<pre class="command">xdotool key ctrl+c
+</pre>
+
+
+<p> Given that you’re using xdotool to get away from the mouse, however,
+ it’s unlikely that you’re going to spend much time with the key 
+command. But there’s another option called type, which sends a stream of
+ characters, and which can be useful for working with text editors. For 
+instance, launch AbiWord and then enter this in a terminal: </p>
+
+
+<pre class="command">xdotool search “AbiWord” windowactivate --sync type 
+“Hello world”
+</pre>
+
+
+<p> You’ll see that the focus switches to the AbiWord window, and then 
+the text is entered into the document, as if by magic. There’s even a 
+tiny pause between the virtual keystrokes, as if someone were typing it.
+ You can change this with the --delay option followed by a number of 
+milliseconds, but the default is fine (and makes sure the target 
+application doesn’t get too confused by receiving an inhumanly rapid 
+stream of keypresses). As an example, here’s a script called mikesig.sh 
+that we’ve put in /usr/bin: </p>
+
+
+<pre class="command">#!/bin/sh
+xdotool type “This post brought to you by Mike Saunders
+Email me at okachi@gmail.com for more great wit”
+</pre>
+
+
+<p> Note that the carriage return in the script is also produced by 
+xdotool, so you can insert new lines. We’ve used our window manager to 
+make the Ctrl+Alt+S combo run mikesig.sh, so whatever program we’re in, 
+we can press Ctrl+Alt+S to get an instant signature generator. If you 
+have a more serious workload, you’ll find this useful, as it works 
+across all sorts of applications and window managers. </p>
+
+</div>
+
+
+<div class="lxf">
+<a href="http://www.linuxformat.com/"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/lxf.png" alt="First published in Linux Format" style="border: 0;"></a>
+<p>First published in <a href="http://www.linuxformat.com/">Linux Format magazine</a> <a href="http://www.linuxformat.com/archives?issue=154">issue 154</a></p>
+</div><p></p>
+			<p style="text-align: center; font-weight: bold;">You should follow us on <a href="http://identi.ca/tuxradar">Identi.ca</a> or <a href="http://twitter.com/tuxradar">Twitter</a></p>
+
+			<div style="text-align: center; margin-top: 20px;">
+				<!-- <script src="http://digg.com/tools/diggthis.js" type="text/javascript"></script> -->
+				<!-- <script type="text/javascript" src="http://www.reddit.com/button.js?t=2"></script> -->
+			</div>
+
+
+			<p style="text-align: center; margin-top: 5px;">
+
+			<script type="text/javascript">
+				document.write ('<a href="');
+				document.write('http://www.stumbleupon.com/submit?url=' +document.URL +'&title='+document.title.replace(/ /g,'+')+'">');
+				document.write ('<img border="0" src="http://cdn.stumble-upon.com/images/160x30_su_blue.gif"></a>');
+			</script><a href="http://www.stumbleupon.com/submit?url=http://tuxradar.com/content/xdotool-script-your-mouse&amp;title=xdotool:+Script+your+mouse+%7C+TuxRadar+Linux"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/160x30_su_blue.gif" border="0"></a>
+
+			<br style="margin-bottom: 5px">
+
+			<script src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/slashdot-it.js" type="text/javascript"></script><iframe src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/slashdot-it.html" frameborder="0" height="25" scrolling="no" width="130"></iframe>
+
+			</p>
+
+
+			</div>  </div>
+</div>
+<div id="comments"><h2 class="comments">Your comments</h2><a id="comment-16081"></a>
+<div class="comment-hi"><h3 class="title">Your Future</h3><p class="submitted">Rhakios - May 15, 2012 @ 6:27pm</p><p>"Well, the calendar on the wall of LXF Towers says that it’s officially The Future(™)"</p>
+<p>That's because of who employs you, for the rest of us our calendars are merely for the present.</p>
+</div><a id="comment-16082"></a>
+<div class="comment"><h3 class="title">Key Bindings?</h3><p class="submitted">09vwrabbit (not verified) - May 15, 2012 @ 6:48pm</p><p>What
+ if I want to assign Fn + G on my asus x101 netbook to enable and 
+disable my wireless card?  This is the way it came when it had meego but
+ now doesn't work with Lubuntu.  Could I use xdotool to assign this?  
+Thanks again for another great post!</p>
+</div><a id="comment-16083"></a>
+<div class="comment-hi"><h3 class="title">Best use</h3><p class="submitted">Bruno Girin (not verified) - May 15, 2012 @ 10:43pm</p><p>Best
+ use for that tool as far as I'm concerned is automated GUI testing. 
+Think about it: you just find a bug in your favourite app so rather than
+ go through a lengthy explanation, write an xdotool script to reproduce 
+it and attach the script to your bug report.</p>
+</div><a id="comment-16426"></a>
+<div class="comment"><h3 class="title">Wish This Was More Like AutoHotKey in Windows</h3><p class="submitted">BaldFat (not verified) - June 27, 2012 @ 6:31pm</p><p>Glad
+ I have found this. I grew fond of AutoHotKey in windows and used it on 
+my horrible Windows XP machine to take care of mundane web browser data 
+entry. </p>
+<p>So if I had to click on 50 click boxes on a page I could do it with AutoHotKey.</p>
+<p>So if I had to change the format of an entire 1000 cell spreadsheet I could do it with Autohotkey and it worked wonders.</p>
+<p>I guess I might do a little hacking to see if I can improve on my AutoHotKey scripts.</p>
+<p>Bald&amp;Fat</p>
+</div><a id="comment-16592"></a>
+<div class="comment-hi"><h3 class="title">Map mouse to keyboard, fully functional</h3><p class="submitted">Jac (not verified) - July 16, 2012 @ 5:05pm</p><p>I´m
+ trying to map the left click of the mouse to the keyboard F key, but 
+with no sucess, when I do it using "xdotool click 1" only a single click
+ of the mouse is mapped so I can´t click and drag. do you know how to 
+achieve a real mouse button simulation using the F keyboard key?</p>
+</div><a id="comment-20777"></a>
+<div class="comment"><h3 class="title">Leave Scripts in favor of GUI</h3><p class="submitted">MurGuu (not verified) - October 20, 2012 @ 12:09am</p><p>Slightly
+ relevant : Use Tool at MurGuu.com to automate mouse clicking of almost 
+any type. Easy to use, keyboard shortcuts support, tested on Mint 13 and
+ latest Ubuntu, works good.</p>
+</div><a id="comment-20882"></a>
+<div class="comment-hi"><h3 class="title">Question</h3><p class="submitted">dhs (not verified) - October 21, 2012 @ 5:11am</p><p>I have a doubt in a program.</p>
+<p>int main()<br>
+{<br>
+   int p=500;<br>
+   system(xdotool mousemove p p);<br>
+return 0;<br>
+}</p>
+<p>this program is moving mouse to 0,0 pixel.<br>
+rather it should move the mouse to 500,500</p>
+<p>HELP...???</p>
+</div><a id="comment-39775"></a>
+<div class="comment"><h3 class="title">@dhs</h3><p class="submitted">ams (not verified) - January 6, 2013 @ 1:25pm</p><p>The mouse moves to 0,0 instead of 500,500 because the executed command is literally "xdotool mousemove p p".</p>
+<p>You need to construct your string first, e.g.: </p>
+<p>char str[256];<br>
+int p1 = 500;<br>
+int p2 = 500;<br>
+sprintf(str, "xdotool mousemove %d %d", p1, p2);<br>
+system(str);</p>
+</div><a id="comment-62361"></a>
+<div class="comment-hi"><h3 class="title">how to send virtual keys in fedora from Windows OS</h3><p class="submitted">gaurav garg @ tipswell (not verified) - April 17, 2013 @ 11:48am</p><p>how to send virtual keys in fedora from Windows OS</p>
+</div><a id="comment-110412"></a>
+<div class="comment"><h3 class="title">Question</h3><p class="submitted">Indrajeet (not verified) - September 28, 2013 @ 7:48pm</p><p>I want to perform the mouse event programming on icons.Can anyone guide me how to do this?</p>
+</div><form action="/content/xdotool-script-your-mouse" accept-charset="UTF-8" method="post" id="comment-controls">
+<div><div class="box">
+
+  <h2>Comment viewing options</h2>
+
+  <div class="content"><div class="container-inline"><input name="form_id" id="edit-comment-controls" value="comment_controls" type="hidden">
+<div class="form-item">
+ <select name="mode" class="form-select" id="edit-mode"><option value="1">Flat list - collapsed</option><option value="2">Flat list - expanded</option><option value="3">Threaded list - collapsed</option><option value="4" selected="selected">Threaded list - expanded</option></select>
+</div>
+<div class="form-item">
+ <select name="order" class="form-select" id="edit-order"><option value="1">Date - newest first</option><option value="2" selected="selected">Date - oldest first</option></select>
+</div>
+<div class="form-item">
+ <select name="comments_per_page" class="form-select" id="edit-comments-per-page"><option value="10">10 comments per page</option><option value="30">30 comments per page</option><option value="50" selected="selected">50 comments per page</option><option value="70">70 comments per page</option><option value="90">90 comments per page</option><option value="150">150 comments per page</option><option value="200">200 comments per page</option><option value="250">250 comments per page</option><option value="300">300 comments per page</option></select>
+</div>
+<input name="op" id="edit-submit" value="Save settings" class="form-submit" type="submit">
+</div><div class="description">Select your preferred way to display the comments and click "Save settings" to activate your changes.</div></div>
+</div>
+
+</div></form>
+<div class="box">
+
+  <h2>Post new comment</h2>
+
+  <div class="content"><form action="/comment/reply/623" accept-charset="UTF-8" method="post" id="comment-form">
+<div><div class="form-item">
+ <label for="edit-name">Your name: <span class="form-required" title="This field is required.">*</span></label>
+ <input maxlength="60" name="name" id="edit-name" size="30" value="Anonymous Penguin" class="form-text required" type="text">
+</div>
+<div class="form-item">
+ <label for="edit-subject">Title: </label>
+ <input maxlength="64" name="subject" id="edit-subject" size="60" class="form-text" type="text">
+</div>
+<div class="form-item">
+ <label for="edit-comment">Comment: <span class="form-required" title="This field is required.">*</span></label>
+ <textarea cols="60" rows="15" name="comment" id="edit-comment" class="form-textarea required"></textarea>
+</div>
+<input name="form_id" id="edit-comment-form" value="comment_form" type="hidden">
+<fieldset class="captcha"><legend>CAPTCHA</legend><div class="description"><strong style="background-color:yellow;">We can't accept links</strong> (unless you obfuscate them). You also need to negotiate the following CAPTCHA...</div><div class="form-item">
+ 
+ <div class="description"><script type="text/javascript" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/challenge"></script><script type="text/javascript" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/recaptcha.js"></script><div class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio" id="recaptcha_widget_div" style=""><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_clean"> <tbody><tr height="73"> <td class="recaptcha_image_cell" width="302"><center><div style="width: 300px; height: 57px;" id="recaptcha_image"><img style="display:block;" alt="Проверка по слову reCAPTCHA" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/image.jpeg" height="57" width="300"></div></center></td> <td style="padding: 10px 7px 7px 7px;"> <a title="Обновить" id="recaptcha_reload_btn"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/refresh.png" id="recaptcha_reload" alt="Обновить" height="18" width="25"></a> <a title="Звуковая проверка" id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/audio.png" id="recaptcha_switch_audio" alt="Звуковая проверка" height="15" width="25"></a><a title="Визуальная проверка" id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio"><img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/text.png" id="recaptcha_switch_img" alt="Визуальная проверка" height="15" width="25"></a> <a title="Справка" id="recaptcha_whatsthis_btn"><img alt="Справка" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/help.png" id="recaptcha_whatsthis" height="16" width="25"></a> </td> <td style="padding: 18px 7px 18px 7px;"> <img src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/logo.png" id="recaptcha_logo" alt="" height="36" width="71"> </td> </tr> <tr> <td style="padding-left: 7px;"> <div class="recaptcha_input_area" style="padding-top: 2px; padding-bottom: 7px;"> <span style="display: none;" id="recaptcha_challenge_field_holder"><input name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_VuupLc_IsFlrwIH4S2MaKUA6NpW6xHduvT_lrBksekcCSSJ-Q2ScGTNXTBilbbjRTTHsv7Lc9m83Ylx505_3eA8eQKASdQWJX_fH7bHb3M13_Vn7Z-h1mdw_FvWKN9VovdUg2NkYrAMiYUh2nbzlji2IxPLviw" type="hidden"></span><input autocomplete="off" placeholder="Введите текст" style="border: 1px solid #3c3c3c; width: 302px;" name="recaptcha_response_field" id="recaptcha_response_field" type="text"> </div> </td> <td colspan="2"><span id="recaptcha_privacy" class="recaptcha_only_if_privacy"></span></td> </tr> </tbody></table> </div></div>
+
+	<noscript>
+  		<iframe src="http://api.recaptcha.net/noscript?k=6LdmHAcAAAAAAFNmJ8kpw8DxcrXSABtOBX1MMwIm" height="300" width="500" frameborder="0"></iframe><br/>
+  		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
+	</noscript></div>
+</div>
+<input name="captcha_token" id="edit-captcha-token" value="807e5be0c5bd3a89a843595b2f2627c2" type="hidden">
+</fieldset>
+<input name="op" id="edit-preview" value="Preview comment" class="form-submit" type="submit">
+<input name="op" id="edit-submit" value="Post comment" class="form-submit" type="submit">
+
+</div></form>
+</div>
+</div>
+</div><p></p>	</div>
+
+	<div id="right"> 
+
+				
+<!--DFP SKY - THIN -->
+<div style="display: none;" id="dfp-advert-3"><script>googletag.cmd.push(function(){googletag.display('dfp-advert-3')});</script><div style="border: 0pt none;" id="google_ads_iframe_/8644/tech_linuxformat_2__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_2" id="google_ads_iframe_/8644/tech_linuxformat_2" frameborder="0" height="600" scrolling="no" width="160"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_2__hidden__" id="google_ads_iframe_/8644/tech_linuxformat_2__hidden__" frameborder="0" height="0" scrolling="no" width="0"></iframe></div>
+
+
+
+		<!-- End ad tag -->
+
+
+
+
+	</div>
+</div>
+
+<!--
+<div style="clear: both; margin-top: 30px; text-align: center;">
+<script type="text/javascript" language="JavaScript">
+         google_ad_client = 'ca-futurepublishing_html'; 
+         google_ad_width = 728;
+         google_ad_height = 90;
+         google_ad_format = '728x90_pas_abgc';
+         google_ad_type = 'text';
+         google_encoding = 'latin1'; 
+         google_safe = 'high';
+         google_color_bg = 'cccccc';
+         google_color_text = '000000';
+         google_color_link = '3a89af';
+         google_color_url = '3a89af'; 
+         google_color_border = '666666';
+         google_color_line = 'd3dade';
+         google_alternate_color = '00FFFF';
+</script>
+<script type="text/javascript" language="JavaScript" src='http://pagead2.googlesyndication.com/pagead/show_ads.js'></script>
+<noscript>
+    <img height="1" width="1" border="0" src="http://pagead2.googlesyndication.com/pagead/imp.gif?client=ca-futurepublishing_html&event=noscript" /> 
+</noscript>
+</div>
+-->
+
+<div id="prefooter" style="margin-top: 50px;">
+	<div class="inner" style="text-align:center;">
+
+		
+			<div style="display: inline;">	
+			<form action="/frontpage?destination=frontpage" accept-charset="UTF-8" method="post" style="margin-top: 0; padding-top: 0; display: inline;" id="user-login-form">
+	 			Username: <input maxlength="60" name="name" id="edit-name" size="15" class="form-text required" type="text"> &nbsp; 
+	 			Password: <input name="pass" id="edit-pass" maxlength="60" size="15" class="form-text required" type="password">
+				<input name="op" id="edit-submit" value="Log in" class="form-submit" type="submit">
+				<input name="form_id" id="edit-user-login-block" value="user_login_block" type="hidden">
+			</form>
+			</div>
+
+
+			<div style="display: inline; margin-left: 100px">
+				<a href="http://tuxradar.com/user/register">Create Account</a> |
+				<a href="http://tuxradar.com/about">About TuxRadar</a>
+			</div>
+
+			</div>
+</div>
+
+
+
+<div id="future_company_footer"><div><ul class="foot_images"><li class="footer_logo" title="Future Publishing"><a href="http://www.futureplc.com/" class="future-logo"></a></li></ul><div class="text"><div class="backtotop"><a href="javascript:window.scrollTo(0,0);">Top&nbsp;▲</a></div><ul class="footertext"><li>Future is AOP &amp; PPA Digital Publisher of the Year and BMA Media Company of the Year.</li><li>This
+ site&nbsp;is part of Future plc, an international media group and 
+leading digital publisher. We produce content across five core areas:</li></ul><ul class="category"><li><h6>Technology</h6><ul><li title="TechRadar"><a href="http://www.techradar.com/" title="Tech news">TechRadar</a></li><li title="T3"><a href="http://www.t3.com/" title="Technology news and gadget reviews">T3</a></li><li title="Mac|Life"><a href="http://www.maclife.com/" title="iPhone, iPad, Mac">Mac|Life</a></li><li title="Gizmodo UK"><a href="http://www.gizmodo.co.uk/" title="Tech news, from off the beaten track">Gizmodo UK</a></li><li title="More..."><a href="http://www.futureplc.com/what-we-do/portfolios/technology/" title="More...">More...</a></li></ul></li><li><h6>Entertainment</h6><ul><li title="CVG"><a href="http://www.computerandvideogames.com/" title="Game news and reviews">CVG</a></li><li title="PC Gamer"><a href="http://www.pcgamer.com/" title="PC games">PC Gamer</a></li><li title="GamesRadar"><a href="http://www.gamesradar.com/" title="Game cheats and news">GamesRadar</a></li><li title="Total Film"><a href="http://www.totalfilm.com/" title="Movie news">Total Film</a></li><li title="More..."><a href="http://www.futureplc.com/what-we-do/portfolios/entertainment/" title="More...">More...</a></li></ul></li><li><h6>Music</h6><ul><li title="MusicRadar"><a href="http://www.musicradar.com/" title="Music news">MusicRadar</a></li><li title="Guitarist"><a href="http://www.musicradar.com/guitarist" title="The guitar player's bible">Guitarist</a></li><li title="FutureMusic"><a href="http://www.musicradar.com/futuremusic" title="Technique and technology for making music">FutureMusic</a></li><li title="Rhythm"><a href="http://www.musicradar.com/rhythm" title="The UK's best-selling drum magazine">Rhythm</a></li><li title="More..."><a href="http://www.futureplc.com/what-we-do/portfolios/music/" title="More...">More...</a></li></ul></li><li><h6>Creative</h6><ul><li title="Digital Camera World"><a href="http://www.digitalcameraworld.com/" title="Digital Camera News, Reviews, Tips and Techniques">Digital Camera World</a></li><li title="Mollie Makes"><a href="http://www.molliemakes.com/" title="Making, collecting, thrifting, crafting">Mollie Makes</a></li><li title="Photography Week"><a href="http://photographyweek.digitalcameraworld.com/" title="The weekly iPad magazine for photographers">Photography Week</a></li><li title="The Simple Things"><a href="http://www.thesimplethings.com/" title="Celebrating the things that matter most">The Simple Things</a></li><li title="More..."><a href="http://www.futureplc.com/what-we-do/portfolios/creative/" title="More...">More...</a></li></ul></li><li><h6>Sport &amp; Auto</h6><ul><li title="BikeRadar"><a href="http://www.bikeradar.com/" title="Bikes and bike reviews">BikeRadar</a></li><li title="Cyclingnews"><a href="http://www.cyclingnews.com/" title="Pro cycling news and reviews">Cyclingnews</a></li><li title="Football Week"><a href="http://www.thefootballweek.net/" title="Get ahead of the game">Football Week</a></li><li title="TriRadar"><a href="http://www.triradar.com/" title="Triathlon Training, News &amp; Gear">TriRadar</a></li><li title="More..."><a href="http://www.futureplc.com/what-we-do/portfolios/sport-and-auto/" title="More...">More...</a></li></ul></li></ul><ul class="foot_legals"><li title="About Future"><a href="http://www.futureplc.com/about/" title="About Future" rel="nofollow">About Future</a></li><li title="Jobs"><a href="http://www.yourfuturejob.com/" title="Jobs in media" rel="follow">Jobs</a></li><li title="PR"><a href="http://www.futureplc.com/news/" title="Public Relations" rel="nofollow">PR</a></li><li title="Advertising"><a href="http://www.futureplc.com/what-we-do/advertising-solutions/" title="Advertising" rel="nofollow">Advertising</a></li><li title="Digital Future"><a href="http://advertising.digitalfuture.com/" title="Digital Future" rel="nofollow">Digital Future</a></li><li title="Privacy Policy"><a href="http://www.futureplc.com/privacy-policy/" title="Privacy Policy" rel="nofollow">Privacy Policy</a></li><li title="Cookies Policy"><a href="http://www.futureplc.com/cookies-policy/" title="Cookies Policy" rel="nofollow">Cookies Policy</a></li><li title="Terms &amp; Conditions"><a href="http://www.futureplc.com/terms-and-conditions/" title="Terms and Conditions" rel="nofollow">Terms &amp; Conditions</a></li><li title="Subscriptions"><a href="http://www.myfavouritemagazines.co.uk/" title="Buy magazines online" rel="follow">Subscriptions</a></li><li title="Investor Relations"><a href="http://www.futureplc.com/investors/" title="Investor Relations" rel="nofollow">Investor Relations</a></li><li title="Contact Future"><a href="http://www.futureplc.com/contact/" title="Contact Future" rel="nofollow">Contact Future</a></li></ul><p>©
+ Future Publishing Limited, Beauford Court, 30 Monmouth Street, Bath BA1
+ 2BW. All rights reserved. England and Wales company registration number
+ 2008885.</p></div></div><div style="z-index: 16777271; position: fixed; left: 50%; bottom: 0px; width: 970px; margin-left: -485px; height: 30px; line-height: 30px; border: medium none; background-color: rgb(245, 221, 136); color: rgb(0, 0, 0); overflow: hidden; text-align: center; font-size: 12px; font-family: arial; padding: 0px;" id="fp_cookieMessageContainer">We
+ use cookies on this website. By using this site, you agree that we may 
+store and access cookies on your device.  Find out more and set your 
+preferences <a href="http://www.futureplc.com/cookies-policy/" target="_blank" style="color: #000; font-weight: bold; text-decoration: none; border-bottom: 1px solid #000;">here</a>.<a style="display: block; width: 30px; height: 30px; background-color: rgb(180, 141, 4); border: medium none; color: rgb(255, 255, 255); font-size: 20px; line-height: 30px; text-decoration: none; position: absolute; right: 0px; top: 0px;" href="#null" id="fp_cookieMessageCloseButton">×</a></div></div><style>#future_company_footer{min-width: 970px;}  #future_company_footer>div{max-width: 970px;} #future_company_footer div.text{width: 890px;}</style><script type="text/javascript" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/fp_cookie.js" async="" defer="defer"></script>
+
+<!--DFP OOP1 -->
+<div style="display: none;" id="dfp-advert-4-oop"><script>googletag.cmd.push(function(){googletag.display('dfp-advert-4-oop')});</script><div style="border: 0pt none;" id="google_ads_iframe_/8644/tech_linuxformat_3__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_3" id="google_ads_iframe_/8644/tech_linuxformat_3" frameborder="0" height="1" scrolling="no" width="1"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_3__hidden__" id="google_ads_iframe_/8644/tech_linuxformat_3__hidden__" frameborder="0" height="0" scrolling="no" width="0"></iframe></div>
+<!--DFP OOP2-->
+<div style="display: none;" id="dfp-advert-5-oop"><script>googletag.cmd.push(function(){googletag.display('dfp-advert-5-oop')});</script><div style="border: 0pt none;" id="google_ads_iframe_/8644/tech_linuxformat_4__container__"><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_4" id="google_ads_iframe_/8644/tech_linuxformat_4" frameborder="0" height="1" scrolling="no" width="1"></iframe></div><iframe src="javascript:&quot;<html><body style='background:transparent'></body></html>&quot;" style="border: 0px none; vertical-align: bottom; visibility: hidden; display: none;" marginheight="0" marginwidth="0" name="google_ads_iframe_/8644/tech_linuxformat_4__hidden__" id="google_ads_iframe_/8644/tech_linuxformat_4__hidden__" frameborder="0" height="0" scrolling="no" width="0"></iframe></div>
+
+
+<div id="wrap">
+		<div id="host_footer">
+
+
+<object type="application/x-shockwave-flash" data="xdotool:%20Script%20your%20mouse%20|%20TuxRadar%20Linux_files/ukfast_mycloudstack3.swf" height="60" width="468">
+        <param name="movie" value="/files/ukfast_mycloudstack3.swf">
+        <param name="quality" value="high">
+</object>
+
+
+
+
+
+<br><strong><a href="http://www.ukfast.co.uk/mycloudstack.html#utm_source=tux-mycloudstack-offers&amp;utm_medium=tux-mycloudstack-offers-leader&amp;utm_campaign=tux-mycloudstack-offers">Web hosting by UKFast</a></strong>
+		</div>
+
+</div>
+	
+
+
+
+
+
+<br>
+
+
+
+<!--OMNITURE CODE HBX2.5 (Universal)-->
+<!-- Copyright 1997 - 2008. Omniture, Inc. All Rights Reserved.  Omniture is a registered trademark of Omniture, Inc. in the United States, Canada, Japan, and the European Community. -->
+<script type="text/javascript" language="javascript">
+var _hbEC=0,_hbE=new Array;function _hbEvent(a,b){b=_hbE[_hbEC++]=new Object();b._N=a;b._C=0;return b;}
+var hbx=_hbEvent("pv");hbx.vpc="HBX0250u";hbx.gn="ehg-futurepub.hitbox.com";
+
+//BEGIN EDITABLE SECTION
+//CONFIGURATION VARIABLES
+hbx.acct="DM570213BNZR71EN3";//ACCOUNT NUMBER(S)
+hbx.pn="TuxRadar_xdotool: Script your mouse";//PAGE NAME(S)
+hbx.mlc="/TuxRadar/ROS";//MULTI-LEVEL CONTENT CATEGORY
+
+hbx.pndef="title";//DEFAULT PAGE NAME
+hbx.ctdef="full";//DEFAULT CONTENT CATEGORY
+
+//OPTIONAL PAGE VARIABLES
+//ACTION SETTINGS
+hbx.fv="";//FORM VALIDATION MINIMUM ELEMENTS OR SUBMIT FUNCTION NAME
+hbx.lt="auto_pos";//LINK TRACKING
+hbx.dlf="n";//DOWNLOAD FILTER
+hbx.dft="n";//DOWNLOAD FILE NAMING
+hbx.elf="n";//EXIT LINK FILTER
+
+//SEGMENTS AND FUNNELS
+hbx.seg="";//VISITOR SEGMENTATION
+hbx.fnl="";//FUNNELS
+
+//CAMPAIGNS
+hbx.cmp="_P::cid";//CAMPAIGN ID
+hbx.cmpn="";//CAMPAIGN ID IN QUERY
+hbx.dcmp="";//DYNAMIC CAMPAIGN ID
+hbx.dcmpn="";//DYNAMIC CAMPAIGN ID IN QUERY
+hbx.dcmpe="";//DYNAMIC CAMPAIGN EXPIRATION
+hbx.dcmpre="";//DYNAMIC CAMPAIGN RESPONSE EXPIRATION
+hbx.hra="_P::attr";//RESPONSE ATTRIBUTE
+hbx.hqsr="";//RESPONSE ATTRIBUTE IN REFERRAL QUERY
+hbx.hqsp="";//RESPONSE ATTRIBUTE IN QUERY
+hbx.hlt="";//LEAD TRACKING
+hbx.hla="";//LEAD ATTRIBUTE
+hbx.gp="";//CAMPAIGN GOAL
+hbx.gpn="";//CAMPAIGN GOAL IN QUERY
+hbx.hcn="";//CONVERSION ATTRIBUTE
+hbx.hcv="";//CONVERSION VALUE
+hbx.cp="null";//LEGACY CAMPAIGN
+hbx.cpd="";//CAMPAIGN DOMAIN
+
+//CUSTOM VARIABLES
+hbx.ci="";//CUSTOMER ID
+hbx.hc1="";//CUSTOM 1
+hbx.hc2="";//CUSTOM 2
+hbx.hc3="";//CUSTOM 3
+hbx.hc4="";//CUSTOM 4
+hbx.hrf="";//CUSTOM REFERRER
+hbx.pec="";//ERROR CODES
+
+</script>
+<script type="text/javascript" language="javascript" src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/hbx.js"></script>
+<!--END OMNITURE CODE-->
+
+
+<!-- Begin Google Analytics code -->
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="xdotool:%20Script%20your%20mouse%20%7C%20TuxRadar%20Linux_files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4487960-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+<!-- End Google Analytics code -->
+
+<!-- Begin Sitestat4 code -->
+
+<script language="JavaScript1.1" type="text/javascript">
+<!--
+function sitestat(ns_l){ns_l+='&amp;ns__t='+(new Date()).getTime();ns_pixelUrl=ns_l;
+ns_0=document.referrer;
+ns_0=(ns_0.lastIndexOf('/')==ns_0.length-1)?ns_0.substring(ns_0.lastIndexOf('/'),0):ns_0;
+if(ns_0.length>0)ns_l+='&amp;ns_referrer='+escape(ns_0);
+if(document.images){ns_1=new Image();ns_1.src=ns_l;}else
+document.write('<img src="'+ns_l+'" width="1" height="1" alt="">');}
+var countername = "ros.content.xdotool-script-your-mouse.page";
+sitestat("http://uk.sitestat.com/future/tuxradar/s?"+countername);
+//-->
+</script>
+<noscript>
+<img src="http://uk.sitestat.com/future/tuxradar/s?ros.content.xdotool-script-your-mouse.page"
+width="1" height="1" alt="">
+</noscript>
+
+
+<!-- End Sitestat4 code -->
+
+	
+
+
+
+
+
+
+<iframe style="display: none; width: 0px; height: 0px;" name="google_osd_static_frame" id="google_osd_static_frame_8987306170279"></iframe></body></html>
