@@ -7,7 +7,7 @@
 include ../../Make.mak
 
 
-CAUL-S_DIR = ../gaul-s		
+#CAUL-S_DIR = ../gaul-s		
 CGPLIB_DIR = ../cgplib		
 PLOTER_DIR = ../ploter		
 ##JIMTCL_DIR = ../jimtcl		
@@ -18,12 +18,12 @@ X_TOOL_DIR = ../x-tool
 #-------------------------------------------------------------------------------
 
 
-all:  CAUL-S__ CGPLIB__ PLOTER__ LOGICS__ JOYJOY__ ##JIMTCL__  
+all:  CGPLIB__ PLOTER__ LOGICS__ JOYJOY__ ##JIMTCL__ CAUL-S__  
 
 #-------------------------------------------------------------------------------
 
-CAUL-S__ :
-	(cd $(CAUL-S_DIR); make)
+# CAUL-S__ :
+# 	(cd $(CAUL-S_DIR); make)
 
 CGPLIB__ :
 	(cd $(CGPLIB_DIR); make)
@@ -50,7 +50,7 @@ test:
 #-------------------------------------------------------------------------------
 
 clean : 
-	(cd $(CAUL-S_DIR); make clean)
+#	(cd $(CAUL-S_DIR); make clean)
 	(cd $(CGPLIB_DIR); make clean)
 	(cd $(PLOTER_DIR); make clean)
 	(cd $(LOGICS_DIR); make clean)

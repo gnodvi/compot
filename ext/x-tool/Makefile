@@ -13,9 +13,7 @@ PROGS = l_scan T/l_scan.so  #m_nist
 #-------------------------------------------------------------------------------
 
 all:  $(PROGS) 
-	(cd CIPS;              make)
-	(cd TOOL/3.20160805.1; make)
-	(cd GOCR/gocr-0.52;    make)
+	(cd S;   make)
 
 # test:  
 # 	(cd ext/m; M)
@@ -36,10 +34,7 @@ T/l_scan.so: T/l_scan.o
 
 clean:  
 	rm -f *.o $(PROGS) T/*.o
-	(cd CIPS;              make clean)
-	(cd TOOL/3.20160805.1; make clean)
-	(cd GOCR/gocr-0.52;    make clean)
-	(rm -f GOCR/gocr-0.52/src/gocr)
+	(cd S;       make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

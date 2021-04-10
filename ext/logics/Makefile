@@ -2,10 +2,10 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd METAMATH; make)
+#	(cd METAMATH; make)
 
 test:  
-	(cd METAMATH; test-run.sh)
+#	(cd METAMATH; test-run.sh)
 
 #--------------------------------------------
 

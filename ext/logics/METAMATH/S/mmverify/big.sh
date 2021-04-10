@@ -7,16 +7,9 @@
 
 
 echo ""
-echo "---------------- MMVERIFY.PY --------------"
-echo ""
 
-python3 S/mmverify/mmverify.py < min.mm 
+python3 ./mmverify.py < big.mm 
 
-echo ""
-echo "---------------- METAMATH -----------------"
-echo ""
-
-./metamath "read big.mm" 'verify proof *' exit 
 
 echo ""
 

@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+# -*-   mode: python  coding: utf-8   -*- --------------------------------------
 
-# see end file
+#!/usr/bin/env python3
 
 #-------------------------------------------------------------------------------
 # mmverify.py -- Proof verifier for the Metamath language
@@ -40,37 +40,27 @@ def vprint(vlevel, *args):
     if verbosity >= vlevel: print(*args, file=sys.stderr)
 
 #-------------------------------------------------------------------------------
+
 class toks:
-    
     def __init__(self, lines):
-        
         self.lines_buf = [lines]
-        self.tokbuf    = []
+        self.tokbuf = []
         self.imported_files = set()
 
     def read(self):
-        
         while self.tokbuf == []:
-            
             line = self.lines_buf[-1].readline()
-            
-            print ("_______" + line.rstrip())
-            
             if not line:
                 self.lines_buf.pop().close()
                 if not self.lines_buf: return None
             else:
                 self.tokbuf = line.split()
                 self.tokbuf.reverse()
-                
         return self.tokbuf.pop()
 
     def readf(self):
-        
         tok = self.read()
-        
         while tok == '$[':
-            
             filename = self.read()
             endbracket = self.read()
             if endbracket != '$]':
@@ -83,10 +73,8 @@ class toks:
         return tok
 
     def readc(self):
-        
         while 1:
             tok = self.readf()
-            
             if tok == None: return None
             if tok == '$(':
                 while tok != '$)':
@@ -97,7 +85,6 @@ class toks:
     def readstat(self):
         stat = []
         tok = self.readc()
-        
         while tok != '$.':
             if tok == None: raise MMError('EOF before $.')
             stat.append(tok)
@@ -117,7 +104,6 @@ class Frame:
 
 #-------------------------------------------------------------------------------
 class FrameStack(list):
-    
     def push(self):
         self.append(Frame())
 
@@ -196,23 +182,19 @@ class FrameStack(list):
 
 #-------------------------------------------------------------------------------
 class MM:
-    
     def __init__(self, begin_label, stop_label):
-        
-        self.fs     = FrameStack()
+        self.fs = FrameStack()
         self.labels = {}
         self.begin_label = begin_label
-        self.stop_label  = stop_label
+        self.stop_label = stop_label
 
     def read (self, toks):
-        
         self.fs.push()
         label = None
 
         tok = toks.readc()
 
         while tok not in (None, '$}'):
-            
             if tok == '$c':
                 for tok in toks.readstat(): self.fs.add_c(tok)
             elif tok == '$v':
@@ -242,32 +224,24 @@ class MM:
                 if label == self.stop_label: sys.exit(0)
                 stat = toks.readstat()
                 proof = None
-
                 try:
                     i = stat.index('$=')
                     proof = stat[i + 1:]
                     stat = stat[:i]
                 except ValueError:
                      raise MMError('$p must contain proof after $=')
-
                 if self.begin_label and label == self.begin_label:
                     self.begin_label = None
-                    
                 if not self.begin_label:
-                    vprint (1, 'verifying', label)
-                    # ----------------------------------
-                    self.verify (label, stat, proof)
-                    # ----------------------------------
-                    
+                    vprint(1, 'verifying', label)
+                    self.verify(label, stat, proof)
                 self.labels[label] = ('$p', self.fs.make_assertion(stat))
                 label = None
-                
             elif tok == '$d': self.fs.add_d(toks.readstat())
             elif tok == '${': self.read(toks)
             elif tok[0] != '$': label = tok
             else: print('tok:', tok)
             tok = toks.readc()
-            
         self.fs.pop()
 
     def apply_subst(self, stat, subst):
@@ -426,13 +400,6 @@ if __name__ == '__main__':
     mm.read (toks (sys.stdin))
 
     #mm.dump()
-
-#-------------------------------------------------------------------------------
-
-### end of file
-# Local Variables:
-# coding: koi8
-# End:
 
 #-------------------------------------------------------------------------------
     
