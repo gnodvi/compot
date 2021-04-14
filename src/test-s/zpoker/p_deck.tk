@@ -1,3 +1,5 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
 #!/bin/sh
 #
 # the next line restarts using tclsh \
