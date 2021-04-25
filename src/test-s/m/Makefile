@@ -4,31 +4,31 @@
 
 ORIGIN_DIR = ../origin
 
-OTHERS_DIR = ../others
+#OTHERS_DIR = ../others
 
-ZPOKER_DIR = ../zpoker
+HPOKER_DIR = ../hpoker
 
 #-------------------------------------------------------------------------------
 
 
-all:  ORIGIN__ # ZPOKER__ # OTHERS__ 
+all:  ORIGIN__ # HPOKER__ # OTHERS__ 
 
 #-------------------------------------------------------------------------------
 
 ORIGIN__ :
 	(cd $(ORIGIN_DIR); make)
 
-OTHERS__ :
-	(cd $(OTHERS_DIR); make)
+# OTHERS__ :
+# 	(cd $(OTHERS_DIR); make)
 
-ZPOKER__ :
-	(cd $(ZPOKER_DIR); make)
+HPOKER__ :
+	(cd $(HPOKER_DIR); make)
 
 #-------------------------------------------------------------------------------
 
 clean : 
 	(cd $(ORIGIN_DIR); make clean)
-#	(cd $(ZPOKER_DIR); make clean)
+#	(cd $(HPOKER_DIR); make clean)
 #	(cd $(OTHERS_DIR); make clean)
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

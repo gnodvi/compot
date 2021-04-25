@@ -1004,11 +1004,12 @@ proc  tao_loop0_main {tao} {
     
     #if {$::NEW} {
 
-    puts ""
+    #puts ""
     #puts "i         = $i"
-    puts "point     = $point -> $new_point"
-    puts "isplus    = $isplus"
-    puts ""
+    #puts "point     = $point -> $new_point"
+    puts "new_point = $new_point"
+    #puts "isplus    = $isplus"
+    #puts ""
     
     # здесь надо бы распечатать текущий расчет из PLOT:
     # 
@@ -1117,12 +1118,29 @@ proc tao_loop_MAIN {tao} {
 
 }
 #-------------------------------------------------------------------------------
-proc  loop0 {{nn 30} {nums 100} {seed -1}} { 
+proc  loop0 {args} { 
 
+
+  set size  [dict_parse $args "-size"    30] 
+  set nums  [dict_parse $args "-nums"   100] 
+  set seed  [dict_parse $args "-seed"    -1]
+
+  if {0} {
+  puts ""
+  puts "......... loop0 ..............."
+  puts ""
+  puts "args = $args"
+  puts "size = $size"
+  puts "nums = $nums"
+  puts "seed = $seed"
+
+  exit
+  }
+  # ------------------------------------------------------------
 
   srandom_set $seed
 
-  set gr [graf_create $nn]
+  set gr [graf_create $size]
   
   graf_init  $gr "GR_RAND" 0.0 0.0  "GR_RAND" 0.0 0.0
 
@@ -1163,7 +1181,6 @@ proc  loop0 {{nn 30} {nums 100} {seed -1}} {
   puts "p_out  = $p_out"
   puts ""
   
-  # ------------------------------------------------------------
 
   tao_loop_MAIN $tao
 
@@ -1171,16 +1188,31 @@ proc  loop0 {{nn 30} {nums 100} {seed -1}} {
   return $tao
 }
 #-------------------------------------------------------------------------------
-proc loop1 {{nn 10} {nums 100} {seed -1}} {
+proc loop1 {args} {
 
-  # nn    количество ребер в графе
+  # size  количество ребер в графе
   # nums  количество шагов
 
-  # ---------------------------------------------------------
+  set size  [dict_parse $args "-size"    30] 
+  set nums  [dict_parse $args "-nums"   100] 
+  set seed  [dict_parse $args "-seed"    -1]
+
+  if {0} {
+  puts ""
+  puts "......... loop1 ..............."
+  puts ""
+  puts "args = $args"
+  puts "size = $size"
+  puts "nums = $nums"
+  puts "seed = $seed"
+
+  exit
+  }
+  # ------------------------------------------------------------
   
   #set ::simp_random 1   ;# для точного сравнения с LISP
 
-  set gr_old [graf_create $nn]
+  set gr_old [graf_create $size]
 
   srandom_set $seed
   

@@ -14,28 +14,29 @@ package require compot::common
 package require compot::graphs 
 
 # -------------------------------------------------------------------------------
-proc TEST {} {
+# proc TEST {} {
 
-  #source "g-graf.tl"      
-  #set ::NEW 1 ;# побольше и получше печатаем про граф
+#   source "t_meta.tl"
 
-  source "t_meta.tl"
+#   global argc argv
 
-  global argc argv
+#   # надо оставить только словарные параметры
+#   # 
+#   set argv [lrange $argv 1 end]
 
-  set param1 [lindex $argv 1]
+#   puts stderr "argc = $argc   argv = $argv"
 
-  #   eval $param1 ;# вызываем вспомогательную секонд-функцию
-  #   return
+#   set prog  [dict_parse $argv "-prog"    "loop1" ] 
+ 
+#   set size  [dict_parse $argv "-size"    10] 
+#   set nums  [dict_parse $argv "-nums"     5] 
+#   set seed  [dict_parse $argv "-seed"  1706] 
 
-  switch -- $param1 {
+#   $prog  -size $size -nums $nums -seed $seed 
+  
 
-    "0" {loop0  10 5  1706}
-    "1" {loop1  10 3  1706}
-  }
-
-  return
-}
+#   return
+# }
 #-------------------------------------------------------------------------------
 
 set CUR_DIR "t"
@@ -43,4 +44,8 @@ set CUR_DIR "t"
 READ_AND_CALL_ARGUS  $CUR_DIR
 
 # -------------------------------------------------------------------------------
+
+# t~.tl TEST -prog loop1 .........
+# t_test.tl -mode test -prog loop1 -size 10 -nums 5 -seed 1706
+
 # -------------------------------------------------------------------------------

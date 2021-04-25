@@ -100,7 +100,7 @@
 # ;;
 
 # -------------------------------------------------------------------------------
-proc graf_init {gr type_nodes nod1 nod2 \
+proc graf_init {gr type_nodes nod1 nod2 
                    type_edges edg1 edg2} {
 
   set nn [dict_get $gr "NN"]

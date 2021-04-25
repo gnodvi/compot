@@ -1,3 +1,6 @@
+argc = 10   argv = -mode test -prog loop0 -size 10 -nums 5 -seed 1706
+mode = test
+prog = loop0
 
 --------------- loop0 -------------------------
 
@@ -10,30 +13,15 @@ p_out  = {1 "Nodes"  1  NIL} {2 "Rmax"   1  NIL} {2 "Rmin"   1  NIL}
 tao_loop_MAIN: tao_loop0_main
 
   0)  
-
-point     = 0 -> 2
-isplus    = 0
-
+new_point = 2
   1)  
-
-point     = 2 -> 4
-isplus    = 1
-
+new_point = 4
   2)  
-
-point     = 4 -> 1
-isplus    = 0
-
+new_point = 1
   3)  
-
-point     = 1 -> 6
-isplus    = 1
-
+new_point = 6
   4)  
-
-point     = 6 -> 6
-isplus    = 0
-
+new_point = 6
 
 tao_prepare_and_draw_plot_to_console ..
 

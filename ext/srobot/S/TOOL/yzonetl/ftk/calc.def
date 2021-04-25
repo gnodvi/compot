@@ -1,0 +1,21 @@
+#-------------------------------------------------
+#                                                 
+#        Defined params for AGL                   
+#                                                 
+#-------------------------------------------------
+;                         ; FLAG_PARALL true 
+;                         ; 
+; number of nodes         ; NN          101 
+; number of steps         ; NUM_DOING   251 
+;                         ; 
+;                         ; EDGE_ALL    50 
+;                         ; EDGE_TWO    80 
+;                         ; 
+;                         ; DO_ADD      50 
+;                         ; DO_DEL      40 
+;                         ; 
+;                         ; OLD_TO_NEW  30 
+;                         ; NEW_TO_OLD  30 
+;                         ; 
+;                         ; MUTACIQ     10 
+#-------------------------------------------------

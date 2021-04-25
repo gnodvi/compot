@@ -11,14 +11,14 @@ include ../../Make.mak
 CGPLIB_DIR = ../cgplib		
 PLOTER_DIR = ../ploter		
 ##JIMTCL_DIR = ../jimtcl		
-LOGICS_DIR = ../logics		
+#LOGICS_DIR = ../logics		
 JOYJOY_DIR = ../joyjoy		
-X_TOOL_DIR = ../x-tool		
+SROBOT_DIR = ../srobot		
 
 #-------------------------------------------------------------------------------
 
 
-all:  CGPLIB__ PLOTER__ LOGICS__ JOYJOY__ ##JIMTCL__ CAUL-S__  
+all:  CGPLIB__ PLOTER__ JOYJOY__ ##JIMTCL__ CAUL-S__ LOGICS__  
 
 #-------------------------------------------------------------------------------
 
@@ -31,14 +31,14 @@ CGPLIB__ :
 PLOTER__ :
 	(cd $(PLOTER_DIR); make)
 
-LOGICS__ :
-	(cd $(LOGICS_DIR); make)
+#LOGICS__ :
+#	(cd $(LOGICS_DIR); make)
 
 JOYJOY__ :
 	(cd $(JOYJOY_DIR); make)
 
-# X_TOOL__ :
-# 	(cd $(JOYJOY_DIR); make)
+SROBOTL__ :
+	(cd $(SROBOT_DIR); make)
 
 ##JIMTCL__ :
 ##	(cd $(JIMTCL_DIR); make)
@@ -53,9 +53,9 @@ clean :
 #	(cd $(CAUL-S_DIR); make clean)
 	(cd $(CGPLIB_DIR); make clean)
 	(cd $(PLOTER_DIR); make clean)
-	(cd $(LOGICS_DIR); make clean)
+#	(cd $(LOGICS_DIR); make clean)
 	(cd $(JOYJOY_DIR); make clean)
-	(cd $(X_TOOL_DIR); make clean)
+	(cd $(SROBOT_DIR); make clean)
 
 ##	(cd $(JIMTCL_DIR); make clean)
 

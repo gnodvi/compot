@@ -1,3 +1,5 @@
+// -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
+
 //------------------------------------------------------------------------------
 /* Copyright Itai Nahshon 1995, 1996.
    This program is distributed with no warranty.
@@ -233,6 +235,7 @@ destroy_images(void) {
 //------------------------------------------------------------------------------
 void
 Usage(void) {
+  
   fprintf(stderr, "Usage: %s [ args ]\n"
 	  "Command line args:\n"
 	  "-display displayname\n"
@@ -261,9 +264,9 @@ Usage(void) {
 	  "Arrow keys: Scroll in direction of arrow\n"
 	  "Mouse button drag: Set top-left corner of viewed area\n",
 	  progname);
+  
   exit(1);
 }
-
 //------------------------------------------------------------------------------
 /* resize is called with the dest size.
    we call it then manification changes or when
@@ -340,18 +343,22 @@ void scale32(void)
 #undef T
 }
 
-static int _XlibErrorHandler(Display *display, XErrorEvent *event) {
+//------------------------------------------------------------------------------
+static int _XlibErrorHandlerTrue (Display *display, XErrorEvent *event) {
   
-  fprintf(stderr, "An error occured detecting the mouse position\n");
+  fprintf (stderr, "An error occured detecting the mouse position\n");
   return True;
 }
 
 //------------------------------------------------------------------------------
 int
-main(int argc, char **argv) {
+main (int argc, char **argv) {
+
+  // значения по умолчанию
+  // 
+  int follow_mouse = True /* False */;
+  int show_cursor  = True;
   
-  int follow_mouse = False;
-  int show_cursor = True;
   int number_of_screens;
   int i;
   Bool result;
@@ -361,19 +368,29 @@ main(int argc, char **argv) {
   int win_x, win_y;
   unsigned int mask_return;
 
-  Display *display = XOpenDisplay(NULL);
-  assert(display);
-  XSetErrorHandler(_XlibErrorHandler);
-  number_of_screens = XScreenCount(display);
+  Display *display = XOpenDisplay (NULL);
+
+  assert (display);
+
+  // обработчик ошибок
+  // 
+  XSetErrorHandler (_XlibErrorHandlerTrue);
+
+  number_of_screens = XScreenCount (display);
   fprintf(stderr, "There are %d screens available in this X session\n", number_of_screens);
-  root_windows = malloc(sizeof(Window) * number_of_screens);
+
+  root_windows = malloc (sizeof(Window) * number_of_screens);
+
   for (i = 0; i < number_of_screens; i++) {
-    root_windows[i] = XRootWindow(display, i);
+    root_windows[i] = XRootWindow (display, i);
   }
+  
   for (i = 0; i < number_of_screens; i++) {
-    result = XQueryPointer(display, root_windows[i], &window_returned,
+    
+    result = XQueryPointer (display, root_windows[i], &window_returned,
 			   &window_returned, &root_x, &root_y, &win_x, &win_y,
 			   &mask_return);
+
     if (result == True) {
       break;
     }
@@ -382,34 +399,40 @@ main(int argc, char **argv) {
     fprintf(stderr, "No mouse found.\n");
     return -1;
   }
+  
   printf("Mouse is at (%d,%d)\n", root_x, root_y);
+
+  //----------------------------------------------------------------
 
   XSetWindowAttributes xswa;
   XEvent event;
 
   int buttonpressed = False;
-  int unmapped = True;
-  int scroll = 1;
+  int unmapped      = True;
+  int scroll        = 1;
+  
   char title[80];
   XGCValues gcv;
   char *dpyname = NULL;
   int source_geom_mask = NoValue,
-    dest_geom_mask = NoValue,
+        dest_geom_mask = NoValue,
     copy_from_src_mask;
   int xpos = 0, ypos = 0;
 
-  atexit(destroy_images);
-  progname = strrchr(argv[0], '/');
+  atexit (destroy_images);
+  progname = strrchr (argv[0], '/');
   if(progname)
     ++progname;
   else
     progname = argv[0];
 
+  //----------------------------------------------------------------
   /* parse command line options */
-  while(--argc > 0) {
+  while (--argc > 0) {
+    
     ++argv;
 
-    if(!strcmp(argv[0], "-follow")) {
+    if(! strcmp(argv[0], "-follow")) {
       follow_mouse = True;
       continue;
     }
@@ -528,9 +551,13 @@ main(int argc, char **argv) {
 
     Usage();
   }
+  //----------------------------------------------------------------
+  //
+  //  а теперь уже непосредственно сама программа
 
-  if (!(dpy = XOpenDisplay(dpyname))) {
-    perror("Cannot open display");
+
+  if (! (dpy = XOpenDisplay (dpyname))) {
+    perror ("Cannot open display");
     exit(-1);
   }
 
@@ -539,7 +566,7 @@ main(int argc, char **argv) {
 
   copy_from_src_mask = NoValue;
 
-  if(source_geom_mask & WidthValue) {
+  if (source_geom_mask & WidthValue) {
     if(flipxy) {
       height[DST] = magy * width[SRC];
       copy_from_src_mask |= HeightValue;
@@ -551,7 +578,7 @@ main(int argc, char **argv) {
     }
   }
 
-  if(source_geom_mask & HeightValue) {
+  if (source_geom_mask & HeightValue) {
     if(flipxy) {
       width[DST] = magx * height[SRC];
       copy_from_src_mask |= WidthValue;
@@ -562,12 +589,12 @@ main(int argc, char **argv) {
     }
   }
 
-  if(copy_from_src_mask & dest_geom_mask) {
+  if (copy_from_src_mask & dest_geom_mask) {
     fprintf(stderr, "Conflicting dimensions between source and dest geometry\n");
     Usage();
   }
 
-  scr = DefaultScreenOfDisplay(dpy);
+  scr = DefaultScreenOfDisplay (dpy);
 
   depth = DefaultDepthOfScreen(scr);
   if (depth < 8) {
@@ -594,13 +621,13 @@ main(int argc, char **argv) {
   xswa.event_mask |= KeyPressMask|KeyReleaseMask;		/* commands */
   xswa.background_pixel = BlackPixelOfScreen(scr);
 
-  win = XCreateWindow(dpy, RootWindowOfScreen(scr),
+  win = XCreateWindow (dpy, RootWindowOfScreen (scr),
 		      xpos, ypos, width[DST], height[DST], 0,
 		      DefaultDepthOfScreen(scr), InputOutput,
 		      DefaultVisualOfScreen(scr),
 		      CWEventMask | CWBackPixel, &xswa);
 
-  XChangeProperty(dpy, win, XA_WM_ICON_NAME, XA_STRING, 8,
+  XChangeProperty (dpy, win, XA_WM_ICON_NAME, XA_STRING, 8,
 		  PropModeReplace,
 		  (unsigned char *)progname, strlen(progname));
 
@@ -621,7 +648,7 @@ main(int argc, char **argv) {
 
   set_title = True;
 
-  status = XMapWindow(dpy, win);
+  status = XMapWindow (dpy, win);
 
   gcv.plane_mask = AllPlanes;
   gcv.subwindow_mode = IncludeInferiors;
@@ -663,7 +690,7 @@ main(int argc, char **argv) {
 #endif
   crosshair = XCreateFontCursor(dpy, XC_crosshair);
 
-  XDefineCursor(dpy, win, crosshair);
+  XDefineCursor (dpy, win, crosshair);
 
   for(;;) {
     if (follow_mouse || show_cursor ) {
@@ -692,7 +719,7 @@ main(int argc, char **argv) {
     ******/
 
     while(XPending(dpy)) {
-      XNextEvent(dpy, &event);
+      XNextEvent (dpy, &event);
       switch(event.type) {
       case ClientMessage:
 	if ((event.xclient.message_type == wm_protocols) &&
@@ -719,7 +746,7 @@ main(int argc, char **argv) {
 	break;
 
       case KeyRelease:
-	switch(XKeycodeToKeysym(dpy, event.xkey.keycode, 0)) {
+	switch (XKeycodeToKeysym(dpy, event.xkey.keycode, 0)) {
 	case XK_Control_L:
 	case XK_Control_R:
 	  scroll = 1;
@@ -728,7 +755,7 @@ main(int argc, char **argv) {
 	break;
 
       case KeyPress:
-	switch(XKeycodeToKeysym(dpy, event.xkey.keycode, 0)) {
+	switch (XKeycodeToKeysym (dpy, event.xkey.keycode, 0)) {
 	case XK_Control_L:
 	case XK_Control_R:
 	  scroll = 10;
@@ -1025,6 +1052,7 @@ main(int argc, char **argv) {
       DRAW_FRAME();
 #endif
   }
+  
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

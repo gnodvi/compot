@@ -9,16 +9,17 @@ exec tclsh "$0" ${1+"$@"}
 
 set auto_path [linsert $auto_path 0 "COMPOT/src"]
 set auto_path [linsert $auto_path 0 "."]
+set auto_path [linsert $auto_path 0 "./COMPOT/src/common"] ;# for JIM
 
 
 package require compot::common 
+#source "COMPOT/common/a-comp.tl"
 
-package require compot::graphs 
+#package require compot::graphs 
+source "g-graf.tl"
 
 #-------------------------------------------
 
-#source "COMPOT/common/a-comp.tl"
-#source "g-graf.tl"
 
 source "t_meta.tl"
 
@@ -146,55 +147,61 @@ proc tao_main_menu {tao} {
 proc MAIN_NEW {} {
 
 
-  set command  "test"  ;# по умолчанию
-  set prog    "loop1"  ;# по умолчанию - псевдопараллельность
-
   global argc argv arg0
 
-  if {$argc > 0}  {set command [lindex $argv 0]}
+  puts "argc = $argc   argv = $argv"
 
 
-  switch -- $command {
+  set mode  [dict_parse $argv "-mode"   "test"  ]  
+  set prog  [dict_parse $argv "-prog"   "loop0" ]  
+  set file  [dict_parse $argv "-file"   "t__000040"]  
+
+  set size   [dict_parse $argv "-size"   300] 
+  set nums   [dict_parse $argv "-nums"   300] 
+  set menu   [dict_parse $argv "-menu"     0]  
+  set save   [dict_parse $argv "-save"     0]  
+
+  puts "mode = $mode"
+  puts "prog = $prog"
+
+  #puts "argc = $argc   argv = $argv"
+
+  switch -- $mode {
 
     "test"   {
 
-      if {$argc > 0} {set prog [lindex $argv 1]}
-      
       #set ::NEW 1 ;# побольше и получше печатаем про граф
       
-      set tao [$prog] ;# вызываем саму программу инициации/выполнения, 
-                       # возвращаем разрез, 
-                       # в нем уже будет будет основная функция выполнения,
+      # если надо, то будем сохарнять
+      # 
+      if {$save} {
+          MAKE_GLOBAL_NAME_set_timed ;# временные метки в глобальные имена
+                                      # а зачем ?
+          
+          set ::is_meta_saving 1 ;# запуск теста с сохранением разрезов!
+        }
+      
+      # вызываем саму программу инициации/выполнения, 
+      # возвращаем разрез, 
+      # в нем уже будет будет основная функция выполнения,
       # которую потом можно будет повторить
 
-      tao_main_menu $tao  
-    }
+      set tao [$prog {*}$argv]
 
-    "calc"   {
-
-      if {$argc > 0} {set prog [lindex $argv 1]}
-
-      MAKE_GLOBAL_NAME_set_timed ;# временные метки в глобальные имена
-      # а зачем ?
-
-      set ::is_meta_saving 1 ;# запуск теста с сохранением разрезов!
-  
-      set nn    300  
-      set nums  300 
-
-      $prog  $nn $nums ;# loop1 300 300
+      # если надо, то вызовем в конце расчета интерактивное меню
+      # 
+      if {$menu == 1} {
+          tao_main_menu $tao
+        }
     }
 
     "plot"   {
-      set file [lindex $argv 1]
       tao_file_draw_plot $file
     }
 
     "next"   {
-      set file [lindex $argv 1]
       tao_file_next_calc $file
     }
-
 
   }
 
@@ -225,4 +232,11 @@ MAIN_NEW
 #   (копировать) топологическую информацию; может обойтись вообще без чисел?
 #
 #-------------------------------------------------------------------------------
+
+#time t_test.tl -mode test -prog loop0 -size 100 -nums 100 -seed 1706
+
+# real	0m32.158s
+# user	0m32.048s
+# sys	0m0.104s
+
 # ------------------------------------------------------------------------------
