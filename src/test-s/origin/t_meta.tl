@@ -692,7 +692,17 @@ proc plot_from_outlist {p_out_list nums} {
   return $p_lot
 }
 #-------------------------------------------------------------------------------
-proc tao_create {gr nums p_out_list} {
+proc tao_set_out {tao p_out_list} {
+
+  set nums [GET $tao  "NUMS"]
+
+  set p_lot  [plot_from_outlist  $p_out_list $nums]
+  
+  SET $tao "P_LOT" $p_lot ;#
+
+}
+#-------------------------------------------------------------------------------
+proc tao_create {gr nums} {
 
 
   set tao [dict_create]
@@ -700,40 +710,15 @@ proc tao_create {gr nums p_out_list} {
   SET $tao    "GR"  $gr
   SET $tao  "NUMS"  $nums
 
-  #---------------------------------------------------------
   # в словарь  нужна ссылка на список, а не сам список?
   # 
-  #   set p_out [list_create_num_val] 
-  
-  # нужен новый вариант!
-  # 
-  set fnum [llength $p_out_list]
-  set xnum $nums
-  set tnum 1
 
-  set p_lot  [plot_from_outlist  $p_out_list $nums]
+  #set fnum [llength $p_out_list]
+  #set xnum $nums
+  #set tnum 1
 
-
-#   foreach l $p_out_list {
-
-#     lappend $p_out $l ;# заносим начальный список по адресу
-
-#     # для нового варианта:
-#     #
-#     #set name [lindex $l 1]
-#     #SET $n_out $name {} 
-#   }
-  
-  # а по простому?
-  #set p_out [MAKE_GLOBAL_NAME "LIST"]
-  #set $p_out $p_out_list
-  #---------------------------------------------------------
-  
-  #SET $tao "P_OUT" $p_out ;# ссылку на это список в словарь
-  
-  SET $tao "P_LOT" $p_lot ;#
-  
   SET $tao "STEP"   0
+
 
   return $tao
 }
@@ -1118,33 +1103,41 @@ proc tao_loop_MAIN {tao} {
 
 }
 #-------------------------------------------------------------------------------
-proc  loop0 {args} { 
+proc  tao_loop0_create {args} { 
 
 
   set size  [dict_parse $args "-size"    30] 
   set nums  [dict_parse $args "-nums"   100] 
   set seed  [dict_parse $args "-seed"    -1]
+  set prog  [dict_parse $args "-prog"   "" ]  
 
-  if {0} {
+  if {1} {
   puts ""
-  puts "......... loop0 ..............."
+  puts "......... $prog ..............."
   puts ""
   puts "args = $args"
   puts "size = $size"
   puts "nums = $nums"
   puts "seed = $seed"
 
-  exit
+  #exit
   }
-  # ------------------------------------------------------------
 
   srandom_set $seed
 
   set gr [graf_create $size]
   
-  graf_init  $gr "GR_RAND" 0.0 0.0  "GR_RAND" 0.0 0.0
+  # здесь будет целиком "разрез" задачи
+  # 
+  set tao [tao_create  $gr $nums] 
+
+  SET $tao  LOOP_MAIN  "tao_loop0_main"
 
   # ------------------------------------------------------------
+
+  graf_init  $gr "GR_RAND" 0.0 0.0  "GR_RAND" 0.0 0.0
+
+
   # TODO: заменить эту конструкцию на DICT !!
   # 
 
@@ -1155,9 +1148,7 @@ proc  loop0 {args} {
                {2 "Rmin"   1  NIL} \
               ]
 
-  # здесь будет целиком "разрез" задачи
-  # 
-  set tao [tao_create  $gr $nums $p_out] 
+  tao_set_out  $tao $p_out 
 
   # ------------------------------------------------------------
 
@@ -1170,25 +1161,12 @@ proc  loop0 {args} {
                     
   SET $tao       TEST  $test
   SET $tao      POINT  0
-  SET $tao  LOOP_MAIN  "tao_loop0_main"
-
-  puts ""
-  puts "--------------- loop0 -------------------------"
-  puts ""
-  puts "nums   = $nums" 
-  puts "seed   = $seed " 
-  puts "test   = $test"   
-  puts "p_out  = $p_out"
-  puts ""
-  
-
-  tao_loop_MAIN $tao
 
 
   return $tao
 }
 #-------------------------------------------------------------------------------
-proc loop1 {args} {
+proc tao_loop1_create {args} {
 
   # size  количество ребер в графе
   # nums  количество шагов
@@ -1196,26 +1174,31 @@ proc loop1 {args} {
   set size  [dict_parse $args "-size"    30] 
   set nums  [dict_parse $args "-nums"   100] 
   set seed  [dict_parse $args "-seed"    -1]
+  set prog  [dict_parse $args "-prog"   "" ]  
 
-  if {0} {
+  if {1} {
+
   puts ""
-  puts "......... loop1 ..............."
+  puts "......... $prog ..............."
   puts ""
   puts "args = $args"
   puts "size = $size"
   puts "nums = $nums"
   puts "seed = $seed"
 
-  exit
+  #exit
   }
-  # ------------------------------------------------------------
   
-  #set ::simp_random 1   ;# для точного сравнения с LISP
-
   set gr_old [graf_create $size]
 
   srandom_set $seed
   
+  # здесь будет целиком "разрез" задачи
+  # 
+  set tao [tao_create  $gr_old $nums] 
+
+  SET $tao  LOOP_MAIN  "tao_loop1_main"
+
   # ---------------------------------------------------------
 
   set p_out [list  \
@@ -1225,16 +1208,11 @@ proc loop1 {args} {
                {2 "TwoEdges"  1  NIL} \
               ]      
 
-  # здесь будет целиком "разрез" задачи
-  # 
-  set tao [tao_create  $gr_old $nums $p_out] 
+  tao_set_out  $tao $p_out 
+
 
   # одновременное изменение структуры по неким правилам для каждого
   # ребра по его окружению.
-
-  SET $tao  LOOP_MAIN  "tao_loop1_main"
-
-  # ---------------------------------------------------------
 
   # а здесь уже более специфичное задание
   #
@@ -1244,32 +1222,26 @@ proc loop1 {args} {
   SET $tao  reform_proc  "graf_reform_by_ADD_DEL"
   SET $tao  reform_args  [list $addnode_type $delnode_type]
 
-  # ---------------------------------------------------------
+
+  return $tao
+}
+#-------------------------------------------------------------------------------
+proc  loop0 {args} { 
+
+  set tao [tao_loop0_create {*}$args] 
+
+  tao_loop_MAIN $tao
+
+  return $tao
+}
+#-------------------------------------------------------------------------------
+proc loop1 {args} {
+
+
+  set tao [tao_loop1_create {*}$args]
 
   tao_loop_MAIN $tao ;# эту прогу будем потом повторять по тербованию
  
-
-  puts ""
-  puts "--------------- loop1 -------------------------"
-  puts ""
-  puts "nums       = $nums" 
-  puts "seed       = $seed " 
-  puts ""
-  puts "-----------------------------------------------"
-  puts ""
-
-  # TODO: зачем тут так специфично епчатать, может лучше разрез как словарь, 
-  # просто с параметрами, чтоб не весь, например, а упрощенно ..
-  # 
-  #puts "addnode_type = $addnode_type"
-  #puts "delnode_type = $delnode_type"
-  # puts ""
-
-  puts "p_out = $p_out"
-  puts ""
-  puts "-----------------------------------------------"
-  puts ""
-  puts ""
 
   return $tao
 }

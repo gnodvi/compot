@@ -10,8 +10,8 @@ proc package_require_compot {COMPOT_} {
   
   uplevel "source  $COM/a-comm.tl"
   uplevel "source  $COM/a-dict.tl"
-  #   source [file join $dir "a-disp.tl"]
-  #   source [file join $dir "a-menu.tl"]
+  uplevel "source  $COM/a-disp.tl"
+  uplevel "source  $COM/a-menu.tl"
   uplevel "source  $COM/a-comp.tl"
   uplevel "source  $COM/a-plot.tl"
   
@@ -29,6 +29,10 @@ proc package_require_compot {COMPOT_} {
   uplevel "source  $COM/f-rand.tl"
   
 }
+
+#-------------------------------------------
+  #   source [file join $dir "a-disp.tl"]
+  #   source [file join $dir "a-menu.tl"]
 #-------------------------------------------
 
 set COMPOT "./COMPOT"

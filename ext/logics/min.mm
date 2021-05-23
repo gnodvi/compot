@@ -1,1 +1,1 @@
-./M/demo0.mm
+M/demo0.mm

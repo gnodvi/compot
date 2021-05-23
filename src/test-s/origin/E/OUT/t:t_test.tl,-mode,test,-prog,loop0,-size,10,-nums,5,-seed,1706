@@ -2,13 +2,12 @@ argc = 10   argv = -mode test -prog loop0 -size 10 -nums 5 -seed 1706
 mode = test
 prog = loop0
 
---------------- loop0 -------------------------
+......... loop0 ...............
 
-nums   = 5
-seed   = 1706 
-test   = 1
-p_out  = {1 "Nodes"  1  NIL} {2 "Rmax"   1  NIL} {2 "Rmin"   1  NIL}
-
+args = -mode test -prog loop0 -size 10 -nums 5 -seed 1706
+size = 10
+nums = 5
+seed = 1706
 
 tao_loop_MAIN: tao_loop0_main
 

@@ -262,10 +262,10 @@ proc rand_test {} {
   puts "RAND_TEST"
   puts ""
 
-  set ll {0 0 0 0 1}
-  puts "lrand = [lrand $ll]"
+  #set ll {0 0 0 0 1}
+  #puts "lrand = [lrand $ll]"
 
-  puts ""
+  #puts ""
 }
 #-------------------------------------------------------------------------------
 proc TEST_menu {} {

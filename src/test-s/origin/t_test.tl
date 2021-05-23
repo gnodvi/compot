@@ -139,6 +139,8 @@ proc tao_main_menu {tao} {
 
   lappend menu_list   [list " m"  "MORE TEST" [list tao_moretest $tao]]
 
+  #set_en 
+  # 
   call_menu "mainmain" $menu_list
 
   return
@@ -207,11 +209,6 @@ proc MAIN_NEW {} {
 
   return
 }
-# -------------------------------------------------------------------------------
-#
-# t_test.tl   test loop1
-# t_test.tl   calc loop1
-#
 # -------------------------------------------------------------------------------
 
 #MAIN

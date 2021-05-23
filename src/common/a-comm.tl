@@ -392,7 +392,8 @@ if {$::OS == "QNX"} {
   set ::OSVER [system_get_osver]
 }
 
-set ::is_koi8       1
+#set ::is_koi8       1
+set ::is_koi8       0
 set ::is_color      1
 set ::is_color_menu 1
 
@@ -1853,6 +1854,11 @@ proc puts_rus {args} {
 }
 #-------------------------------------------------------------------------------
 proc puts_engrus {args} {
+
+  # is_newline ?? Jim USE_REFS JIM
+  #
+  set is_newline "" ;# чтобы передавать "ссылку" в Jim !!!!!
+ 
 
   # args -  либо один параметр, либо опция
   # -nonewline и строка
@@ -3903,20 +3909,63 @@ proc parse_read {name argus j} {
 # )
 # ;-------------------------------------------------------------------------------
 # ;-------------------------------------------------------------------------------
-proc MIN {v1 v2} {
+# proc MIN {v1 v2} {
 
 
-  return [expr {min ($v1, $v2)}]
-}
+#   return [expr {min ($v1, $v2)}]
+# }
 # ;-------------------------------------------------------------------------------
-proc MAX {v1 v2} {
+# proc MAX {v1 v2} {
 
 
-  return [expr {max ($v1, $v2)}]
+#   return [expr {max ($v1, $v2)}]
+# }
+#-------------------------------------------------------------------------------
+# ::math::max --
+#
+#	Return the maximum of two or more values
+#
+# Arguments:
+#	val	first value
+#	args	other values
+#
+# Results:
+#	max	maximum value
+# proc ::math::max {val args} {}
+
+proc MAX {val args} {
+
+    set max $val
+    foreach val $args {
+	if { $val > $max } {
+	    set max $val
+	}
+    }
+    set max
 }
 #-------------------------------------------------------------------------------
+# ::math::min --
 #
+#	Return the minimum of two or more values
 #
+# Arguments:
+#	val	first value
+#	args	other values
+#
+# Results:
+#	min	minimum value
+# proc ::math::min {val args} {}
+
+proc MIN {val args} {
+
+    set min $val
+    foreach val $args {
+	if { $val < $min } {
+	    set min $val
+	}
+    }
+    set min
+}
 # ;===============================================================================
 # ;
 # ;===============================================================================

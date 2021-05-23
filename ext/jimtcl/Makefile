@@ -2,14 +2,16 @@
 #-------------------------------------------------------------------------------
 
 
-INP = ./0.79/jimtcl-0.79-clean
+INP = ./J/0.79/jimtcl-0.79
 ADD = ./0.79_qnxpaches
 OUT = ./0.79_qnxresult
 
 #-------------------------------------------------------------------------------
 
 all: qnx
-
+	@echo ""
+	@echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	@echo ""
 	(cd $(OUT); make)
 
 qnx: 
@@ -50,7 +52,12 @@ qnx:
 
 	cp  -Rv  $(ADD)/*        $(OUT)
 
-	# cp  -Rv  $(ADD)/E        $(OUT)
+	mkdir -p $(OUT)/src/T
+	mkdir -p $(OUT)/src/Q
+	mkdir -p $(OUT)/src/noise/T
+	mkdir -p $(OUT)/src/noise/Q
+
+# cp  -Rv  $(ADD)/E        $(OUT)
 	# cp  -Rv  $(ADD)/doc      $(OUT)
 	# cp  -Rv  $(ADD)/qnx      $(OUT)
 	# cp   -v  $(ADD)/*        $(OUT)

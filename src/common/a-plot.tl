@@ -1010,11 +1010,17 @@ proc plot_min_max_NEW {fi plot} {
     foreach  {xmin ymin xmax ymax} \
                                  [plot_min_max_local_NEW  $fi $ti $plot] {}
    
-    set XMIN [expr {min ($xmin, $XMIN)}]
-    set XMAX [expr {max ($xmax, $XMAX)}]
+    #    set XMIN [expr {min ($xmin, $XMIN)}]
+    #    set XMAX [expr {max ($xmax, $XMAX)}]
+    set XMIN [MIN  $xmin $XMIN]
+    set XMAX [MAX  $xmax $XMAX]
     
-    set FMIN [expr {min ($ymin, $FMIN)}]
-    set FMAX [expr {max ($ymax, $FMAX)}]
+    set FMIN [MIN  $ymin $FMIN]
+    set FMAX [MAX  $ymax $FMAX]
+
+    #     set FMIN [expr {min ($ymin, $FMIN)}]
+    #     set FMAX [expr {max ($ymax, $FMAX)}]
+
   }
   
   if {[FRavno  $FMIN $FMAX  $::EPS]} {
