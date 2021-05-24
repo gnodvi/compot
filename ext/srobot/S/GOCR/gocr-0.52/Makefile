@@ -10,9 +10,9 @@
 #      make install DESTDIR=$RPM_BUILD_ROOT
 #
 
-prefix = /home/mgena/.MSOFT/GOCR/0.52/R
+prefix = /usr/local
 #bindir = $(prefix)/bin
-bindir = /home/mgena/.MSOFT/GOCR/0.52/R${exec_prefix}/bin
+bindir = /usr/local${exec_prefix}/bin
 
 SHELL = /bin/bash
 # this does not work on SuSE 6.0, why? (autoconf 2.12 do not set /bin/bash ?)
@@ -21,7 +21,7 @@ INSTALL = /usr/bin/install -c
 CC = gcc
 CFLAGS = -g -O2
 # following DEFs are not used, but I play with it for training
-CPPFLAGS = 
+CPPFLAGS = -Wall -g -fexceptions -DDO_DEBUG=1 
 DEFS = -DHAVE_CONFIG_H
 includedir = ${prefix}/include
 #
@@ -101,7 +101,7 @@ help:
 
 
 # you can override this variable by: make install DESTDIR=yourpath
-DESTDIR=/home/mgena/.MSOFT/GOCR/0.52/R
+DESTDIR=/usr/local
 .PHONY : install uninstall test examples
 install:
 	$(MAKE) -C src install

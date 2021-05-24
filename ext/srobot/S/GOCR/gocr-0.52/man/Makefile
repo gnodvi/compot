@@ -7,7 +7,7 @@ PROGRAM = gocr
 mandir = ${prefix}/share/man
 
 INSTALL=/usr/bin/install -c
-DESTDIR=/home/mgena/.MSOFT/GOCR/0.52/R
+DESTDIR=/usr/local
 
 default: all
 

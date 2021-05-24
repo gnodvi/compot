@@ -55,12 +55,12 @@ INSTALL=/usr/bin/install -c
 SHELL=/bin/bash
 
 DEFS=-DHAVE_CONFIG_H
-CPPFLAGS=
+CPPFLAGS=-Wall -g -fexceptions -DDO_DEBUG=1 
 # to see the config.h
 CFLAGS=-g -O2 $(CPPFLAGS) -I../include $(DEFS)
 LDFLAGS=-lm 
 LIBS=
-DESTDIR=/home/mgena/.MSOFT/GOCR/0.52/R
+DESTDIR=/usr/local
 
 .SUFFIXES: .s .o .c .h
 # do not look for files if help (etc) is given
