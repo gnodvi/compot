@@ -920,13 +920,12 @@ proc TEST_xx {} {
   set vers        [dict_parse $argv "-vers"  "gp"]
   set print       [dict_parse $argv "-print"  1]
 
-  set func        [dict_parse $argv "-func"  {x ** 2 + x}]
+  set func        [dict_parse $argv "-func"   {x ** 2 + x}]
   set auto        [dict_parse $argv "-auto"   0]
 
-  set ::NEWS      [dict_parse $argv "-news"   0]
+  set ::NEWS      [dict_parse $argv "-news"   0] ;# кладем сразу начальное значение x в стек несколько раз с запасом
 
   if {$::NEWS} {
-
     set gp_list     [dict_parse $argv "-list"       "* nop +"]
   } else {
     set gp_list     [dict_parse $argv "-list"   "dup * nop +"]
@@ -1135,8 +1134,7 @@ proc TEST_xx {} {
 
 # упростил пока (сразу заношу в стек X несколько раз (dup dup dup dup dup dup)
 
-# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 6 -nums -1 -news 1 -func "" -list "* +" -print 2
-
+# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 -news 1 -list "* +" -print 2 -func 'x ** 3 + x ** 2 + x' 
 
 # Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  * + * + * +
 

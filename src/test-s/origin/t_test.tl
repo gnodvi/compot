@@ -229,11 +229,27 @@ MAIN_NEW
 #   (копировать) топологическую информацию; может обойтись вообще без чисел?
 #
 #-------------------------------------------------------------------------------
+# AstroDistro
 
 #time t_test.tl -mode test -prog loop0 -size 100 -nums 100 -seed 1706
 
 # real	0m32.158s
 # user	0m32.048s
 # sys	0m0.104s
+
+#--------------------
+# Debian 10
+
+#time t_test.tl -mode test -prog loop0 -size 100 -nums 100 -seed 1706
+
+# real	0m10.956s
+# user	0m8.178s
+# sys	0m0.064s
+
+# time t_test.jm -mode test -prog loop0 -size 100 -nums 100 -seed 1706
+
+# real	0m14.140s
+# user	0m11.627s
+# sys	0m0.004s
 
 # ------------------------------------------------------------------------------
