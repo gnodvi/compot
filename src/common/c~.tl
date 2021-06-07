@@ -32,7 +32,7 @@ proc TEST_capture {} {
     #load  a_capt.so Capture
 
     set this_dir [pwd]
-    set name_lib [file join $this_dir "c_capt.so"]
+    set name_lib [file join "$this_dir/T" "c_capt.so"]
     load $name_lib Capture
   }
 

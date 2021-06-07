@@ -20,13 +20,13 @@ puts ""
 
 #source "T_JKL.tl"
 
+# puts ""
+
+# run_numer_tests  n . E/OUT 
+
 puts ""
 
-run_numer_tests  n . E/OUT 
-
-puts ""
-
-run_numer_tests  r . E/OUT 
+run_numer_tests  t . E/OUT 
 
 puts ""
 
@@ -48,9 +48,9 @@ run_numer_tests  g . E/OUT
 
 puts ""
 
-run_numer_tests  h . E/OUT 
+# run_numer_tests  h . E/OUT 
 
-puts ""
+# puts ""
 
 #-------------------------------------------------------------------------------
 
@@ -62,13 +62,13 @@ puts ""
 
 # puts ""
 
-run_numer_tests  s . E/OUT 
+# run_numer_tests  s . E/OUT 
 
-puts ""
+# puts ""
 
-run_numer_tests  t . E/OUT 
+# run_numer_tests  t . E/OUT 
 
-puts ""
+# puts ""
 
 #-------------------------------------------------------------------------------
 #

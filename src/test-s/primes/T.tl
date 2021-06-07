@@ -5,23 +5,19 @@
 exec tclsh "$0" ${1+"$@"}
 #
 #-------------------------------------------------------------------------------
+#
+set auto_path [linsert $auto_path 0 "./COMPOT"]
+
+package require compot::common 
+
+#-------------------------------------------------------------------------------
+
+puts ""
 
 
-#TASK='-list "* +" -func "x ** 4 + x ** 3 + x ** 2 + x"'
+run_numer_tests  n . E/OUT 
 
-# echo "TASK = $TASK"
-
-# exit
-
-
-exec r~.tl TEST TEST_xx 
-
-#eval exec r~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 -vers gp -news 1 -print 2 -list "* +" -func "x ** 4 + x ** 3 + x ** 2 + x"
-
-#      -list "* + sin" -func 'sin ( x ** 2 + x )'
-
-#      -func 'x ** 3 + x ** 2 + x'
-#      -func 'x ** 3'
+puts ""
 
 
 #-------------------------------------------------------------------------------

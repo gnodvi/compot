@@ -3,66 +3,148 @@
 #!/bin/sh
 # \
 exec tclsh "$0" ${1+"$@"}
-
-#-------------------------------------------------------------------------------
 #
-set auto_path [linsert $auto_path 0 "COMPOT/src"]
+#-------------------------------------------------------------------------------
+
+
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+#lappend auto_path \
+  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+
 
 package require compot::common 
 
+package require tcltest
 
-# ;===============================================================================
-# ;
-# ;
-# ;===============================================================================
+# source "b-com0.tl"
+# source "b-com1.tl"
 
-set  ::CUR_DIR  "t"
+#-------------------------------------------------------------------------------
+proc TEST {} {
 
-# ;(load "../a-comm.cl")
-# (load "./a-comm.cl")
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  ;# простой jOY 
 
-#source "./a-comm.cl.tl"
-#source "../common/a-como.tl"
-
-
-# ;---------------------------- hfjgh-------------hfjgh-
-# ;(load "../../a-comm.cl")
-# ;
-# ; TODO: на такое "длинное" имя плохо реагирует функция my_load - надо
-# ;       или исправить или вообще уж на TCL переписать
-# ;  ghgjghjg ghgjghjg ghgjghjg hfjgh ;ljklj
-# ;  привет гена !!!!! ура из Xming !!!! jhjhjh роролроро гена !!!
-# ;-----------------------------------------
-
-
-
-# ;-------------------------------------------------------------------------------
-proc  TEST {} {
-
-  #my_load "f-tabs.tl" $::CUR_DIR ;# (use-package :a-ctab)
-  #my_load "f-tour.tl" $::CUR_DIR
+  source "g-corE.tl"
+  source "t-joyP.tl"  ; # тесты на JOY
   
-  my_load "t_test.tl" $::CUR_DIR
-  my_load "t-rsb-.tl" $::CUR_DIR
-  my_load "t_rsb1.tl" $::CUR_DIR
-  
-  #   ;(load "v_test.cl")
-  #   ;(load "v-rsb-.cl")
-  #   ;
-  
-  #   (run_cdr_argus (first argus) argus "TEST ..")
   global argc argv
-  eval [lindex $argv 1] ;#
-  
+
+  incr ::ind0
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
 }
-# ;===============================================================================
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc NEXT_sorted {} {
 
-# (READ_AND_CALL_ARGUS  CUR_DIR)
+  set res {{1 one} {3 three} {2 two}}
 
-# (format t "~%") ; поскольку main нe сдeлан ...
+  # сортируем по 1-му элементу списков
+
+  set sorted [lsort -integer -index 0 $res]
+
+  puts ""
+  puts "res origin = $res"
+  puts "res sorted = $sorted"
+
+}
+#-------------------------------------------------------------------------------
+#
+#
+# ~/.pilot/s/compot/genpro$ j~.tl JOY2 TEST_main b__01.joy 
+#
+# OPEN_FNAME not find file TEST_main in all PATHS !!
+#
+# ------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+proc ALIB {} {
+
+  source "t_ants.tl"
+
+  global argc argv
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+proc ANTS {} {
 
 
-READ_AND_CALL_ARGUS  $::CUR_DIR
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  ;# надо будет подключить и ко всем примерам!!
+  source "f-2222.tl"  ;
+  source "f-3333.tl"  ; #  ????? dict_create
 
-# ;===============================================================================
+  #set dic4 [dict_create a b]
+  #puts stderr "dic4  = $dic4"
+  #puts stderr "dic4  = [set $dic4]"
 
+  source "g-corE.tl" 
+  source "t-joyP.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
+  source "t_ants.tl"
+
+
+  global argc argv
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+# proc COMM {} {
+
+#   source "g-corE.tl"
+  
+#   global argc argv
+
+#   incr ::ind0
+
+#   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+# }
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+
+set CUR_DIR "t"
+  
+READ_AND_CALL_ARGUS  $CUR_DIR
+
+puts "" 
+
+#-------------------------------------------------------------------------------
+
+# r:r~.tl,TEST,TEST_xx,,-seed,0,-lpop,5,-size,6,-nums,-1,-print,2 ................ PASSED
+# r:r~.tl,TEST,TEST_xx,,-seed,2013,,-lpop,10,-size,6,-nums,10 ................ PASSED
+
+
+#-------------------------------------------------------------------------------
+
+# r~.tl TEST TEST_nn  2013 9 6 1 @  ???????
+
+# -) Усложнить задачи. (ANTS) задавая более сложные рисунки в т.ч. и динамически 
+#    меняющиеся; а также  с постепенным усложнением; кроме того, сделать эвлюцию
+#    "жизни мурашей" в реальном времени;
+
+#-------------------------------------------------------------------------------
+# 
+# r~.tl ANTS ANTS_test_shalito_joy 50
+# r~.tl ANTS ANTS_test_shalito_joy  0 - в интерактивном виде !!
+# r~.tl ANTS ANTS_test_simple_joy
+
+# r~.tl ANTS ANTS_gp @  10 15 2
+# 
+# r~.tl ANTS ANTS_t2
+
+# r~.tl ANTS ANTS_test_shalito_old
+# r~.tl ANTS ANTS_test_simple_old
+
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------

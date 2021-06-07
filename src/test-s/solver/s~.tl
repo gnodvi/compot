@@ -12,9 +12,12 @@ package require compot::common
 
 #-------------------------------------------------------------------------------
 
-set auto_path [linsert $auto_path 0 "COMPOT/src/optima"]
+# set auto_path [linsert $auto_path 0 "COMPOT/src/optima"]
 
-package require compot::optima
+# package require compot::optima
+
+source  "h-gsl0.tl"
+source  "h-mbee.tl"
 
 #-------------------------------------------------------------------------------
 

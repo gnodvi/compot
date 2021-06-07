@@ -12,10 +12,10 @@
 # exit
 
 
-r~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 \
+t~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 \
       -vers gp \
       -print 2 \
-      -news 0 -list "* + dup"  -func "x ** 3"
+      -news 0 -list "* + dup"  -func "x ** 2"
 
 #      -news 1 -list "* + dup"  -func "x ** 3"
 #      -list "* + 1" -func "4"

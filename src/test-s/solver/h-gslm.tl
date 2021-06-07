@@ -15,10 +15,13 @@ package require compot::common
 
 #-------------------------------------------------------------------------------
 
-lappend auto_path \
-  [file join [file dirname [info script]] "."] 
+# lappend auto_path \
+#   [file join [file dirname [info script]] "."] 
 
-package require compot::optima
+#package require compot::optima
+
+source  "h-gsl0.tl"
+source  "h-mbee.tl"
 
 #-------------------------------------------------------------------------------
 

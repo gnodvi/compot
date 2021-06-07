@@ -18,33 +18,39 @@
     You should have received a copy of the GNU Lesser General Public License
     along with CGP-Library.  If not, see <http://www.gnu.org/licenses/>.
 */
+//------------------------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "cgp.h"
 
-void tournament(struct parameters *params, struct chromosome **parents, struct chromosome **candidateChromos, int numParents, int numCandidateChromos){
+//------------------------------------------------------------------------------
+void tournament(struct parameters *params, struct chromosome **parents, 
+                struct chromosome **candidateChromos, int numParents, int numCandidateChromos){
 
-	int i;
-	
-	struct chromosome *candidateA;
-	struct chromosome *candidateB;
-	
-	for(i=0; i<numParents; i++){
-			
-		candidateA = candidateChromos[rand() % numCandidateChromos];
-		candidateB = candidateChromos[rand() % numCandidateChromos];
-		
-		if(getChromosomeFitness(candidateA) <= getChromosomeFitness(candidateB)){
-			copyChromosome(parents[i], candidateA);
-		}
-		else{
-			copyChromosome(parents[i], candidateB);
-		}		
-	}
+  int i;
+  
+  struct chromosome *candidateA;
+  struct chromosome *candidateB;
+  
+  srand (2020);  //gnodvi
+
+  for(i=0; i<numParents; i++){
+    
+    candidateA = candidateChromos[rand() % numCandidateChromos];
+    candidateB = candidateChromos[rand() % numCandidateChromos];
+    
+    if(getChromosomeFitness(candidateA) <= getChromosomeFitness(candidateB)){
+      copyChromosome(parents[i], candidateA);
+    }
+    else{
+      copyChromosome(parents[i], candidateB);
+    }		
+  }
+
 }
-
+//------------------------------------------------------------------------------
 int main(void){
 	
   struct parameters *params = NULL;
@@ -66,24 +72,26 @@ int main(void){
   setRandomNumberSeed (2021);
   //---------------------------------
 
-	addNodeFunction(params, "add,sub,mul,div,sin");
-	
-	setTargetFitness(params, targetFitness);
-
-    setUpdateFrequency(params, updateFrequency); 
-	
-	setCustomSelectionScheme(params, tournament, "tournament");
-	
-	trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
-	
-	chromo = runCGP(params, trainingData, numGens);
-	
-	freeChromosome(chromo);
-	freeDataSet(trainingData);
-	freeParameters(params);
-	
-	return 0;
+  addNodeFunction(params, "add,sub,mul,div,sin");
+  
+  setTargetFitness(params, targetFitness);
+  
+  setUpdateFrequency(params, updateFrequency); 
+  
+  setCustomSelectionScheme(params, tournament, "tournament");
+  
+  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  
+  chromo = runCGP (params, trainingData, numGens);
+  
+  freeChromosome(chromo);
+  freeDataSet(trainingData);
+  freeParameters(params);
+  
+  return 0;
 }
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
 

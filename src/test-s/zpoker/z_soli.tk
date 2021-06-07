@@ -597,7 +597,7 @@ proc About {} {
 #   http://uebb.cs.tu-berlin.de/~krischan/patience/patience-english.html
 #   http://www.tcl.tk/starkits/patience.kit
 
-source "p_soli.im"
+source "z_soli.im"
 
 #-------------------------------------------------------------------------------
 
