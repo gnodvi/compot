@@ -23,22 +23,6 @@ package require tcltest
 # source "b-com1.tl"
 
 #-------------------------------------------------------------------------------
-proc TEST {} {
-
-  source "f-0000.tl"  ;# общие части
-  source "f-1111.tl"  ;# простой jOY 
-
-  source "g-corE.tl"
-  source "t-joyP.tl"  ; # тесты на JOY
-  
-  global argc argv
-
-  incr ::ind0
-
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
-
-}
-#-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
 proc NEXT_sorted {} {
@@ -76,20 +60,15 @@ proc ALIB {} {
 #-------------------------------------------------------------------------------
 proc ANTS {} {
 
-
   source "f-0000.tl"  ;# общие части
   source "f-1111.tl"  ;# надо будет подключить и ко всем примерам!!
   source "f-2222.tl"  ;
   source "f-3333.tl"  ; #  ????? dict_create
 
-  #set dic4 [dict_create a b]
-  #puts stderr "dic4  = $dic4"
-  #puts stderr "dic4  = [set $dic4]"
-
   source "g-corE.tl" 
-  source "t-joyP.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
-  source "t_ants.tl"
 
+  source "t-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
+  source "t_ants.tl"
 
   global argc argv
 
@@ -108,6 +87,23 @@ proc ANTS {} {
 #   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
 # }
+#-------------------------------------------------------------------------------
+proc TEST {} {
+
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  ;# простой jOY 
+  source "g-corE.tl"
+
+  source "t-proJ.tl"  ; # тесты на JOY
+  source "t_test.tl"  ; #
+  
+  global argc argv
+
+  incr ::ind0
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------

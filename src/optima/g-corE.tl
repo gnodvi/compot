@@ -11,9 +11,17 @@ source "f-1111.tl"  ;#
 
 set ::gp_dict [dict_create]
 
-set ::gp_dict_AUTO 0
-
 librarys_push $::gp_dict ;# запихнуть в глобальную библиотеку 
+
+set ::gp_dict_NUMER 0 ;# для имен в динамическом словаре
+
+#------------------------------
+
+set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
+
+set ::gp_dict_AUTO  0 ;# флажок применения динамического словаря
+
+
 
 #-------------------------------------------------------------------------------
 
@@ -2703,13 +2711,13 @@ proc make_itemlist {task randpop_proc
                 $population_size $len \
                 $is_print]
 
-  if {$::NEWS} {
-    puts ""
-    puts stderr "randpop_proc = $randpop_proc"
-    puts stderr "prgpop       = $prgpop"
-    puts ""
-    #exit
-  }
+#   if {$::NEWS} {
+#     puts ""
+#     puts stderr "randpop_proc = $randpop_proc"
+#     puts stderr "prgpop       = $prgpop"
+#     puts ""
+#     #exit
+#   }
 
   # TODO:
   # 
@@ -3663,12 +3671,14 @@ proc only_names_from_gpdict {} {
   return $ret
 }
 #-------------------------------------------------------------------------------
+# сфомируем совокупный на этот момент список: GP_LIST = gp_list + gp_dict
+#-------------------------------------------------------------------------------
 proc make_GP_LIST {gp_list} {
 
 
   if {$::gp_dict_AUTO} {
 
-    set GP_LIST {} ;# сфомируем совокупный на этот момент список
+    set GP_LIST {} 
     
     lappend GP_LIST  {*}$gp_list ;# это заданные в задаче
     
@@ -5614,6 +5624,8 @@ proc pop_print_step_info {pop task is_print args} {
   
 }
 # ------------------------------------------------------------------------------
+# основная программа вызова "эволюционной" функции
+# ------------------------------------------------------------------------------
 proc pop_evolution {pop task max_generations evolfunc args} {
 
 
@@ -6035,27 +6047,6 @@ proc make_mutant {task leader  mutprob} {
   return $leader_mutant
 }
 #-------------------------------------------------------------------------------
-#  генерируем последнюю 1/3 популяции мутируя лидеров.
-#-------------------------------------------------------------------------------
-proc make_mutated_from_items {task items l mutprob} {
-
-
-  set mutated {} ;# сформируем список мутантов
-  
-  set l_leaders [lrange $items 0 [- $l 1]] ;# это слишком примитивно 
-
-
-  foreach leader $l_leaders {
-
-    set leader_mutant [make_mutant  $task $leader $mutprob]
-
-    lappend mutated $leader_mutant
-  }
-  
-  
-  return $mutated
-}
-#-------------------------------------------------------------------------------
 proc is_items_equal {item1 item2} {
 
   set src1 [item_get_main_src $item1]
@@ -6087,42 +6078,70 @@ proc is_this_mutant_unikum {mutant items} {
   return 1
 }
 #-------------------------------------------------------------------------------
-proc make_mutated_from_items_NEWS {task items l mutprob} {
+#  генерируем последнюю 1/3 популяции мутируя лидеров.
+#-------------------------------------------------------------------------------
+proc make_mutated_from_items {task sorted_items m mutprob} {
 
-  set l_items [llength $items]
+
+  set mutated {} ;# сформируем список мутантов
+  
+  set l_leaders [lrange $sorted_items 0 [- $m 1]] ;# это слишком примитивно 
+
+
+  foreach leader $l_leaders {
+
+    set leader_mutant [make_mutant  $task $leader $mutprob]
+
+    lappend mutated $leader_mutant
+  }
+  
+  
+  return $mutated
+}
+#-------------------------------------------------------------------------------
+proc make_mutant_unikum {task parent mutprob items} {
+
+  set num_probes 10
+
+
+  for {set i 0} {$i < $num_probes} {incr i} {
+    
+    set mutant [make_mutant  $task $parent $mutprob]
+    
+    if [is_this_mutant_unikum $mutant $items] {
+      break
+    }
+  }
+
+  return $mutant
+}
+#-------------------------------------------------------------------------------
+proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
+
+  set l_items [llength $sorted_items]
   set mutated {} ;# сформируем список мутантов
   
   # сейчас берем первых l,
   # а надо случайным выбором от всех
   # TODO !!!
 
-  #for {set i 0} {$i < $l} {incr i} {}
-  #set i 0
-
   while {1} {
 
-    if {[llength $mutated] ==  $l} {break}
+    if {[llength $mutated] ==  $m} {break}
 
-    #if {1} {
+
     set j [myrand_new 0 [- $l_items 1]] 
-    set parent [lindex $items $j]
-    #} else {
-    #  set parent [lindex $items $i]
-    #  incr i
-    #}
+
+    set parent [lindex $sorted_items $j] ;# родителем взяли случайного из всего списка
   
-    # сделаем уникального мутанта
+
+    # сделаем уникального мутанта (c 10-ти поыток) для этого списка
     # 
-    #while {1} {}
-    for {set i 0} {$i < 10} {incr i} {
-      
-      set mutant [make_mutant  $task $parent $mutprob]
+    make_mutant_unikum  $task $parent $mutprob $sorted_items
 
-      if [is_this_mutant_unikum $mutant $items] {
-        break
-      }
-    }
 
+    # добавим мутанта в список
+    #
     lappend mutated $mutant
   }
 
@@ -6353,9 +6372,6 @@ proc make_offsprings_from_items {sorted_items l} \
   return $offsprings
 }
 #-------------------------------------------------------------------------------
-
-set ::gp_dict_NUMER 0
-
 #-------------------------------------------------------------------------------
 proc is_this_src_exist {src_new} {
 
@@ -6422,77 +6438,116 @@ proc gp_dict_add_item {item} {
 
 }
 #-------------------------------------------------------------------------------
+# обрабатываем популяцию, выделяя паттерны в библиотеки.
+# 
+# 
+#-------------------------------------------------------------------------------
 proc works_on_gp_dict {sorted_items} {
 
 
-  foreach item $sorted_items {
-
-    set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
-    
-    set src [item_get_main_src $item]
-    
-    set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
-    
-    #if {$add_ok} {
-    break
-    #}
-
-    # пока берем только самый первый (если есть подходящий)
+  # но пока самы простейший случай - берем самого успешного итема и делаем
+  # его исходник частью библиотеки/
     # не сильно улучшает, если искать среди всего списка?
     # 
-  }
 
+  if {1} {
+
+    set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
+    set src [item_get_main_src $item]
+      
+    set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
+
+  } else {
+
+    foreach item $sorted_items { 
+      #set item [lindex $sorted_items 0] ;# будем пока брать лучшиего    
+      #set src [item_get_main_src $item]
+      #set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
+      
+      #if {$add_ok} {
+      #break
+      #}
+    }
+  }
+  
   return
 }
 #-------------------------------------------------------------------------------
 
-set ::NEWS 0
+set ::GP_iscrossover 1
 
+#-------------------------------------------------------------------------------
+proc calc_lom_from_len {len } {
+
+
+  set l [expr {$len/3}] ;# размер лидирующей группы
+  
+
+  if {$::GP_iscrossover == 0} {
+    set o 0 ;# не будем кроссовить !!
+  } else {
+    set o $l ;# сгенерим столько же отпрысков от лидеров
+  }
+ 
+  set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
+
+
+  return [list $l $o $m]
+}
+#-------------------------------------------------------------------------------
+# основная эволюционная программа (для GP)
 #-------------------------------------------------------------------------------
 proc gp_evolution_4 {pop task args} {
 
 
-  set mutprob [dict_parse  $args "-mutprob" 0.1]
-
-
-  set sorted_items [GET $pop "itemlist"]
-
-  #---------------------------------------
-
   # предполагается что итемы тут уже отсортированы !!
   # 
+  set sorted_items [GET $pop "itemlist"]
+
   # это слишком простой вариант, нужно сначала добавлять, потом
   #            пересчитывать и потом уже убивать слабых ?
 
   set len [llength $sorted_items]
+
+  #set len [GET $pop stable_size]
+
+  #---------------------------------------
+
+  set lom [calc_lom_from_len  $len]
+
+  foreach {l o m} $lom {break}
+
+  #puts "lom = $lom, len = $len, lpop = [GET $pop stable_size]"
+
+  #exit
 
   #---------------------------------------
   # 1)
   # выделяем лидеров популяции  (1/3)
 
   
-  set l [expr {$len/3}] ;# размер лидирующей группы
-  
   set leaders_items [lrange $sorted_items 0 [expr {$l-1}]]
   
   #---------------------------------------
+  # выделяем библиотечные шаблоны
+
   if {$::gp_dict_AUTO} {
 
     works_on_gp_dict $leaders_items
   }
+
   #---------------------------------------
   # 2) CROSSOVER
   # генерируем другую 1/3  популяции отпрысками от случайных лидеров
  
-  
-  if {$::NEWS} {
+  if {$::GP_iscrossover == 0} {
 
-    set o 0 ;# не будем кроссовить !!
+    # не будем кроссовить !!
     set offsprings_items {}
 
   } else {
 
-    set o $l ;# сгенерим столько же отпрысков от лидеров
+    # сгенерим столько же отпрысков от лидеров
     set offsprings_items  [make_offsprings_from_items  $sorted_items $o]
   }
  
@@ -6501,10 +6556,9 @@ proc gp_evolution_4 {pop task args} {
   # генерируем последнюю 1/3 популяции мутируя лидеров (?)
   
   
-  set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
+  set mutprob [dict_parse  $args "-mutprob" 0.1]
 
- # puts "gp_evolution_4: l = $l, o = $o, m = $m"
-
+  
   if {$::NEWS} {
 
     set mutated_items  [make_mutated_from_items_NEWS  $task $sorted_items $m  $mutprob]
@@ -6512,6 +6566,7 @@ proc gp_evolution_4 {pop task args} {
 
     set mutated_items  [make_mutated_from_items       $task $sorted_items $m  $mutprob]
   }
+
 
   #dict_print_real_all_in_list  "[procname]"  $mutated_items
 
@@ -7308,23 +7363,28 @@ proc super_de {task seed_proc step_proc args} {
   return $pop
 }
 #-------------------------------------------------------------------------------
-proc super_ga {task seed_proc step_proc args} {
+proc super_ga {task seed_proc step_proc   args} {
 
 
   set population_size ""
   set max_generations ""
   set len_chromo      ""
 
-  #global argv
-  #set argv [lrange $argv 1 end]
-
-  #puts "args = $args"
-
+  # здесь уже нормальные словарные параметы вводим ()
+  # 
+  #   -lpop    -> population_size
+  #   -nums    -> max_generations
+  #   -size    -> len_chromo
+  #   -verb    -> print
+  #   -seed    -> seed
+  
   set print [parse_opts_NEW  $args population_size max_generations len_chromo  200 500 4]
+
+  #-------------------------------------------
 
   SET $task "len_chromo" $len_chromo
 
- set pop [ga_genesis_main  \
+  set pop [ga_genesis_main  \
              $task                              {*}[NB                 ] \
              $population_size		        {*}[NB                 ] \
              1			                {*}[NB  num_chromo     ] \
