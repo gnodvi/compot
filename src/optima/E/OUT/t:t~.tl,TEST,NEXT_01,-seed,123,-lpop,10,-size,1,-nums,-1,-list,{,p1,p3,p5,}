@@ -23,38 +23,12 @@ make_prgpop: INIT POPULATION:
 prgpop = p1 p5 p3 p3 p5 p5 p3 p3 p5 p1
 
 000)     best =   15.000 :   p5 
-001)     best =   15.000 :   p5 
-002)     best =   15.000 :   p5 
-003)     best =   15.000 :   p5 
-004)     best =   15.000 :   p5 
-005)     best =   15.000 :   p5 
-006)     best =   15.000 :   p5 
-007)     best =   15.000 :   p5 
-008)     best =   15.000 :   p5 
-009)     best =   15.000 :   p5 
-010)     best =   15.000 :   p5 
-011)     best =   15.000 :   p5 
-012)     best =   15.000 :   p5 
-013)     best =   15.000 :   p5 
-014)     best =   15.000 :   p5 
-015)     best =   15.000 :   p5 
-016)     best =   15.000 :   p5 
-017)     best =   12.000 :   p3 p5 
-018)     best =   10.000 :   p5 p5 
-019)     best =   10.000 :   p5 p5 
-020)     best =    9.000 :   p1 p5 p5 
-021)     best =    7.000 :   p5 p3 p5 
-022)     best =    7.000 :   p5 p3 p5 
-023)     best =    4.000 :   p3 p5 p3 p5 
-024)     best =    1.000 :   p5 p3 p5 p3 p5 
-025)     best =    1.000 :   p5 p3 p5 p3 p5 
-026)     best =    1.000 :   p5 p3 p5 p3 p5 
-027)     best =    1.000 :   p5 p3 p5 p3 p5 
-028)     best =    1.000 :   p5 p3 p5 p3 p5 
-029)     best =    1.000 :   p5 p3 p5 p3 p5 
-030)     best =    1.000 :   p5 p3 p5 p3 p5 
-031)     best =    1.000 :   p5 p3 p5 p3 p5 
-032)     best =    1.000 :   p5 p3 p5 p3 p5 
-033)     best =    0.000 :   p3 p3 p5 p3 p5 p1 
+001)     best =   10.000 :   p5 p5 
+002)     best =   10.000 :   p5 p5 
+003)     best =    7.000 :   p5 p3 p5 
+004)     best =    3.000 :   p5 p3 p3 p3 p3 
+005)     best =    3.000 :   p5 p3 p3 p3 p3 
+006)     best =    1.000 :   p5 p3 p5 p3 p3 
+007)     best =    0.000 :   p5 p3 p3 p3 p3 p3 
 
 

@@ -6078,30 +6078,9 @@ proc is_this_mutant_unikum {mutant items} {
   return 1
 }
 #-------------------------------------------------------------------------------
-#  генерируем последнюю 1/3 популяции мутируя лидеров.
-#-------------------------------------------------------------------------------
-proc make_mutated_from_items {task sorted_items m mutprob} {
+proc make_mutant_unikum {task parent mutprob items num_probes} {
 
-
-  set mutated {} ;# сформируем список мутантов
-  
-  set l_leaders [lrange $sorted_items 0 [- $m 1]] ;# это слишком примитивно 
-
-
-  foreach leader $l_leaders {
-
-    set leader_mutant [make_mutant  $task $leader $mutprob]
-
-    lappend mutated $leader_mutant
-  }
-  
-  
-  return $mutated
-}
-#-------------------------------------------------------------------------------
-proc make_mutant_unikum {task parent mutprob items} {
-
-  set num_probes 10
+  #set num_probes 10
 
 
   for {set i 0} {$i < $num_probes} {incr i} {
@@ -6116,14 +6095,75 @@ proc make_mutant_unikum {task parent mutprob items} {
   return $mutant
 }
 #-------------------------------------------------------------------------------
+#  генерируем последнюю 1/3 популяции мутируя лидеров.
+#-------------------------------------------------------------------------------
+# proc make_mutated_from_items {task sorted_items m mutprob} {
+
+
+#   set mutated {} ;# сформируем список мутантов
+  
+#   set l_leaders [lrange $sorted_items 0 [- $m 1]] ;# это слишком примитивно 
+
+#   # сейчас берем первых m из сортированного списка, делаем их родителями
+#   # мутируем, а затем этот список новых мутантов добавляем
+
+
+#   foreach leader $l_leaders {
+
+#     set leader_mutant [make_mutant  $task $leader $mutprob]
+
+#     lappend mutated $leader_mutant
+#   }
+  
+  
+#   return $mutated
+# }
+#-------------------------------------------------------------------------------
 proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
 
   set l_items [llength $sorted_items]
   set mutated {} ;# сформируем список мутантов
+  set parents {} ;# 
   
-  # сейчас берем первых l,
-  # а надо случайным выбором от всех
-  # TODO !!!
+  # случайным выбором от всех?
+
+  if {1} {
+
+  while {1} {
+
+    if {[llength $parents] ==  $m} {break}
+
+
+    set j [myrand_new 0 [- $l_items 1]] 
+
+    set parent [lindex $sorted_items $j] ;# родителем взяли случайного из всего списка
+  
+    lappend parents $parent
+
+    # сделаем уникального мутанта (c 10-ти поыток) для этого списка
+    # 
+    #set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
+
+
+    # добавим мутанта в список
+    #
+    #lappend mutated $mutant
+
+  }
+
+  foreach parent $parents {
+
+    set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
+
+
+    # добавим мутанта в список
+    #
+    lappend mutated $mutant
+  }
+
+  #-------------------------
+  } else {
+  #-------------------------
 
   while {1} {
 
@@ -6137,7 +6177,7 @@ proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
 
     # сделаем уникального мутанта (c 10-ти поыток) для этого списка
     # 
-    make_mutant_unikum  $task $parent $mutprob $sorted_items
+    set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
 
 
     # добавим мутанта в список
@@ -6145,6 +6185,13 @@ proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
     lappend mutated $mutant
   }
 
+  }
+
+  # просто друагя последовательность случайнсостей
+  # 
+  #puts  "mutated = $mutated"
+  #dict_print_real_all_in_list  "[procname]"  $mutated
+  #exit
   
   return $mutated
 }
@@ -6477,22 +6524,152 @@ proc works_on_gp_dict {sorted_items} {
 set ::GP_iscrossover 1
 
 #-------------------------------------------------------------------------------
-proc calc_lom_from_len {len } {
+proc calc_loms_from_len {len } {
 
 
   set l [expr {$len/3}] ;# размер лидирующей группы
   
 
-  if {$::GP_iscrossover == 0} {
-    set o 0 ;# не будем кроссовить !!
-  } else {
-    set o $l ;# сгенерим столько же отпрысков от лидеров
-  }
+  #if {$::GP_iscrossover == 0} {
+  set o 0 ;# не будем кроссовить !!
+  #} else {
+  #  set o $l ;# сгенерим столько же отпрысков от лидеров
+  #}
  
   set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
 
 
   return [list $l $o $m]
+}
+#-------------------------------------------------------------------------------
+proc fork_from_leaders {leaders_items len} {
+
+  set pop_items {}
+
+  set j 0
+  set l [llength $leaders_items]
+
+  while {1} {
+
+    if {[llength $pop_items] ==  $len} {break}
+
+    if {$j == $l} {      
+      set j 0
+    }
+
+    lappend pop_items [lindex $leaders_items $j]
+
+    incr j
+  }
+
+  return $pop_items
+}
+#-------------------------------------------------------------------------------
+proc is_progress {tobest fitn_old fitn_new} {
+
+  
+  if {$tobest == "MIN" && $fitn_new < $fitn_old} {
+    set ret 1
+  } else {
+    set ret 0
+  }
+
+  return $ret
+}
+#-------------------------------------------------------------------------------
+proc get_best_from_history {history tobest} {
+
+
+  set best_item {}
+  set best_fitn {}
+
+  for {set i 0} {$i < [llength $history]} {incr i} {
+
+    set h [lindex $history $i]
+
+    set item [lindex $h 0]
+    set fitn [lindex $h 1]
+
+    if {$i == 0} {
+      set best_item $item
+      set best_fitn $fitn
+
+      #puts "best_item1 = $best_item"
+    } else {
+
+      set is_progress [is_progress  $tobest $best_fitn $fitn]
+  
+      if {$is_progress} {    
+        set best_item $item
+        set best_fitn $fitn
+      } 
+    }
+
+  }
+
+  #puts "best_item = $best_item"
+
+  return $best_item
+}
+#-------------------------------------------------------------------------------
+proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
+
+
+  set fitn_old  [item_get_fitn   $item_old] 
+
+  set history {}
+
+  lappend history [list $item_old $fitn_old] ;# положили первую пару
+
+  set mutprob 1.0
+
+
+  for {set j 0} {$j < $num_try} {incr j} {
+
+    #item_print_fitness    $item_old 0 
+    
+    set item_new [make_mutant  $task $item_old $mutprob]
+    
+    item_calc_fitness   $item_new $fitnessfunc  $task
+    
+    #item_print_fitness  $item_new 1   
+    #set src   [item_get_main_src   $item] 
+    
+    set fitn_new  [item_get_fitn   $item_new] 
+    
+    lappend history [list $item_new $fitn_new] ;# положили вторую  пару
+   
+    set item_old $item_new
+  }
+  
+  set item_best [get_best_from_history  $history $tobest]
+  #puts "history = $history, item_best_from = $item_best_from_history, item_best = $item_best"
+ 
+  return $item_best
+}
+#-------------------------------------------------------------------------------
+proc mutate_randomly {pop_items_old  task num_try} {
+
+  #set mutprob 1.0 ;# !!!
+
+  set fitnessfunc [GET $task "fit_func"]  
+
+  # "MIN" ;# т.е. чем меьше, тем лучше
+  # "MAX" 
+  # 
+  set tobest [GET $task "fit_tobest"]
+
+  set pop_items_new {}
+
+  foreach item_old $pop_items_old {
+
+    set item_best [try_mutate_to_best $task $fitnessfunc $tobest  $item_old $num_try]
+
+    lappend pop_items_new  $item_best
+  }
+
+  return $pop_items_new
+  #exit
 }
 #-------------------------------------------------------------------------------
 # основная эволюционная программа (для GP)
@@ -6513,9 +6690,11 @@ proc gp_evolution_4 {pop task args} {
 
   #---------------------------------------
 
-  set lom [calc_lom_from_len  $len]
+  set ::GP_iscrossover 0 ;# принудительно отменяем кроссинг всегда !!!
 
-  foreach {l o m} $lom {break}
+  set loms [calc_loms_from_len  $len]
+
+  foreach {l o m} $loms {break}
 
   #puts "lom = $lom, len = $len, lpop = [GET $pop stable_size]"
 
@@ -6540,16 +6719,16 @@ proc gp_evolution_4 {pop task args} {
   # 2) CROSSOVER
   # генерируем другую 1/3  популяции отпрысками от случайных лидеров
  
-  if {$::GP_iscrossover == 0} {
+  #if {$::GP_iscrossover == 0} {
 
-    # не будем кроссовить !!
-    set offsprings_items {}
-
-  } else {
-
-    # сгенерим столько же отпрысков от лидеров
-    set offsprings_items  [make_offsprings_from_items  $sorted_items $o]
-  }
+  # не будем кроссовить !!
+  set offsprings_items {}
+  
+  #} else {
+  
+  # сгенерим столько же отпрысков от лидеров
+  #  set offsprings_items  [make_offsprings_from_items  $sorted_items $o]
+  #}
  
   #---------------------------------------
   # 3) MUTATION
@@ -6559,26 +6738,40 @@ proc gp_evolution_4 {pop task args} {
   set mutprob [dict_parse  $args "-mutprob" 0.1]
 
   
-  if {$::NEWS} {
+  if {! $::NEWS} {
 
+    #if {$::NEWS} {
+    
     set mutated_items  [make_mutated_from_items_NEWS  $task $sorted_items $m  $mutprob]
+    #} else {
+    
+    #  set mutated_items  [make_mutated_from_items       $task $sorted_items $m  $mutprob]
+    #}
+    
+    
+    #dict_print_real_all_in_list  "[procname]"  $mutated_items
+    
+    
+    #---------------------------------------
+    # 4) 
+    # склеиваем три популяции итемов (лидеров, отпрысков, мутантов)
+    # создавая популяцию исходников для следующей итерации.
+    #
+    
+    set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items] 
+   
   } else {
 
-    set mutated_items  [make_mutated_from_items       $task $sorted_items $m  $mutprob]
+    # совсем новый механизм: (форк от лучших и затем мутация)
+
+    #puts "loms = $loms"
+
+    set pop_items [fork_from_leaders $leaders_items $len]
+
+    #puts "pop_items = $pop_items"
+
+    set pop_items [mutate_randomly $pop_items $task 5]
   }
-
-
-  #dict_print_real_all_in_list  "[procname]"  $mutated_items
-
-
-  #---------------------------------------
-  # 4) 
-  # склеиваем три популяции итемов (лидеров, отпрысков, мутантов)
-  # создавая популяцию исходников для следующей итерации.
-  #
-
-  set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items] 
-  
 
   #---------------------------------------
   # записываем их в популяцию
@@ -6687,6 +6880,9 @@ proc bot33_create {args} {
 #-------------------------------------------------------------------------------
 proc make_sortdriver_fromtask {task} {
 
+  # "MIN" ;# т.е. чем меьше, тем лучше
+  # "MAX" 
+  # 
   set tobest [GET $task "fit_tobest"]
 
   set sort_driver "${tobest}_to_LEFT" ;# лучшие в популяции жмем влево

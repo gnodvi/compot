@@ -4,6 +4,7 @@ run_gp_evolution_for_task : seed = 0 !!!!!!!!!!!
 
 make_prgpop: INIT POPULATION: 
 
+
 prgpop = {dup * * dup} {+ * + dup} {dup +} {+ nop} {* +}
 
 000)     best =    2.650 :   dup + 
@@ -180,7 +181,10 @@ prgpop = {dup * * dup} {+ * + dup} {dup +} {+ nop} {* +}
 171)     best =    2.650 :   dup + 
 172)     best =    2.650 :   dup + 
 173)     best =    2.650 :   dup + 
-174)     best =    0.000 :   dup dup * + 
+174)     best =    2.650 :   dup + 
+175)     best =    2.650 :   dup + 
+176)     best =    2.650 :   dup + 
+177)     best =    0.000 :   dup dup * + 
 
 ====================================================================
 
