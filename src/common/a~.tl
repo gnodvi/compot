@@ -14,6 +14,20 @@ exec tclsh "$0" ${1+"$@"}
 source "a-comm.tl"
 
 #-------------------------------------------------------------------------------
+proc RAND {} {
+
+  my_source "a-comr.tl"
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+
+  # a~.jm RAND permutation_test
+  # a~.jm RAND random_test
+  # a~.jm RAND TEST_lrand
+
+}
+#-------------------------------------------------------------------------------
 proc MENU {} {
 
   my_source "a-menu.tl"

@@ -23,7 +23,7 @@ package ifneeded compot::common 1.0 "
   source [file join $dir "f-tabs.tl"]
   source [file join $dir "f-tour.tl"]
   source [file join $dir "f-sort.tl"]
-  source [file join $dir "f-rand.tl"]
+  source [file join $dir "a-comr.tl"]
 
   package provide compot::common 1.0
 "

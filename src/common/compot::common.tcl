@@ -26,7 +26,7 @@ proc package_require_compot {COMPOT_} {
   #   source [file join $dir "f-tour.tl"]
   
   uplevel "source  $COM/f-sort.tl"
-  uplevel "source  $COM/f-rand.tl"
+  uplevel "source  $COM/a-comr.tl"
   
 }
 

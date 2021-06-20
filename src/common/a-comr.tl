@@ -8,6 +8,13 @@ if [info exists ::F_RAND_TL] {
   set  ::F_RAND_TL ""
 }
 
+#-------------------------------------------------------------------------------
+
+
+
+
+
+#-------------------------------------------------------------------------------
 # /*****************************************************************************
 #  *                                                                           *
 #  *  Имя этого файла: c_random_util.c                                         *
@@ -599,34 +606,34 @@ set ::NUM_SAMPLES 20
 # /*----------------------------------------------------------------------------*/
 proc random_test {} {
 
-#   unsigned int	i, j, k;	/* Loop variables. */
-#   double	r;			/* Pseudo-random number. */
-#   long		bins[NUM_BINS];	/* Bin. */
-
-#   double	sum=0, sumsq=0;		/* Stats. */
+  #   unsigned int	i, j, k;	/* Loop variables. */
+  #   double	r;			/* Pseudo-random number. */
+  #   long		bins[NUM_BINS];	/* Bin. */
+  
+  #   double	sum=0, sumsq=0;		/* Stats. */
   set sum 0.0
-
-#   int		numtrue=0, numfalse=0;	/* Count booleans. */
-#   unsigned int	rchi=100;	/* Number of bins in chisq test. */
-#   unsigned int	nchi=1000;	/* Number of samples in chisq test. */
-#   double	chisq;			/* Chisq error. */
-#   double	elimit = 2*sqrt((double)rchi);	/* Chisq error limit. */
-#   double	nchi_rchi = (double)nchi / (double)rchi;	/* Speed calculation. */
-#   FILE		*rfile=NULL;	/* Handle for file of random integers. */
-
-#   random_init();
-
+  
+  #   int		numtrue=0, numfalse=0;	/* Count booleans. */
+  #   unsigned int	rchi=100;	/* Number of bins in chisq test. */
+  #   unsigned int	nchi=1000;	/* Number of samples in chisq test. */
+  #   double	chisq;			/* Chisq error. */
+  #   double	elimit = 2*sqrt((double)rchi);	/* Chisq error limit. */
+  #   double	nchi_rchi = (double)nchi / (double)rchi;	/* Speed calculation. */
+  #   FILE		*rfile=NULL;	/* Handle for file of random integers. */
+  
+  #   random_init();
+  
   puts ""
   puts "Testing random numbers."
-
-#   /*
-#     * Uniform Distribution.
-#     */
-
+  
+  #   /*
+  #     * Uniform Distribution.
+  #     */
+  
   puts "Uniform distribution.  Mean should be about 0.5."
   puts ""
 
-#   for (i=0;i<NUM_BINS;i++) bins[i] = 0;
+  #   for (i=0;i<NUM_BINS;i++) bins[i] = 0;
 
   for {set i 0} {$i < $::NUM_SAMPLES} {incr i} {
   
@@ -648,20 +655,21 @@ proc random_test {} {
   puts ""
   puts [format "Mean random = %f \n" [expr {$sum / $::NUM_SAMPLES}]]
 
-#   printf("Standard deviation = %f\n", (sumsq - sum*sum/NUM_SAMPLES)/NUM_SAMPLES);
-
-#   for (i=0;i<NUM_BINS;i++)
-#     printf("%5.3f %ld\n", i/(double)NUM_BINS, bins[i]);
-
+  #   printf("Standard deviation = %f\n", (sumsq - sum*sum/NUM_SAMPLES)/NUM_SAMPLES);
+  
+  #   for (i=0;i<NUM_BINS;i++)
+  #     printf("%5.3f %ld\n", i/(double)NUM_BINS, bins[i]);
+  
 
   #//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return true ;#  // ????????
   #//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 }
 # ------------------------------------------------------------------------------
 proc test_random_seed {i} {
 
-  random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
+  random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
 
   mysrand $i     ;# для lrand (начальная инициация)
 
@@ -698,12 +706,12 @@ proc TEST_lrand {} {
  
  
   #-----------------------------------------------------
-  #test_random_seed 0 ;# in file f-rand.tl
+  test_random_seed 0 ;# in file a-comr.tl
 
-  #random_seed $i ;# для random_rand (crossover) - f-rand.tl (c_random_util.c)
-  #-----------------------------------------------------
+  #random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
 
   #mysrand   0     ;# для lrand (начальная инициация)
+  #-----------------------------------------------------
 
   puts ""
 
