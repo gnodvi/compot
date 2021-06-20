@@ -68,9 +68,7 @@ source "t_test.tl"  ; # Ô
 #TASK='-list "* +" -func "x ** 4 + x ** 3 + x ** 2 + x"'
 
 # echo "TASK = $TASK"
-
 # exit
-
 
 proc test_xx {} {
 
@@ -79,10 +77,19 @@ proc test_xx {} {
 #       -print 2 \
 #       -news 0 -list "* + dup"  -func "x ** 2"
 
+#set ::GP_iscrossover 0
+
+set ::NEWS 1
+set ::TRY_NUM 20
+
+# TODO:
+# 
+# 
+
 TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 \
       -vers gp \
       -print 2 \
-      -news 0 -list "* + dup"  -func "x ** 2"
+      -news 0 -list "* + dup"  -func "x ** 3 + x ** 2"
 }
 
 #      -news 1 -list "* + dup"  -func "x ** 3"
@@ -104,7 +111,6 @@ proc next_01 {} {
 #t~.tl TEST NEXT_01 -seed 123 -lpop 10 -size 1 -nums -1 -list { p1 p3 p5 } 
 
 #set ::GP_iscrossover 0
-
 #set ::NEWS 1
 
 #NEXT_01 -seed @ -lpop 6 -size 1 -nums -1 -list "p1 p3 p5" -seed 2021 -print 1
@@ -116,9 +122,9 @@ NEXT_01 -seed @ -lpop 6 -size 1 -nums -1 -list "p1 p3 p5" -seed @ -print 1 -news
 
 #-------------------------------------------------------------------------------
 
-#test_xx
+test_xx
 
-next_01
+#next_01
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

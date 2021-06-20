@@ -22,6 +22,8 @@ set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
 set ::gp_dict_AUTO  0 ;# флажок применения динамического словаря
 
 
+set ::TRY_NUM 5
+
 
 #-------------------------------------------------------------------------------
 
@@ -6614,36 +6616,72 @@ proc get_best_from_history {history tobest} {
 #-------------------------------------------------------------------------------
 proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 
+# TODO: 
+
+# - при первом улучшении - заканчиваем цикд
+# - если дошли до конца, т.е. улучшений не было, то 2 варианта (рандомно):
+#   - либо оставляем старый вариант(т.е. нет мутации), но надо учитывать всю популяцию!
+#   - либо берем из списка истории мутаций - самый лучший вариант (хоть и хуже начального)
 
   set fitn_old  [item_get_fitn   $item_old] 
 
   set history {}
+  #lappend history [list $item_old $fitn_old] ;# положили первую пару
 
-  lappend history [list $item_old $fitn_old] ;# положили первую пару
+  set item_start $item_old
+  set fitn_start $fitn_old
+
 
   set mutprob 1.0
 
+  # цикл последовательных мутаций item_old -> item_new -> item_old
+  # 
 
   for {set j 0} {$j < $num_try} {incr j} {
 
     #item_print_fitness    $item_old 0 
     
-    set item_new [make_mutant  $task $item_old $mutprob]
+    set item_new [make_mutant  $task $item_old $mutprob] ;# сделали мутанта
     
-    item_calc_fitness   $item_new $fitnessfunc  $task
+    item_calc_fitness   $item_new $fitnessfunc  $task    ;# посчитали его
     
     #item_print_fitness  $item_new 1   
     #set src   [item_get_main_src   $item] 
     
     set fitn_new  [item_get_fitn   $item_new] 
     
-    lappend history [list $item_new $fitn_new] ;# положили вторую  пару
+
+    # посмотрим, есть ли уже улучшение от начального
+    #
+    set is_progress [is_progress  $tobest $fitn_start $fitn_new]
+    #
+    if {$is_progress} {    
+      return $item_new ;# если есть, то заканчиваем и выходим с этим результатом
+    }
+
+
+    lappend history [list $item_new $fitn_new] ;# положили в историю
    
-    set item_old $item_new
+    set item_old $item_new ;# готовимся к  след. шагу цикла
   }
   
-  set item_best [get_best_from_history  $history $tobest]
-  #puts "history = $history, item_best_from = $item_best_from_history, item_best = $item_best"
+
+  # улучшений не было, тогда:
+
+  # RAND
+  set r [random_int_range  1 10]
+
+  if {$r <= 3} {
+
+    set item_best $item_start ;# оставили начальный вариант
+
+  } else {
+
+    # возьмем лучший из истории (исключая начальный)
+    # 
+    set item_best [get_best_from_history  $history $tobest]
+  }
+
  
   return $item_best
 }
@@ -6770,7 +6808,7 @@ proc gp_evolution_4 {pop task args} {
 
     #puts "pop_items = $pop_items"
 
-    set pop_items [mutate_randomly $pop_items $task 5]
+    set pop_items [mutate_randomly $pop_items $task $::TRY_NUM]
   }
 
   #---------------------------------------
