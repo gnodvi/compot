@@ -106,20 +106,26 @@ static boolean		is_initialised=FALSE;
 //  global state for next call.  size should be non-zero,
 //  and state should be initialized.
 /*----------------------------------------------------------------------------*/
+// 
+//  !!!! May be Error !!??
+//   !!! only even numbers then only odd numbers !! ??
+// 
+/*----------------------------------------------------------------------------*/
 GAULFUNC unsigned int random_rand (void)
 {
   unsigned int val;
 
-  if (!is_initialised) die("Neither random_init() or random_seed() have been called.");
+  if (!is_initialised) die ("Neither random_init() or random_seed() have been called.");
 
   //THREAD_LOCK(random_state_lock);
 
-  val = (current_state.v[current_state.j]+current_state.v[current_state.k])
+  val = (current_state.v[current_state.j] + current_state.v[current_state.k])
     & RANDOM_RAND_MAX;
 
   current_state.x = (current_state.x+1) % RANDOM_NUM_STATE_VALS;
   current_state.j = (current_state.j+1) % RANDOM_NUM_STATE_VALS;
   current_state.k = (current_state.k+1) % RANDOM_NUM_STATE_VALS;
+  
   current_state.v[current_state.x] = val;
 
   //THREAD_UNLOCK(random_state_lock);

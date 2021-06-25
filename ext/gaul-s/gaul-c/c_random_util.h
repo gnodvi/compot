@@ -79,7 +79,9 @@
  * sizeof(random_state) should be 64*sizeof(int) which is
  * hopefully, fairly, optimal.
  */
+
 #define RANDOM_NUM_STATE_VALS	57
+
 typedef struct random_state_t
   {
   unsigned int	v[RANDOM_NUM_STATE_VALS];

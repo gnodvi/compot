@@ -63,14 +63,27 @@ test_utils (int argc, char **argv)
 }
 //------------------------------------------------------------------------------
 void 
-test_ ()
+test_random_int ()
 {
   //random_init ();
-  random_seed (1234);
+  random_seed (12345);
 
-  int chromo =  (int) random_int (1/* pop->num_chromosomes */);
+  printf ("\n");
 
-  printf ("chromo= %d \n", chromo);
+  int i, max = 2;
+  
+  for (i = 0; i < 30; i++) {
+    
+    int ret                   =  (int) random_int (max);
+    /* GAULFUNC  */unsigned int rnd = random_rand ();
+
+    printf ("i = %4d, max = %d,   i mod max = %d,   rnd = %10u, rnd mod max = %d,   ret = %2d \n",
+	    i, max,  i % max,
+	    rnd, rnd % max,
+	    ret);
+  }
+
+  printf ("\n");
 
   return;
 }
@@ -87,7 +100,7 @@ main (int argc, char **argv)
   if (!strcmp(argv[1], "bitstrings")) test_bitstrings (argc, argv);
   if (!strcmp(argv[1], "prng"))       test_prng (argc, argv);
   if (!strcmp(argv[1], "utils"))      test_utils (argc, argv);
-  if (!strcmp(argv[1], "_"))          test_ ();
+  if (!strcmp(argv[1], "test"))       test_random_int ();
 
   exit (EXIT_SUCCESS);
 }

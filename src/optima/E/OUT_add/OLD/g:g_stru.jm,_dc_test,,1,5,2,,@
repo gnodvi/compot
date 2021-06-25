@@ -1,0 +1,22 @@
+
+ga_population_set_parameters ... 
+
+ordered     = 0 1 2 3 4
+permutation = 1 0 4 3 2
+i= 0  dist1=   44.00  dist2=   54.00
+i= 1  dist1=   36.00  dist2=   18.00
+i= 2  dist1=   22.00  dist2=   46.00
+i= 3  dist1=    0.00  dist2=    0.00
+i= 4  dist1=   26.00  dist2=   20.00
+ordered     = 2 2 2 3 4
+permutation = 2 2 4 2 3
+i= 0  dist1=   32.00  dist2=   44.00
+i= 1  dist1=   68.00  dist2=   10.00
+i= 2  dist1=   44.00  dist2=   46.00
+i= 3  dist1=   26.00  dist2=   42.00
+i= 4  dist1=   14.00  dist2=   14.00
+The final solution with seed = 0 was:
+9 9 6 8 1 7 8 5 9 3 5 5 3 9 5 
+
+With score = 42.212766 
+

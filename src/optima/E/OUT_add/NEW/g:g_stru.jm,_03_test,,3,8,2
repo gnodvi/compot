@@ -1,0 +1,25 @@
+
+
+bnums  = 3
+bsize  = 15
+maxgs  = 8
+
+ga_population_set_parameters ... 
+
+000)     best =   41.468 :   2 5 2 5 6 2 4 9 9 7 6 3 2 7 1 
+001)     best =   43.681 :   2 5 2 5 5 3 5 4 8 7 6 3 5 7 1 
+002)     best =   44.723 :   1 5 2 4 5 3 5 4 8 7 6 3 5 7 1 
+003)     best =   44.745 :   1 5 2 4 5 3 5 4 8 7 6 3 5 7 2 
+004)     best =   45.745 :   1 5 2 3 5 3 5 4 8 7 6 2 5 7 2 
+005)     best =   45.766 :   1 5 2 3 5 3 5 4 7 7 6 2 5 7 2 
+006)     best =   46.787 :   1 5 2 3 5 3 4 4 8 7 6 2 5 7 3 
+007)     best =   46.830 :   1 5 2 3 4 3 4 4 7 7 6 2 5 7 3 
+008)     best =   47.851 :   1 5 2 3 4 3 4 4 7 7 5 2 5 7 3 
+do_print_stop_criteria: ret = 8, max_generations = 8
+The evolution was stopped: maximum number of generations
+
+Best solution , score = 47.85 : 1 5 2 3 4 3 4 4 7 7 5 2 5 7 3 
+generation = 8
+Total number of fitness evaluations: 184
+
+
