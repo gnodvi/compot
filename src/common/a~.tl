@@ -22,6 +22,7 @@ set_debian_OUT_add
 #-------------------------------------------------------------------------------
 proc RAND {} {
 
+  my_source "g-rand.tl"
   my_source "a-comr.tl"
 
   global argc argv

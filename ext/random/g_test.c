@@ -1,24 +1,11 @@
-/*******************************************************************************
-  c_x_tester.c
+// -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
 
-*******************************************************************************/
 
-#include "c_all_util.h"
+
+#include "g-comm.h"
 
 //******************************************************************************
-//  synopsis:	Test GAUL's bitstring routines.
-//------------------------------------------------------------------------------
-void 
-test_bitstrings (int argc, char **argv)
-{
 
-  //fprintf (stderr, "..11.. \n");
-
-  ga_bit_test ();
-
-  return;
-}
-//******************************************************************************
 //  Synopsis:	Test GAUL pseudo-random number generator.
 //------------------------------------------------------------------------------
 void 
@@ -40,24 +27,6 @@ test_prng (int argc, char **argv)
   //  printf ("Routines produce sufficiently random numbers.\n");
 
   printf ("\n");
-
-  return;
-}
-//******************************************************************************
-//  synopsis:	Test GAUL's general support code.
-//------------------------------------------------------------------------------
-void 
-test_utils (int argc, char **argv)
-{
-
-/*
- * Run utility test functions.
- */
-  avltree_test ();
-
-  table_test ();
-
-  linkedlist_test ();
 
   return;
 }
@@ -97,9 +66,9 @@ main (int argc, char **argv)
   if (argc !=2 ) 
     exit (EXIT_SUCCESS);
 
-  if (!strcmp(argv[1], "bitstrings")) test_bitstrings (argc, argv);
+/*   if (!strcmp(argv[1], "bitstrings")) test_bitstrings (argc, argv); */
   if (!strcmp(argv[1], "prng"))       test_prng (argc, argv);
-  if (!strcmp(argv[1], "utils"))      test_utils (argc, argv);
+/*   if (!strcmp(argv[1], "utils"))      test_utils (argc, argv); */
   if (!strcmp(argv[1], "test"))       test_random_int ();
 
   exit (EXIT_SUCCESS);
@@ -107,7 +76,6 @@ main (int argc, char **argv)
 //------------------------------------------------------------------------------
 
 // c_x_tester test
-
 // c_x_test_prng.sh 
 
 // c_x_tester bitstrings

@@ -15,11 +15,12 @@ JIMTCL_DIR = ../jimtcl
 LOGICS_DIR = ../logics		
 JOYJOY_DIR = ../joyjoy		
 SROBOT_DIR = ../srobot		
+RANDOM_DIR = ../random		
 
 #-------------------------------------------------------------------------------
 
 
-all:  CGPLIB__ PLOTER__ JOYJOY__ JIMTCL__ LOGICS__ CAUL-S__   
+all:  CGPLIB__ PLOTER__ JOYJOY__ JIMTCL__ LOGICS__ CAUL-S__ RANDOM__   
 
 #-------------------------------------------------------------------------------
 
@@ -44,6 +45,9 @@ SROBOTL__ :
 JIMTCL__ :
 	(cd $(JIMTCL_DIR); make)
 
+RANDOM__ :
+	(cd $(RANDOM_DIR); make)
+
 #-------------------------------------------------------------------------------
 test:
 	M
@@ -59,6 +63,7 @@ clean :
 	(cd $(SROBOT_DIR); make clean)
 
 	(cd $(JIMTCL_DIR); make clean)
+	(cd $(RANDOM_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

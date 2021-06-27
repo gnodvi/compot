@@ -41,7 +41,6 @@ source "g-sima.tl"
 
 set_debian_OUT_add
 
-
 # //******************************************************************************
 # //  Synopsis:	Test GAUL pseudo-random number generator.
 
