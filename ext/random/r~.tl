@@ -22,51 +22,32 @@ exec tclsh "$0" ${1+"$@"}
 
 # ;-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc TEST_capture {} {
+proc TEST_random {} {
 
-
-  #if {$::OS == "QNX"} {
-  #  load  ./b_cqnx.so Capture
-  #  #load  ac_capt.so Capture
-  #} else {
-    #load  a_capt.so Capture
 
   set this_dir [pwd]
-  #set name_lib [file join "$this_dir/T" "c_capt.so"]
   set name_lib [file join "$this_dir/T" "ranlib.so"]
-  load $name_lib Capture
-  #}
 
-  #tcl_capture
-
-  set ret1 [tcl_capture {puts "HHHHHHHHH"}]
-
-  # alloc: invalid block: 0x875a90: f8 30
-  # аварийный останов - 
-  # ошибка была именно здесь только, при возврате непосредственно!
-  # исправил: TCL_DYNAMIC -> NULL
-
-  puts ""
-  puts "RET1 = $ret1"
-
-  tcl_capture {puts "AAAAAAAAA"} ret2
-  puts ""
-  puts "RET2 = $ret2"
+  load $name_lib Random ;# -> Random_Init
 
   #------------------------------------------
 
-  set r [knuth_random]
-
-  puts "r = $r"
-
   puts ""
 
-  #------------------------------------------
+  knuth_random_seed 0 ;# 2021
+
+  for {set i 0} {$i < 10} {incr i} {
+
+    set r [knuth_random_rand]
+    puts "r = $r"
+  }
+
+  puts ""
 
 }
 #-------------------------------------------------------------------------------
 
-TEST_capture 
+TEST_random 
 
 #-------------------------------------------------------------------------------
 

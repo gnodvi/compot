@@ -525,7 +525,7 @@ proc main_ga {len_chromo} {
   for {set i 0} {$i < $num_runs} {incr i} {
  
     set seed [expr {424242 * $i}]
-    random_seed $seed
+    gaul_random_seed $seed
   
     # set pop [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_2 \
     #          ga_select_one_randomrank \
@@ -627,7 +627,7 @@ proc main_t1 {len_chromo} {
     #     // 
     
     set seed [expr {230975 * $i}]
-    random_seed $seed
+    gaul_random_seed $seed
   
     foreach {task pop}   [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_5 \
 			    NULL NULL NULL] {}
@@ -708,7 +708,7 @@ proc main_sa {} {
   for {set i 0} {$i < $num_runs} {incr i} {
    
     set seed [expr {230975 * $i}]
-    random_seed $seed
+    gaul_random_seed $seed
   
     #     /* Note that most of the population data is not required for
     #       * simulated annealling.

@@ -812,7 +812,7 @@ proc rand_0_new {} {
 # ------------------------------------------------------------------------------
 proc test_random_seed {i} {
 
-  random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
+  gaul_random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
 
   mysrand $i     ;# для lrand (начальная инициация)
 
@@ -852,8 +852,6 @@ proc TEST_lrand {} {
   #-----------------------------------------------------
   test_random_seed 0 ;# in file a-comr.tl
 
-  #random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
-  #mysrand   0     ;# для lrand (начальная инициация)
   #-----------------------------------------------------
 
   puts ""
@@ -866,7 +864,7 @@ proc TEST_lrand {} {
   puts ""
 
   #-----------------------------------------------------
-  #random_seed 0     ;# для lrand (начальная инициация)
+  #gaul_random_seed 0     ;# для lrand (начальная инициация)
 
   # !!! тест дает странные (вырожденные) результаты для небольших списков !!
   # 
@@ -888,8 +886,6 @@ proc TEST_random_int {} {
   #-----------------------------------------------------
   #test_random_seed 0 ;# in file a-comr.tl
 
-  #random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
-  #mysrand   0     ;# для lrand (начальная инициация)
   #-----------------------------------------------------
 
   puts ""

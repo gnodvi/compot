@@ -41,9 +41,9 @@ if [info exists ::G_RAND_TL] {
 # 		"Numerical Recipes in C: The Art of Scientific Computing"
 # 		Cambridge University Press, 2nd ed. (1992)
 
-#   Usage:	o First call random_init().
+#   Usage:	o First call gaul_random_init().
 
-# 		o Call random_seed() to seed the PRNG (like srand()).
+# 		o Call gaul_random_seed() to seed the PRNG (like srand()).
 # 		  Alternatively, random_tseed() to use system clock for seed.
 
 # 		o random_rand() is a rand() replacement, which is available
@@ -102,7 +102,7 @@ proc random_rand {} {
   #   unsigned int val;
 
   if {! $::is_initialised} {
-    die "Neither 'random_init' or 'random_seed' have been called."
+    die "Neither 'gaul_random_init' or 'gaul_random_seed' have been called."
   }
 
   #   THREAD_LOCK(random_state_lock);
@@ -130,10 +130,10 @@ proc random_rand {} {
   return $val
 } 
 # /*----------------------------------------------------------------------------*/
-# GAULFUNC void random_seed (const unsigned int seed)
-proc random_seed {seed} {
+# GAULFUNC void gaul_random_seed (const unsigned int seed)
+proc gaul_random_seed {seed} {
 
-  #puts "random_seed .............. "
+  #puts "gaul_random_seed .............. "
 
 #   if {$::is_my_random} {
 #     # не будем усложнять, воспользуемся встроенными средствами!
@@ -173,13 +173,13 @@ proc random_seed {seed} {
 # //  called prior to any of these functions being used.
 # //  Seeds the PRNG with a seed of 1.
 # /*----------------------------------------------------------------------------*/
-# GAULFUNC void random_init (void)
+# GAULFUNC void gaul_random_init (void)
 # /*----------------------------------------------------------------------------*/
-proc  random_init {} {
+proc  gaul_random_init {} {
 
-  #puts "random_init .............. "
+  #puts "gaul_random_init .............. "
 
-  random_seed  1
+  gaul_random_seed  1
   
   # #if RANDOM_DEBUG>0
   #   printf("DEBUG: Random number routines initialised.\n");
@@ -189,7 +189,7 @@ proc  random_init {} {
 }
 #-----------------------------------------------------------
 
-random_init ;# сразу подготовим к выполнению, на всяк случай.
+gaul_random_init ;# сразу подготовим к выполнению, на всяк случай.
 
 
 # /*----------------------------------------------------------------------------*/
@@ -533,7 +533,7 @@ proc permutation_test {} \
 
   #set ::simp_random 1  
   #set seed       2009
-  random_init
+  gaul_random_init
 
   set ordered {1 2 3 4 5}
   set size 5
@@ -588,7 +588,7 @@ proc random_test {} {
   #   double	nchi_rchi = (double)nchi / (double)rchi;	/* Speed calculation. */
   #   FILE		*rfile=NULL;	/* Handle for file of random integers. */
   
-  #   random_init();
+  #   gaul_random_init();
   
   puts ""
   puts "Testing random numbers."

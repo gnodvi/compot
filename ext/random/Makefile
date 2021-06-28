@@ -99,7 +99,7 @@ T/random.o: random.c random.h
 
 #-------------------------------------------------------------------------------
 
-T/ranlib.so: T/ranlib.o
+T/ranlib.so: T/ranlib.o T/random.o
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
 
 T/ranlib.o: ranlib.cc

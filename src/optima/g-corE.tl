@@ -7539,7 +7539,7 @@ proc parse_opts_NEW {argv
     set seed [clock seconds]
   }
 
-  random_seed $seed
+  gaul_random_seed $seed
   #------------------------------
 
   return $print

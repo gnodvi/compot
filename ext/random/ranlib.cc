@@ -27,115 +27,32 @@
  
 //------------------------------------------------------------------------------
 int  
-tcl_capture (ClientData clientData, Tcl_Interp *interp,
+knuth_random_seed (ClientData clientData, Tcl_Interp *interp,
                  int argc, char **argv) 
 {
-  int old_stdout;
-  static int fd = 0;
-  char *buf;
 
-  struct stat statbuf;
-  char *tmpfile;
-  int result;
-  
-  if (argc != 2 && argc != 3) {
-    Tcl_AppendResult(interp, "wrong # args: should be \"",
-                     argv[0], " command ?varName?\"", NULL);
-    return TCL_ERROR;
-  }
-  
-  // File descriptor mangling
-  if (!fd) {
-    tmpfile = tmpnam(NULL);
-    //warning: the use of `tmpnam' is dangerous, better use `mkstemp'
-    fd = open (tmpfile, O_RDWR|O_CREAT|O_TRUNC, 0666);
-  } else {
-    lseek(fd, 0, SEEK_SET);
-  }
-  
-  old_stdout = dup(1);
-  close(1);
-  dup2(fd, 1);
-  
-  // Run the command
-  result = Tcl_Eval(interp, argv[1]);
-  
-  // Reset file descriptors
-  dup2(old_stdout, 1);
-  close(old_stdout);
-  
-  // Reload the output 
-  fstat(fd, &statbuf);
-
-  //if (NULL == (buf = (char *)xmalloc(statbuf.st_size+1)))
-  //undefined reference to `xmalloc'
-  //xmalloc is a non-standard function that has the motto "succeed or die". 
-  //If it fails to allocate memory it will terminate your program and 
-  //print an error message to stderr.
-
-  if (NULL == (buf = (char *) malloc (statbuf.st_size+1)))
-    return TCL_ERROR;
-
-  lseek (fd, 0, SEEK_SET);
-  read  (fd, buf, statbuf.st_size);
-  buf[statbuf.st_size]=0;
-  
-  // Return it to Tcl 
-
-  //---------------------------------------------------------
-  if (argc == 3) {
-
-    Tcl_ResetResult (interp);
-    
-    //sprintf (interp->result, "%d", result);
-    //a_capt.cc:68: error: 'Tcl_Interp' has no member named 'result'
-    
-    return Tcl_SetVar (interp, argv[2], buf, 0) ? TCL_OK : TCL_ERROR;
-
-  //---------------------------------------------------------
-  } else {
-  //---------------------------------------------------------
-
-    // # alloc: invalid block: 0x875a90: f8 30
-    // # аварийный останов
-    // 
-    // # исправил: TCL_DYNAMIC -> NULL
-
-    // Tcl_SetResult (interp, buf, TCL_DYNAMIC);
-    Tcl_SetResult (interp, buf, NULL);
-  }
-  //---------------------------------------------------------
-  
-  return TCL_OK;
-}
-//------------------------------------------------------------------------------
-int  
-knuth_random (ClientData clientData, Tcl_Interp *interp,
-                 int argc, char **argv) 
-{
-  int old_stdout;
-  static int fd = 0;
-  char *buf;
-  struct stat statbuf;
-
-  char *tmpfile;
-  int result;
-  
   //if (argc != 2 && argc != 3) {
   //  Tcl_AppendResult(interp, "wrong # args: should be \"",
   //                   argv[0], " command ?varName?\"", NULL);
   //  return TCL_ERROR;
   //}
   
+  int seed = atoi (argv[1]);
 
+  usrand (seed);
 
-  if (NULL == (buf = (char *) malloc (20)))
-    return TCL_ERROR;
+  return TCL_OK;
+}
+//------------------------------------------------------------------------------
+int  
+knuth_random_rand (ClientData clientData, Tcl_Interp *interp,
+                 int argc, char **argv) 
+{
+  char buf[80];
 
-  //sprintf ("", 22);
-  strcpy (buf, "12345");
-  
-  // Return it to Tcl 
+  int r = /* 12345678 */ urand ();
+
+  sprintf (buf, "%10u", r);
 
   Tcl_SetResult (interp, buf, NULL);
   
@@ -143,7 +60,7 @@ knuth_random (ClientData clientData, Tcl_Interp *interp,
 }
 //------------------------------------------------------------------------------
 int 
-Capture_Init (Tcl_Interp *interp) 
+Random_Init (Tcl_Interp *interp) 
 {
 
   // инициализация интерфейса (обходился и без нее ?)
@@ -157,20 +74,23 @@ Capture_Init (Tcl_Interp *interp)
 
   // регистрация команды
 
-  Tcl_CreateCommand (interp, "tcl_capture", tcl_capture,
+
+  Tcl_CreateCommand (interp, "knuth_random_rand", knuth_random_rand,
                      (ClientData) NULL, 
                      (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand (interp, "knuth_random", knuth_random,
+
+  Tcl_CreateCommand (interp, "knuth_random_seed", knuth_random_seed,
                      (ClientData) NULL, 
                      (Tcl_CmdDeleteProc *) NULL);
 
 
+  usrand (0); // time
 
   // можно подготовить реализацию пакета, тогда можно будет
   // вызывать как package requare capture
 
-  Tcl_PkgProvide (interp, "capture", "1.1");
+  Tcl_PkgProvide (interp, "random", "1.1");
 
   return TCL_OK;  
 }
