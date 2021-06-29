@@ -1049,7 +1049,7 @@ proc graf_check {gr {is_print 0}} {
 # -------------------------------------------------------------------------------
 proc test_11_NEW {} {  
 
-  srandom_set 2010 ;# пусть пока так !!
+  math_random_seed_null 2010 ;# пусть пока так !!
   
   set nn 6
   set gr [graf_create $nn]

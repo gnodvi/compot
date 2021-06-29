@@ -877,7 +877,7 @@ proc botspusk_fun_todo {bot} {
   #   xyz_beg
   #   )
   
-  YRAND_F ;#  YRAND_F;
+  ##YRAND_F ;#  YRAND_F;
   
   #puts stderr ""
   #puts stderr "SPUSK FOR NUM_BEG "

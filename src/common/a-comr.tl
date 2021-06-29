@@ -83,12 +83,12 @@ proc read_seedflag {&ind} {
   # флажок для постоянства тестов (а обычно какая случайность выдается?) 
   # 
   if {$flag == "@"} {
-    #mysrand 2012
+    #math_random_seed 2012
     #set s_rand 1020
   } else {
     #set s_rand $flag
-    #mysrand $s_rand
-    mysrand $flag
+    #math_random_seed $s_rand
+    math_random_seed $flag
   }
 
   incr ind ;# а так мы увеличиваем его!
@@ -231,137 +231,52 @@ proc _RandomRange {range} {
 # ;
 # ; систeмно-зависимыe функции по случайным числам
 # ;
-# ;-------------------------------------------------------------------------------
-proc Y-srandom {seed} {
+#-------------------------------------------------------------------------------
+proc math_random_seed {seed} {
 
-  # ;#+SBCL (alien-funcall (extern-alien "srandom" (function void unsigned-int)) seed)
-  # ;#+CLISP (declare (ignore seed))
-  
-  
-  # (if is_libc 
-  
-  # #+SBCL  (alien-funcall (extern-alien "srandom" (function void unsigned-int)) seed)
-  # #+CLISP (clisp_libc_srandom seed)
-  
-  # ;    (declare (ignore seed))
-  # ;Misplaced declaration: (DECLARE (IGNORE SEED))
-  #     )
+  # if {$seed == 0} {
+  #   set seed [Y-time 0] ;# // переменная псевдослучайность
+  # } 
 
-  return [expr {srand($seed)}]
+  expr {srand($seed)}
 
 }
 # ;-------------------------------------------------------------------------------
-# ;#+SBCL
-# ;(defun srandom_set (seed)
+# srandom_set -> math_random_seed_null 
+proc math_random_seed_null {seed} {
 
-# ;  (if (< seed 0) (Y-srandom (Y-time 0)) ; // переменная псевдослучайность
-# ;                 (Y-srandom seed)       ; // фиксированная 
-# ;                 )
-# ;)
-# ;-------------------------------------------------------------------------------
-# ;#+CLISP
-proc srandom_set {seed} {
+  if {$seed == 0} {
+    set seed [Y-time 0] ;# // переменная псевдослучайность
+  } 
 
-  # ;#+SBCL
-  # ;  (if (< seed 0) (Y-srandom (Y-time 0)) ; // переменная псевдослучайность
-  # ;                 (Y-srandom seed)       ; // фиксированная 
-  # ;                 )
+  #   if {$seed == 0} {
   
-  # ;#+CLISP
-  # ;  (if (< seed 0) (setf *random-state* (make-random-state t)) 
-  # ;                 (setf *random-state* (srandom_save_or_read seed))      
-  # ;                 )
-  
-  
-  # (if is_libc 
-  
-  #   (if (< seed 0) (Y-srandom (Y-time 0)) ; // переменная псевдослучайность
-  #                  (Y-srandom seed)       ; // фиксированная 
-  #                  )
-  
-  #   (if (< seed 0) (setf *random-state* (make-random-state t)) 
-  #                  (setf *random-state* (srandom_save_or_read seed))      
-  #                  )
-  #     )
+  #     set ret [math_random_seed [Y-time 0]] ;# // переменная псевдослучайность
+  #   } else {
+  #     set ret [math_random_seed $seed]      ;# // фиксированная 
+  #   }
 
-  if {$seed < 0} {
-    set ret [Y-srandom [Y-time 0]] ;# // переменная псевдослучайность
-  } else {
-    set ret [Y-srandom $seed]      ;# // фиксированная 
-  }
+  return [math_random_seed $seed]
+  #return $ret
+}
+# ------------------------------------------------------------------------------
+# TODO: 
+#       test_random_seed -> comm_random_seed !! везде !!
 
-  return $ret
+proc test_random_seed {i} {
+
+  gaul_random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
+
+  math_random_seed $i     ;# для lrand (начальная инициация)
+
 }
 # ;-------------------------------------------------------------------------------
 proc Y-random {} {
 
-  # ;#+SBCL (alien-funcall (extern-alien "random" (function int)) )
-  # ;;#+CLISP (random MAXRANDOM )
-  # ;#+CLISP (if is_libc (clisp_libc_random)
-  # ;                   (random MAXRANDOM)
-  # ;                   )
-  
-  # (if is_libc 
-  
-  # #+SBCL  (alien-funcall (extern-alien "random" (function int)) )
-  # #+CLISP (clisp_libc_random)
-  
-  #     (random MAXRANDOM)
-  #     )
-
   set r [myrand 0 $::MAXRANDOM]
-  #set r [system random]
 
   return $r
 }
-# ;-------------------------------------------------------------------------------
-# (defun Y-drand48 ()
-
-# ;#+SBCL (alien-funcall (extern-alien "drand48" (function double)) )
-# ;#+CLISP (/ (random MAXRANDOM) (* 1.0 MAXRANDOM))
-
-# (if is_libc 
-
-# #+SBCL  (alien-funcall (extern-alien "drand48" (function double)) )
-# #+CLISP (clisp_libc_drand48)
-
-#      (/ (random MAXRANDOM) (* 1.0 MAXRANDOM))
-#     )
-
-# )
-# ;-------------------------------------------------------------------------------
-# (defun Y-srand48 (seed)
-
-# #+SBCL  (alien-funcall (extern-alien "srand48" (function void int)) seed)
-# ;#+CLISP (declare (ignore seed))
-# #+CLISP (clisp_libc_srand48 seed)
-
-# )
-# ;-------------------------------------------------------------------------------
-
-# ; в CYGWIN не заработало пока не иницииировал явно тут:
-# (Y-srand48 2010)
-
-# ;-------------------------------------------------------------------------------
-proc YRAND_F {} {
-
-  # ;#+SBCL (Y-srand48 (Y-time 0))
-  # ;#+CLISP (setf *random-state* (make-random-state t)) 
-  
-  # (if is_libc 
-  
-  #     (Y-srand48 (Y-time 0))
-  #     (setf *random-state* (make-random-state t)) 
-  #     )
-  
-}
-# ;-------------------------------------------------------------------------------
-# (defun my_sqrt (x)
-
-# #+SBCL  (alien-funcall (extern-alien "sqrt" (function double double)) x)
-# #+CLISP (sqrt x) ; похожe он один к одному бeрeт из libc.. ?
-
-# )
 # ;===============================================================================
 # ;
 # ; нe систeмныe (производныe утилиты-функции)
@@ -385,7 +300,6 @@ proc YRAND {imin imax} {
     
     return $ret
   }
-
 
   if {$::simp_random} {
     set r [_RandomRange $::MAXRANDOM]
@@ -418,48 +332,26 @@ proc YRAND {imin imax} {
 # ;-------------------------------------------------------------------------------
 proc  YRandF {fmin fmax} {
 
-  # (let (
-  #   (choise (Y-drand48))
-  #set choise [expr rand()]
-
   set choise [expr {1.0 * [_RandomRange $::MAXRANDOM] / $::MAXRANDOM}]
 
-  #   )
-  
-  #   (+ fmin (* choise (- fmax fmin)))
-
   set ret [expr {($fmin + ($choise * ($fmax - $fmin)))} ]
-
-  #puts stderr "choise = $choise  YRandF = $ret"
 
   return $ret
 }
 # ;-------------------------------------------------------------------------------
-proc YRAND_S {} {
+# proc YRAND_S {} {
 
-  srandom_set -1
-}
+#   srandom_set -1
+# }
 # ;-------------------------------------------------------------------------------
 proc YRAND_C {} {
 
-  srandom_set 2010
+  math_random_seed_null 2010
 }
 # ;-------------------------------------------------------------------------------
 proc Rand123 {p1 p2 p3} {
 
-  # (declare (ignore p2))
-
-  # (let (
   set y_rand [YRAND 1 100]
-  #   )
-  
-  #   ;(format t "Rand123: ~s ~%" y_rand)
-  
-  #   (cond 
-  #    ((< y_rand p1)  1)
-  #    ((> y_rand p3)  3)
-  #    (t              2)
-  #    )
   
   if     {$y_rand < $p1}  {return 1} \
   elseif {$y_rand > $p3}  {return 3} \
@@ -478,46 +370,6 @@ proc RandYes {procent} {
     return 0 ;#       FALSE
   }
 }
-# ;-------------------------------------------------------------------------------
-# ; Возвращает псевдо-случайное число с плавающей точкой
-# ; в диапазоне       0.0 <= number < n
-# ;
-# ; 0.0 - включен или нет? !
-# ;-------------------------------------------------------------------------------
-# (defun random-floating-point-number (n)
-
-#   (YRandF 0 n)
-# )
-# ;-------------------------------------------------------------------------------
-# ; Возвращает псевдо-случайное целоев в диапазоне 0 ---> n-1
-# ;-------------------------------------------------------------------------------
-# (defun random-integer (n)
-
-# (let (
-#   )
-
-#   (YRAND 0 (- n 1))
-# ))
-# ;-------------------------------------------------------------------------------
-# (defun seed_set (seed)
-
-#   (if (= 0 seed) 
-#       t ;(format t "SEEEED ~%") ;; это сигнал, что глобальный не надо менять
-
-#       ;(srandom_set seed)
-#       (srandom_set (round (* 2010 seed)))
-#    ) 
-
-# )
-# ;-------------------------------------------------------------------------------
-# (defun seed_set_random ()
-  
-#   (YRAND_S)
-# )
-# ;-------------------------------------------------------------------------------
-# ; случайноe значeниe из интeрвала [-max-value, max-value] ??
-#
-# это с плавающей точкой ??
 # ;-------------------------------------------------------------------------------
 proc  random-value {max_value} {
 
@@ -582,12 +434,12 @@ proc rand_1 {} {
   
   puts ""
   
-  srandom_set $seed
+  math_random_seed_null $seed
   rand_0  ;# вызов вeрхнeго тeста 
   
   puts ""
   
-  srandom_set $seed
+  math_random_seed_null $seed
   rand_0  ;# вызов вeрхнeго тeста 
   
   puts ""
@@ -609,35 +461,14 @@ proc rand_2 {} {
   puts [format "time(0)= %s  " [Y-time 0]]
   puts ""
   
-  YRAND_F
+  #YRAND_F
   puts [format "v= %s  " [YRandF $vmin $vmax]]
   
-  YRAND_F
+  #YRAND_F
   puts [format "v= %s  " [YRandF $vmin $vmax]]
   
   puts ""
 }
-# ;-------------------------------------------------------------------------------
-# (defun rand_3 (argus)  (declare (ignore argus))
-
-#   ;(setf *random-state* (make-random-state t))
-#   ;(setf *random-state* (make-random-state nil))
-  
-#   (YRAND_S)
-#   ;(YRAND_C)
-#   ;(YRAND_F)
-
-#   (dotimes (i 20)
-  
-#     (format t "  ~A  ~12S   ~A  ~%" 
-#             (YRAND 1  4)  ;(gal_irand 4) 
-#             (Y-drand48)   ;(gal_frand) 
-#             (YRAND 0 1)   ;(gal_brand) 
-#             ) 
-#     ) 
-
-#   (format t "~%")
-# )
 # ;-------------------------------------------------------------------------------
 proc rand_4 {} {
 
@@ -667,96 +498,6 @@ proc rand_4 {} {
   }
   
   puts ""
-}
-# ;-------------------------------------------------------------------------------
-# (defun rand_5 (argus)  (declare (ignore argus))
-
-# (let (
-#   ;(seed  2009)
-#   )
-
-#   (format t "~%")
-
-# ;(YRAND_C)
-# ;(srandom_set seed)
-# ;(rand_test_0)
-
-#   (srandom_set 2010)
-#   (format t "srandom_set 2010 ~%~%")
-
-#   (dotimes (i 10)
-#     (format t "YRAND(-7 +7)= ~s ~%" (YRAND -7 +7))
-#     )
-
-#   (format t "~%")
-# ))
-# ;===============================================================================
-
-# ;-------------------------------------------------------------------------------
-# (defun rand_6 (argus) (declare (ignore argus))
-
-#   (setf is_libc NIL) ; используeм чисто лисповскиe прикольныe случ. функции
-
-#   (srandom_set 201)
-
-#   (format t "~%")
-
-#   (dotimes (i 10)
-#     (format t "Y-random= ~s ~%" (Y-random))
-#     )
-
-#   (format t "~%")
-# )
-# ;===============================================================================
-# ;
-# ;
-# ;
-# ;
-# ;===============================================================================
-
-# ;-------------------------------------------------------------------------------
-# (defun pick-k-random-individual-indices (k max)
-
-# (let (
-#   (numbers nil)
-#   )
-
-#   (loop 
-#     for n = (random-integer max)
-
-#     unless (member n numbers :test #'eql)
-#     do (push n numbers)
-
-#     until (= (length numbers) k)
-#     )
-
-#   numbers
-# ))
-# ;-------------------------------------------------------------------------------
-# (defun int_from_bin (genotype bit_num)
-
-# (let (
-#   bit pos val
-#   (value 0)
-#   ) 
-  
-#   (dotimes (i bit_num)
-#     (setf bit (nth i genotype))
-
-#     (when (= bit 1)
-#         (setf pos (- bit_num i 1))
-#         (setf val (expt 2 pos))
-#         (setf value (+ value val))
-#     )
-#   )
-
-#   value
-# ))	                                                             
-#-------------------------------------------------------------------------------
-proc mysrand {seed} {
-
-  expr {srand($seed)}
-
 }
 #-------------------------------------------------------------------------------
 #
@@ -809,14 +550,6 @@ proc rand_0_new {} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-proc test_random_seed {i} {
-
-  gaul_random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
-
-  mysrand $i     ;# для lrand (начальная инициация)
-
-}
 #-------------------------------------------------------------------------------
 # возвращаем случайный элемент из списка 
 #-------------------------------------------------------------------------------
@@ -850,7 +583,7 @@ proc TEST_lrand {} {
  
  
   #-----------------------------------------------------
-  test_random_seed 0 ;# in file a-comr.tl
+  test_random_seed 1 ;# 0 ;# in file a-comr.tl
 
   #-----------------------------------------------------
 

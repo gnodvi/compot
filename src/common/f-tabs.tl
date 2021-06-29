@@ -586,7 +586,7 @@ proc bottop_init {top  seed          \
 
   bottop_players_init  $top
   #   (srandom_set  seed)  
-  mysrand $seed 
+  math_random_seed $seed 
   
   #   (setf (SET_RESULT top) set_result)
   #   (setf (PRINT_SORT_RESULTS top) print_sort_results)

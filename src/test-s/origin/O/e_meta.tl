@@ -867,7 +867,7 @@ proc loop1 {{nn 10} {nums 100} {seed -1}} {
 
   set gr_old [graf_create $nn]
 
-  srandom_set $seed
+  math_random_seed_null $seed
   
   # ---------------------------------------------------------
 
@@ -1181,7 +1181,7 @@ proc  tao_loop0_main {tao} {
 proc  loop0 {{nn 10} {nums 100} {seed -1}} { 
 
 
-  srandom_set $seed
+  math_random_seed_null $seed
 
   set gr [graf_create $nn]
   

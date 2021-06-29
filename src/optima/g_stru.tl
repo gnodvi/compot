@@ -1546,7 +1546,7 @@ proc make_bots_list {task gp_list target_text0 args} {
   if {$mode == "@"} {
   #-------------------------------------------------------------
 
-    srandom_set 2019 ;# постоянный выбор текстовой строки
+    math_random_seed_null 2019 ;# постоянный выбор текстовой строки
 
     #set lpop 30 ;# 30 ;# 30 ;# 140
     #set ::is_print 1
@@ -1562,7 +1562,7 @@ proc make_bots_list {task gp_list target_text0 args} {
 
     #--------------------------------------------
 
-    srandom_set 2019 ;# постоянный выбор текстовой строки
+    math_random_seed_null 2019 ;# постоянный выбор текстовой строки
     
     set vers 0
     set task [make_task_for_STRU -vers $vers]
