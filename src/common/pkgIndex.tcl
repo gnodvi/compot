@@ -2,6 +2,13 @@
 
 
 #-------------------------------------------------------------------------------
+package ifneeded compot::random 1.0 "
+
+  source [file join $dir "../../ext/random/g-rand.tl"]
+  source [file join $dir "a-comr.tl"]
+
+  package provide compot::random 1.0
+"
 #-------------------------------------------------------------------------------
 
 package ifneeded compot::common 1.0 "
@@ -24,13 +31,11 @@ package ifneeded compot::common 1.0 "
   source [file join $dir "f-tour.tl"]
   source [file join $dir "f-sort.tl"]
 
-  source [file join $dir "../../ext/random/g-rand.tl"]
-  source [file join $dir "a-comr.tl"]
+  package require compot::random 
 
   package provide compot::common 1.0
 "
 
-#  package provide compot::common 1.0
 
 #-------------------------------------------------------------------------------
 #  source [file join $dir "g-graf.tl"]

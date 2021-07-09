@@ -3,7 +3,8 @@
 /* random.c */
 
 #include <time.h>
-#include "random.h"
+
+#include "k-rand.h"
 
 /*
 	urand(), urand0() return uniformly distributed unsigned random ints

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "random.h"
+#include "k-rand.h"
 
  
 //------------------------------------------------------------------------------

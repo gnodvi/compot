@@ -26,7 +26,7 @@ proc TEST_random {} {
 
 
   set this_dir [pwd]
-  set name_lib [file join "$this_dir/T" "ranlib.so"]
+  set name_lib [file join "$this_dir/T" "k-lib.so"]
 
   load $name_lib Random ;# -> Random_Init
 

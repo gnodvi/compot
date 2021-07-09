@@ -67,7 +67,7 @@ CURDIR="$(shell pwd)"
 
 #------------------------------------------------------------------
 
-PROGS = r_test T/g-rand.o g_test T/ranlib.so
+PROGS = k_test T/g-rand.o g_test T/k-lib.so
 
 all: $(PROGS)
 
@@ -91,18 +91,18 @@ g_test: g_test.c  $(H-FILES)  T/g-rand.o
 
 #------------------------------------------------------------------
 
-r_test: r_test.c random.h T/random.o
-	gcc ${FLAGS} -o $@ $< T/random.o
+k_test: k_test.c k-rand.h T/k-rand.o
+	gcc ${FLAGS} -o $@ $< T/k-rand.o
 
-T/random.o: random.c random.h
-	gcc ${FLAGS} -c random.c -o $@
+T/k-rand.o: k-rand.c k-rand.h
+	gcc ${FLAGS} -c $<  -o $@
 
 #-------------------------------------------------------------------------------
 
-T/ranlib.so: T/ranlib.o T/random.o
+T/k-lib.so: T/k-lib.o T/k-rand.o
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
 
-T/ranlib.o: ranlib.cc
+T/k-lib.o: k-lib.cc
 	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
 
 #------------------------------------------------------------------

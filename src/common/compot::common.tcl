@@ -27,9 +27,11 @@ proc package_require_compot {COMPOT_} {
   
   uplevel "source  $COM/f-sort.tl"
 
-  uplevel "source  $COM/../../ext/random/g-rand.tl"
-  uplevel "source  $COM/a-comr.tl"
+  #uplevel "source  $COM/../../ext/random/g-rand.tl"
+  #uplevel "source  $COM/a-comr.tl"
   
+  package require compot::random   
+
 }
 
 #-------------------------------------------

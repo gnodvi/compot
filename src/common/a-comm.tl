@@ -4746,5 +4746,130 @@ proc set_debian_OUT_add {} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+
+
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# генерируем случайное целое из min-
+#-------------------------------------------------------------------------------
+#
+# похожий есть в l_strugle.tl
+
+set ::is_print 0 
+
+# здесь нужна глобальная переменная для начала отсчета "эффективных" параметров
+# т.е. без вспомогательных слов!
+
+set ::ind0 0
+
+#-------------------------------------------------------------------------------
+proc parse_opts_3 {&par1    &par2    &par3  
+                     def_par1 def_par2 def_par3 {ind 1}} {
+
+  #set ind 1 ;# с какого параметра начинаем обработку (чтение)
+
+  USE_REFS
+
+  global argc argv argv0
+
+  #set ::is_print 0 ;# ?????здесь зачем я это делаю??
+
+  if  {$argc == $ind} { 
+    # вызов без параметров, только с одним mode
+    
+    set par1  $def_par1
+    set par2  $def_par2
+    set par3  $def_par3
+ 
+  } else {
+
+    set par1 [lindex $argv $ind]  ; incr ind 
+    set par2 [lindex $argv $ind]  ; incr ind 
+    set par3 [lindex $argv $ind]  ; incr ind 
+
+    if  {$argc == [expr {$ind + 1}]}    {
+
+      #set ::is_print 1 ;# до этого не был установлен, например в 2
+
+      if {$::is_print == 0} {
+        set ::is_print 1 ;# до этого не был установлен, например в 2
+      }
+    }
+  }
+
+  return $::is_print
+}
+#-------------------------------------------------------------------------------
+proc read_seedflag {&ind} {
+
+  USE_REFS
+
+  global argv0 argc argv
+  
+  set flag [lindex $argv $ind]
+  #puts "flag = $flag"
+  puts ""
+
+  # флажок для постоянства тестов (а обычно какая случайность выдается?) 
+  # 
+  if {$flag == "@"} {
+    #math_random_seed 2012
+    #set s_rand 1020
+  } else {
+    #set s_rand $flag
+    #math_random_seed $s_rand
+    math_random_seed $flag
+  }
+
+  incr ind ;# а так мы увеличиваем его!
+
+}
+#-------------------------------------------------------------------------------
+proc parse_opt_seed_3 {&par1 &par2 &par3} {
+
+  set def_par1  10
+  set def_par2   6
+  set def_par3  10
+
+  USE_REFS
+
+  global argv0 argc argv
+  
+  set ind 1 ;# один параметр у нас уже есть - имя "......."
+  #set ind [expr $::ind0 + 1]
+  
+#   puts stderr "argc = $argc"
+#   puts stderr "argc = $argc"
+
+  read_seedflag  ind 
+
+  parse_opts_3  par1 par2 par3  def_par1 def_par2 def_par3   $ind ;# 2 !!
+
+}
+#-------------------------------------------------------------------------------
+proc parse_opt_seed_3_new {&par1 &par2 &par3} {
+
+  set def_par1  10
+  set def_par2   6
+  set def_par3  10
+
+  USE_REFS
+
+  global argv0 argc argv
+  
+  set ind $::ind0 ;# !!!!!!!!!
+  
+  puts stderr ""
+  puts stderr "ind = ::ind0 = $ind"
+  puts stderr "argc = $argc"
+  puts stderr "argv = $argv"
+
+  read_seedflag  ind 
+
+  parse_opts_3  par1 par2 par3  def_par1 def_par2 def_par3  $ind ;# 2 !!
+
+}
+# ;;;=============================================================================
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
