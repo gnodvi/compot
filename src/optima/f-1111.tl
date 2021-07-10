@@ -1528,7 +1528,7 @@ proc TEST_dict_CMD {} {
     set seed [clock seconds]
   }
 
-  test_random_seed $seed 
+  comm_random_seed $seed 
 
   #-------------------------------------
 

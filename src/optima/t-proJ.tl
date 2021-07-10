@@ -658,7 +658,7 @@ proc task_correct_gp {task t r} {
 #   set target_text0 [GET $task "target_text"] 
 
   
-#   test_random_seed [+ $t $r]      
+#   comm_random_seed [+ $t $r]      
 
 
 #   if {$t == 0} { 

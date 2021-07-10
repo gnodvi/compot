@@ -140,7 +140,7 @@ proc _gaul_pick_random_entities {&permutation num size avoid} {
 #     } while (permutation[pos] == avoid);
 
     while 1 {
-      set pos [expr {$j + [random_int [expr {$size - $j}]]}]
+      set pos [expr {$j + [comm_random_int [expr {$size - $j}]]}]
       set val [lindex $permutation $pos]
 
       #puts "j= $j  pos= $pos  val= $val  avoid= $avoid"
@@ -1239,7 +1239,7 @@ proc ga_differentialevolution	{pop task max_generations args} {
 
 
       set len [GET $pop len_chromosomes]
-      set n [random_int $len] ;# случайный номер гена
+      set n [comm_random_int $len] ;# случайный номер гена
 
       #puts ""
       #puts "len = $len  n = $n !!!!!!!!!!!!!!!!!!!!!!!!!"

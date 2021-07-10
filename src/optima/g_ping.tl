@@ -224,7 +224,7 @@ proc pingpong_seed {pop task adam} {
 
   for {set i 0} {$i < $len_chromo} {incr i} \
   {
-    set j [random_int $len_chromo] ;# выбрали второй случайный индекс
+    set j [comm_random_int $len_chromo] ;# выбрали второй случайный индекс
     
     while {[item_get_chromo_gen $adam  $j] > -1}  {
 
@@ -268,8 +268,8 @@ proc pingpong_mutate_swap {pop mother son} {
   #   i = random_int (len_chromo);
   #   j = random_int (len_chromo);
 
-  set i [random_int $len_chromo]
-  set j [random_int $len_chromo]
+  set i [comm_random_int $len_chromo]
+  set j [comm_random_int $len_chromo]
     
   if {$i == $j} \
   {
@@ -405,7 +405,7 @@ proc pingpong_mutate_shift {pop mother son}  {
   item_set_mainsrc $son [item_get_mainsrc $mother]
   
   #   i = random_int (len_chromo);
-  set i [random_int $len_chromo]
+  set i [comm_random_int $len_chromo]
   
   #   do {
   #     j = random_int (len_chromo);
@@ -413,7 +413,7 @@ proc pingpong_mutate_shift {pop mother son}  {
   #   } while (i == j);
 
   while {1} {
-    set j [random_int $len_chromo]
+    set j [comm_random_int $len_chromo]
     if {$i != $j} {break}
   }
   

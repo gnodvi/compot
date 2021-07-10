@@ -1683,7 +1683,7 @@ proc ga_select_one_randomrank {pop &mother} {
   
   if {[random_boolean_prob [GET $pop mutation_ratio]]} \
   {
-    set mother [pop_get_entity_ $pop [random_int $select_state]]
+    set mother [pop_get_entity_ $pop [comm_random_int $select_state]]
 
     return 0 ;# false
   } else {
@@ -1724,7 +1724,7 @@ proc ga_select_two_randomrank {pop &mother &father} {
   
   if {[random_boolean_prob [GET $pop crossover_ratio]]} \
   {
-    set mother [pop_get_entity_ $pop  [random_int $select_state]]
+    set mother [pop_get_entity_ $pop  [comm_random_int $select_state]]
     set father [pop_get_entity_ $pop              $select_state]
 
     return 0 ;# false
@@ -1749,8 +1749,8 @@ proc ga_select_one_bestof2 {pop &mother} {
   
   set orig_size [GET $pop stable_size]
 
-  set mother1 [pop_get_entity_ $pop  [random_int $orig_size]]
-  set mother2 [pop_get_entity_ $pop  [random_int $orig_size]]
+  set mother1 [pop_get_entity_ $pop  [comm_random_int $orig_size]]
+  set mother2 [pop_get_entity_ $pop  [comm_random_int $orig_size]]
   
   set fit1 [item_get_fitn $mother1]
   set fit2 [item_get_fitn $mother2]
@@ -1803,13 +1803,13 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   set orig_size [GET $pop stable_size]
   set c_ratio   [GET $pop crossover_ratio] 
 
-  set moth_i [random_int $orig_size]
+  set moth_i [comm_random_int $orig_size]
   #set mother [$pop get_entity $moth_i]
   set mother [pop_get_entity_ $pop  $moth_i]
 
   set moth_fitness [item_get_fitn $mother]
 
-  set chal_i [random_int $orig_size]
+  set chal_i [comm_random_int $orig_size]
   #set challenger [$pop get_entity $chal_i]
   set challenger [pop_get_entity_ $pop  $chal_i]
 
@@ -1826,7 +1826,7 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   while {1} {
-    set fath_i [random_int $orig_size]
+    set fath_i [comm_random_int $orig_size]
     if {$moth_i != $fath_i}  {break}
   }
 
@@ -1836,7 +1836,7 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   set fath_fitness  [item_get_fitn $father]
   
 
-  set chal_i [random_int $orig_size]
+  set chal_i [comm_random_int $orig_size]
   set challenger   [pop_get_entity_ $pop  $chal_i];
 
   set chal_fitness [item_get_fitn $challenger]
@@ -4233,7 +4233,7 @@ proc ga_singlepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
 
   # Choose crossover point and perform operation 
   #
-  set location [random_int  $len_chromo]
+  set location [comm_random_int  $len_chromo]
   
   set son_chromo [make_list $len_chromo 0]
   set dau_chromo [make_list $len_chromo 0]
@@ -4268,7 +4268,7 @@ proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
 
   #   /* Choose crossover point and perform operation */
 
-  set location1 [random_int  $len_chromo]
+  set location1 [comm_random_int  $len_chromo]
 
   #   do
   #   {
@@ -4276,7 +4276,7 @@ proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
   #   } while (location2 == location1);
   
   while {1} {
-    set  location2 [random_int  $len_chromo]
+    set  location2 [comm_random_int  $len_chromo]
     if {$location2 != $location1} {break}
   }
 
@@ -4384,7 +4384,7 @@ proc ga_crossover_char_doublepoints {pop task  father mother son daughter} \
   #     /* Choose crossover point and perform operation */
   #     location1 = random_int (pop->len_chromosomes);
 
-  set location1 [random_int  $len_chromo]
+  set location1 [comm_random_int  $len_chromo]
 
   #     do
   #     {
@@ -4392,7 +4392,7 @@ proc ga_crossover_char_doublepoints {pop task  father mother son daughter} \
   #     } while (location2==location1);
 
   while {1} {
-    set  location2 [random_int  $len_chromo]
+    set  location2 [comm_random_int  $len_chromo]
     if {$location2 != $location1} {break}
   }
   
@@ -4478,7 +4478,7 @@ proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH
 
   # Choose crossover point and perform operation 
 
-  set location1 [random_int  $len_chromo]
+  set location1 [comm_random_int  $len_chromo]
 
   #   do
   #   {
@@ -4486,7 +4486,7 @@ proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH
   #   } while (location2==location1);
   
   while {1} {
-    set  location2 [random_int  $len_chromo]
+    set  location2 [comm_random_int  $len_chromo]
     if {$location2 != $location1} {break}
   }
 
@@ -4632,7 +4632,7 @@ proc ga_seed_integer_random {pop task adam}  {
     # ((int *)adam->CH/* chromosome[chromo] */)[point] =
     #   random_int_range(pop->allele_min_integer,pop->allele_max_integer);
 
-    set r [random_int_range  $amin $amax]
+    set r [comm_random_int_range  $amin $amax]
 
     #$adam set_chromo_gen $point $r 
     item_set_chromo_gen $adam $point $r 
@@ -4699,7 +4699,7 @@ proc ga_mutate_integer_singlepoint_drift {pop task  father son} {
 
   set len_chromo [llength chromosome]
 
-  set point [random_int  $len_chromo] ;# Index of allele to mutate 
+  set point [comm_random_int  $len_chromo] ;# Index of allele to mutate 
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # 
@@ -4763,7 +4763,7 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
 
   # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
   # 
-  set point [random_int  $len_chromo]
+  set point [comm_random_int  $len_chromo]
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #
@@ -4848,11 +4848,11 @@ proc ga_mutate_double_singlepoint_drift {pop task  father son}  {
 
   #   /* Select mutation locus. */
   #   /* chromo =  (int) */ random_int(1/* pop->num_chromosomes */);
-  random_int 1
+  comm_random_int 1
 
   #   //chromo = 0; // (int) random_int(1/* pop->num_chromosomes */);
   #   point  = (int) random_int(pop->len_chromosomes);
-  set point [random_int  $len_chromo]
+  set point [comm_random_int  $len_chromo]
 
   #   /*
   #     * Copy unchanged data.
@@ -6669,7 +6669,7 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
   # улучшений не было, тогда:
 
   # RAND
-  set r [random_int_range  1 10]
+  set r [comm_random_int_range  1 10]
 
   if {$r <= 3} {
 
@@ -6944,7 +6944,7 @@ proc run_gp_evolution_for_task {
   puts "[procname] : seed = $seed !!!!!!!!!!!"
 
   #random_seed $seed 
-  test_random_seed $seed 
+  comm_random_seed $seed 
 
   #-------------------------------------
 

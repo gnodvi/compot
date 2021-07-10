@@ -136,17 +136,6 @@ proc math_random_seed_null {seed} {
   return [math_random_seed $seed]
   #return $ret
 }
-# ------------------------------------------------------------------------------
-# TODO: 
-#       test_random_seed -> comm_random_seed !! везде !!
-
-proc test_random_seed {i} {
-
-  gaul_random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
-
-  math_random_seed $i     ;# для lrand (начальная инициация)
-
-}
 # ;-------------------------------------------------------------------------------
 proc Y-random {} {
 
@@ -164,48 +153,6 @@ proc Y-random {} {
 set ::debug_print 0
 set ::simp_random 0
 
-# ;-------------------------------------------------------------------------------
-proc YRAND {imin imax} {
-
-  set ii [expr {$imax - $imin + 1}]
-
-
-  if {0} {
-    # этот способ работает, но не совпаадет с Лиспом !
-    #
-    set ret [rand  $imin $imax]
-    
-    return $ret
-  }
-
-  if {$::simp_random} {
-    set r [_RandomRange $::MAXRANDOM]
-  } else {
-    set r [Y-random]
-  }
-
-
-  if {0} {
-
-    set rr [expr  {$r * 1.0 * $ii / $::MAXRANDOM}]
-    set ir [expr  {int ($rr)}]   ;# floor
-
-  } else {
-
-    #(setf ret (+ imin (mod r (- imax imin -1))))
-    set rr [expr {fmod ($r, $ii)}]
-
-    #set ir $rr
-    set ir [expr  {int ($rr)}]   ;# floor
-  }
-
-
-  set ret [expr {$imin + $ir}]  
-
-  #puts stderr "YRAND:   imin= $imin  imax= $imax  ii= $ii  r= $r  rr= $rr ir= $ir  ret= $ret "
-
-  return $ret
-}
 # ;-------------------------------------------------------------------------------
 proc  YRandF {fmin fmax} {
 
@@ -277,6 +224,103 @@ proc random_in_interval {fmin fmax} {
 
   return $r
 }
+# ;-------------------------------------------------------------------------------
+proc YRAND {imin imax} {
+
+  set ii [expr {$imax - $imin + 1}]
+
+
+  if {0} {
+    # этот способ работает, но не совпаадет с Лиспом !
+    #
+    set ret [rand  $imin $imax]
+    
+    return $ret
+  }
+
+  if {$::simp_random} {
+    set r [_RandomRange $::MAXRANDOM]
+  } else {
+    set r [Y-random]
+  }
+
+
+  if {0} {
+
+    set rr [expr  {$r * 1.0 * $ii / $::MAXRANDOM}]
+    set ir [expr  {int ($rr)}]   ;# floor
+
+  } else {
+
+    #(setf ret (+ imin (mod r (- imax imin -1))))
+    set rr [expr {fmod ($r, $ii)}]
+
+    #set ir $rr
+    set ir [expr  {int ($rr)}]   ;# floor
+  }
+
+
+  set ret [expr {$imin + $ir}]  
+
+  #puts stderr "YRAND:   imin= $imin  imax= $imax  ii= $ii  r= $r  rr= $rr ir= $ir  ret= $ret "
+
+  return $ret
+}
+#-------------------------------------------------------------------------------
+#
+# rand() - возвращает случайное число с плавающей точкой в интервале [0.0 1.0]
+#
+# генерируем случайное целое из min-max (оба включены) интервала.
+#-------------------------------------------------------------------------------
+proc myrand {min max} {
+
+  expr {$min + int(rand() * (($max-$min)+1))}
+
+}
+#-------------------------------------------------------------------------------
+# генерируем случайное целое из min-max (оба включены) интервала.
+#-------------------------------------------------------------------------------
+proc myrand_new {min max} {
+
+  incr max
+
+  #puts "myrand_new: min= $min, max= $max"
+
+  return [random_int_range  $min $max]
+}
+#-------------------------------------------------------------------------------
+proc YRAND_new {imin imax} {
+
+
+  return [myrand_new  $imin $imax]
+}
+#-------------------------------------------------------------------------------
+# TODO: 
+#       test_random_seed -> comm_random_seed !! везде !!
+
+# ------------------------------------------------------------------------------
+proc comm_random_seed {i} {
+
+  gaul_random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
+
+  math_random_seed $i     ;# для lrand (начальная инициация)
+
+}
+#-------------------------------------------------------------------------------
+proc comm_random_int {max} {
+
+
+  return [random_int $max]
+
+}
+#-------------------------------------------------------------------------------
+proc comm_random_int_range {min max} {
+
+
+  return [random_int_range $min $max]
+
+}
+#-------------------------------------------------------------------------------
 # ;===============================================================================
 # ;
 # ;-------------------------------------------------------------------------------
@@ -377,56 +421,14 @@ proc rand_4 {} {
   puts ""
 }
 #-------------------------------------------------------------------------------
-#
-# rand() - возвращает случайное число с плавающей точкой в интервале [0.0 1.0]
-#
-# генерируем случайное целое из min-max (оба включены) интервала.
-#-------------------------------------------------------------------------------
-proc myrand {min max} {
-
-  expr {$min + int(rand() * (($max-$min)+1))}
-
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-
-#source "../../ext/random/g-rand.tl"
-#source "g-rand.tl"
-
-
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-# генерируем случайное целое из min-max (оба включены) интервала.
-#-------------------------------------------------------------------------------
-proc myrand_new {min max} {
-
-  incr max
-
-  #puts "myrand_new: min= $min, max= $max"
-
-  return [random_int_range  $min $max]
-}
-#-------------------------------------------------------------------------------
-proc YRAND_new {imin imax} {
-
-
-  return [myrand_new  $imin $imax]
-}
-#-------------------------------------------------------------------------------
 proc rand_0_new {} {
 
   dotimes i 30 {
 
-    #puts -nonewline [format "random_int_range (1 4)= %d \n" [myrand_new 1 4]]
-    #puts -nonewline [format "random_int_range (1 4)= %s \n" [random_int_range 1 4]]
-    #puts -nonewline [format "random_int_range (1 4)= %s \n" [random_int_range 1 5]] ;# ????????
     puts -nonewline [format "YRAND_new (1 4)= %s \n" [YRAND_new 1 5]]
   }
 
 }
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # возвращаем случайный элемент из списка 
 #-------------------------------------------------------------------------------
@@ -460,7 +462,7 @@ proc TEST_lrand {} {
  
  
   #-----------------------------------------------------
-  test_random_seed 1 ;# 0 ;# in file a-comr.tl
+  comm_random_seed 1 ;# 0 ;# in file a-comr.tl
 
   #-----------------------------------------------------
 
@@ -494,7 +496,7 @@ proc TEST_lrand {} {
 proc TEST_random_int {} {
     
   #-----------------------------------------------------
-  #test_random_seed 0 ;# in file a-comr.tl
+  #comm_random_seed 0 ;# in file a-comr.tl
 
   #-----------------------------------------------------
 

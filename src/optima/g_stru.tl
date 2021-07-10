@@ -389,7 +389,7 @@ proc _01_test {} {
   set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
   set print $::is_print
 
-  test_random_seed 0 ;#$i
+  comm_random_seed 0 ;#$i
   
   #---------------------------------------------------------------------
 
@@ -545,7 +545,7 @@ proc _3_struggle_adaptation {task pop child} \
   
   set len [LTARGET]
 
-  set allele [random_int $len] ;# Randomly selected allele
+  set allele [comm_random_int $len] ;# Randomly selected allele
 
   # ----------------------------------------------------
   #
@@ -665,7 +665,7 @@ proc do_print_stop_criteria {ret max_generations} {
 proc _03_test {} \
 {
   
-  test_random_seed 0 ;# 23091975
+  comm_random_seed 0 ;# 23091975
   
   set population_size 120
   set max_generations 1000
@@ -874,7 +874,7 @@ proc  calc_BOT04  {obj args} {
 proc _04_test {} \
 {
   
-  test_random_seed 0 ;# 23091975
+  comm_random_seed 0 ;# 23091975
   
 
   set population_size ""
@@ -1058,7 +1058,7 @@ proc _05_test {} \
 
   parse_opts_3   num_pops population_size max_generations  5 80 250
 
-  test_random_seed 0 ;# 42
+  comm_random_seed 0 ;# 42
   
 
   #----------------------------------------------------------------------
@@ -1191,7 +1191,7 @@ proc _dc_test {} \
   #
   for {set i 0} {$i < $num_runs} {incr i} {
   
-    test_random_seed  $i
+    comm_random_seed  $i
     
     set len_chromo [LTARGET] 
   
@@ -1234,7 +1234,7 @@ proc make_pop_DARWIN {task population_size len_chromo} {
 
   set len_chromo [LTARGET] 
   
-  test_random_seed 0 ;# 23091975
+  comm_random_seed 0 ;# 23091975
 
   set seed_proc  "maintest_seed_proc"
 
@@ -1494,7 +1494,7 @@ proc ent_as_string_list {e ch_form} {
 #   set target_text0 [GET $task "target_text"] 
 
   
-#   test_random_seed $t      
+#   comm_random_seed $t      
 
 
 #   if {$t == 0} { 
@@ -1662,7 +1662,7 @@ proc task_correct_target_text {task t r} {
   set target_text0 [GET $task "target_text"] 
 
   
-  test_random_seed [+ $t $r]      
+  comm_random_seed [+ $t $r]      
 
 
   if {$t == 0} { 
@@ -1715,7 +1715,7 @@ proc maintest_531 {} {
 
 #   for {set t 0} {$t < $num_text} {incr t} {
 
-#     #test_random_seed $t      
+#     #comm_random_seed $t      
 #     set target_text [make_text_variant  $task  $t]
     
 #     lappend targets $target_text

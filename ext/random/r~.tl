@@ -11,8 +11,18 @@ exec tclsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 
-source "a-comm.tl"
+set COMPOT "./COMPOT"
 
+#set auto_path [linsert $auto_path 0 $COMPOT]
+
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
+set auto_path [linsert $auto_path 0 $COMPOT/ext/random] ;# for JIM
+
+#-------------------------------------------------------------------------------
+
+#source "a-comm.tl"
+
+package require compot::common 
 #package require compot::random 
 
 
@@ -25,8 +35,8 @@ source "a-comm.tl"
 #-------------------------------------------------------------------------------
 proc RAND {} {
 
-  my_source "g-rand.tl"
-  my_source "random.tl"
+#  my_source "g-rand.tl"
+#  my_source "random.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию

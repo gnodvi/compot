@@ -813,7 +813,7 @@ proc TEST_xx {args} {
   }
   
   #random_seed $seed 
-  test_random_seed $seed 
+  comm_random_seed $seed 
 
   #------------------------------------------------------
 
