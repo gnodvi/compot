@@ -8,6 +8,8 @@ exec tclsh "$0" ${1+"$@"}
 #
 set auto_path [linsert $auto_path 0 "./COMPOT"]
 
+#set auto_path [linsert $auto_path 0 "./COMPOT/ext/random"]
+
 package require compot::common 
 
 #-------------------------------------------------------------------------------

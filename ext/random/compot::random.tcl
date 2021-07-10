@@ -6,10 +6,8 @@
 proc package_require_random {COMPOT_} {
 
 
-  set COM $COMPOT_/src/common
-  
-  uplevel "source  $COM/../../ext/random/g-rand.tl"
-  uplevel "source  $COM/a-comr.tl"
+  uplevel "source  $COMPOT_/ext/random/g-rand.tl"
+  uplevel "source  $COMPOT_/ext/random/random.tl"
   
 }
 

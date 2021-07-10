@@ -1,1 +1,1 @@
-../../../src/common/E/lib.sh
+../../srobot/E/lib.sh

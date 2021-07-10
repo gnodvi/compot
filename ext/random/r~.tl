@@ -13,6 +13,9 @@ exec tclsh "$0" ${1+"$@"}
 
 source "a-comm.tl"
 
+#package require compot::random 
+
+
 #-------------------------------------------------------------------------------
 # установить ссылку для конкретного окружения
 
@@ -23,7 +26,7 @@ source "a-comm.tl"
 proc RAND {} {
 
   my_source "g-rand.tl"
-  my_source "a-comr.tl"
+  my_source "random.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
@@ -36,7 +39,7 @@ proc RAND {} {
 }
 #-------------------------------------------------------------------------------
 
-set CUR_DIR "a"
+set CUR_DIR "r"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 

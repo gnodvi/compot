@@ -2,14 +2,16 @@
 
 
 #-------------------------------------------------------------------------------
-package ifneeded compot::random 1.0 "
+# package ifneeded compot::random 1.0 "
 
-  source [file join $dir "../../ext/random/g-rand.tl"]
-  source [file join $dir "a-comr.tl"]
+#   source [file join $dir "../../ext/random/g-rand.tl"]
+#   source [file join $dir "../../ext/random/a-comr.tl"]
 
-  package provide compot::random 1.0
-"
+#   package provide compot::random 1.0
+# "
 #-------------------------------------------------------------------------------
+
+set auto_path [linsert $auto_path 0 "./COMPOT/ext/random"]
 
 package ifneeded compot::common 1.0 "
 
