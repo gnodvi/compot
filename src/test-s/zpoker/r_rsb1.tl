@@ -35,13 +35,19 @@
 # ;-------------------------------------------------------------------------------
 # ;  roshambo with given probabilities of rock, paper, or scissors 
 # ;-------------------------------------------------------------------------------
+
+
+# ;-------------------------------------------------------------------------------
 # ;int 
 proc biased_roshambo {prob_rock prob_paper} {
 
   # (let (
   # ;  double throw;
   # ;  throw = random() / maxrandom;
+
+  #set val [expr {[Y-random] / $::y_maxrandom}]
   set val [expr {[Y-random] / $::y_maxrandom}]
+
   #   )
   
   puts "prob_rock= $prob_rock   prob_paper= $prob_paper   val == $val"

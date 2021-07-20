@@ -139,7 +139,9 @@ proc math_random_seed_null {seed} {
 # ;-------------------------------------------------------------------------------
 proc Y-random {} {
 
-  set r [myrand 0 $::MAXRANDOM]
+  ##set r [myrand 0 $::MAXRANDOM]
+
+  set r  [math_randon_int_minmax  0 $::MAXRANDOM]
 
   return $r
 }
@@ -193,13 +195,11 @@ proc RandYes {procent} {
     #puts "RandYes = 0"
     return 0 ;#       FALSE
   }
+
 }
 # ;-------------------------------------------------------------------------------
 proc  random-value {max_value} {
 
-  # ;  (- max-value (* 2 (random max-value)))
-
-  #set r [YRAND 0 $max_value]
   set r [YRandF 0 $max_value]
   
   set ret [expr {$max_value - (2 * $r)}]
@@ -212,15 +212,8 @@ proc  random-value {max_value} {
 # ;-------------------------------------------------------------------------------
 proc random_in_interval {fmin fmax} {
 
-  # ;  (coerce (- (random-floating-point-number (- fmax fmin)) (- 0.0 fmin))
-  # ;          'single-float)
-  
   
   set r [YRandF $fmin $fmax]
-
-  #puts "random_in_interval: r = $r"
-  #puts ""
-  #exit
 
   return $r
 }
@@ -272,10 +265,17 @@ proc YRAND {imin imax} {
 #
 # генерируем случайное целое из min-max (оба включены) интервала.
 #-------------------------------------------------------------------------------
-proc myrand {min max} {
+proc math_randon_int_minmax {min max} {
 
   expr {$min + int(rand() * (($max-$min)+1))}
 
+}
+#-------------------------------------------------------------------------------
+proc myrand {min max} {
+
+ # expr {$min + int(rand() * (($max-$min)+1))}
+
+  return [math_randon_int_minmax $min $max]
 }
 #-------------------------------------------------------------------------------
 # генерируем случайное целое из min-max (оба включены) интервала.
@@ -284,16 +284,19 @@ proc myrand_new {min max} {
 
   incr max
 
-  #puts "myrand_new: min= $min, max= $max"
-
-  return [random_int_range  $min $max]
+  return [comm_random_int_range  $min $max]
 }
 #-------------------------------------------------------------------------------
-proc YRAND_new {imin imax} {
+
+alias comm_random_int_minmax myrand_new
+
+#-------------------------------------------------------------------------------
+# proc YRAND_new {imin imax} {
 
 
-  return [myrand_new  $imin $imax]
-}
+#   #return [myrand_new  $imin $imax]
+#   return [comm_random_int_minmax  $imin $imax]
+# }
 #-------------------------------------------------------------------------------
 # TODO: 
 #       test_random_seed -> comm_random_seed !! везде !!
@@ -307,20 +310,15 @@ proc comm_random_seed {i} {
 
 }
 #-------------------------------------------------------------------------------
-proc comm_random_int {max} {
 
+alias  comm_random_int_permutation  gaul_random_int_permutation
 
-  return [random_int $max]
+# Return a random integer between min and max-1 inclusive.
+alias  comm_random_int_range        gaul_random_int_range
 
-}
-#-------------------------------------------------------------------------------
-proc comm_random_int_range {min max} {
+# Return a random integer between 0 and (N-1) inclusive.
+alias  comm_random_int              gaul_random_int
 
-
-  return [random_int_range $min $max]
-
-}
-#-------------------------------------------------------------------------------
 # ;===============================================================================
 # ;
 # ;-------------------------------------------------------------------------------
@@ -425,7 +423,8 @@ proc rand_0_new {} {
 
   dotimes i 30 {
 
-    puts -nonewline [format "YRAND_new (1 4)= %s \n" [YRAND_new 1 5]]
+    #puts -nonewline [format "YRAND_new (1 4)= %s \n" [YRAND_new 1 5]]
+    puts -nonewline [format "YRAND_new (1 4)= %s \n" [comm_random_int_minmax 1 5]]
   }
 
 }
@@ -442,7 +441,7 @@ proc lrand_new {list} {
     
   set l [llength $list]
 
-  set r [random_int $l]
+  set r [comm_random_int $l]
 
   #set i [* $r ]
 
@@ -504,7 +503,7 @@ proc TEST_random_int {} {
 
   for {set i 0} {$i < 20} {incr i} {
 
-    puts "[random_int 4]"
+    puts "[comm_random_int 4]"
   }
 
   puts ""

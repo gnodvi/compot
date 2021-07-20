@@ -50,7 +50,26 @@ knuth_random_rand (ClientData clientData, Tcl_Interp *interp,
 {
   char buf[80];
 
-  int r = /* 12345678 */ urand ();
+  int r = urand ();
+
+  sprintf (buf, "%10u", r);
+
+  Tcl_SetResult (interp, buf, NULL);
+  
+  return TCL_OK;
+}
+//------------------------------------------------------------------------------
+int  
+knuth_random_randint (ClientData clientData, Tcl_Interp *interp,
+                      int argc, char **argv) 
+{
+  //int upto = 10;
+
+  int upto = atoi (argv[1]);
+
+  char buf[80];
+
+  int r = randint (upto);
 
   sprintf (buf, "%10u", r);
 
@@ -75,12 +94,17 @@ Random_Init (Tcl_Interp *interp)
   // регистрация команды
 
 
+  Tcl_CreateCommand (interp, "knuth_random_seed", knuth_random_seed,
+                     (ClientData) NULL, 
+                     (Tcl_CmdDeleteProc *) NULL);
+
+
   Tcl_CreateCommand (interp, "knuth_random_rand", knuth_random_rand,
                      (ClientData) NULL, 
                      (Tcl_CmdDeleteProc *) NULL);
 
 
-  Tcl_CreateCommand (interp, "knuth_random_seed", knuth_random_seed,
+  Tcl_CreateCommand (interp, "knuth_random_randint", knuth_random_randint,
                      (ClientData) NULL, 
                      (Tcl_CmdDeleteProc *) NULL);
 

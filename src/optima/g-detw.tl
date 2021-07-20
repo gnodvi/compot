@@ -142,7 +142,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
     }
     
     set permutation {}
-    random_int_permutation  $size  ordered  permutation 
+    comm_random_int_permutation  $size  ordered  permutation 
     #
     # сделаем как в оригинале пока, т.е. с изменением исходного ordered, но
     # это довольно странно !

@@ -1,4 +1,6 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
+#-------------------------------------------------------------------------------
 
 if [info exists ::G_RAND_TL] {
   return
@@ -97,7 +99,7 @@ set ::is_initialised 0
 # GAULFUNC unsigned int random_rand (void)
 
 # /*----------------------------------------------------------------------------*/
-proc random_rand {} {
+proc gaul_random_rand {} {
 
   #   unsigned int val;
 
@@ -199,7 +201,7 @@ gaul_random_init ;# сразу подготовим к выполнению, на всяк случай.
 # /*----------------------------------------------------------------------------*/
 proc random_boolean {} {
 
-  set ret [expr {[random_rand] <= $::RANDOM_RAND_MAX / 2}]
+  set ret [expr {[gaul_random_rand] <= $::RANDOM_RAND_MAX / 2}]
 
   return $ret
 
@@ -213,7 +215,7 @@ proc random_boolean {} {
 # /*----------------------------------------------------------------------------*/
 proc random_boolean_prob {prob} {
 
-  set ret [expr {[random_rand] <= $prob * $::RANDOM_RAND_MAX}]
+  set ret [expr {[gaul_random_rand] <= $prob * $::RANDOM_RAND_MAX}]
 
   return $ret
 
@@ -223,28 +225,12 @@ proc random_boolean_prob {prob} {
 
 # некоторые мои функуции
 # 
-#-------------------------------------------------------------------------------
-# rand() - возвращает случайное число с плавающей точкой в интервале [0.0 1.0]
-#
-# генерируем случайное целое из min-max (оба включены) интервала.
-# 
-# = myrand из файла a-comm.tl !!!!
-#
-#-------------------------------------------------------------------------------
-proc common_rand {min max} {
-
-  expr {$min + int(rand() * (($max-$min)+1))}
-
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 # /*----------------------------------------------------------------------------*/
 # //  Return a random integer between 0 and (N-1) inclusive.
 #
 # GAULFUNC unsigned int random_int (const unsigned int max)
 # /*----------------------------------------------------------------------------*/
-proc random_int {max} {
+proc gaul_random_int {max} {
 
 #   /*
 #     return (int)((double)random_rand()*max/RANDOM_RAND_MAX);
@@ -255,7 +241,7 @@ proc random_int {max} {
   if {$max == 0} {
     set ret 0
   } else {
-    set ret [expr {[random_rand] % $max}]
+    set ret [expr {[gaul_random_rand] % $max}]
   }
 
   #puts stderr [format "random_int :  ret = %d " $ret]
@@ -270,7 +256,7 @@ proc random_int {max} {
 # GAULFUNC int random_int_range (const int min, const int max)
 
 # /*----------------------------------------------------------------------------*/
-proc random_int_range {min max} \
+proc gaul_random_int_range {min max} \
 {
   #   /*
   #     return (random_rand()*(max-min)/RANDOM_RAND_MAX + min);
@@ -284,7 +270,7 @@ proc random_int_range {min max} \
 
   } else {
 
-    return [expr {$min + ([random_rand] % $max_min)}]
+    return [expr {$min + ([gaul_random_rand] % $max_min)}]
   }
   
   #   return (max-min==0) ? max : min + (random_rand()%(max-min));
@@ -308,7 +294,7 @@ proc  random_double {max} {
 
   #  return ( max * (((double) random_rand()) / (double) RANDOM_RAND_MAX) );
 
-  set r [random_rand]
+  set r [gaul_random_rand]
 
   set ret [expr {$max * ((1.0 * $r) / $::RANDOM_RAND_MAX)}]
 
@@ -329,7 +315,7 @@ proc random_double_range {min max} {
 
 
 
-  return [expr {($max - $min) * ((1.0 * [random_rand]) / $::RANDOM_RAND_MAX)  + $min}]
+  return [expr {($max - $min) * ((1.0 * [gaul_random_rand]) / $::RANDOM_RAND_MAX)  + $min}]
 
 #   return ( (max-min) * (((double) random_rand()) / (double) RANDOM_RAND_MAX) + min );
 }
@@ -341,7 +327,7 @@ proc random_double_range {min max} {
 # /*----------------------------------------------------------------------------*/
 proc random_unit_uniform {} {
 
-  set r [random_rand]
+  set r [gaul_random_rand]
 
   # return ( (((double) random_rand()) / (double) RANDOM_RAND_MAX) );
 
@@ -496,7 +482,7 @@ proc random_unit_gaussian {} {
 #                         )
 # /*----------------------------------------------------------------------------*/
 #proc random_int_permutation {size iarray  &oarray}
-proc random_int_permutation {size &iarray  &oarray} \
+proc gaul_random_int_permutation {size &iarray  &oarray} \
 {
   USE_REFS
   #upvar ${&iarray} iarray
@@ -511,7 +497,7 @@ proc random_int_permutation {size &iarray  &oarray} \
   
   for {set i [expr {$size - 1}]} {$i > 0} {incr i -1} \
   {
-    set pos [random_int $i]
+    set pos [gaul_random_int $i]
 
     #puts stderr [format "i = %2d  pos = %2d " $i  $pos]
 
@@ -544,7 +530,7 @@ proc permutation_test {} \
 
   puts "permutation_test: "
 
-  random_int_permutation  $size  ordered  permutation 
+  gaul_random_int_permutation  $size  ordered  permutation 
 
   puts "permutation_test: ordered     = $ordered"
   puts "permutation_test: permutation = $permutation"

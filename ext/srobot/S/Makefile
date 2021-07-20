@@ -10,7 +10,7 @@ all:
 
 	(cd TOOL/xdotool;      make)
 	(cd TOOL/xzoom;        make)
-	(cd TOOL/yzonetl;      make)
+	(cd TOOL/yzone-m;      make)
 
 # test:  
 # 	(cd ext/m; M)
@@ -25,7 +25,7 @@ clean:
 
 	(cd TOOL/xdotool;      make clean)
 	(cd TOOL/xzoom;        make clean)
-	(cd TOOL/yzonetl;      make clean)
+	(cd TOOL/yzone-m;      make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

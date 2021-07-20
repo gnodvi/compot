@@ -94,7 +94,7 @@ proc all5s_seed {pop task entity} \
 
   for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point} \
   {
-    item_set_chromo_gen $entity  $point [random_int $maxint]
+    item_set_chromo_gen $entity  $point [comm_random_int $maxint]
 
     #$entity configure -ch_form " %02d"
     # âõäåí úáäá÷áôø üôïô ÐÁÒÁÍÅÔÒ ÐÒÉ ÓÏÚÄÁÎÉÉ, Ô.Å. ga_entity_setup
@@ -132,7 +132,7 @@ proc all5s_mutate {pop task  father son}  {
 
   #   // Select mutation locus
   #   // 
-  set point [random_int $len_chromosomes]
+  set point [comm_random_int $len_chromosomes]
   
   #   // Copy genome from father
   #   // 

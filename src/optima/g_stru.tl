@@ -1424,15 +1424,11 @@ proc eschemes {} \
   return 1
 }
 # ------------------------------------------------------------------------------
-  # TODO : 
-  #   YRAND -> YRAND_new
-
-# ------------------------------------------------------------------------------
 proc make_random_list_member {source_list} {
 
   set nums [llength $source_list]
   
-  set j [YRAND_new 0 [- $nums 1]]
+  set j [comm_random_int_minmax 0 [- $nums 1]]
   set l [lindex $source_list $j]
 
   return $l
@@ -1446,7 +1442,7 @@ proc make_random_target_text {source_list  size pmin pmax} {
 
     set l [make_random_list_member  $source_list] ;# или с коэффициентом порядка 
 
-    set povtor [YRAND_new  $pmin $pmax]
+    set povtor [comm_random_int_minmax  $pmin $pmax]
 
     dotimes p $povtor {
 

@@ -213,7 +213,7 @@ proc make_prelist {n} {
 
   repeat $n {
 
-    if {[myrand_new 0 3] == 0} {
+    if {[comm_random_int_minmax 0 3] == 0} {
 
       lappend ret $ind 
     }

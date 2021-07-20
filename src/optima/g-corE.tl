@@ -2194,7 +2194,7 @@ proc ga_select_two_sus {pop &mother &father}  {
     # поскольку вызывается один раз
     #
 
-    random_int_permutation  $orig_size  ordered oarray ;# перемешали числа
+    comm_random_int_permutation  $orig_size  ordered oarray ;# перемешали числа
 
     
     SET $sd "permutation" $oarray     ;# записаил перемешку
@@ -2630,7 +2630,8 @@ proc make_rand_prgpop {task bnums minlen maxlen  gp_list randinstr quotes_proc} 
 
   while {[incr bnums -1] >= 0} {
 
-    set n [myrand_new $minlen $maxlen]
+    set n [comm_random_int_minmax  $minlen $maxlen]
+
 
     lappend prgpop [make_randprog  $task $n $randinstr $quotes_proc]
   }
@@ -3843,7 +3844,7 @@ proc get_randprog_unikum {task result minlen maxlen attempts max_attempts
 
  #puts "... 1"
 
- set prg [make_randprog  $task [myrand_new  $minlen $maxlen] \
+ set prg [make_randprog  $task [comm_random_int_minmax  $minlen $maxlen] \
             $randinstr \
             $quotes_proc]
 
@@ -5904,13 +5905,13 @@ proc gp_crossover {a b} {
   # получить четыре точки скрещивания
   # поменять две точки если необходимо, чтобы a0>=a1 и b0>=b1
 
-  set a0 [myrand_new 0 [expr {[llength $a]-1}]]
-  set a1 [myrand_new 0 [expr {[llength $a]-1}]]
+  set a0 [comm_random_int_minmax 0 [expr {[llength $a]-1}]]
+  set a1 [comm_random_int_minmax 0 [expr {[llength $a]-1}]]
 
   if {$a0 > $a1} {set t $a0; set a0 $a1; set a1 $t}
 
-  set b0 [myrand_new 0 [expr {[llength $b]-1}]]
-  set b1 [myrand_new 0 [expr {[llength $b]-1}]]  
+  set b0 [comm_random_int_minmax 0 [expr {[llength $b]-1}]]
+  set b1 [comm_random_int_minmax 0 [expr {[llength $b]-1}]]  
 
   if {$b0 > $b1} {set t $b0; set b0 $b1; set b1 $t}
   
@@ -6136,7 +6137,7 @@ proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
     if {[llength $parents] ==  $m} {break}
 
 
-    set j [myrand_new 0 [- $l_items 1]] 
+    set j [comm_random_int_minmax 0 [- $l_items 1]] 
 
     set parent [lindex $sorted_items $j] ;# родителем взяли случайного из всего списка
   
@@ -6172,7 +6173,7 @@ proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
     if {[llength $mutated] ==  $m} {break}
 
 
-    set j [myrand_new 0 [- $l_items 1]] 
+    set j [comm_random_int_minmax 0 [- $l_items 1]] 
 
     set parent [lindex $sorted_items $j] ;# родителем взяли случайного из всего списка
   
@@ -6203,7 +6204,7 @@ proc get_rand_offspring {leaders l} {
 
 
   #set x       [myrand 0 [expr {$l - 1}]]
-  set x       [myrand_new 0 [expr {$l - 1}]]
+  set x       [comm_random_int_minmax 0 [expr {$l - 1}]]
 
   set item    [lindex $leaders $x]
 
