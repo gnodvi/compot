@@ -141,7 +141,7 @@ proc Y-random {} {
 
   ##set r [myrand 0 $::MAXRANDOM]
 
-  set r  [math_randon_int_minmax  0 $::MAXRANDOM]
+  set r  [math_random_int_minmax  0 $::MAXRANDOM]
 
   return $r
 }
@@ -265,7 +265,7 @@ proc YRAND {imin imax} {
 #
 # генерируем случайное целое из min-max (оба включены) интервала.
 #-------------------------------------------------------------------------------
-proc math_randon_int_minmax {min max} {
+proc math_random_int_minmax {min max} {
 
   expr {$min + int(rand() * (($max-$min)+1))}
 
@@ -275,7 +275,7 @@ proc myrand {min max} {
 
  # expr {$min + int(rand() * (($max-$min)+1))}
 
-  return [math_randon_int_minmax $min $max]
+  return [math_random_int_minmax $min $max]
 }
 #-------------------------------------------------------------------------------
 # генерируем случайное целое из min-max (оба включены) интервала.
@@ -304,10 +304,11 @@ alias comm_random_int_minmax myrand_new
 # ------------------------------------------------------------------------------
 proc comm_random_seed {i} {
 
-  gaul_random_seed $i ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
+  gaul_random_seed $i  ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
 
-  math_random_seed $i     ;# для lrand (начальная инициация)
+  math_random_seed $i  ;# для lrand (начальная инициация)
 
+  ##knut_random_seed $i
 }
 #-------------------------------------------------------------------------------
 

@@ -7,7 +7,11 @@
 #include <string.h>
 #include <math.h> 
 
+#ifdef _JIM
+#include <jim.h>
+#else
 #include <tcl.h>
+#endif
 
 //#include <tcl.h>
 #include <fcntl.h>
@@ -22,13 +26,36 @@
 
 
 //#define NO_CONST 1   ?????????
-  
-
  
+#ifdef _JIM
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#define Gen_Interp Jim_Interp
+#define Gen_CreateCommand Jim_CreateCommand
+#define GEN_OK JIM_OK 
+#define GEN_ERROR JIM_ERR 
+#define Gen_PkgProvideEx Jim_PackageProvide
+#define Gen_SetResult Jim_SetResultString 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#else
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#define Gen_Interp        Tcl_Interp
+#define Gen_CreateCommand Tcl_CreateCommand
+#define GEN_OK            TCL_OK 
+#define GEN_ERROR         TCL_ERROR 
+#define Gen_PkgProvideEx  Tcl_PkgProvideEx
+#define Gen_SetResult     Tcl_SetResult
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif
+
+
 //------------------------------------------------------------------------------
+#ifdef _JIM
 int  
-knuth_random_seed (ClientData clientData, Tcl_Interp *interp,
-                 int argc, char **argv) 
+knuth_random_seed (/* ClientData clientData, */ Gen_Interp *interp, int argc, char **argv) 
+#else
+int  
+knuth_random_seed (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
+#endif
 {
 
   //if (argc != 2 && argc != 3) {
@@ -41,12 +68,16 @@ knuth_random_seed (ClientData clientData, Tcl_Interp *interp,
 
   usrand (seed);
 
-  return TCL_OK;
+  return GEN_OK;
 }
 //------------------------------------------------------------------------------
+#ifdef _JIM
 int  
-knuth_random_rand (ClientData clientData, Tcl_Interp *interp,
-                 int argc, char **argv) 
+knuth_random_rand (/* ClientData clientData, */ Gen_Interp *interp, int argc, char **argv) 
+#else
+int  
+knuth_random_rand (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
+#endif
 {
   char buf[80];
 
@@ -54,14 +85,18 @@ knuth_random_rand (ClientData clientData, Tcl_Interp *interp,
 
   sprintf (buf, "%10u", r);
 
-  Tcl_SetResult (interp, buf, NULL);
+  Gen_SetResult (interp, buf, NULL);
   
-  return TCL_OK;
+  return GEN_OK;
 }
 //------------------------------------------------------------------------------
+#ifdef _JIM
 int  
-knuth_random_randint (ClientData clientData, Tcl_Interp *interp,
-                      int argc, char **argv) 
+knuth_random_randint (/* ClientData clientData, */ Gen_Interp *interp, int argc, char **argv) 
+#else
+int  
+knuth_random_randint (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
+#endif
 {
   //int upto = 10;
 
@@ -73,13 +108,18 @@ knuth_random_randint (ClientData clientData, Tcl_Interp *interp,
 
   sprintf (buf, "%10u", r);
 
-  Tcl_SetResult (interp, buf, NULL);
+  Gen_SetResult (interp, buf, NULL);
   
-  return TCL_OK;
+  return GEN_OK;
 }
 //------------------------------------------------------------------------------
+#ifndef _JIM
 int 
-Random_Init (Tcl_Interp *interp) 
+Random_Init (Gen_Interp *interp) 
+#else
+int 
+Jim_knutjimInit (Gen_Interp *interp) 
+#endif
 {
 
   // инициализация интерфейса (обходился и без нее ?)
@@ -87,36 +127,39 @@ Random_Init (Tcl_Interp *interp)
   //
   char *version = "8.5";  // минимальная версия
 
+#ifndef _JIM
   if (Tcl_InitStubs (interp, version, 0) == NULL) {
-    return TCL_ERROR;
+    return GEN_ERROR;
   }
+#endif
 
   // регистрация команды
 
 
-  Tcl_CreateCommand (interp, "knuth_random_seed", knuth_random_seed,
-                     (ClientData) NULL, 
-                     (Tcl_CmdDeleteProc *) NULL);
+  Gen_CreateCommand (interp, "knut_random_seed", knuth_random_seed,
+                     /* (ClientData) */ NULL, 
+                     /* (Tcl_CmdDeleteProc *) */ NULL);
 
 
-  Tcl_CreateCommand (interp, "knuth_random_rand", knuth_random_rand,
-                     (ClientData) NULL, 
-                     (Tcl_CmdDeleteProc *) NULL);
+  Gen_CreateCommand (interp, "knuth_random_rand", knuth_random_rand,
+                     /* (ClientData) */ NULL, 
+                     /* (Tcl_CmdDeleteProc *) */ NULL);
 
 
-  Tcl_CreateCommand (interp, "knuth_random_randint", knuth_random_randint,
-                     (ClientData) NULL, 
-                     (Tcl_CmdDeleteProc *) NULL);
+  Gen_CreateCommand (interp, "knuth_random_randint", knuth_random_randint,
+                     /* (ClientData) */ NULL, 
+                     /* (Tcl_CmdDeleteProc *) */ NULL);
 
 
   usrand (0); // time
 
   // можно подготовить реализацию пакета, тогда можно будет
-  // вызывать как package requare capture
+  // вызывать как package requare 
 
-  Tcl_PkgProvide (interp, "random", "1.1");
+  Gen_PkgProvideEx (interp, "random", "1.1", NULL);
+  //Tcl_PkgProvideEx (interp, "random", "1.1", NULL);
 
-  return TCL_OK;  
+  return GEN_OK;  
 }
 //------------------------------------------------------------------------------
 // load a_capt.so Capture

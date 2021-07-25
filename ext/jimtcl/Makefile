@@ -13,6 +13,7 @@ all: qnx
 	@echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	@echo ""
 	(cd $(OUT); make)
+	(cd examples; make)
 
 qnx: 
 
@@ -65,12 +66,15 @@ qnx:
 
 #-------------------------------------------------------------------------------
 
+
 test:
 	(cd $(OUT); make test)
+	(cd examples; make test)
 
 #-------------------------------------------------------------------------------
 
 clean: qnx_clean
+	(cd examples; make clean)
 #	(cd $(OUT); make clean)
 
 qnx_clean:

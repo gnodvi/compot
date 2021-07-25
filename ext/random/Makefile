@@ -67,7 +67,7 @@ CURDIR="$(shell pwd)"
 
 #------------------------------------------------------------------
 
-PROGS = k_test T/g-rand.o g_test T/k-lib.so
+PROGS = k_test T/g-rand.o g_test T/k-lib.so T/knutjim.so
 
 all: $(PROGS)
 
@@ -104,6 +104,17 @@ T/k-lib.so: T/k-lib.o T/k-rand.o
 
 T/k-lib.o: k-lib.cc
 	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
+
+#------------------------------------------------------------------
+
+ifdef NOTEST
+BUILDOPTS := --notest
+endif
+
+JIM_DIR = ./JIM
+
+T/knutjim.so:  k-rand.c k-lib.c
+	build-jim-ext -I$(JIM_DIR) -I$(JIM_DIR) $(BUILDOPTS) -D_JIM -o $@ $^
 
 #------------------------------------------------------------------
 

@@ -10,7 +10,12 @@
 #------------------------------------------
 
 set this_dir [pwd]
-set name_lib [file join "$this_dir/T" "k-lib.so"]
+
+if {$::__JIM__} {
+  set name_lib [file join "$this_dir/T" "knutjim.so"]
+} else {
+  set name_lib [file join "$this_dir/T" "k-lib.so"]
+}
 
 load $name_lib Random ;# -> Random_Init
 
@@ -21,7 +26,7 @@ proc TEST_random_rand {seed} {
 
   puts ""
 
-  knuth_random_seed $seed ;# 2021
+  knut_random_seed $seed ;# 2021
 
   for {set i 0} {$i < 10} {incr i} {
 
@@ -36,7 +41,7 @@ proc TEST_random_rand {seed} {
 proc TEST_random_randint {seed} {
 
 
-  knuth_random_seed $seed ;# 2021
+  knut_random_seed $seed ;# 2021
 
   for {set i 0} {$i < 10} {incr i} {
 
