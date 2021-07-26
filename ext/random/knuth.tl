@@ -12,9 +12,9 @@
 set this_dir [pwd]
 
 if {$::__JIM__} {
-  set name_lib [file join "$this_dir/T" "knutjim.so"]
+  set name_lib [file join "$this_dir/T" "k_jim.so"]
 } else {
-  set name_lib [file join "$this_dir/T" "k-lib.so"]
+  set name_lib [file join "$this_dir/T" "k_tcl.so"]
 }
 
 load $name_lib Random ;# -> Random_Init

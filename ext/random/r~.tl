@@ -38,7 +38,7 @@ proc RAND {} {
   #  my_source "g-rand.tl"
   #  my_source "random.tl"
 
-  ##source "knuth.tl"
+  source "knuth.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию

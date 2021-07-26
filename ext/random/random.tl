@@ -308,7 +308,7 @@ proc comm_random_seed {i} {
 
   math_random_seed $i  ;# для lrand (начальная инициация)
 
-  ##knut_random_seed $i
+  knut_random_seed $i
 }
 #-------------------------------------------------------------------------------
 

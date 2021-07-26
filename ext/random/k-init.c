@@ -24,6 +24,9 @@
 //  #include "capture.h"
 //  #include "misc.h"
 
+//------------------------------------------------------------------------------
+
+#include "k-main.h"
 
 //#define NO_CONST 1   ?????????
  
@@ -50,8 +53,9 @@
 
 //------------------------------------------------------------------------------
 #ifdef _JIM
-int  
-knuth_random_seed (/* ClientData clientData, */ Gen_Interp *interp, int argc, char **argv) 
+static int  
+knuth_random_seed (/* ClientData clientData, */ Gen_Interp *interp,
+		   int argc, Jim_Obj *const *argv) 
 #else
 int  
 knuth_random_seed (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
@@ -64,7 +68,17 @@ knuth_random_seed (ClientData clientData, Gen_Interp *interp, int argc, char **a
   //  return TCL_ERROR;
   //}
   
-  int seed = atoi (argv[1]);
+  const char *str;
+  int len;
+
+#ifdef _JIM
+  str = Jim_GetString(argv[1], &len);
+#else
+  str = argv[1];
+#endif
+
+  //int seed = atoi (argv[1]);
+  int seed = atoi (str);
 
   usrand (seed);
 
@@ -72,8 +86,9 @@ knuth_random_seed (ClientData clientData, Gen_Interp *interp, int argc, char **a
 }
 //------------------------------------------------------------------------------
 #ifdef _JIM
-int  
-knuth_random_rand (/* ClientData clientData, */ Gen_Interp *interp, int argc, char **argv) 
+static int  
+knuth_random_rand (/* ClientData clientData, */ Gen_Interp *interp,
+		   int argc, Jim_Obj *const *argv) 
 #else
 int  
 knuth_random_rand (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
@@ -83,33 +98,57 @@ knuth_random_rand (ClientData clientData, Gen_Interp *interp, int argc, char **a
 
   int r = urand ();
 
-  sprintf (buf, "%10u", r);
+  sprintf (buf,    "%10u", r);
+  //fprintf (stderr, "%10u \n", r);
 
-  Gen_SetResult (interp, buf, NULL);
+  
+#ifdef _JIM
+  int len = /* 10 */ strlen (buf);
+  Jim_SetResultString (interp, buf, /* NULL */ len);
+#else
+  Tcl_SetResult (interp, buf, /* NULL */ 0); //??
+#endif
   
   return GEN_OK;
 }
 //------------------------------------------------------------------------------
 #ifdef _JIM
 int  
-knuth_random_randint (/* ClientData clientData, */ Gen_Interp *interp, int argc, char **argv) 
+knuth_random_randint (/* ClientData clientData, */ Gen_Interp *interp,
+		      int argc, Jim_Obj *const *argv) 
 #else
 int  
 knuth_random_randint (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
 #endif
 {
-  //int upto = 10;
+  const char *str;
+  int len;
 
-  int upto = atoi (argv[1]);
+#ifdef _JIM
+  str = Jim_GetString(argv[1], &len);
+#else
+  str = argv[1];
+#endif
+
+  //int upto = 10;
+  int upto = atoi (/* argv[1] */ str);
 
   char buf[80];
 
   int r = randint (upto);
 
   sprintf (buf, "%10u", r);
+  //sprintf (buf, "%d\n", r);
 
-  Gen_SetResult (interp, buf, NULL);
+  //Gen_SetResult (interp, buf, /* NULL */ 10);
   
+#ifdef _JIM
+  /* int */ len = 10;
+  Jim_SetResultString (interp, buf, /* NULL */ len);
+#else
+  Tcl_SetResult (interp, buf, /* NULL */ 0); //??
+#endif
+
   return GEN_OK;
 }
 //------------------------------------------------------------------------------
@@ -118,7 +157,7 @@ int
 Random_Init (Gen_Interp *interp) 
 #else
 int 
-Jim_knutjimInit (Gen_Interp *interp) 
+Jim_k_jimInit (Gen_Interp *interp) 
 #endif
 {
 
@@ -156,7 +195,7 @@ Jim_knutjimInit (Gen_Interp *interp)
   // можно подготовить реализацию пакета, тогда можно будет
   // вызывать как package requare 
 
-  Gen_PkgProvideEx (interp, "random", "1.1", NULL);
+  Gen_PkgProvideEx (interp, "random", "1.1", /* NULL */ 0);
   //Tcl_PkgProvideEx (interp, "random", "1.1", NULL);
 
   return GEN_OK;  

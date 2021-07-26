@@ -67,7 +67,7 @@ CURDIR="$(shell pwd)"
 
 #------------------------------------------------------------------
 
-PROGS = k_test T/g-rand.o g_test T/k-lib.so T/knutjim.so
+PROGS = k_test T/g-rand.o g_test T/k_tcl.so T/k_jim.so
 
 all: $(PROGS)
 
@@ -91,18 +91,18 @@ g_test: g_test.c  $(H-FILES)  T/g-rand.o
 
 #------------------------------------------------------------------
 
-k_test: k_test.c k-rand.h T/k-rand.o
-	gcc ${FLAGS} -o $@ $< T/k-rand.o
+k_test: k_test.c k-main.h T/k-main.o
+	gcc ${FLAGS} -o $@ $< T/k-main.o
 
-T/k-rand.o: k-rand.c k-rand.h
+T/k-main.o: k-main.c k-main.h
 	gcc ${FLAGS} -c $<  -o $@
 
 #-------------------------------------------------------------------------------
 
-T/k-lib.so: T/k-lib.o T/k-rand.o
+T/k_tcl.so: T/k-init.o T/k-main.o
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
 
-T/k-lib.o: k-lib.cc
+T/k-init.o: k-init.c
 	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
 
 #------------------------------------------------------------------
@@ -113,7 +113,7 @@ endif
 
 JIM_DIR = ./JIM
 
-T/knutjim.so:  k-rand.c k-lib.c
+T/k_jim.so:  k-main.c k-init.c
 	build-jim-ext -I$(JIM_DIR) -I$(JIM_DIR) $(BUILDOPTS) -D_JIM -o $@ $^
 
 #------------------------------------------------------------------
