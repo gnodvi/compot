@@ -9,17 +9,34 @@
 #
 #------------------------------------------
 
-set this_dir [pwd]
+# set this_dir [pwd]
 
-if {$::__JIM__} {
-  set name_lib [file join "$this_dir/T" "k_jim.so"]
-} else {
-  set name_lib [file join "$this_dir/T" "k_tcl.so"]
-}
+# if {$::__JIM__} {
+#   set name_lib [file join "$this_dir/T" "k_jim.so"]
+# } else {
+#   set name_lib [file join "$this_dir/T" "k_tcl.so"]
+# }
 
-load $name_lib Random ;# -> Random_Init
+# load $name_lib Random ;# -> Random_Init
 
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc knut_random_int_minmax {min max} {
+
+  set interval [expr {$max - $min + 1}]
+
+  set r [knut_random_int $interval]
+
+  return [+ $r $min]
+}
+#-------------------------------------------------------------------------------
+proc knut_random_int_minmax_1 {min max} {
+
+
+  return [knut_random_int_minmax  $min [- $max 1]]
+}
+#-------------------------------------------------------------------------------
+# 
 #-------------------------------------------------------------------------------
 proc TEST_random_rand {seed} {
 
@@ -30,7 +47,7 @@ proc TEST_random_rand {seed} {
 
   for {set i 0} {$i < 10} {incr i} {
 
-    set r [knuth_random_rand]
+    set r [knut_random_rand]
     puts "r = $r"
   }
 
@@ -45,7 +62,8 @@ proc TEST_random_randint {seed} {
 
   for {set i 0} {$i < 10} {incr i} {
 
-    set r [knuth_random_randint 20]
+    #//gives a random integer uniformly in [0..upto-1]
+    set r [knut_random_int 20]
     puts "i = $i, r = $r"
   }
 
@@ -69,6 +87,22 @@ proc TEST_all {} {
   puts ""
 
   TEST_random_randint $seed
+
+  puts ""
+
+  for {set i 0} {$i < 20} {incr i} {
+
+    set r [knut_random_int_minmax  1 5]    
+    puts "i = $i, r = $r"
+  }
+
+  puts ""
+
+  for {set i 0} {$i < 20} {incr i} {
+
+    set r [knut_random_int_minmax_1  1 5]    
+    puts "i = $i, r = $r"
+  }
 
 }
 #-------------------------------------------------------------------------------

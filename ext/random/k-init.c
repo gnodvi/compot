@@ -180,12 +180,12 @@ Jim_k_jimInit (Gen_Interp *interp)
                      /* (Tcl_CmdDeleteProc *) */ NULL);
 
 
-  Gen_CreateCommand (interp, "knuth_random_rand", knuth_random_rand,
+  Gen_CreateCommand (interp, "knut_random_rand", knuth_random_rand,
                      /* (ClientData) */ NULL, 
                      /* (Tcl_CmdDeleteProc *) */ NULL);
 
 
-  Gen_CreateCommand (interp, "knuth_random_randint", knuth_random_randint,
+  Gen_CreateCommand (interp, "knut_random_int", knuth_random_randint,
                      /* (ClientData) */ NULL, 
                      /* (Tcl_CmdDeleteProc *) */ NULL);
 

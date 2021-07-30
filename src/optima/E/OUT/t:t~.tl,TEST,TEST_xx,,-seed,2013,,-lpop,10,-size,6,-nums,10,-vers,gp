@@ -5,19 +5,19 @@ run_gp_evolution_for_task : seed = 2013 !!!!!!!!!!!
 make_prgpop: INIT POPULATION: 
 
 
-prgpop = {+ dup} {* *} {+ nop} {nop *} {nop +} {nop nop nop nop * dup} {* + nop *} {* nop + *} {nop dup * * * *} {* * nop nop}
+prgpop = {+ + nop + +} {nop dup} {dup * * dup nop} {nop nop + nop} {nop dup nop} {+ dup} {dup + dup dup dup +} {+ dup * dup nop} nop {* dup}
 
-000)     best =   25.000 :   + dup 
-001)     best =   25.000 :   + dup 
-002)     best =    3.752 :   dup * 
-003)     best =    3.752 :   dup * 
-004)     best =    3.752 :   dup * 
-005)     best =    3.752 :   dup * 
-006)     best =    3.752 :   dup * 
-007)     best =    3.752 :   dup * 
-008)     best =    3.752 :   dup * 
-009)     best =    3.752 :   dup * 
-010)     best =    3.752 :   dup * 
+000)     best =    5.543 :   dup + dup dup dup + 
+001)     best =    2.650 :   dup + dup 
+002)     best =    2.650 :   dup + dup 
+003)     best =    2.650 :   dup + dup 
+004)     best =    2.650 :   dup + dup 
+005)     best =    2.650 :   dup + dup 
+006)     best =    2.650 :   dup + dup 
+007)     best =    2.650 :   dup + dup 
+008)     best =    2.650 :   dup + dup 
+009)     best =    2.650 :   dup + dup 
+010)     best =    2.650 :   dup + dup 
 
 ====================================================================
 

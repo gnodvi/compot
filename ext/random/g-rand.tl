@@ -194,33 +194,6 @@ proc  gaul_random_init {} {
 gaul_random_init ;# сразу подготовим к выполнению, на всяк случай.
 
 
-# /*----------------------------------------------------------------------------*/
-# //  Return TRUE 50% of the time.
-# /*----------------------------------------------------------------------------*/
-# GAULFUNC boolean random_boolean (void)
-# /*----------------------------------------------------------------------------*/
-proc random_boolean {} {
-
-  set ret [expr {[gaul_random_rand] <= $::RANDOM_RAND_MAX / 2}]
-
-  return $ret
-
-  #return (boolean)(random_rand() <= RANDOM_RAND_MAX/2);
-}
-# /*----------------------------------------------------------------------------*/
-# //  Return TRUE (prob * 100)% of the time
-# /*----------------------------------------------------------------------------*/
-# GAULFUNC boolean random_boolean_prob (const double prob)
-
-# /*----------------------------------------------------------------------------*/
-proc random_boolean_prob {prob} {
-
-  set ret [expr {[gaul_random_rand] <= $prob * $::RANDOM_RAND_MAX}]
-
-  return $ret
-
-#   return (boolean)(random_rand() <= (unsigned int)(prob * (double)RANDOM_RAND_MAX));
-# }
 #-------------------------------------------------------------------------------
 
 # некоторые мои функуции
@@ -228,7 +201,6 @@ proc random_boolean_prob {prob} {
 # /*----------------------------------------------------------------------------*/
 # //  Return a random integer between 0 and (N-1) inclusive.
 #
-# GAULFUNC unsigned int random_int (const unsigned int max)
 # /*----------------------------------------------------------------------------*/
 proc gaul_random_int {max} {
 
@@ -253,14 +225,8 @@ proc gaul_random_int {max} {
 # /*----------------------------------------------------------------------------*/
 # //  Return a random integer between min and max-1 inclusive.
 # /*----------------------------------------------------------------------------*/
-# GAULFUNC int random_int_range (const int min, const int max)
-
-# /*----------------------------------------------------------------------------*/
 proc gaul_random_int_range {min max} \
 {
-  #   /*
-  #     return (random_rand()*(max-min)/RANDOM_RAND_MAX + min);
-  #     */
   
   set max_min [expr {$max - $min}]
 
@@ -273,7 +239,6 @@ proc gaul_random_int_range {min max} \
     return [expr {$min + ([gaul_random_rand] % $max_min)}]
   }
   
-  #   return (max-min==0) ? max : min + (random_rand()%(max-min));
 }
 # /*----------------------------------------------------------------------------*/
 # //  Return a random double within the allowed range.

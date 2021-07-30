@@ -1,24 +1,24 @@
 
 lrand     = 2
-lrand     = 1
 lrand     = 3
+lrand     = 1
 lrand     = 4
 lrand     = 1
-lrand     = 3
-lrand     = 4
+lrand     = 1
 lrand     = 2
 lrand     = 3
-lrand     = 3
+lrand     = 4
+lrand     = 4
 
 
 lrand_new = 2
 lrand_new = 2
+lrand_new = 1
+lrand_new = 3
+lrand_new = 4
+lrand_new = 3
+lrand_new = 3
+lrand_new = 3
 lrand_new = 2
-lrand_new = 2
-lrand_new = 2
-lrand_new = 2
-lrand_new = 2
-lrand_new = 2
-lrand_new = 2
-lrand_new = 2
+lrand_new = 1
 

@@ -31,6 +31,7 @@ if [info exists ::A_COMR_TL] {
 # (defvar *random_state_save* (make-random-state t)) 
 
 set ::MAXRANDOM 1000000000
+#set ::MAXRANDOM 0xFFFFFFFFL
 
 # ;-------------------------------------------------------------------------------
 # ; чисто лисповскиe приколы
@@ -118,25 +119,26 @@ proc math_random_seed {seed} {
   expr {srand($seed)}
 
 }
-# ;-------------------------------------------------------------------------------
-# srandom_set -> math_random_seed_null 
+#-------------------------------------------------------------------------------
 proc math_random_seed_null {seed} {
 
   if {$seed == 0} {
     set seed [Y-time 0] ;# // переменная псевдослучайность
   } 
 
-  #   if {$seed == 0} {
-  
-  #     set ret [math_random_seed [Y-time 0]] ;# // переменная псевдослучайность
-  #   } else {
-  #     set ret [math_random_seed $seed]      ;# // фиксированная 
-  #   }
-
   return [math_random_seed $seed]
-  #return $ret
 }
-# ;-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc comm_random_seed_null {seed} {
+
+  if {$seed == 0} {
+    
+    set seed [Y-time 0] ;# // переменная псевдослучайность
+  } 
+
+  return [comm_random_seed $seed]
+}
+#-------------------------------------------------------------------------------
 proc Y-random {} {
 
   ##set r [myrand 0 $::MAXRANDOM]
@@ -172,7 +174,9 @@ proc  YRandF {fmin fmax} {
 # ;-------------------------------------------------------------------------------
 proc YRAND_C {} {
 
-  math_random_seed_null 2010
+  #math_random_seed_null 2010
+  comm_random_seed_null 2010
+  
 }
 # ;-------------------------------------------------------------------------------
 proc Rand123 {p1 p2 p3} {
@@ -280,29 +284,41 @@ proc myrand {min max} {
 #-------------------------------------------------------------------------------
 # генерируем случайное целое из min-max (оба включены) интервала.
 #-------------------------------------------------------------------------------
-proc myrand_new {min max} {
+proc comm_random_int_minmax {min max} {
 
-  incr max
+  incr max ;# правую границу сдвинули вправо
 
-  return [comm_random_int_range  $min $max]
+  return [comm_random_int_minmax_1  $min $max]
 }
 #-------------------------------------------------------------------------------
 
-alias comm_random_int_minmax myrand_new
+# /*----------------------------------------------------------------------------*/
+# //  Return TRUE (prob * 100)% of the time
+# /*----------------------------------------------------------------------------*/
+proc gaul_random_boolean_prob {prob} {
 
-#-------------------------------------------------------------------------------
-# proc YRAND_new {imin imax} {
+  set number 1000000000
+  
+  set rnd [gaul_random_int $number]
+  #set rnd [knut_random_int $number]
+  
+  set ret [expr {$rnd < $prob * $number}]
 
+  return $ret
+}
+# /*----------------------------------------------------------------------------*/
+# //  Return TRUE 50% of the time.
+# /*----------------------------------------------------------------------------*/
+proc gaul_random_boolean {} {
 
-#   #return [myrand_new  $imin $imax]
-#   return [comm_random_int_minmax  $imin $imax]
-# }
-#-------------------------------------------------------------------------------
-# TODO: 
-#       test_random_seed -> comm_random_seed !! везде !!
+  set ret [gaul_random_boolean_prob 0.5]
 
+  return $ret
+}
 # ------------------------------------------------------------------------------
 proc comm_random_seed {i} {
+
+  incr i ;# на всяк случай, чтобы не было нуля
 
   gaul_random_seed $i  ;# для random_rand (crossover) - a-comr.tl (c_random_util.c)
 
@@ -311,18 +327,38 @@ proc comm_random_seed {i} {
   knut_random_seed $i
 }
 #-------------------------------------------------------------------------------
+#===============================================================================
+#
+
+# Return a random integer between 0 and (N-1) inclusive.
+#
+#alias  comm_random_int             gaul_random_int
+# 
+alias  comm_random_int              knut_random_int
+#
+# при этой, вроде логичной замене, выдает непостоянные значения! seed ?
+#                                         или ошибку !!
+# g_ping.jm _sa 2 5 20
+# g_ping.jm _09 1 5  1  @
+#
+# но лучше проверять на попроще и покороче тесте:
+# g_ping.jm  _sa 1 5 2
 
 alias  comm_random_int_permutation  gaul_random_int_permutation
 
 # Return a random integer between min and max-1 inclusive.
-alias  comm_random_int_range        gaul_random_int_range
+#
+#alias  comm_random_int_minmax_1     gaul_random_int_range
+#
+alias  comm_random_int_minmax_1     knut_random_int_minmax_1
+#
+#
+# t~.tl ANTS ANTS_gp 2012  10 15 2  - error !
+#
 
-# Return a random integer between 0 and (N-1) inclusive.
-alias  comm_random_int              gaul_random_int
-
-# ;===============================================================================
-# ;
-# ;-------------------------------------------------------------------------------
+#===============================================================================
+#
+#-------------------------------------------------------------------------------
 proc rand_0 {} {
 
   #puts stderr "......... 05-stderr"
@@ -492,7 +528,7 @@ proc TEST_lrand {} {
 
   return
 }
-##-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 proc TEST_random_int {} {
     
   #-----------------------------------------------------
@@ -513,5 +549,7 @@ proc TEST_random_int {} {
 }
 # /*----------------------------------------------------------------------------*/
 # ./f~.tl TEST_lrand
+
+
 # /*----------------------------------------------------------------------------*/
 # /*----------------------------------------------------------------------------*/

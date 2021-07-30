@@ -8,11 +8,11 @@ ga_population_seed  .........
 
 ga_population_set_parameters ... 
 
-000)     best =   43.574 :   1 5 4 3 1 6 3 6 9 9 1 5 6 5 3 
-001)     best =   43.574 :   2 1 7 8 2 9 2 4 4 4 9 7 4 3 5 
-002)     best =   44.766 :   2 1 7 3 2 10 2 4 4 4 9 7 4 3 5 
-Best solution , score = 44.77 : 2 1 7 3 2 10 2 4 4 4 9 7 4 3 5 
+000)     best =   41.468 :   6 1 2 1 1 9 5 8 5 4 9 6 3 7 9 
+001)     best =   42.553 :   3 2 7 6 8 1 4 3 6 8 3 5 2 6 6 
+002)     best =   43.596 :   10 2 2 7 7 4 4 6 6 8 4 2 1 2 4 
+Best solution , score = 43.60 : 10 2 2 7 7 4 4 6 6 8 4 2 1 2 4 
 generation = 2
-Total number of fitness evaluations: 129
+Total number of fitness evaluations: 127
 
 

@@ -50,13 +50,40 @@ proc RAND {} {
 
 }
 #-------------------------------------------------------------------------------
+proc TEST_all {} {
+
+  puts ""
+  puts "TEST_all"
+  puts ""
+
+  comm_random_seed_null 0
+
+  for {set i 0} {$i < 15} {incr i} {
+
+    set ret [gaul_random_boolean_prob 0.9]
+    puts "ret = $ret"
+  }
+
+  puts ""
+
+  for {set i 0} {$i < 15} {incr i} {
+
+    set ret [gaul_random_boolean_prob 0.1]
+    puts "ret = $ret"
+  }
+
+  puts ""
+}
+#-------------------------------------------------------------------------------
 
 set CUR_DIR "r"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 
 #-------------------------------------------------------------------------------
-# 
+#
+# r~.tl TEST_all
+
 # a~.tl DICT_tests
 # a~.tl TEST_5
 # a~.tl TEST_color

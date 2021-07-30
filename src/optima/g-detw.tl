@@ -77,7 +77,7 @@ proc main_swap_childs {pop i father mother son daughter permutation} \
 proc mutation_step {pop task child} \
 {
 
-  if {[random_boolean_prob [GET $pop mutation_ratio]]} \
+  if {[gaul_random_boolean_prob [GET $pop mutation_ratio]]} \
   {
     
     set this_entity [ga_get_free_entity $pop]

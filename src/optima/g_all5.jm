@@ -115,7 +115,7 @@ proc all5s_mutate {pop task  father son}  {
   #   int   point;                         /* Index of allele to mutate          */
   #   int   dir = random_boolean()?-1:1;   /* The direction of drift.            */
   
-  if {[random_boolean]} {
+  if {[gaul_random_boolean]} {
     set dir -1
   } else {
     set dir  1
@@ -199,7 +199,7 @@ proc _1_main {} \
   
   parse_opts_3  len_chromo population_size max_generations 100 200 250
   
-  gaul_random_seed  20092004
+  comm_random_seed  20092004
   
   #   pop = ga_genesis_integer (
   #      population_size,	/* const int              population_size      */
@@ -325,7 +325,7 @@ proc _2_main {} \
   
   parse_opts_3  len_chromo population_size max_generations 100 200 250
 
-  gaul_random_seed  20092004
+  comm_random_seed  20092004
 
   set task [task_create  -fit_func "all5s_score" -fit_tobest "MAX" -fit_target 1]
 

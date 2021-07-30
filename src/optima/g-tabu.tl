@@ -342,7 +342,8 @@ proc ga_tabu {task pop initial max_iterations} {
     #     //
     for {set i 0} {$i < $search_count} {incr i} {
 
-      [GET $pop mutate]   $pop $best $putative($i)
+      #[GET $pop mutate]   $pop $best $putative($i)
+      [GET $pop mutate]   $pop $task $best $putative($i)
 
       #set eval_proc [GET $pop evaluate]
       #$eval_proc  $pop  $putative($i)

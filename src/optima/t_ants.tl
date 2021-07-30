@@ -841,7 +841,7 @@ proc arr_create {w h} {
 # ------------------------------------------------------------------------------
 proc  arr_make_random {} {
 
-  math_random_seed 2011
+  comm_random_seed 2011
   set r_val 0.2
 
   set w 32

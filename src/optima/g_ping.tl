@@ -312,7 +312,7 @@ proc pingpong_crossover {pop task  mother father dau son} {
 
   for {set i 0} {$i < $len_chromo} {incr i} \
     {
-      if {[random_boolean]} \
+      if {[gaul_random_boolean]} \
         {
           #       ((int *)     son->CH)[i] = ((int *)father->CH)[i];
           #       ((int *)daughter->CH)[i] = ((int *)mother->CH)[i];
@@ -456,7 +456,7 @@ proc pingpong_mutate_shift {pop mother son}  {
 # //------------------------------------------------------------------------------
 proc  pingpong_mutate {pop mother son r_prob} {
 
-  if {[random_boolean_prob $r_prob]} {
+  if {[gaul_random_boolean_prob  $r_prob]} {
     pingpong_mutate_swap  $pop $mother $son
 
   } else {
@@ -524,15 +524,16 @@ proc main_ga {len_chromo} {
 
   for {set i 0} {$i < $num_runs} {incr i} {
  
-    set seed [expr {424242 * $i}]
-    gaul_random_seed $seed
+    set seed [expr {424242 * $i + 10}]
+    
+    comm_random_seed $seed
   
     # set pop [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_2 \
     #          ga_select_one_randomrank \
     #          ga_select_two_randomrank \
     #          pingpong_crossover]
   
-    foreach {task pop}  [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_2 \
+    foreach {task pop}  [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_5 \
 			   ga_select_one_randomrank \
 			   ga_select_two_randomrank \
 			   pingpong_crossover] {}
@@ -598,7 +599,8 @@ proc main_ga {len_chromo} {
 # void 
 # pingpong_mutate_0_5 (population *pop, entity *mother, entity *son)
 # //------------------------------------------------------------------------------
-proc pingpong_mutate_0_5 {pop mother son} {
+#proc pingpong_mutate_0_5 {pop mother son} {}
+proc pingpong_mutate_0_5 {pop task mother son} {
 
   #   /* Checks. */
   #   if (!mother || !son) die ("Null pointer to entity structure passed");
@@ -626,8 +628,8 @@ proc main_t1 {len_chromo} {
     #     // Note that most of the population data is not required for a tabu-search. 
     #     // 
     
-    set seed [expr {230975 * $i}]
-    gaul_random_seed $seed
+    set seed [expr {230975 * $i + 10}]
+    comm_random_seed $seed
   
     foreach {task pop}   [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_5 \
 			    NULL NULL NULL] {}
@@ -707,8 +709,12 @@ proc main_sa {} {
   
   for {set i 0} {$i < $num_runs} {incr i} {
    
-    set seed [expr {230975 * $i}]
-    gaul_random_seed $seed
+    set seed [expr {230 * $i + 10}] ;# !!! получается иногда ноль !!!
+
+    #puts "main_sa: seed = $seed"
+    #set seed 2021
+    
+    comm_random_seed $seed
   
     #     /* Note that most of the population data is not required for
     #       * simulated annealling.

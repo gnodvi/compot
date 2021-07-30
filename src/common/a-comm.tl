@@ -4819,7 +4819,8 @@ proc read_seedflag {&ind} {
   } else {
     #set s_rand $flag
     #math_random_seed $s_rand
-    math_random_seed $flag
+    
+    comm_random_seed $flag
   }
 
   incr ind ;# а так мы увеличиваем его!

@@ -1681,7 +1681,7 @@ proc ga_select_one_randomrank {pop &mother} {
     return $::true
   }
   
-  if {[random_boolean_prob [GET $pop mutation_ratio]]} \
+  if {[gaul_random_boolean_prob [GET $pop mutation_ratio]]} \
   {
     set mother [pop_get_entity_ $pop [comm_random_int $select_state]]
 
@@ -1722,7 +1722,7 @@ proc ga_select_two_randomrank {pop &mother &father} {
   }
 
   
-  if {[random_boolean_prob [GET $pop crossover_ratio]]} \
+  if {[gaul_random_boolean_prob [GET $pop crossover_ratio]]} \
   {
     set mother [pop_get_entity_ $pop  [comm_random_int $select_state]]
     set father [pop_get_entity_ $pop              $select_state]
@@ -4340,7 +4340,7 @@ proc ga_crossover_char_allele_mixing {pop task  father mother son daughter} \
 
   for {set j 0} {$j < [GET $pop len_chromosomes]} {incr j} \
   {
-    if {[random_boolean]} \
+    if {[gaul_random_boolean]} \
     {
 
       item_set_chromo_gen $son      $j  [item_get_chromo_gen $father $j]
@@ -4633,7 +4633,7 @@ proc ga_seed_integer_random {pop task adam}  {
     # ((int *)adam->CH/* chromosome[chromo] */)[point] =
     #   random_int_range(pop->allele_min_integer,pop->allele_max_integer);
 
-    set r [comm_random_int_range  $amin $amax]
+    set r [comm_random_int_minmax_1  $amin $amax]
 
     #$adam set_chromo_gen $point $r 
     item_set_chromo_gen $adam $point $r 
@@ -4709,7 +4709,7 @@ proc ga_mutate_integer_singlepoint_drift {pop task  father son} {
   # ((int *)son->chromosome[chromo])[point] += dir;
   #
 
-  if {[random_boolean]} {
+  if {[gaul_random_boolean]} {
     set dir -1  ;# The direction of drift.
   } else {
     set dir  1
@@ -4782,7 +4782,7 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
 
     # The direction of drift. 
     # 
-    if {[random_boolean]} {
+    if {[gaul_random_boolean]} {
       set dir -1
     } else {
       set dir  1
@@ -5455,7 +5455,7 @@ proc migration_right_to_left {pop0 pop1} {
 
   for {set i 0} {$i < $size1} {incr i} {
     
-    if {[random_boolean_prob $migration_ratio]} {        
+    if {[gaul_random_boolean_prob $migration_ratio]} {        
       ga_entity_clone  $pop0 [pop_get_entity_ $pop1  $i];
     }
   }
@@ -6670,7 +6670,7 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
   # улучшений не было, тогда:
 
   # RAND
-  set r [comm_random_int_range  1 10]
+  set r [comm_random_int_minmax_1  1 10]
 
   if {$r <= 3} {
 
@@ -6944,7 +6944,6 @@ proc run_gp_evolution_for_task {
   }
   puts "[procname] : seed = $seed !!!!!!!!!!!"
 
-  #random_seed $seed 
   comm_random_seed $seed 
 
   #-------------------------------------
@@ -7540,7 +7539,7 @@ proc parse_opts_NEW {argv
     set seed [clock seconds]
   }
 
-  gaul_random_seed $seed
+  comm_random_seed $seed
   #------------------------------
 
   return $print

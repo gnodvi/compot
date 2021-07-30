@@ -1,14 +1,14 @@
 
 func = $x**2+$x
-000)     best =   25.000 :   + dup * * + nop 
-001)     best =    3.752 :   dup * nop nop nop dup 
-002)     best =   25.000 :   * * + dup + nop 
-003)     best =   25.000 :   * * + nop + nop 
-004)     best =   25.000 :   * * nop nop nop * 
-005)     best =   25.000 :   * * nop nop nop * 
-006)     best =   25.000 :   * * + dup + nop 
-007)     best =   25.000 :   * * + dup + nop 
-008)     best =   25.000 :   * * nop dup + * 
-009)     best =   25.000 :   * * nop nop + nop 
-010)     best =   25.000 :   * * nop dup nop nop 
+000)     best =    2.828 :   dup dup * * dup nop 
+001)     best =    2.650 :   dup nop + nop dup dup 
+002)     best =    2.650 :   dup nop nop + dup dup 
+003)     best =    2.650 :   dup nop nop + nop dup 
+004)     best =    6.115 :   nop nop dup dup nop nop 
+005)     best =   25.000 :   * nop * nop + dup 
+006)     best =   25.000 :   * nop * + + nop 
+007)     best =   25.000 :   + nop * + + dup 
+008)     best =   25.000 :   * nop * + + dup 
+009)     best =   25.000 :   + nop + nop nop nop 
+010)     best =   25.000 :   * nop dup nop nop dup 
 

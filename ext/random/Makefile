@@ -113,8 +113,11 @@ endif
 
 JIM_DIR = ./JIM
 
-T/k_jim.so:  k-main.c k-init.c
-	build-jim-ext -I$(JIM_DIR) -I$(JIM_DIR) $(BUILDOPTS) -D_JIM -o $@ $^
+SRC =  k-main.c k-init.c
+DEP =  k-main.h
+
+T/k_jim.so:  $(SRC) $(DEP)
+	build-jim-ext -I$(JIM_DIR) -I$(JIM_DIR) $(BUILDOPTS) -D_JIM -o $@ $(SRC)
 
 #------------------------------------------------------------------
 

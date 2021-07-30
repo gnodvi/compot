@@ -43,7 +43,7 @@ proc ga_sa_boltzmann_acceptance {pop original putative} {
 
   if {$ofit < $pfit} {return true}
 
-  set rand_prob [random_boolean_prob [expr {exp (($pfit - $ofit) / $d ) }]]
+  set rand_prob [gaul_random_boolean_prob [expr {exp (($pfit - $ofit) / $d ) }]]
 
   return $rand_prob
 
@@ -129,9 +129,9 @@ proc  ga_sa {task pop
   #   entity	*tmp;			/* Used to swap working solutions. */
   
   if {$::is_print} {
-    puts "> "
-    puts "> ga_sa ............................................. "
-    puts "> "
+    puts ""
+    puts "ga_sa ............................................. "
+    puts ""
   }
   
   #   // Checks. 
@@ -153,7 +153,7 @@ proc  ga_sa {task pop
   if {$initial == "NULL"} \
   {
     if {$::is_print} {
-      puts "> Will perform simulated annealling with random starting solution. "
+      puts "Will perform simulated annealling with random starting solution. "
     }
     
     set initial [get_free_and_init $pop $task] ;#  3-й
@@ -193,11 +193,11 @@ proc  ga_sa {task pop
   #             best->fitness);
   
   if {$::is_print} { 
-    puts "> "
+    puts ""
     puts [format \
-            "> Prior to the first iteration, the current solution has fitness score of %f " \
+            "Prior to the first iteration, the current solution has fitness score of %f " \
             [item_get_fitn $best]]
-    puts "> "
+    puts ""
 
     pop_print $pop
   }
@@ -227,7 +227,7 @@ proc  ga_sa {task pop
       #         + ((double)iteration/max_iterations)
       #         * (pop->sa_params->final_temp - pop->sa_params->initial_temp);
 
-      puts stderr "55555555555555555555" ;# мы сюда не попадаем ????
+      #puts stderr "55555555555555555555" ;# мы сюда не попадаем ????
     } else {
 
       #       if (    pop->sa_params->temperature > pop->sa_params->final_temp
@@ -247,13 +247,15 @@ proc  ga_sa {task pop
         [GET $SA temperature] = [expr {[GET $SA temperature] - [GET $SA temp_step]}]
       }
 
-      puts stderr "6666666666666666666"
+      #puts stderr "6666666666666666666"
     }
     
     #  
     # Generate and score a new solution.
     # 
-    [GET $pop mutate]   $pop $best $putative
+    #[GET $pop mutate]   $pop $best $putative
+    [GET $pop mutate]   $pop $task $best $putative
+    
     #[GET $pop evaluate] $pop       $putative
     
     #set task      [GET $pop  "TASK"]
@@ -292,7 +294,7 @@ proc  ga_sa {task pop
     #               best->fitness);
     
     if {$::is_print} { 
-      puts [format "> After iteration %d, the current solution has fitness score of %f" \
+      puts [format "After iteration %d, the current solution has fitness score of %f" \
               $iteration [item_get_fitn $best]]
     }
 
@@ -300,7 +302,7 @@ proc  ga_sa {task pop
   
 
   if {$::is_print} { 
-    puts "> "
+    puts ""
 
     pop_print $pop
   }

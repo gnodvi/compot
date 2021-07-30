@@ -1,17 +1,14 @@
 
 
-run_v1_src:  PRG = i dup dup i i dup - + * -
+run_v1_src:  PRG = + {* + * -} dup i dup * dup
 
-stack= |                         3 |  instr= i  
-stack= |                       3 i |  instr= dup  
-stack= |                   3 i dup |  instr= dup  
-stack= |               3 i dup dup |  instr= i  
-stack= |             3 i dup dup i |  instr= i  
-stack= |           3 i dup dup i i |  instr= dup  
-stack= |       3 i dup dup i i dup |  instr= -  
-stack= |     3 i dup dup i i dup - |  instr= +  
-stack= |   3 i dup dup i i dup - + |  instr= *  
-stack= | 3 i dup dup i i dup - + * |  instr= -  
+stack= |                         3 |  instr= +  
+stack= |                       3 + |  instr= * + * -  
+stack= |             3 + {* + * -} |  instr= dup  
+stack= |         3 + {* + * -} dup |  instr= i  
+stack= |       3 + {* + * -} dup i |  instr= dup  
+stack= |   3 + {* + * -} dup i dup |  instr= *  
+stack= | 3 + {* + * -} dup i dup * |  instr= dup  
 
-x= 3  result= -
+x= 3  result= dup
 

@@ -10,5 +10,8 @@ int randint(int upto);
 double randreal();
 
 #define MAX_URAND 0xFFFFFFFFL
+//#define MAX_URAND 1000000000 
+
+//set ::MAXRANDOM 1000000000
 
 //------------------------------------------------------------------------------

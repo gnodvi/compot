@@ -172,7 +172,7 @@ set ::target_text  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
 
 set ::gp_list      "1 2 3 4 5 6 7 8 9"
 
-gaul_random_seed 0
+comm_random_seed 10
 
 
 # ------------------------------------------------------------------------------
@@ -389,7 +389,7 @@ proc _01_test {} {
   set ::is_print 1 ;# TODO: здесь уж слишком много печати, надо гибче?
   set print $::is_print
 
-  comm_random_seed 0 ;#$i
+  comm_random_seed 10 ;#$i
   
   #---------------------------------------------------------------------
 
@@ -665,7 +665,7 @@ proc do_print_stop_criteria {ret max_generations} {
 proc _03_test {} \
 {
   
-  comm_random_seed 0 ;# 23091975
+  comm_random_seed 10 ;# 23091975
   
   set population_size 120
   set max_generations 1000
@@ -874,7 +874,7 @@ proc  calc_BOT04  {obj args} {
 proc _04_test {} \
 {
   
-  comm_random_seed 0 ;# 23091975
+  comm_random_seed 10 ;# 23091975
   
 
   set population_size ""
@@ -1058,7 +1058,7 @@ proc _05_test {} \
 
   parse_opts_3   num_pops population_size max_generations  5 80 250
 
-  comm_random_seed 0 ;# 42
+  comm_random_seed 10 ;# 42
   
 
   #----------------------------------------------------------------------
@@ -1191,7 +1191,7 @@ proc _dc_test {} \
   #
   for {set i 0} {$i < $num_runs} {incr i} {
   
-    comm_random_seed  $i
+    comm_random_seed  [+ $i 10]
     
     set len_chromo [LTARGET] 
   
@@ -1234,7 +1234,7 @@ proc make_pop_DARWIN {task population_size len_chromo} {
 
   set len_chromo [LTARGET] 
   
-  comm_random_seed 0 ;# 23091975
+  comm_random_seed 10 ;# 23091975
 
   set seed_proc  "maintest_seed_proc"
 
@@ -1542,7 +1542,7 @@ proc make_bots_list {task gp_list target_text0 args} {
   if {$mode == "@"} {
   #-------------------------------------------------------------
 
-    math_random_seed_null 2019 ;# постоянный выбор текстовой строки
+    comm_random_seed_null 2019 ;# постоянный выбор текстовой строки
 
     #set lpop 30 ;# 30 ;# 30 ;# 140
     #set ::is_print 1
@@ -1558,7 +1558,7 @@ proc make_bots_list {task gp_list target_text0 args} {
 
     #--------------------------------------------
 
-    math_random_seed_null 2019 ;# постоянный выбор текстовой строки
+    comm_random_seed_null 2019 ;# постоянный выбор текстовой строки
     
     set vers 0
     set task [make_task_for_STRU -vers $vers]
