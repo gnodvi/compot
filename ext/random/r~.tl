@@ -60,7 +60,7 @@ proc TEST_all {} {
 
   for {set i 0} {$i < 15} {incr i} {
 
-    set ret [gaul_random_boolean_prob 0.9]
+    set ret [comm_random_boolean_prob 0.9]
     puts "ret = $ret"
   }
 
@@ -68,7 +68,7 @@ proc TEST_all {} {
 
   for {set i 0} {$i < 15} {incr i} {
 
-    set ret [gaul_random_boolean_prob 0.1]
+    set ret [comm_random_boolean_prob 0.1]
     puts "ret = $ret"
   }
 

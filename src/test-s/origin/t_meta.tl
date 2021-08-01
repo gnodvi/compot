@@ -1123,7 +1123,7 @@ proc  tao_loop0_create {args} {
   #exit
   }
 
-  math_random_seed_null $seed
+  comm_random_seed_null $seed
 
   set gr [graf_create $size]
   
@@ -1191,7 +1191,7 @@ proc tao_loop1_create {args} {
   
   set gr_old [graf_create $size]
 
-  math_random_seed_null $seed
+  comm_random_seed_null $seed
   
   # здесь будет целиком "разрез" задачи
   # 

@@ -312,7 +312,7 @@ proc pingpong_crossover {pop task  mother father dau son} {
 
   for {set i 0} {$i < $len_chromo} {incr i} \
     {
-      if {[gaul_random_boolean]} \
+      if {[comm_random_boolean]} \
         {
           #       ((int *)     son->CH)[i] = ((int *)father->CH)[i];
           #       ((int *)daughter->CH)[i] = ((int *)mother->CH)[i];
@@ -456,7 +456,7 @@ proc pingpong_mutate_shift {pop mother son}  {
 # //------------------------------------------------------------------------------
 proc  pingpong_mutate {pop mother son r_prob} {
 
-  if {[gaul_random_boolean_prob  $r_prob]} {
+  if {[comm_random_boolean_prob  $r_prob]} {
     pingpong_mutate_swap  $pop $mother $son
 
   } else {

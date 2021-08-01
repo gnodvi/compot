@@ -1681,7 +1681,7 @@ proc ga_select_one_randomrank {pop &mother} {
     return $::true
   }
   
-  if {[gaul_random_boolean_prob [GET $pop mutation_ratio]]} \
+  if {[comm_random_boolean_prob [GET $pop mutation_ratio]]} \
   {
     set mother [pop_get_entity_ $pop [comm_random_int $select_state]]
 
@@ -1722,7 +1722,7 @@ proc ga_select_two_randomrank {pop &mother &father} {
   }
 
   
-  if {[gaul_random_boolean_prob [GET $pop crossover_ratio]]} \
+  if {[comm_random_boolean_prob [GET $pop crossover_ratio]]} \
   {
     set mother [pop_get_entity_ $pop  [comm_random_int $select_state]]
     set father [pop_get_entity_ $pop              $select_state]
@@ -3723,8 +3723,10 @@ proc randinstr_MAIN {gp_list} {
   #} else {
 
   set GP_LIST [make_GP_LIST  $gp_list]
-  #set   instr [lrand_new     $GP_LIST] ;# нет уверенности в этой функции!
-  set   instr [lrand  $GP_LIST] ;#
+
+  set   instr [lrand_new     $GP_LIST] ;# нет уверенности в этой функции!
+  #set   instr [lrand  $GP_LIST] ;#
+
   #}
 
   return $instr
@@ -4340,7 +4342,7 @@ proc ga_crossover_char_allele_mixing {pop task  father mother son daughter} \
 
   for {set j 0} {$j < [GET $pop len_chromosomes]} {incr j} \
   {
-    if {[gaul_random_boolean]} \
+    if {[comm_random_boolean]} \
     {
 
       item_set_chromo_gen $son      $j  [item_get_chromo_gen $father $j]
@@ -4709,7 +4711,7 @@ proc ga_mutate_integer_singlepoint_drift {pop task  father son} {
   # ((int *)son->chromosome[chromo])[point] += dir;
   #
 
-  if {[gaul_random_boolean]} {
+  if {[comm_random_boolean]} {
     set dir -1  ;# The direction of drift.
   } else {
     set dir  1
@@ -4782,7 +4784,7 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
 
     # The direction of drift. 
     # 
-    if {[gaul_random_boolean]} {
+    if {[comm_random_boolean]} {
       set dir -1
     } else {
       set dir  1
@@ -5455,7 +5457,7 @@ proc migration_right_to_left {pop0 pop1} {
 
   for {set i 0} {$i < $size1} {incr i} {
     
-    if {[gaul_random_boolean_prob $migration_ratio]} {        
+    if {[comm_random_boolean_prob $migration_ratio]} {        
       ga_entity_clone  $pop0 [pop_get_entity_ $pop1  $i];
     }
   }

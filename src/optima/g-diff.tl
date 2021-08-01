@@ -571,7 +571,7 @@ proc DE_best_exp {pop i n best tmpentity &name_permutation weighting_factor
 
     set factor [GET [GET $pop de_params] de_crossover_factor]
 
-    set flag [gaul_random_boolean_prob $factor]
+    set flag [comm_random_boolean_prob $factor]
  
     if {! $flag} { break; } ;# вообще заканчиваем цикл ! и выходим
     
@@ -628,7 +628,7 @@ proc DE_best_1_bin {pop i n best tmpentity &name_permutation weighting_factor} {
 
     if {! [expr {$L < $len_chromosomes}]} { break; }
 
-    set flag [gaul_random_boolean]
+    set flag [comm_random_boolean]
 
     if {$flag} {
       calc_tmpentity2  $pop $n $best $tmpentity $name_permutation $weighting_factor 
@@ -675,7 +675,7 @@ proc DE_best_bin {pop i n best tmpentity  &name_permutation weighting_factor
 
   for {set L 1} {$L < $len_chromosomes} {incr L} {
 
-    set flag [gaul_random_boolean]
+    set flag [comm_random_boolean]
    if {$flag} {
      $calc_proc  $pop $n $best $tmpentity $name_permutation $weighting_factor 
     }

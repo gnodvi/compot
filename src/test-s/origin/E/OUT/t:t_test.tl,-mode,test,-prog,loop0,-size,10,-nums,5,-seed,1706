@@ -12,15 +12,15 @@ seed = 1706
 tao_loop_MAIN: tao_loop0_main
 
   0)  
-new_point = 2
+new_point = 5
   1)  
-new_point = 4
+new_point = 5
   2)  
-new_point = 1
+new_point = 0
   3)  
 new_point = 6
   4)  
-new_point = 6
+new_point = 4
 
 tao_prepare_and_draw_plot_to_console ..
 

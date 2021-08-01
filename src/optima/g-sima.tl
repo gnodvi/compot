@@ -43,7 +43,7 @@ proc ga_sa_boltzmann_acceptance {pop original putative} {
 
   if {$ofit < $pfit} {return true}
 
-  set rand_prob [gaul_random_boolean_prob [expr {exp (($pfit - $ofit) / $d ) }]]
+  set rand_prob [comm_random_boolean_prob [expr {exp (($pfit - $ofit) / $d ) }]]
 
   return $rand_prob
 

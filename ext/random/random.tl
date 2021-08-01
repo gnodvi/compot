@@ -143,7 +143,8 @@ proc Y-random {} {
 
   ##set r [myrand 0 $::MAXRANDOM]
 
-  set r  [math_random_int_minmax  0 $::MAXRANDOM]
+  set r  [knut_random_int_minmax  0 $::MAXRANDOM]
+  #set r  [math_random_int_minmax  0 $::MAXRANDOM]
 
   return $r
 }
@@ -269,18 +270,11 @@ proc YRAND {imin imax} {
 #
 # генерируем случайное целое из min-max (оба включены) интервала.
 #-------------------------------------------------------------------------------
-proc math_random_int_minmax {min max} {
+# proc math_random_int_minmax {min max} {
 
-  expr {$min + int(rand() * (($max-$min)+1))}
+#   expr {$min + int(rand() * (($max-$min)+1))}
 
-}
-#-------------------------------------------------------------------------------
-proc myrand {min max} {
-
- # expr {$min + int(rand() * (($max-$min)+1))}
-
-  return [math_random_int_minmax $min $max]
-}
+# }
 #-------------------------------------------------------------------------------
 # генерируем случайное целое из min-max (оба включены) интервала.
 #-------------------------------------------------------------------------------
@@ -291,16 +285,22 @@ proc comm_random_int_minmax {min max} {
   return [comm_random_int_minmax_1  $min $max]
 }
 #-------------------------------------------------------------------------------
+proc myrand {min max} {
+
+##  return [math_random_int_minmax $min $max]
+
+  return [comm_random_int_minmax $min $max]
+}
+#-------------------------------------------------------------------------------
 
 # /*----------------------------------------------------------------------------*/
 # //  Return TRUE (prob * 100)% of the time
 # /*----------------------------------------------------------------------------*/
-proc gaul_random_boolean_prob {prob} {
+proc knut_random_boolean_prob {prob} {
 
   set number 1000000000
   
-  set rnd [gaul_random_int $number]
-  #set rnd [knut_random_int $number]
+  set rnd [knut_random_int $number]
   
   set ret [expr {$rnd < $prob * $number}]
 
@@ -309,9 +309,9 @@ proc gaul_random_boolean_prob {prob} {
 # /*----------------------------------------------------------------------------*/
 # //  Return TRUE 50% of the time.
 # /*----------------------------------------------------------------------------*/
-proc gaul_random_boolean {} {
+proc knut_random_boolean {} {
 
-  set ret [gaul_random_boolean_prob 0.5]
+  set ret [knut_random_boolean_prob 0.5]
 
   return $ret
 }
@@ -329,6 +329,9 @@ proc comm_random_seed {i} {
 #-------------------------------------------------------------------------------
 #===============================================================================
 #
+
+alias  comm_random_boolean_prob   knut_random_boolean_prob
+alias  comm_random_boolean        knut_random_boolean
 
 # Return a random integer between 0 and (N-1) inclusive.
 #
@@ -468,11 +471,11 @@ proc rand_0_new {} {
 #-------------------------------------------------------------------------------
 # возвращаем случайный элемент из списка 
 #-------------------------------------------------------------------------------
-proc lrand {list} {
+# proc lrand {list} {
     
-  lindex $list [expr {int(rand()*[llength $list])}]
+#   lindex $list [expr {int(rand()*[llength $list])}]
     
-}
+# }
 #-------------------------------------------------------------------------------
 proc lrand_new {list} {
     
@@ -504,12 +507,12 @@ proc TEST_lrand {} {
 
   puts ""
 
-  for {set i 0} {$i < 10} {incr i} {
+#   for {set i 0} {$i < 10} {incr i} {
 
-    puts "lrand     = [lrand $ll]"
-  }
+#     puts "lrand     = [lrand $ll]"
+#   }
 
-  puts ""
+#   puts ""
 
   #-----------------------------------------------------
   #gaul_random_seed 0     ;# для lrand (начальная инициация)
