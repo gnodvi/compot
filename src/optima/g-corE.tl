@@ -491,6 +491,7 @@ dict_class_create GAUL {POP} {
   #   newpop->allele_max_integer = RAND_MAX-1;
   SET $obj  "allele_min_integer" 0
   
+  set ::RANDOM_RAND_MAX 4294967295  ;# g-gaul
   SET $obj  "allele_max_integer" [expr {$::RANDOM_RAND_MAX - 1}] ;# попробуем так
   
   SET $obj  "allele_min_double" $::DBL_MIN

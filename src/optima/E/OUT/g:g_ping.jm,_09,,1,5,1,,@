@@ -13,18 +13,14 @@ ga_population_set_parameters ...
 000)     best = -127.000 :   6 3 0 1 4 2 5 8 7 
 ga_select_two_randomrank: 
 orig_size = 5   select_state = 1
-ga_select_two_randomrank: 
-orig_size = 5   select_state = 2
-ga_select_two_randomrank: 
-orig_size = 5   select_state = 3
 
 -------------------------------------------------------------------
 
     1)   fitn = -127.000 :   6 3 0 1 4 2 5 8 7
-    2)   fitn = -127.000 :   6 3 0 1 4 2 5 8 7
-    3)   fitn = -127.000 :   6 3 0 1 4 2 5 8 7
-    4)   fitn = -135.000 :   7 0 3 1 2 4 6 8 5
-    5)   fitn = -135.000 :   7 0 3 1 2 4 6 8 5
+    2)   fitn = -135.000 :   7 0 3 1 2 4 6 8 5
+    3)   fitn = -160.000 :   6 3 0 4 1 2 5 8 7
+    4)   fitn = -352.320 :   7 8 2 1 6 5 0 3 4
+    5)   fitn = -483.000 :   7 8 3 1 2 4 6 0 5
 
 001)     best = -127.000 :   6 3 0 1 4 2 5 8 7 
 

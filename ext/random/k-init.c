@@ -152,6 +152,49 @@ knuth_random_randint (ClientData clientData, Gen_Interp *interp, int argc, char 
   return GEN_OK;
 }
 //------------------------------------------------------------------------------
+#ifdef _JIM
+int  
+knuth_random_randreal (/* ClientData clientData, */ Gen_Interp *interp,
+		      int argc, Jim_Obj *const *argv) 
+#else
+int  
+knuth_random_randreal (ClientData clientData, Gen_Interp *interp, int argc, char **argv) 
+#endif
+{
+  const char *str;
+  int len;
+
+#ifdef _JIM
+  str = Jim_GetString(argv[1], &len);
+#else
+  str = argv[1];
+#endif
+
+  //int upto = 10;
+  //int upto = atoi (/* argv[1] */ str);
+  double upto = atof (/* argv[1] */ str);
+
+  char buf[80];
+
+  //int r = randint (upto);
+  double r = randreal (upto);
+
+  //sprintf (buf, "%10u", r);
+  sprintf (buf, "%10.3f", r);
+  //sprintf (buf, "%d\n", r);
+
+  //Gen_SetResult (interp, buf, /* NULL */ 10);
+  
+#ifdef _JIM
+  /* int */ len = 10;
+  Jim_SetResultString (interp, buf, /* NULL */ len);
+#else
+  Tcl_SetResult (interp, buf, /* NULL */ 0); //??
+#endif
+
+  return GEN_OK;
+}
+//------------------------------------------------------------------------------
 #ifndef _JIM
 int 
 Random_Init (Gen_Interp *interp) 
@@ -186,6 +229,11 @@ Jim_k_jimInit (Gen_Interp *interp)
 
 
   Gen_CreateCommand (interp, "knut_random_int", knuth_random_randint,
+                     /* (ClientData) */ NULL, 
+                     /* (Tcl_CmdDeleteProc *) */ NULL);
+
+
+  Gen_CreateCommand (interp, "knut_random_float", knuth_random_randreal,
                      /* (ClientData) */ NULL, 
                      /* (Tcl_CmdDeleteProc *) */ NULL);
 

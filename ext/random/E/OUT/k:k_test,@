@@ -1,0 +1,46 @@
+
+argc = 2 
+
+i =    0, max = 4,   i mod max = 0,   rnd = 2550876519, rnd mod max = 3,   ret =  0 
+i =    1, max = 4,   i mod max = 1,   rnd = 2617675291, rnd mod max = 3,   ret =  0 
+i =    2, max = 4,   i mod max = 2,   rnd = 1421475883, rnd mod max = 3,   ret =  1 
+i =    3, max = 4,   i mod max = 3,   rnd = 1504968088, rnd mod max = 0,   ret =  1 
+i =    4, max = 4,   i mod max = 0,   rnd = 3013262217, rnd mod max = 1,   ret =  2 
+i =    5, max = 4,   i mod max = 1,   rnd =  544115492, rnd mod max = 0,   ret =  1 
+i =    6, max = 4,   i mod max = 2,   rnd =  516667399, rnd mod max = 3,   ret =  1 
+i =    7, max = 4,   i mod max = 3,   rnd = 1832583369, rnd mod max = 1,   ret =  0 
+i =    8, max = 4,   i mod max = 0,   rnd = 1063416249, rnd mod max = 1,   ret =  3 
+i =    9, max = 4,   i mod max = 1,   rnd = 2192855212, rnd mod max = 0,   ret =  0 
+i =   10, max = 4,   i mod max = 2,   rnd = 3941211396, rnd mod max = 0,   ret =  0 
+i =   11, max = 4,   i mod max = 3,   rnd = 2630554281, rnd mod max = 1,   ret =  0 
+i =   12, max = 4,   i mod max = 0,   rnd = 1322026082, rnd mod max = 2,   ret =  3 
+i =   13, max = 4,   i mod max = 1,   rnd = 4275061891, rnd mod max = 3,   ret =  1 
+i =   14, max = 4,   i mod max = 2,   rnd = 2234740614, rnd mod max = 2,   ret =  3 
+i =   15, max = 4,   i mod max = 3,   rnd = 3377310085, rnd mod max = 1,   ret =  0 
+i =   16, max = 4,   i mod max = 0,   rnd = 2474819756, rnd mod max = 0,   ret =  2 
+i =   17, max = 4,   i mod max = 1,   rnd = 3525528476, rnd mod max = 0,   ret =  1 
+i =   18, max = 4,   i mod max = 2,   rnd =  797136041, rnd mod max = 1,   ret =  1 
+i =   19, max = 4,   i mod max = 3,   rnd = 1945438179, rnd mod max = 3,   ret =  0 
+i =   20, max = 4,   i mod max = 0,   rnd =  989445085, rnd mod max = 1,   ret =  3 
+i =   21, max = 4,   i mod max = 1,   rnd =  701272663, rnd mod max = 3,   ret =  1 
+i =   22, max = 4,   i mod max = 2,   rnd = 1680708921, rnd mod max = 1,   ret =  1 
+i =   23, max = 4,   i mod max = 3,   rnd = 3916043932, rnd mod max = 0,   ret =  2 
+i =   24, max = 4,   i mod max = 0,   rnd = 3937090790, rnd mod max = 2,   ret =  0 
+i =   25, max = 4,   i mod max = 1,   rnd = 1155255562, rnd mod max = 2,   ret =  3 
+i =   26, max = 4,   i mod max = 2,   rnd = 2042446370, rnd mod max = 2,   ret =  2 
+i =   27, max = 4,   i mod max = 3,   rnd =  869198728, rnd mod max = 0,   ret =  3 
+i =   28, max = 4,   i mod max = 0,   rnd =  288984452, rnd mod max = 0,   ret =  0 
+i =   29, max = 4,   i mod max = 1,   rnd = 3515274754, rnd mod max = 2,   ret =  1 
+
+
+i =    0  ret =   9.01 
+i =    1  ret =   9.22 
+i =    2  ret =   7.35 
+i =    3  ret =   0.77 
+i =    4  ret =   3.73 
+i =    5  ret =   9.13 
+i =    6  ret =   0.85 
+i =    7  ret =   1.80 
+i =    8  ret =  11.02 
+i =    9  ret =   6.33 
+

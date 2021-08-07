@@ -6,14 +6,25 @@
 proc package_require_random {COMPOT_} {
 
 
-  uplevel "source  $COMPOT_/ext/random/g-rand.tl"
-
   uplevel "load [file join "$COMPOT_/ext/random/T" "k_jim.so"] Random" 
 
   uplevel "source  $COMPOT_/ext/random/knuth.tl"
   uplevel "source  $COMPOT_/ext/random/random.tl"
   
 }
+
+#-------------------------------------------------------------------------------
+# proc package_require_random {COMPOT_} {
+
+
+#   uplevel "source  $COMPOT_/ext/random/g-rand.tl"
+
+#   uplevel "load [file join "$COMPOT_/ext/random/T" "k_jim.so"] Random" 
+
+#   uplevel "source  $COMPOT_/ext/random/knuth.tl"
+#   uplevel "source  $COMPOT_/ext/random/random.tl"
+  
+# }
 
 #-------------------------------------------
 

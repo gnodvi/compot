@@ -121,7 +121,7 @@ proc prng {} {
   #   boolean  success;
   
   #   /* Usual initializations */
-  comm_random_init 
+  #comm_random_init 
   
   #   /* Run randomness test function */
   #   success = random_test ();

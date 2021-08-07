@@ -71,6 +71,24 @@ proc TEST_random_randint {seed} {
 
 }
 #-------------------------------------------------------------------------------
+proc TEST_random_randreal {seed} {
+
+
+  knut_random_seed $seed ;# 2021
+
+  for {set i 0} {$i < 10} {incr i} {
+
+    #//gives a random integer uniformly in [0..upto-1]
+    #set r [knut_random_int 20]
+
+    set r [knut_random_float 20.0]
+    puts "i = $i, r = $r"
+  }
+
+  puts ""
+
+}
+#-------------------------------------------------------------------------------
 proc TEST_all {} {
 
   global argc argv argv0
@@ -103,6 +121,10 @@ proc TEST_all {} {
     set r [knut_random_int_minmax_1  1 5]    
     puts "i = $i, r = $r"
   }
+
+  puts ""
+
+  TEST_random_randreal $seed
 
 }
 #-------------------------------------------------------------------------------

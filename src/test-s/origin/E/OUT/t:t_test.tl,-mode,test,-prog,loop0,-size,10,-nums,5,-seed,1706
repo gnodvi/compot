@@ -12,13 +12,13 @@ seed = 1706
 tao_loop_MAIN: tao_loop0_main
 
   0)  
-new_point = 5
+new_point = 6
   1)  
 new_point = 5
   2)  
 new_point = 0
   3)  
-new_point = 6
+new_point = 7
   4)  
 new_point = 4
 

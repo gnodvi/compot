@@ -68,22 +68,29 @@ unsigned urand (void)
   return rand_z;
 }
 //------------------------------------------------------------------------------
+double randreal (double upto)
+//gives a random integer uniformly in (0,1)
+{
+
+  // return (rand()/(RAND_MAX+1.0));
+  //return (urand() / (double)((double) MAX_URAND+1.0));
+	
+  return ( ((double)upto * (double)urand()) / ((double)MAX_URAND+1.0) );
+}
+//------------------------------------------------------------------------------
 int randint (int upto)
 //gives a random integer uniformly in [0..upto-1]
 {
 
   // return((float)upto*(float)rand())/(RAND_MAX+1.0);
-  return (((double)upto * (double)urand()) / ((double)MAX_URAND+1.0));
 
+  // здесь деление нацело ?? нет! здесь возврат целого!!
+  // 
+  //return ( ((double)upto * (double)urand()) / ((double)MAX_URAND+1.0) );
+
+  return (randreal (upto));
 }
 //------------------------------------------------------------------------------
-double randreal ()
-//gives a random integer uniformly in (0,1)
-{
-
-  // return (rand()/(RAND_MAX+1.0));
-  return (urand() / (double)((double) MAX_URAND+1.0));	
-}
 //------------------------------------------------------------------------------
 
 

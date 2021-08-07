@@ -853,7 +853,8 @@ proc  arr_make_random {} {
   for {set i 0} {$i < $w} {incr i} {
   for {set j 0} {$j < $h} {incr j} {
 
-    set r [expr rand()] ;#(YRandF 0 1) -  здесь как раз подошла стандартная функция
+    #set r [expr rand()] ;#(YRandF 0 1) -  здесь как раз подошла стандартная функция
+    set r [YRandF 0 1] 
 
     if {$r <= $r_val} {
       lappend arr "x"

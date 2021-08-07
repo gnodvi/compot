@@ -119,6 +119,8 @@ proc graf_init {gr type_nodes nod1 nod2
 # -------------------------------------------------------------------------------
 proc graf_init1 {gr r_edge_all r_edge_two} {
 
+  # seed
+
   set nn [dict_get $gr "NN"] ;# [$gr.NN]
 
   dotimes u $nn {
@@ -1045,11 +1047,12 @@ proc graf_check {gr {is_print 0}} {
 }
 # ===============================================================================
 # 
+  comm_random_seed_null 2010 ;# пусть пока так !!
 # 
 # -------------------------------------------------------------------------------
 proc test_11_NEW {} {  
 
-  comm_random_seed_null 2010 ;# пусть пока так !!
+  #comm_random_seed_null 2010 ;# пусть пока так !!
   
   set nn 6
   set gr [graf_create $nn]
