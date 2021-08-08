@@ -1246,16 +1246,6 @@ proc  minbot_init {b  long1 long2 long3   d1} {
   
 }
 # ;-------------------------------------------------------------------------------
-# ;YT_MINBOT *
-#  minbot_make (name      ;   char
-#                     bot_init  ;   MINBOT_INIT
-#                     bot_data  ;   MINBOT_DATA 
-#                     bot_todo  ;   MINBOT_TODO
-#                     long1 long2 long3  ; long
-#                     d1        ;   double 
-#                     ) 
-# ;-------------------------------------------------------------------------------
-# ;YT_MINBOT *
 proc minbot_make {name        \
                   bot_init    \
                   bot_data    \
@@ -1264,11 +1254,7 @@ proc minbot_make {name        \
                   d1          \
                   } {
 
-  # (let (
-  #   ;(bot (minbot_create))
-
   set bot [make-instance "YT_MINBOT"]
-  #   )
   
   if {$name == "NIL"} {
     $bot.P_NAME = ""

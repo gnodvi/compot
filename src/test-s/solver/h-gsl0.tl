@@ -498,7 +498,7 @@ proc gsl_multimin_fdfminimizer_set { \
   puts stderr ""
   puts stderr "SETS_prog = $SETS_prog" ;# xxx_conjugate_set
   puts stderr "STATE     = $STATE"
-  puts stderr "X         = $X"
+  puts         "X         = $X"
   puts stderr "GRADIENT_ptr = $GRADIENT_ptr"
 
   if {$::NOVA} {

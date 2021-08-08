@@ -30,6 +30,18 @@ proc make_i_check {&point i r} {
 # ;-------------------------------------------------------------------------------
 # ; создаeм случайную точку в окрeстности
 # ;-------------------------------------------------------------------------------
+proc  random-value {max_value} {
+
+  set r [YRandF 0 $max_value]
+  
+  set ret [expr {$max_value - (2 * $r)}]
+
+  #puts "  random-value: max_value= $max_value r= $r ret= $ret"
+  
+  return $ret
+
+}
+# ;-------------------------------------------------------------------------------
 proc make_rand_obee_near_point {point_null interval} {
 
   # (let* (
@@ -40,6 +52,7 @@ proc make_rand_obee_near_point {point_null interval} {
   
   dotimes i $len {
     set c [lindex $point_null $i]
+
     set d [random-value $interval]
     
     if {$::debug_print} {
@@ -95,7 +108,7 @@ proc make_in_interval {} {
     set xyz_min [lindex $::xyz_min_list $i]
     set xyz_max [lindex $::xyz_max_list $i]
     
-    set r [random_in_interval $xyz_min $xyz_max]
+    set r [YRandF $xyz_min $xyz_max]
     
     lset point $i  $r
   }

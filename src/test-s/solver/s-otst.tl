@@ -657,57 +657,29 @@ proc minproc_print_name {minproc} {
 # ;-------------------------------------------------------------------------------
 proc minproc_check_print {minproc} {
 
-  # (let (
   set dim [set [DIM]]
-  #   is_compare
-  #   )
   
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #if {$::simp_random} {
-  #  minproc_print $minproc
-  #}
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-  # ;  //minproc_true (minproc);
-  
-  # ;  is_compare = fpoints_compare (dim, MM->s_calc, MM->s_true,               
-  # ;                                MM->xyz_err[0]); 
-  
   set eps [lindex [set [XYZ_ERR]] 0]
-
-  #puts ""
-  #puts ""
-  #puts ""
-  #puts "minproc_check_print: eps = $eps"
-  #puts ""
-
 
   set is_compare \
     [fpoints_compare $dim [$minproc.S_CALC] [$minproc.S_TRUE]  $eps]
 
   
-  # ;  if (is_compare) printf (" .... O-KEY!");
-  # ;  else            printf (" .... ERROR!");
-  
   if {$is_compare} {
-    puts -nonewline " .... O-KEY!"
+    puts " .... O-KEY!"
   } else {
-    puts -nonewline " .... ERROR!"
-  }
-  puts ""
-  
-  # ;  if (!is_compare) {
-  # ;    fpoints_print (MM->s_true, "true: ", dim);
-  # ;    fpoints_print (MM->s_calc, "calc: ", dim);
-  # ;  }
-  
-  if  {! $is_compare} {
+    puts " .... ERROR!"
 
     fpoints_print [$minproc.S_TRUE] "true: " $dim
     fpoints_print [$minproc.S_CALC] "calc: " $dim
   }
+
+ # puts ""
+  
+#   if  {! $is_compare} {
+
+#   }
 
 }
 # ;-------------------------------------------------------------------------------
@@ -758,7 +730,9 @@ proc get_stopfun {minproc} {
 # ;-------------------------------------------------------------------------------
 proc  simp_test {} { 
 
-  set ::simp_random 1   ;# для точного сравнения с LISP
+  #set ::simp_random 1   ;# для точного сравнения с LISP
+  comm_random_seed 20
+
 
   puts ""
 
@@ -828,6 +802,28 @@ proc  simp_test {} {
   #set ::_DEBUG 1
 
   bot_calc_data  $m_botfunspusk $m_dat05
+
+  puts ""
+  
+}
+# ;-------------------------------------------------------------------------------
+proc  simp_tester {} { 
+
+  comm_random_seed 20
+
+  puts ""
+
+  set m_dat01  [minproc_create_begin "mp_data_01"]
+  
+  set m_botgslspusk [minbot_make "GSLspusk"        \
+                            "botgslspusk_1_init"   \
+                            "botspusk_fun_data"    \
+                            "botgslspusk_1_todo"   \
+                            2 "0"  0 0]
+  
+  puts ""
+  
+  bot_calc_data  $m_botgslspusk $m_dat01
 
   puts ""
   

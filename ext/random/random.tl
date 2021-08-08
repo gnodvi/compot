@@ -157,7 +157,7 @@ proc Y-random {} {
 # (defvar *debug_print*  nil)
 
 set ::debug_print 0
-set ::simp_random 0
+#set ::simp_random 0
 
 # ;-------------------------------------------------------------------------------
 proc  YRandF {fmin fmax} {
@@ -210,26 +210,6 @@ proc RandYes {procent} {
     return 0 ;#       FALSE
   }
 
-}
-# ;-------------------------------------------------------------------------------
-proc  random-value {max_value} {
-
-  set r [YRandF 0 $max_value]
-  
-  set ret [expr {$max_value - (2 * $r)}]
-
-  #puts "  random-value: max_value= $max_value r= $r ret= $ret"
-  
-  return $ret
-
-}
-# ;-------------------------------------------------------------------------------
-proc random_in_interval {fmin fmax} {
-
-  
-  set r [YRandF $fmin $fmax]
-
-  return $r
 }
 # ;-------------------------------------------------------------------------------
 # proc YRAND____ {imin imax} {
@@ -446,7 +426,7 @@ proc rand_1 {} {
   #puts stderr "......... 04-stderr"
   #puts stdout "......... 04-stdout"
 
-  set ::simp_random 1  ;# ??!!
+  #set ::simp_random 1  ;# ??!!
   #set ::debug_print 1
 
   # (let (
@@ -498,7 +478,7 @@ proc rand_4 {} {
 
   # ;#+SBCL (load-shared-object "libc.so.6")
 
-  set ::simp_random 1   ;# для точного сравнения с LISP
+  #set ::simp_random 1   ;# для точного сравнения с LISP
   
   puts ""
 
@@ -507,6 +487,7 @@ proc rand_4 {} {
   }
   
   puts ""
+
   rand_0
   
 #   puts ""
