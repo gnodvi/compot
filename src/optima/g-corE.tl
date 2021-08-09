@@ -2715,13 +2715,6 @@ proc make_itemlist {task randpop_proc
                 $population_size $len \
                 $is_print]
 
-#   if {$::NEWS} {
-#     puts ""
-#     puts stderr "randpop_proc = $randpop_proc"
-#     puts stderr "prgpop       = $prgpop"
-#     puts ""
-#     #exit
-#   }
 
   # TODO:
   # 

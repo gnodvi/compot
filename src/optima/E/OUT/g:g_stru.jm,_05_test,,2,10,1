@@ -1,1 +1,10 @@
-../OUT_add/CUR/g:g_stru.jm,_05_test,,2,10,1
+
+Best solution  on island 0 , score = 41.53 : 2 4 5 3 6 9 3 1 4 6 4 3 7 9 7 
+generation = 0
+Total number of fitness evaluations: 20
+
+Best solution  on island 1 , score = 42.51 : 3 2 1 5 9 3 3 2 9 5 7 2 5 1 1 
+generation = 0
+Total number of fitness evaluations: 20
+
+

@@ -1,1 +1,18 @@
-../OUT_add/CUR/g:g_stru.jm,_04_test,,10,2,@
+
+
+bnums  = 10
+bsize  = 15
+maxgs  = 2
+
+ga_population_seed  ......... 
+
+ga_population_set_parameters ... 
+
+000)     best =   42.553 :   5 2 6 9 8 3 3 3 4 2 4 8 4 6 7 
+001)     best =   45.638 :   5 2 5 9 8 3 3 3 4 2 5 5 3 2 5 
+002)     best =   45.894 :   3 2 1 5 10 3 3 3 4 2 5 5 3 3 5 
+Best solution , score = 45.89 : 3 2 1 5 10 3 3 3 4 2 5 5 3 3 5 
+generation = 2
+Total number of fitness evaluations: 126
+
+

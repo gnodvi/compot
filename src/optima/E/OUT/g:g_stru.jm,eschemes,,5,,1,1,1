@@ -1,1 +1,14 @@
-../OUT_add/CUR/g:g_stru.jm,eschemes,,5,,1,1,1
+
+Best solution Darwinian, score = 43.47 : 8 4 5 3 6 3 9 9 4 4 4 3 7 2 7 
+generation = 1
+Total number of fitness evaluations: 17
+
+Best solution Baldwinian, score = 42.45 : 7 5 2 8 7 3 2 6 2 1 4 2 5 9 7 
+generation = 1
+Total number of fitness evaluations: 56
+
+Best solution Lamarckian, score = 44.51 : 7 7 5 3 3 8 5 8 6 6 5 5 8 7 5 
+generation = 1
+Total number of fitness evaluations: 94
+
+
