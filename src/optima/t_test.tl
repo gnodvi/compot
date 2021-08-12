@@ -425,13 +425,9 @@ proc NEXT_01 {args} {
   # флажки для новейших алгоритмов
   # 
   # 
-  set auto        [dict_parse $argo "-auto"  0]
   set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
+  set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
   
-  #set auto        [dict_parse $argv "-auto"   0]
-
-  set ::gp_dict_AUTO $auto
-
   #------------------------------------------------------
 
   set ::sum_target 20
@@ -716,11 +712,8 @@ proc FITPROC_xx {prog task args} {
 
 # }
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 proc TEST_xx {args} {
-
-
-#   global argc argv argv0
-#   set argv [lrange $argv 2 end]
 
 
   if {$args == ""} {
@@ -730,17 +723,9 @@ proc TEST_xx {args} {
     set argv $args
   }
   
-
   puts ""
-  #puts stderr "argv = $argv"
-  #exit
 
   #------------------------------------------------------
-
-  set args {-print  1}
-
-  #------------------------------------------------------
-
 
   set seed        [dict_parse $argv "-seed"  2013]
   set lpop        [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
@@ -770,19 +755,21 @@ proc TEST_xx {args} {
   puts "func = $func"
 
   #------------------------------------------------------
+  # флажки для новейших алгоритмов
+  # 
+  # 
+  set ::NEWS      [dict_parse $argv "-news"  $::NEWS]
+  set ::AUTO      [dict_parse $argv "-auto"  $::AUTO]
+  set ::DEEP      [dict_parse $argv "-deep"  $::DEEP]
+  
+  #------------------------------------------------------
 
   #set ::randinstr   randinstr_MAIN 
   #set ::quotes_proc "make_quotes_BE"
   #set ::quotes_proc "make_quotes_TCL"
   #set ::quotes_proc  "quotes_proc_NULL" 
 
-  #if {$::NEWS} {
-
-  #  set rand_prgpop_proc "make_rand_prgpop_unikum"
-  #} else {
-
   set rand_prgpop_proc "make_rand_prgpop"
-  #}
   
   set pb [mp_create]
 
@@ -800,8 +787,7 @@ proc TEST_xx {args} {
               -fit_func "FITPROC_xx"  \
               -fit_tobest     "MIN" \
               -func           $func \
-              -gp_list    $gp_list]
-  
+              -gp_list    $gp_list] 
 
   #------------------------------------------------------
   #
@@ -812,13 +798,12 @@ proc TEST_xx {args} {
     set seed [clock seconds]
   }
   
-  #random_seed $seed 
   comm_random_seed $seed 
 
-  #------------------------------------------------------
-
 
   #------------------------------------------------------
+  #------------------------------------------------------
+
 
   if {$vers == "fs"} {
   #------------------------------------------------------
@@ -848,9 +833,12 @@ proc TEST_xx {args} {
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"
 
-    set m [dict merge $args $argv]
-    puts "m = $m"
 
+    #set args {-print  1}           ;# ?? добавили 
+    #
+    #set m [dict merge $args $argv]
+    set m [dict merge   {-print  1} $argv]
+    puts "m = $m"
     #set ret [calc_BOT01 $obj {*}$argv  -print 1]
     set ret [calc_BOT01 $obj {*}$m]
 
@@ -870,7 +858,6 @@ proc TEST_xx {args} {
 
     puts ""
     puts "===================================================================="
-
 
   #------------------------------------------------------
   } 
@@ -903,7 +890,7 @@ proc TEST_xx {args} {
     #
     # а теперь запустим "соревнование"
     
-   set obj_gp [BOT33 new   -lpop $lpop -lsrc $size \
+    set obj_gp [BOT33 new   -lpop $lpop -lsrc $size \
                 -task $task -print $print]
 
    
@@ -916,7 +903,6 @@ proc TEST_xx {args} {
 
     maintest_run  $botobjs  "task_correct_gp" $num_text $num_runs  $nums  
    
-
   #------------------------------------------------------
   } 
   #------------------------------------------------------
@@ -926,4 +912,3 @@ proc TEST_xx {args} {
 }
 #-------------------------------------------------------------------------------
 ###########################################################################################
-#-------------------------------------------------------------------------------

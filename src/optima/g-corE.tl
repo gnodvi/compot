@@ -19,10 +19,9 @@ set ::gp_dict_NUMER 0 ;# для имен в динамическом словаре
 
 set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
 
-set ::gp_dict_AUTO  0 ;# флажок применения динамического словаря
+set ::AUTO 0 ;# флажок применения динамического словаря
 
-
-set ::TRY_NUM 5
+set ::DEEP 5 ;# глубина последовательности мутации
 
 
 #-------------------------------------------------------------------------------
@@ -3673,7 +3672,7 @@ proc only_names_from_gpdict {} {
 proc make_GP_LIST {gp_list} {
 
 
-  if {$::gp_dict_AUTO} {
+  if {$::AUTO} {
 
     set GP_LIST {} 
     
@@ -5866,7 +5865,7 @@ source "g-diff.tl"
 #               это число приближенно кратно 3.
 # len :         максимальная длина особей в начальной популяции.
 # fitnessfunc : фитнесс-функция (имя Tcl-процедуры).
-# mutprob :     вероятность мутации, используемая процедурой 'gp_joy_mutate'.
+# mutprob :     вероятность мутации, используемая процедурой 'gp_joyprg_mutate'.
 # 
 #-------------------------------------------------------------------------------
 
@@ -5941,11 +5940,11 @@ proc gp_crossover {a b} {
   list $x0 $x1
 }
 #-------------------------------------------------------------------------------
-proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+proc mutate_gen_in_joyprg_by_mode {&program i prob gp_list  mode} {
 
   USE_REFS
-
-  #puts stderr "mutate_and_lset_or_linsert: program = $program, i = $i, mode = $mode"
 
   set r [random_double 1.0]
   
@@ -5953,8 +5952,7 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
     return ;# ничего не делаем, уходим
   }
 
-
-  # делаем мутацию
+  # делаем мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # 
 
   if {$mode == 0} {
@@ -5977,7 +5975,6 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
   
     switch -- $mode {
       1 {
-        #puts stderr "mutate_and_lset_or_linsert: program = $program, i = $i, item = $item"
         lset program $i $item                     ;# либо заменяем итем 
       }  
       2 {
@@ -5990,18 +5987,14 @@ proc mutate_and_lset_or_linsert {&program i prob gp_list  mode} {
   return
 }
 #-------------------------------------------------------------------------------
-# 
-# g_stru.jm _gp_test -seed 2013 -lpop 10 -size 6 -nums 10
-# 
-#./COMPOT/src/common/a-comm.tl:4260: Error: bad index "": must be integer?[+-]integer? or end?[+-]integer?
-
-#-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа, в которой каждая 
 # инструкция будет заменена (или новая вставлена сразу за ней) с заданной 
 # вероятностью '$p'.
 # 
 #-------------------------------------------------------------------------------
-proc gp_joy_mutate {task program prob} {
+proc gp_joyprg_mutate {task prg mutprob} {
+
+  #set num_genes_for_mutate [expr [llength $prg] - 3 ]
 
   # TODO: привести к общему виду с 
   # gaul_mutation {pop task}
@@ -6009,41 +6002,32 @@ proc gp_joy_mutate {task program prob} {
 
   set gp_list [GET $task gp_list]
 
-  #puts stderr "gp_joy_mutate: program = $program, len = [llength $program]"
-
-
-  for {set i 0} {$i < [llength $program]} {incr i} {
+  for {set i 0} {$i < [llength $prg]} {incr i} {
     
     set mode [lrand "0 1 2"]
-    #puts stderr "gp_joy_mutate: mode = $mode"
 
-    mutate_and_lset_or_linsert  program $i $prob $gp_list  $mode 
-
-    #mutate_and_lset_or_linsert  program $i $prob $gp_list  0 
-    #mutate_and_lset_or_linsert  program $i $prob $gp_list  1
-    #mutate_and_lset_or_linsert  program $i $prob $gp_list  2
-    # 
-    # так нельзя! я э могу уже изменить прогу, например укоротить !!!!
+    # 0 - удаляем 
+    # 1 - заменяем
+    # 2 - добавляем
+    
+    mutate_gen_in_joyprg_by_mode  prg  $i $mutprob $gp_list  $mode 
   }
   
-  return $program
+  return $prg
 }
-#-------------------------------------------------------------------------------
-proc make_mutant {task leader  mutprob} {
+#------g-------------------------------------------------------------------------
+proc make_mutant_from_item {item mutprob task} {
 
-  set prg        [item_get_main_src $leader] ;# исходник на JOY в виде строки?
+  set prg        [item_get_main_src $item] ;# исходник на JOY в виде строки?
   
-
-  set prg_mutant [gp_joy_mutate  $task $prg $mutprob]
+  set prg_mutant [gp_joyprg_mutate  $task $prg $mutprob]
+ 
   
-
-  # делаем нового агента-мутанта
-  
-  set leader_mutant [item_make $prg_mutant]  
+  set mutant [item_make $prg_mutant]  ;# цельный агента-мутанта
   
   # пока фитнеса нет, только программы
 
-  return $leader_mutant
+  return $mutant
 }
 #-------------------------------------------------------------------------------
 proc is_items_equal {item1 item2} {
@@ -6084,7 +6068,7 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
 
   for {set i 0} {$i < $num_probes} {incr i} {
     
-    set mutant [make_mutant  $task $parent $mutprob]
+    set mutant [make_mutant_from_item  $parent $mutprob $task]
     
     if [is_this_mutant_unikum $mutant $items] {
       break
@@ -6094,31 +6078,7 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
   return $mutant
 }
 #-------------------------------------------------------------------------------
-#  генерируем последнюю 1/3 популяции мутируя лидеров.
-#-------------------------------------------------------------------------------
-# proc make_mutated_from_items {task sorted_items m mutprob} {
-
-
-#   set mutated {} ;# сформируем список мутантов
-  
-#   set l_leaders [lrange $sorted_items 0 [- $m 1]] ;# это слишком примитивно 
-
-#   # сейчас берем первых m из сортированного списка, делаем их родителями
-#   # мутируем, а затем этот список новых мутантов добавляем
-
-
-#   foreach leader $l_leaders {
-
-#     set leader_mutant [make_mutant  $task $leader $mutprob]
-
-#     lappend mutated $leader_mutant
-#   }
-  
-  
-#   return $mutated
-# }
-#-------------------------------------------------------------------------------
-proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
+proc make_mutated_from_items {task sorted_items m mutprob} {
 
   set l_items [llength $sorted_items]
   set mutated {} ;# сформируем список мутантов
@@ -6138,22 +6098,12 @@ proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
     set parent [lindex $sorted_items $j] ;# родителем взяли случайного из всего списка
   
     lappend parents $parent
-
-    # сделаем уникального мутанта (c 10-ти поыток) для этого списка
-    # 
-    #set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
-
-
-    # добавим мутанта в список
-    #
-    #lappend mutated $mutant
-
+    
   }
 
   foreach parent $parents {
 
     set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
-
 
     # добавим мутанта в список
     #
@@ -6186,12 +6136,6 @@ proc make_mutated_from_items_NEWS {task sorted_items m mutprob} {
 
   }
 
-  # просто друагя последовательность случайнсостей
-  # 
-  #puts  "mutated = $mutated"
-  #dict_print_real_all_in_list  "[procname]"  $mutated
-  #exit
-  
   return $mutated
 }
 #-------------------------------------------------------------------------------
@@ -6519,49 +6463,31 @@ proc works_on_gp_dict {sorted_items} {
   return
 }
 #-------------------------------------------------------------------------------
-
-set ::GP_iscrossover 1
-
+# создание новой популяции на основе списка лидеров (меньшего размера)
+# циклическим клонированием
+# 
 #-------------------------------------------------------------------------------
-proc calc_loms_from_len {len } {
+proc cyclic_clone_from_leaders {leaders_items new_len} {
 
+  set new_items {} ;# будем формировать новую популяцию длиной 'new_len'
 
-  set l [expr {$len/3}] ;# размер лидирующей группы
-  
-
-  #if {$::GP_iscrossover == 0} {
-  set o 0 ;# не будем кроссовить !!
-  #} else {
-  #  set o $l ;# сгенерим столько же отпрысков от лидеров
-  #}
- 
-  set m [expr {$len - ($l + $o)}]  ;# сделаем сколько-то мутантов
-
-
-  return [list $l $o $m]
-}
-#-------------------------------------------------------------------------------
-proc fork_from_leaders {leaders_items len} {
-
-  set pop_items {}
-
-  set j 0
-  set l [llength $leaders_items]
+  set old_len [llength $leaders_items]
+  set       j 0 ;# индекс по списку лидеров
 
   while {1} {
 
-    if {[llength $pop_items] ==  $len} {break}
+    if {[llength $new_items] ==  $new_len} {break}
 
-    if {$j == $l} {      
-      set j 0
+    if {$j == $old_len} {      
+      set j 0 ;# начнем клонирование с начала списка лидеров
     }
 
-    lappend pop_items [lindex $leaders_items $j]
+    lappend new_items [lindex $leaders_items $j]
 
     incr j
   }
 
-  return $pop_items
+  return $new_items
 }
 #-------------------------------------------------------------------------------
 proc is_progress {tobest fitn_old fitn_new} {
@@ -6613,12 +6539,12 @@ proc get_best_from_history {history tobest} {
 #-------------------------------------------------------------------------------
 proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 
-# TODO: 
+  # TODO: 
 
-# - при первом улучшении - заканчиваем цикд
-# - если дошли до конца, т.е. улучшений не было, то 2 варианта (рандомно):
-#   - либо оставляем старый вариант(т.е. нет мутации), но надо учитывать всю популяцию!
-#   - либо берем из списка истории мутаций - самый лучший вариант (хоть и хуже начального)
+  # - при первом улучшении - заканчиваем цикд
+  # - если дошли до конца, т.е. улучшений не было, то 2 варианта (рандомно):
+  #   - либо оставляем старый вариант(т.е. нет мутации), но надо учитывать всю популяцию!
+  #   - либо берем из списка истории мутаций - самый лучший вариант (хоть и хуже начального)
 
   set fitn_old  [item_get_fitn   $item_old] 
 
@@ -6638,8 +6564,9 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 
     #item_print_fitness    $item_old 0 
     
-    set item_new [make_mutant  $task $item_old $mutprob] ;# сделали мутанта
+    set item_new [make_mutant_from_item  $item_old $mutprob $task] ;# сделали мутанта
     
+
     item_calc_fitness   $item_new $fitnessfunc  $task    ;# посчитали его
     
     #item_print_fitness  $item_new 1   
@@ -6658,6 +6585,9 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 
 
     lappend history [list $item_new $fitn_new] ;# положили в историю
+    #
+    # TODO: но надо бы туда положить еще и метод мутации?
+    
    
     set item_old $item_new ;# готовимся к  след. шагу цикла
   }
@@ -6665,7 +6595,6 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 
   # улучшений не было, тогда:
 
-  # RAND
   set r [comm_random_int_minmax_1  1 10]
 
   if {$r <= 3} {
@@ -6685,7 +6614,6 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 #-------------------------------------------------------------------------------
 proc mutate_randomly {pop_items_old  task num_try} {
 
-  #set mutprob 1.0 ;# !!!
 
   set fitnessfunc [GET $task "fit_func"]  
 
@@ -6694,17 +6622,19 @@ proc mutate_randomly {pop_items_old  task num_try} {
   # 
   set tobest [GET $task "fit_tobest"]
 
-  set pop_items_new {}
+  set pop_items_new {} ;# сюда будем формировать новых мутантов
+  
 
+  # идем циклом и каждый итем пытаемся смутировать к лучшему
+  #
   foreach item_old $pop_items_old {
 
-    set item_best [try_mutate_to_best $task $fitnessfunc $tobest  $item_old $num_try]
+    set item_best [try_mutate_to_best  $task $fitnessfunc $tobest  $item_old $num_try]
 
     lappend pop_items_new  $item_best
   }
 
   return $pop_items_new
-  #exit
 }
 #-------------------------------------------------------------------------------
 # основная эволюционная программа (для GP)
@@ -6721,93 +6651,55 @@ proc gp_evolution_4 {pop task args} {
 
   set len [llength $sorted_items]
 
-  #set len [GET $pop stable_size]
-
-  #---------------------------------------
-
-  set ::GP_iscrossover 0 ;# принудительно отменяем кроссинг всегда !!!
-
-  set loms [calc_loms_from_len  $len]
-
-  foreach {l o m} $loms {break}
-
-  #puts "lom = $lom, len = $len, lpop = [GET $pop stable_size]"
-
-  #exit
+  set l [expr {$len/3}]     ;# размер лидирующей группы
 
   #---------------------------------------
   # 1)
   # выделяем лидеров популяции  (1/3)
 
   
-  set leaders_items [lrange $sorted_items 0 [expr {$l-1}]]
+  set leaders_items [lrange $sorted_items 0 [expr {$l - 1}]]
   
   #---------------------------------------
-  # выделяем библиотечные шаблоны
+  # 2) выделяем библиотечные шаблоны
 
-  if {$::gp_dict_AUTO} {
+  if {$::AUTO} {
 
     works_on_gp_dict $leaders_items
   }
 
   #---------------------------------------
-  # 2) CROSSOVER
-  # генерируем другую 1/3  популяции отпрысками от случайных лидеров
- 
-  #if {$::GP_iscrossover == 0} {
-
-  # не будем кроссовить !!
-  set offsprings_items {}
-  
-  #} else {
-  
-  # сгенерим столько же отпрысков от лидеров
-  #  set offsprings_items  [make_offsprings_from_items  $sorted_items $o]
-  #}
- 
-  #---------------------------------------
   # 3) MUTATION
-  # генерируем последнюю 1/3 популяции мутируя лидеров (?)
-  
-  
-  set mutprob [dict_parse  $args "-mutprob" 0.1]
+   
+  if {$::NEWS} {
+    
+    # совсем новый механизм: (форк от лучших и затем мутация)
 
-  
-  if {! $::NEWS} {
+    set pop_items [cyclic_clone_from_leaders $leaders_items $len]
 
-    #if {$::NEWS} {
+    set pop_items [mutate_randomly   $pop_items $task $::DEEP]
+
+  } else {
     
-    set mutated_items  [make_mutated_from_items_NEWS  $task $sorted_items $m  $mutprob]
-    #} else {
-    
-    #  set mutated_items  [make_mutated_from_items       $task $sorted_items $m  $mutprob]
-    #}
-    
+    set mutprob [dict_parse  $args "-mutprob" 0.1]
+
+    set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
+
+    set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
     
     #dict_print_real_all_in_list  "[procname]"  $mutated_items
-    
-    
+      
     #---------------------------------------
     # 4) 
     # склеиваем три популяции итемов (лидеров, отпрысков, мутантов)
     # создавая популяцию исходников для следующей итерации.
     #
     
-    set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items] 
-   
-  } else {
-
-    # совсем новый механизм: (форк от лучших и затем мутация)
-
-    #puts "loms = $loms"
-
-    set pop_items [fork_from_leaders $leaders_items $len]
-
-    #puts "pop_items = $pop_items"
-
-    set pop_items [mutate_randomly $pop_items $task $::TRY_NUM]
+    # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]   
+    set pop_items   [concat  $leaders_items  $mutated_items]   
   }
 
+    
   #---------------------------------------
   # записываем их в популяцию
 

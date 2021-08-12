@@ -79,8 +79,8 @@ proc test_xx {} {
 
 #set ::GP_iscrossover 0
 
-set ::NEWS 1
-set ::TRY_NUM 20
+#set ::NEWS 1   - лучше передавать параметром? -news 1 
+set ::DEEP 20
 
 # TODO:
 # 
@@ -89,7 +89,7 @@ set ::TRY_NUM 20
 TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 \
       -vers gp \
       -print 2 \
-      -news 0 -list "* + dup"  -func "x ** 3 + x ** 2"
+      -news 1 -list "* + dup"  -func "x ** 3 + x ** 2"
 }
 
 #      -news 1 -list "* + dup"  -func "x ** 3"
@@ -118,8 +118,6 @@ NEXT_01 -seed @ -lpop 6 -size 1 -nums -1 -list "p1 p3 p5" -seed @ -print 1 -news
 
 }
 
-#t~.tl TEST NEXT_01 -seed @ -lpop 10 -size 2 -nums 2 -list "p1 p3 p5" =print 3
-
 #-------------------------------------------------------------------------------
 
 test_xx
@@ -127,6 +125,12 @@ test_xx
 #next_01
 
 #-------------------------------------------------------------------------------
+
+# t~.tl TEST TEST_xx -seed @ -lpop 5 -size 6 -nums -1 -vers gp  -news 0
+# t~.tl TEST TEST_xx         -lpop 5 -size 6 -nums -1 -vers gp  -news 1
+
+# t~.tl TEST NEXT_01 -seed @ -lpop 10 -size 2 -nums 2 -list "p1 p3 p5" -print 3
+
 #-------------------------------------------------------------------------------
 #
 ################################################################################
