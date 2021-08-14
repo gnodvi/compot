@@ -11,10 +11,9 @@ CFLAGS+= -I$(JIM_DIR)
 
 #-------------------------------------------------------------------------------
 
-LDFLAGS += -L/home/mgena/.MSOFT/openssl/1.1.1d/R/lib
+LDLIBS += -L$(JIM_DIR) -ljim -lutil -lm   -ldl -lz  
+LDLIBS += `pkg-config libssl  --libs`
 
-#LDLIBS += -L.. -ljim -lutil -lm -lssl -lcrypto   -ldl -lz  
-LDLIBS += -L$(JIM_DIR) -ljim -lutil -lm -lssl -lcrypto   -ldl -lz  
 
 EXAMPLES=		\
 	jim_command	\

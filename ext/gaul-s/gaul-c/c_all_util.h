@@ -320,8 +320,9 @@ typedef void* vpointer;
 
 typedef const void *constvpointer;
 typedef unsigned char gaulbyte;
+
 /* byte is already defined on win32 systems. */
-typedef unsigned char byte;
+//typedef unsigned char byte;
 
 #ifdef BITSPERBYTE
 # define BYTEBITS	BITSPERBYTE

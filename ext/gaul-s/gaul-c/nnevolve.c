@@ -676,7 +676,7 @@ void nnevolve_chromosome_replicate( const population *pop,
 
 unsigned int nnevolve_chromosome_to_bytes( const population *pop,
                                       entity *joe,
-                                      byte **bytes,
+                                      gaulbyte **bytes,
                                       unsigned int *max_bytes )
   {
   unsigned int	num_bytes;	/* Actual size of genes. */
@@ -692,7 +692,7 @@ unsigned int nnevolve_chromosome_to_bytes( const population *pop,
 
   num_bytes = (unsigned int) sizeof(network_t);
 
-  *bytes = (byte *)joe->chromosome[0];
+  *bytes = (gaulbyte *)joe->chromosome[0];
 
   return num_bytes;
   }
@@ -707,7 +707,7 @@ unsigned int nnevolve_chromosome_to_bytes( const population *pop,
   last updated: 29 Jan 2002
  ******************************************************************************/
 
-void nnevolve_chromosome_from_bytes(const population *pop, entity *joe, byte *bytes)
+void nnevolve_chromosome_from_bytes(const population *pop, entity *joe, gaulbyte *bytes)
   {
   dief("Function not implemented");
 
