@@ -515,24 +515,6 @@ proc get_x_list {xmin xmax nums} {
   return $x_list
 }
 #-------------------------------------------------------------------------------
-proc x_add_dollar {inp} {
-
-  set lis [split $inp]
-
-  set out {}
-
-  foreach l $lis {
-
-    if {$l == "x"} {
-      append out {$x}
-    } else {
-      append out $l
-    }
-  }
-
-  return $out
-}
-#-------------------------------------------------------------------------------
 
 # 0 - не делаем специально начальеую инициацию для задачи _XX (поиска формулы)
 # 1 - кладем сразу начальное значение x в стек несколько раз с запасом
@@ -591,19 +573,21 @@ proc FITPROC_xx {prog task args} {
   # ???? 
   # 
   set func [GET $task "func"]
+  #set joyf [GET $task "joyf"]
 
   # начинаем в цикле подсчет фитнеса --------------------------
 
   #set is_print 0
 
   if {$is_print} {
-    #puts stderr ""
-    #puts stderr "-------------------------------------------------------------------"
-    #puts stderr ""
+    puts stderr ""
+    puts stderr "-------------------------------------------------------------------"
+    puts stderr ""
     #puts stderr "FITPROC_xx: prg    = $src"
-    #puts stderr "FITPROC_xx: x_list = $x_list"
-    #puts stderr "FITPROC_xx: func   = $func"
-    #puts stderr ""
+    puts stderr "FITPROC_xx: x_list = $x_list"
+    puts stderr "FITPROC_xx: func   = $func"
+    puts stderr "FITPROC_xx: joyf   = $joyf"
+    puts stderr ""
   }
 
   set fitness 0
@@ -614,32 +598,35 @@ proc FITPROC_xx {prog task args} {
 
   foreach x $x_list {
 
-    set o [expr $func]
+    #---------------------------------------------------------------
+
+    set real [expr $func] ;# рельное значение для функции в этой точке
+
+    ##run_v1_src $joyf     ;# выполнить исходник
 
     # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
     # 
- 
-    set result [getresult_prog_val  $prog $x]
+    set calc [getresult_prog_val  $prog $x] ;# посчитанное
  
     #---------------------------------------------------------------
 
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
 
     #puts stderr "::joy_ST = $::joy_ST,  len = $len"
-    #puts "result = $result"
+    #puts "calc = $calc"
 
     #set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
     if {$is_print} {
-      puts stderr "x = $x, result = |$result|, ::joy_ST = |$::joy_ST|"
+      puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
     }
     #---------------------------------------------------------------
     #
 
-    if {$result eq {}}  {
+    if {$calc eq {}}  {
 
       if {$is_print} {
-        puts stderr "FITPROC_xx: x = $x, result eq {} , ERROR operator??"
+        puts stderr "FITPROC_xx: x = $x, calc eq {} , ERROR operator??"
       }
       # ошибка программы (на первом ошибочном операторе) !!
       # 
@@ -653,7 +640,7 @@ proc FITPROC_xx {prog task args} {
       # может сразу выходить из цикла по точкам, они же все такие будут?
       break
 
-    } elseif {![string is integer $result] && ![string is double $result]} {
+    } elseif {![string is integer $calc] && ![string is double $calc]} {
 
       # здесь может быть просто списко или символ-строка, а не число!
       # но пока кроме числе и {ошибки} в стеке ничего не предвидится
@@ -668,8 +655,8 @@ proc FITPROC_xx {prog task args} {
 
     } else {
 
-      #set delta [expr {abs($o-$result)}] ;# 
-      set delta [expr {($o-$result) ** 2 } ] ;# !! может корень из суммы квадратов?
+      #set delta [expr {abs($o-$calc)}] ;# 
+      set delta [expr {( $real - $calc ) ** 2 } ] ;# !! может корень из суммы квадратов?
 
       #if {$delta > 1000} {
       #  # anti overflow ???
@@ -679,7 +666,7 @@ proc FITPROC_xx {prog task args} {
       set delta_sum [+ $delta_sum $delta]
 
       if {$is_print} {
-        puts stderr "FITPROC_xx: x = $x, o = $o, result = $result, delta = $delta, delat_sum = $delta_sum"
+        puts stderr "FITPROC_xx: x = $x, real = $real, calc = $calc, delta = $delta, delat_sum = $delta_sum"
       }
 
       #set fitness [+ $fitness $delta]
@@ -691,13 +678,19 @@ proc FITPROC_xx {prog task args} {
   #set fitness [+ $fitness $delta_sum]
   set fitness [expr {$fitness + sqrt ($delta_sum)}]
 
+  # 1) TODO
   # длину учитывать ? но тогда генетич. разнообразие ухудшается?
   #
-  #incr fitness [llength $src] 
+  set len [calc_len_prog $prog]
 
+  #set fitness [+ $fitness [* 0.01 $len]]
+
+
+  # 2) TODO
   # нам не нужны лишние результаты в стеке ? тоже ухудшает? лучше потом преобразовать?
   #
   #incr fitness $len
+
 
   #puts stderr "FITPROC_xx, prg = $src, fitness = $fitness"
 
@@ -711,6 +704,32 @@ proc FITPROC_xx {prog task args} {
 #   puts "item = $item,  ret = [FITPROC_xx  $item $task -is_print 1] "
 
 # }
+#-------------------------------------------------------------------------------
+proc func_prepare_from_input {inp} {
+
+  set lis [split $inp]
+
+  set out {}
+
+  foreach l $lis {
+
+    if        {$l == "x"} {
+      append out {$x}
+    } elseif  {$l == "plus"} {
+      append out +
+    } elseif  {$l == "minus"} {
+      append out -
+    } elseif  {$l == "mult"} {
+      append out *
+    } elseif  {$l == "pow"} {
+      append out **
+    } else {
+      append out $l
+    }
+  } 
+
+  return $out
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc TEST_xx {args} {
@@ -727,12 +746,15 @@ proc TEST_xx {args} {
 
   #------------------------------------------------------
 
-  set seed        [dict_parse $argv "-seed"  2013]
-  set lpop        [dict_parse $argv "-lpop"  10]  ;# колич-во ботов 
-  set size        [dict_parse $argv "-size"   6]  ;# макс. длина ботов (при начальном старте?)
-  set nums        [dict_parse $argv "-nums"  10]  ;# шагов эволюции 
-  set vers        [dict_parse $argv "-vers"  "gp"]
-  set print       [dict_parse $argv "-print"  1]
+  ## set seed        [dict_parse $argv "-seed"  2013]
+  set seed        [dict_parse $argv "-seed"  @] ;# каждый выхов случаен
+
+  set lpop        [dict_parse $argv "-lpop"  10]   ;# колич-во ботов 
+  set size        [dict_parse $argv "-size"   6]   ;# макс. длина ботов (при начальном старте?)
+  set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
+
+  set vers        [dict_parse $argv "-vers"  "gp"] ;# по умолчанию 
+  set print       [dict_parse $argv "-print"    1]
 
   #------------------------------------------------------
 
@@ -743,16 +765,18 @@ proc TEST_xx {args} {
   if {$::INIT} {
     set gp_list     [dict_parse $argv "-list"       "* nop +"]
   } else {
-    set gp_list     [dict_parse $argv "-list"   "dup * nop +"]
+    set gp_list     [dict_parse $argv "-list"   "dup * +"]
   }
 
   #------------------------------------------------------
 
-  set func        [dict_parse $argv "-func"   {x ** 2 + x}]
+  #set func        [dict_parse $argv "-func"   {x ** 2 + x}]
+  set func        [dict_parse $argv "-func"   {x pow 2 plus x}]
 
-  set func [x_add_dollar $func] 
- 
-  puts "func = $func"
+  set func [func_prepare_from_input $func] 
+
+  set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
+  #puts "joyf = $joyf"
 
   #------------------------------------------------------
   # флажки для новейших алгоритмов
@@ -789,6 +813,7 @@ proc TEST_xx {args} {
               -func           $func \
               -gp_list    $gp_list] 
 
+##              -joyf           $joyf \
   #------------------------------------------------------
   #
   # задаем начальную "случайность"
@@ -802,6 +827,13 @@ proc TEST_xx {args} {
 
 
   #------------------------------------------------------
+  # распечатаем начальные значения
+
+  puts "func = $func"
+  puts "seed = $seed"
+  puts "init = $::INIT"
+  puts "list = $gp_list"
+
   #------------------------------------------------------
 
 
@@ -911,4 +943,14 @@ proc TEST_xx {args} {
   return
 }
 #-------------------------------------------------------------------------------
+# 
+# t~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -news 1 -print 2
+#
+# TODO :
+# 1) печатать подробно все шаги 
+# 2) при клонировании рефакторить с выделением новых библю функций
+# 3) в библ. добавить крайние значения, т.е. контекст и + статистика использования
+# 4) мутировать не произвольно а в соотвт. с плюсовой статистикой 
+# 5) возможно запоминать хорошие "практики мутирования"
+# 
 ###########################################################################################

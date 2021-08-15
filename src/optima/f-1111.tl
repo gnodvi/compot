@@ -1349,16 +1349,6 @@ proc run_v1_prog {prog} {
 
   } 
 
-  # else {}
-
-  #     # скорее всего это чистый исходник?  а
-  
-  #     set src    $prog
-  #     run_v1_src $src
-  
-  #     return
-  #  { }
-
   # получим  "исходник" главной программы
   # 
   set src [prog_get_prg_src $prog "main"]
@@ -1371,7 +1361,20 @@ proc run_v1_prog {prog} {
 
   librarys_pop        ;# убрать библиотеку из стека  
 
-  return
+  return 
+}
+#-------------------------------------------------------------------------------
+proc calc_len_prog {prog} {
+
+  if [is_GLOBAL_DICT $prog]  { 
+    set prog [set $prog] ;# сам словарь
+  } 
+
+  set src [prog_get_prg_src $prog "main"]
+
+  set len [llength $src] ;# ?? 
+
+  return $len
 }
 #-------------------------------------------------------------------------------
 # proga - обобщенное название программы, там могут быть разные варианты (типы) 

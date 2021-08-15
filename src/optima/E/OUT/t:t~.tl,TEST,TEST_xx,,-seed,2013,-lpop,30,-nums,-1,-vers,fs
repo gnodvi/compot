@@ -1,6 +1,9 @@
 
 func = $x**2+$x
-m = -print 1 -lpop 30 -nums -1 -vers fs
+seed = 2013
+init = 0
+list = dup * +
+m = -print 1 -seed 2013 -lpop 30 -nums -1 -vers fs
 000)     best =   -6.000 :   nop nop dup nop * dup nop * * dup nop dup 
 001)     best =   -6.000 :   dup + + nop nop dup nop * dup + dup nop 
 002)     best =   -4.000 :   nop dup nop nop nop dup nop * * * nop nop 

@@ -1,10 +1,11 @@
 
-run_gp_evolution_for_task : seed = 0 !!!!!!!!!!!
 
-make_prgpop: INIT POPULATION: 
+make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
 
 prgpop = {MOVE MOVE {IF_FOOD_AHEAD nop} i RIGHT RIGHT MOVE} {IF_FOOD_AHEAD IF_FOOD_AHEAD MOVE {MOVE i} nop RIGHT nop nop RIGHT} {MOVE RIGHT RIGHT} {{MOVE IF_FOOD_AHEAD} i IF_FOOD_AHEAD nop} {{IF_FOOD_AHEAD i} {nop MOVE} MOVE i nop RIGHT MOVE i nop MOVE nop} {i {IF_FOOD_AHEAD nop} MOVE MOVE RIGHT MOVE i RIGHT i MOVE i IF_FOOD_AHEAD nop IF_FOOD_AHEAD} {RIGHT MOVE MOVE nop IF_FOOD_AHEAD} {IF_FOOD_AHEAD {nop IF_FOOD_AHEAD} nop {i RIGHT IF_FOOD_AHEAD} nop nop} {nop i {MOVE RIGHT IF_FOOD_AHEAD MOVE RIGHT MOVE} RIGHT MOVE RIGHT MOVE MOVE MOVE} {i nop}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
 000)     best =   79.000 :   {MOVE IF_FOOD_AHEAD} i IF_FOOD_AHEAD nop 
 001)     best =   79.000 :   {MOVE IF_FOOD_AHEAD} i IF_FOOD_AHEAD nop 

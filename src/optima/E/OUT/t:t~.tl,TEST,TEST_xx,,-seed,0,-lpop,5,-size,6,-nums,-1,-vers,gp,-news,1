@@ -1,19 +1,17 @@
 
 func = $x**2+$x
-run_gp_evolution_for_task : seed = 0 !!!!!!!!!!!
+seed = 0
+init = 0
+list = dup * +
 
-make_prgpop: INIT POPULATION: 
+make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
 
-prgpop = {dup dup nop nop} {* * dup + * dup} * {dup * nop *} {dup dup +}
+prgpop = {dup dup * +} {dup dup dup + * dup} * {dup * * *} {dup dup +}
 
-000)     best =    2.650 :   dup dup + 
-001)     best =    2.650 :   dup dup + 
-002)     best =    2.650 :   dup dup + 
-003)     best =    2.650 :   dup dup + 
-004)     best =    2.191 :   dup dup dup + + 
-005)     best =    2.191 :   dup dup dup + + 
-006)     best =    0.000 :   dup nop dup * nop + 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
+000)     best =    0.000 :   dup dup * + 
 
 ====================================================================
 

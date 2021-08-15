@@ -253,21 +253,8 @@ proc item_get_prog {item} {
 #-------------------------------------------------------------------------------
 proc item_calc_fitness {item fitnessfunc task} {
 
-  # а может уже посчитано?
-  # 
-  #set fitn  [item_get_fitn  $item] 
-
-  #   if {$::ITEMS_LIST == 0} { 
-  
-  #     set prog [item_get_prog    $item]
-  #     set src  [prog_get_prg_src $prog "main"] 
-  
-  #     set fitn  [$fitnessfunc  $src $task]  
-  #   } else {
   
   set fitn  [$fitnessfunc  $item $task]  
-  #   }
-  
 
   incr ::eval_count
 
@@ -2386,11 +2373,11 @@ proc item_qsort_MIN_to_LEFT {a b} {
 #                       vpointer		userdata )
 
 #-------------------------------------------------------------------------------
-proc dict_parse_all {d args} {
+proc dict_parse_all_minus {d args} {
 
   dict for {key value} $args {
 
-    set key [string trimleft $key "-"]
+    set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
 
     SET $d  $key $value
   }
@@ -2411,7 +2398,7 @@ proc task_create {args} \
   SET $t quotes_proc "quotes_proc_NULL"
 
 
-  dict_parse_all $t {*}$args
+  dict_parse_all_minus $t {*}$args ;# заносив убирая минусы !
 
   return $t
 }
@@ -2435,8 +2422,6 @@ proc mutate_create {args} {
   #set mutate_proc "ga_mutate_double_singlepoint_drift"
 
   set mutate_proc [dict_parse $args "-mutate_proc" ga_mutate_double_singlepoint_drift]
-
-  #dict_parse_all $t {*}$args
 
 
   if {$::NEWMUTATE} {
@@ -2692,13 +2677,14 @@ proc make_prgpop {task randpop_proc
   
   if {$is_print} {
     puts ""
-    puts "[procname]: INIT POPULATION: \n"
+    puts "[procname]: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  \n"
     puts stderr "randpop_proc= $randpop_proc, population_size= $population_size, minlen= $minlen, maxlen= $maxlen gp_list= $gp_list, randinstr= $::randinstr, quotes_proc= $::quotes_proc"
     puts ""
     puts "prgpop = $prgpop"
     puts ""
     #pop_print_B  $prgpop 
     #puts ""
+    puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  \n"
   }
 
   return $prgpop
@@ -6002,15 +5988,31 @@ proc gp_joyprg_mutate {task prg mutprob} {
 
   set gp_list [GET $task gp_list]
 
-  for {set i 0} {$i < [llength $prg]} {incr i} {
-    
-    set mode [lrand "0 1 2"]
+  if {$::NEWS} {
 
-    # 0 - удаляем 
-    # 1 - заменяем
-    # 2 - добавляем
-    
+    # по новому алгоритму - хотим точечно и последовательно 
+    # 
+
+    set mode [lrand "0 1 2"]
+    set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
+
     mutate_gen_in_joyprg_by_mode  prg  $i $mutprob $gp_list  $mode 
+
+  } else {
+
+    # о старому алгоритму - мутируем всю программу целиком и хаотично
+    # 
+
+    for {set i 0} {$i < [llength $prg]} {incr i} {
+      
+      set mode [lrand "0 1 2"]
+      
+      # 0 - удаляем 
+      # 1 - заменяем
+      # 2 - добавляем
+      
+      mutate_gen_in_joyprg_by_mode  prg  $i $mutprob $gp_list  $mode 
+    }
   }
   
   return $prg
@@ -6249,15 +6251,7 @@ dict_class_create BOT {} {
 } {
   # а это конструктор класса 
 
-  #   set task [dict_parse $args "-task" \
-     #               [task_create  "FS_fitness" -fit_target $::fit_target]] 
-  
-  #   SET $obj "task" $task
-  
-  #   SET $obj "name" [dict_parse  $args  "-name" ]
-  #   SET $obj "pop"  [dict_parse  $args  "-pop"  ] 
-  
-  dict_parse_all $obj {*}$args 
+  dict_parse_all_minus  $obj {*}$args 
 }
 
 #---------------------------------------------------------
@@ -6564,17 +6558,19 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
 
     #item_print_fitness    $item_old 0 
     
-    set item_new [make_mutant_from_item  $item_old $mutprob $task] ;# сделали мутанта
-    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    item_calc_fitness   $item_new $fitnessfunc  $task    ;# посчитали его
+    set item_new [make_mutant_from_item  $item_old $mutprob     $task] ;# сделали мутанта    
+
+    item_calc_fitness                    $item_new $fitnessfunc $task  ;# посчитали его
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     #item_print_fitness  $item_new 1   
     #set src   [item_get_main_src   $item] 
     
     set fitn_new  [item_get_fitn   $item_new] 
     
-
     # посмотрим, есть ли уже улучшение от начального
     #
     set is_progress [is_progress  $tobest $fitn_start $fitn_new]
@@ -6583,11 +6579,9 @@ proc try_mutate_to_best {task fitnessfunc tobest item_old num_try} {
       return $item_new ;# если есть, то заканчиваем и выходим с этим результатом
     }
 
-
     lappend history [list $item_new $fitn_new] ;# положили в историю
     #
-    # TODO: но надо бы туда положить еще и метод мутации?
-    
+    # TODO: но надо бы туда положить еще и метод мутации?    
    
     set item_old $item_new ;# готовимся к  след. шагу цикла
   }
@@ -6625,7 +6619,7 @@ proc mutate_randomly {pop_items_old  task num_try} {
   set pop_items_new {} ;# сюда будем формировать новых мутантов
   
 
-  # идем циклом и каждый итем пытаемся смутировать к лучшему
+  # идем циклом и каждого бота пытаемся смутировать к лучшему
   #
   foreach item_old $pop_items_old {
 
@@ -6675,6 +6669,8 @@ proc gp_evolution_4 {pop task args} {
     
     # совсем новый механизм: (форк от лучших и затем мутация)
 
+    # TODO: клонировать с рефакторингом (::AUTO)
+    # 
     set pop_items [cyclic_clone_from_leaders $leaders_items $len]
 
     set pop_items [mutate_randomly   $pop_items $task $::DEEP]
@@ -6830,7 +6826,7 @@ proc run_gp_evolution_for_task {
 
     set seed [clock seconds]
   }
-  puts "[procname] : seed = $seed !!!!!!!!!!!"
+  #puts "[procname] : seed = $seed !!!!!!!!!!!"
 
   comm_random_seed $seed 
 

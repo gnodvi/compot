@@ -1,23 +1,27 @@
 
 func = $x**2+$x
-run_gp_evolution_for_task : seed = 2013 !!!!!!!!!!!
+seed = 2013
+init = 0
+list = dup * +
 
-make_prgpop: INIT POPULATION: 
+make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
 
-prgpop = {* nop nop * *} {nop dup dup + + *} {nop +} {+ + + * * +} {* +} nop dup {nop nop + dup nop nop} {* * nop dup} dup
+prgpop = {dup + * * dup} {+ dup dup + + *} {* +} {+ + + * * +} {* +} * dup {+ * + dup * *} {dup dup * dup} dup
 
-000)     best =    6.115 :   nop 
-001)     best =    2.650 :   nop dup dup + * 
-002)     best =    2.650 :   nop dup dup + * 
-003)     best =    2.650 :   nop dup dup + * 
-004)     best =    0.000 :   nop dup dup * + 
-005)     best =    0.000 :   nop dup dup * + 
-006)     best =    0.000 :   nop dup dup * + 
-007)     best =    0.000 :   nop dup dup * + 
-008)     best =    0.000 :   nop dup dup * + 
-009)     best =    0.000 :   nop dup dup * + 
-010)     best =    0.000 :   nop dup dup * + 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
+000)     best =    3.752 :   dup dup * dup 
+001)     best =    3.752 :   dup dup * dup 
+002)     best =    3.752 :   dup dup * dup 
+003)     best =    0.000 :   dup dup * + dup 
+004)     best =    0.000 :   dup dup * + dup 
+005)     best =    0.000 :   dup dup * + dup 
+006)     best =    0.000 :   dup dup * + dup 
+007)     best =    0.000 :   dup dup * + dup 
+008)     best =    0.000 :   dup dup * + dup 
+009)     best =    0.000 :   dup dup * + dup 
+010)     best =    0.000 :   dup dup * + dup 
 
 ====================================================================
 

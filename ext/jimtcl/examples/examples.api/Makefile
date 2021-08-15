@@ -12,7 +12,8 @@ CFLAGS+= -I$(JIM_DIR)
 #-------------------------------------------------------------------------------
 
 LDLIBS += -L$(JIM_DIR) -ljim -lutil -lm   -ldl -lz  
-LDLIBS += `pkg-config libssl  --libs`
+LDLIBS += `pkg-config libssl     --libs`
+LDLIBS += `pkg-config libcrypto  --libs`
 
 
 EXAMPLES=		\
