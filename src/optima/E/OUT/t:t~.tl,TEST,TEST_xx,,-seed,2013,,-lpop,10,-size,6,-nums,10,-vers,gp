@@ -14,14 +14,14 @@ prgpop = {dup + * * dup} {+ dup dup + + *} {* +} {+ + + * * +} {* +} * dup {+ * 
 000)     best =    3.752 :   dup dup * dup 
 001)     best =    3.752 :   dup dup * dup 
 002)     best =    3.752 :   dup dup * dup 
-003)     best =    0.000 :   dup dup * + dup 
-004)     best =    0.000 :   dup dup * + dup 
-005)     best =    0.000 :   dup dup * + dup 
-006)     best =    0.000 :   dup dup * + dup 
-007)     best =    0.000 :   dup dup * + dup 
-008)     best =    0.000 :   dup dup * + dup 
-009)     best =    0.000 :   dup dup * + dup 
-010)     best =    0.000 :   dup dup * + dup 
+003)     best =    3.752 :   dup dup * dup 
+004)     best =    3.752 :   dup dup * dup 
+005)     best =    2.650 :   dup + dup dup 
+006)     best =    2.650 :   dup + dup dup 
+007)     best =    2.650 :   dup + dup dup 
+008)     best =    0.000 :   dup dup * + 
+009)     best =    0.000 :   dup dup * + 
+010)     best =    0.000 :   dup dup * + 
 
 ====================================================================
 

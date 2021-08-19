@@ -457,15 +457,6 @@ proc NEXT_01 {args} {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  #SET $::gp_dict "p222" {src { p1 p1 p1 }}
-  #SET $::gp_dict "p5" {src { p3 p1 p1 }}
-  #gp_dict_add_by_src { p1 p1 p1 }
-  #gp_dict_add_by_src { p1 p1 p1 p1 p1 }
-  #gp_dict_add_by_src { p000 p001 p1 p1 p1 }
-  #SET $::gp_dict "p5" {src { p1 p1 p1 }}
-
-  #set ::gp_dict_AUTO $auto
-
   ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
   ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
   ##                                            -list,\{,p1,p3,p5,\}
@@ -754,7 +745,10 @@ proc TEST_xx {args} {
   set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
 
   set vers        [dict_parse $argv "-vers"  "gp"] ;# по умолчанию 
+
   set print       [dict_parse $argv "-print"    1]
+  set ::is_print  $print
+  
 
   #------------------------------------------------------
 
@@ -856,8 +850,6 @@ proc TEST_xx {args} {
                    -fit_error  0.01        \
                    -gp_list    $gp_list]  
 
-    set ::is_print $print
-  
     set obj \
       [BOT01 new  -lpop $lpop -lsrc $size -task $task_fs -vers $vers] 
 
@@ -866,12 +858,8 @@ proc TEST_xx {args} {
     SET $pop  select_two   "ga_select_two_bestof2"
 
 
-    #set args {-print  1}           ;# ?? добавили 
-    #
-    #set m [dict merge $args $argv]
     set m [dict merge   {-print  1} $argv]
     puts "m = $m"
-    #set ret [calc_BOT01 $obj {*}$argv  -print 1]
     set ret [calc_BOT01 $obj {*}$m]
 
   #------------------------------------------------------
@@ -896,7 +884,7 @@ proc TEST_xx {args} {
   if {$vers == "ga"} {
   #------------------------------------------------------
     
-    set ::is_print $print
+    #set ::is_print $print
     
     set obj_ga \
       [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
@@ -943,14 +931,51 @@ proc TEST_xx {args} {
   return
 }
 #-------------------------------------------------------------------------------
-# 
+proc TEST_auto {args} {
+
+  puts ""
+  puts "TEST_auto"
+  puts ""
+
+  
+  #set prog [list \
+  #            "main"    [list "src" [list_create {*}$src1]] \
+  #            "kvadrat" [list "src" [list_create  dup *] ]  ]
+
+  #set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
+  #set src [item_get_main_src $item]
+      
+  #set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
+  # ::gp
+  
+  #SET $::gp_dict "p222" {src { p1 p1 p1 }}
+  #SET $::gp_dict "p5" {src { p3 p1 p1 }}
+  #gp_dict_add_by_src { p1 p1 p1 }
+  #gp_dict_add_by_src { p1 p1 p1 p1 p1 }
+  #gp_dict_add_by_src { p000 p001 p1 p1 p1 }
+  #SET $::gp_dict "p5" {src { p1 p1 p1 }}
+
+  #set ::gp_dict_AUTO $auto
+
+}
+#-------------------------------------------------------------------------------
+#
 # t~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -news 1 -print 2
+# t~.tl TEST TEST_xx -nums 5 -news 1 -func 'x pow 3 plus x' -news 1 -print 2 -seed 13 -auto 1
 #
 # TODO :
+
 # 1) печатать подробно все шаги 
 # 2) при клонировании рефакторить с выделением новых библю функций
 # 3) в библ. добавить крайние значения, т.е. контекст и + статистика использования
 # 4) мутировать не произвольно а в соотвт. с плюсовой статистикой 
 # 5) возможно запоминать хорошие "практики мутирования"
-# 
+#
+
+# В общем, надо отслеживать и использовать, следующие статистики :
+#   - динамические шаблоны полезных мутаций
+#   - статическое распределение шаблонов по популяции (библиотеки?)
+#   - полезность отдельных операций в рантайме (и сразу реагировать на крах?)
+#   - учитывать арность операций и текущий размер стека ?!!!!
+
 ###########################################################################################
