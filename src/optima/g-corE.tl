@@ -7,6 +7,9 @@ source "f-0000.tl"  ;# общие части
 source "f-1111.tl"  ;# 
 
 
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # формируется динамически (словарная библиотека)
 
 set ::gp_dict [dict_create]
@@ -23,7 +26,107 @@ set ::AUTO 0 ;# флажок применения динамического словаря
 
 set ::DEEP 5 ;# глубина последовательности мутации
 
+# ------------------------------------------------------------------------------
+# программная статистика
 
+set ::PI {}
+
+set ::PI_begin 0
+set ::PI_final 0
+
+# ------------------------------------------------------------------------------
+proc pi_print {} {
+
+  dict for {key value} $::PI {
+
+    #set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
+    #SET $d  $key $value
+
+    puts [format "key = %8s , value = $value" $key]
+  }
+
+}
+# ------------------------------------------------------------------------------
+proc pi_calc_balans_prg {prg} {
+
+  set balans 0
+
+  foreach p $prg {
+
+    #set inp [dict get $::PI $p "inp"] ;# сколько берет из стека
+    #set out [dict get $::PI $p "out"] ;# сколько кладет
+    set sum [dict get $::PI $p "sum"] ;# суммарный баланс
+
+    #incr balans [expr {- $inp + $out}]
+    incr balans $sum
+
+    #puts "p = $p, balans = $balans"
+  }
+
+  return $balans
+}
+# ------------------------------------------------------------------------------
+proc pi_calc_balans_full {prg} {
+
+  set balans [pi_calc_balans_prg  $prg]
+
+  return [expr {$::PI_begin + $balans - $::PI_final}]
+}
+# ------------------------------------------------------------------------------
+proc pi_calc_balans_list {prg} {
+
+
+  set balans $::PI_begin ;# сразу жобавим начальную арность стека
+  set ret {}
+  set len [llength $prg]
+
+  for {set i 0} {$i < $len} {incr i} {
+
+    set p [lindex $prg $i]
+
+    set sum [dict get $::PI $p "sum"] ;# суммарный баланс
+    incr balans $sum
+
+    if {$i == [- $len 1]} {
+      incr balans -$::PI_final ;# последний элемент уже сравним с нужным выходным
+    }
+
+    lappend ret $balans
+  }
+ 
+  # программа будкт считаться семантически корректной, если все элеметы вых.
+  # списка >= 0 (== 0 могут быть такие операторы), а последний элемент == 0.
+  # 
+  # к этому и надо стремится мутируя программу
+
+  return $ret
+}
+# ------------------------------------------------------------------------------
+proc pi_add {name params} {
+
+  dict set ::PI  $name $params
+
+  set inp [dict get $params "inp"] ;# сколько берет из стека
+  set out [dict get $params "out"] ;# сколько кладет
+
+  set sum [expr {- $inp + $out}]
+
+  dict set ::PI $name "sum" $sum
+}
+# ------------------------------------------------------------------------------
+# proc pi_init {} {
+
+#   pi_init_TEST_xx
+
+#   pi_init_NEXT_01 
+
+# }
+# ------------------------------------------------------------------------------
+
+#pi_init 
+
+
+# ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 #namespace import ::struct::*
@@ -5973,9 +6076,7 @@ proc mutate_gen_in_joyprg_by_mode {&program i prob gp_list  mode} {
   return
 }
 #-------------------------------------------------------------------------------
-# По заданной программе возвращается мутированная программа, в которой каждая 
-# инструкция будет заменена (или новая вставлена сразу за ней) с заданной 
-# вероятностью '$p'.
+# По заданной программе возвращается мутированная программа
 # 
 #-------------------------------------------------------------------------------
 proc gp_joyprg_mutate {task prg mutprob} {
@@ -5990,8 +6091,11 @@ proc gp_joyprg_mutate {task prg mutprob} {
 
   if {$::NEWS} {
 
-    # по новому алгоритму - хотим точечно и последовательно 
+    # по новому алгоритму - хотим ьенять точечно и семантически осмыслено 
     # 
+
+    #~~~~~~~~~~~~~~~~~~~~~~~`
+    #~~~~~~~~~~~~~~~~~~~~~~~`
 
     set mode [lrand "0 1 2"]
     set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
@@ -6002,7 +6106,6 @@ proc gp_joyprg_mutate {task prg mutprob} {
 
     # о старому алгоритму - мутируем всю программу целиком и хаотично
     # 
-
     for {set i 0} {$i < [llength $prg]} {incr i} {
       
       set mode [lrand "0 1 2"]
@@ -6022,8 +6125,11 @@ proc make_mutant_from_item {item mutprob task} {
 
   set prg        [item_get_main_src $item] ;# исходник на JOY в виде строки?
   
+  
+  set l [pi_calc_balans_list  $prg]
+  #puts "gp_joyprg_mutate: l = $l"
+
   set prg_mutant [gp_joyprg_mutate  $task $prg $mutprob]
- 
   
   set mutant [item_make $prg_mutant]  ;# цельный агента-мутанта
   
@@ -6665,10 +6771,14 @@ proc try_mutate_for_all_items {pop_items_old  task num_try} {
 
     set fitn_old  [item_get_fitn   $item_old] 
 
+    set src [item_get_main_src $item_old]
+
+    set lst [pi_calc_balans_list $src]
+
     if {$::is_print >= 2} {
       puts stderr ""
-      puts stderr [format "  item_old:  %-37s :   : %5.2f" \
-		     [item_get_main_src $item_old] $fitn_old]
+      puts stderr [format "  item_old:  %-37s :   : %5.2f , lst =  %s " \
+		   $src $fitn_old $lst]
     }
 
     set item_new [try_mutate_to_best  $num_try $task $fitnessfunc $tobest  \

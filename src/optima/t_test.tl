@@ -11,7 +11,8 @@
 set ::sum        0  ;# начальное значение сумматора 
 set ::sum_target 0  ;# к чему стремимся, что надо получить 
 
-
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # proc PLUS_1 {} {
 
@@ -428,6 +429,13 @@ proc NEXT_01 {args} {
   set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
   set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
   
+  pi_add p1  {"inp" 0 "out" 0}
+  pi_add p3  {"inp" 0 "out" 0}
+  pi_add p5  {"inp" 0 "out" 0}
+
+  set ::PI_begin 0
+  set ::PI_final 0
+
   #------------------------------------------------------
 
   set ::sum_target 20
@@ -722,6 +730,17 @@ proc func_prepare_from_input {inp} {
   return $out
 }
 #-------------------------------------------------------------------------------
+proc pi_init_TEST_xx {} {
+
+  pi_add nop {"inp" 0 "out" 0}
+  pi_add dup {"inp" 1 "out" 2}
+  pi_add *   {"inp" 2 "out" 1}
+  pi_add +   {"inp" 2 "out" 1}
+
+  set ::PI_begin 1
+  set ::PI_final 1
+
+}
 #-------------------------------------------------------------------------------
 proc TEST_xx {args} {
 
@@ -754,7 +773,7 @@ proc TEST_xx {args} {
 
   set ::INIT  [dict_parse $argv "-init"   0] 
   ;# 0 - не делаем специально начальеую инициацию
-  ;# 1 - кладем сразу начальное значение x в стек несколько раз с запасом
+  ;# 1 - кладем сразу начальное значение x в стек несколько раз с запасом dup dup dup
 
   if {$::INIT} {
     set gp_list     [dict_parse $argv "-list"       "* nop +"]
@@ -780,6 +799,16 @@ proc TEST_xx {args} {
   set ::AUTO      [dict_parse $argv "-auto"  $::AUTO]
   set ::DEEP      [dict_parse $argv "-deep"  $::DEEP]
   
+#   pi_add nop {"inp" 0 "out" 0}
+#   pi_add dup {"inp" 1 "out" 2}
+#   pi_add *   {"inp" 2 "out" 1}
+#   pi_add +   {"inp" 2 "out" 1}
+
+#   set ::PI_begin 1
+#   set ::PI_final 1
+
+  pi_init_TEST_xx 
+
   #------------------------------------------------------
 
   #set ::randinstr   randinstr_MAIN 
@@ -937,7 +966,31 @@ proc TEST_auto {args} {
   puts "TEST_auto"
   puts ""
 
-  
+  pi_init_TEST_xx 
+
+
+  #puts "::PI = [set $::PI]"
+  puts "::PI = $::PI"
+  puts ""
+  pi_print 
+  puts ""
+
+  #set b [pi_calc_balans_prg  "dup dup"]
+
+  #set begin 1
+  #set final 1
+  #set prg   "dup dup * +"
+  set prg   "* dup dup +"
+
+  #set f [pi_calc_balans_full  $begin $prg $final]
+  #set f [pi_calc_balans_full  $prg]
+
+  #set l [pi_calc_balans_list $begin $prg $final]
+  set lst [pi_calc_balans_list $prg]
+
+  puts "full balans: $::PI_begin | $prg | $::PI_final,  lst = $lst   ???"
+
+
   #set prog [list \
   #            "main"    [list "src" [list_create {*}$src1]] \
   #            "kvadrat" [list "src" [list_create  dup *] ]  ]
@@ -976,6 +1029,7 @@ proc TEST_auto {args} {
 #   - динамические шаблоны полезных мутаций
 #   - статическое распределение шаблонов по популяции (библиотеки?)
 #   - полезность отдельных операций в рантайме (и сразу реагировать на крах?)
-#   - учитывать арность операций и текущий размер стека ?!!!!
+
+#   - учитывать арность операций и текущий размер стека ?!!!! !!!!!!!!!!!!!
 
 ###########################################################################################
