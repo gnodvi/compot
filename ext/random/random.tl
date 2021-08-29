@@ -132,7 +132,7 @@ proc math_random_seed_null {seed} {
 #-------------------------------------------------------------------------------
 proc comm_random_seed_null {seed} {
 
-  if {$seed == 0} {
+  if {$seed == 0 || $seed == "@"} {
     
     set seed [Y-time 0] ;# // переменная псевдослучайность
   } 

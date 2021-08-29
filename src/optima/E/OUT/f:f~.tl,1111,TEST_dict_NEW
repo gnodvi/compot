@@ -4,20 +4,20 @@ src2 = dup *
 
 -------------------------------------------
 
-prog = main {src ::G_LIST_7} kvadrat {src ::G_LIST_8}
+prog = main {src ::G_LIST_1} kvadrat {src ::G_LIST_2}
 
 
 dict_print DICT = 
   main    {
-    src = ::G_LIST_7
+    src = ::G_LIST_1
   }
   kvadrat {
-    src = ::G_LIST_8
+    src = ::G_LIST_2
   }
 
-list_print ::G_LIST_7 = 3 kvadrat ^
+list_print ::G_LIST_1 = 3 kvadrat ^
 
-list_print ::G_LIST_8 = dup *
+list_print ::G_LIST_2 = dup *
 
 
 -------------------------------------------

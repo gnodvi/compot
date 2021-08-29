@@ -14,7 +14,11 @@ source "f-1111.tl"  ;#
 
 set ::gp_dict [dict_create]
 
-librarys_push $::gp_dict ;# запихнуть в глобальную библиотеку 
+
+biblio_push $::gp_dict ;# запихнуть в глобальную библиотеку 
+#
+# ?????
+
 
 set ::gp_dict_NUMER 0 ;# для имен в динамическом словаре
 
@@ -29,15 +33,15 @@ set ::DEEP 5 ;# глубина последовательности мутации
 # ------------------------------------------------------------------------------
 # программная статистика
 
-set ::PI {}
+set ::LIPS {}
 
-set ::PI_begin 0
-set ::PI_final 0
+set ::LIPS_begin 0
+set ::LIPS_final 0
 
 # ------------------------------------------------------------------------------
 proc pi_print {} {
 
-  dict for {key value} $::PI {
+  dict for {key value} $::LIPS {
 
     #set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
     #SET $d  $key $value
@@ -53,9 +57,9 @@ proc pi_calc_balans_prg {prg} {
 
   foreach p $prg {
 
-    #set inp [dict get $::PI $p "inp"] ;# сколько берет из стека
-    #set out [dict get $::PI $p "out"] ;# сколько кладет
-    set sum [dict get $::PI $p "sum"] ;# суммарный баланс
+    #set inp [dict get $::LIPS $p "inp"] ;# сколько берет из стека
+    #set out [dict get $::LIPS $p "out"] ;# сколько кладет
+    set sum [dict get $::LIPS $p "sum"] ;# суммарный баланс
 
     #incr balans [expr {- $inp + $out}]
     incr balans $sum
@@ -70,13 +74,13 @@ proc pi_calc_balans_full {prg} {
 
   set balans [pi_calc_balans_prg  $prg]
 
-  return [expr {$::PI_begin + $balans - $::PI_final}]
+  return [expr {$::LIPS_begin + $balans - $::LIPS_final}]
 }
 # ------------------------------------------------------------------------------
 proc pi_calc_balans_list {prg} {
 
 
-  set balans $::PI_begin ;# сразу жобавим начальную арность стека
+  set balans $::LIPS_begin ;# сразу жобавим начальную арность стека
   set ret {}
   set len [llength $prg]
 
@@ -84,11 +88,11 @@ proc pi_calc_balans_list {prg} {
 
     set p [lindex $prg $i]
 
-    set sum [dict get $::PI $p "sum"] ;# суммарный баланс
+    set sum [dict get $::LIPS $p "sum"] ;# суммарный баланс
     incr balans $sum
 
     if {$i == [- $len 1]} {
-      incr balans -$::PI_final ;# последний элемент уже сравним с нужным выходным
+      incr balans -$::LIPS_final ;# последний элемент уже сравним с нужным выходным
     }
 
     lappend ret $balans
@@ -99,19 +103,22 @@ proc pi_calc_balans_list {prg} {
   # 
   # к этому и надо стремится мутируя программу
 
+  # TODO - нет, неверно, слишком упрощенно, надо не только сумму баланса,
+  #        но именно по входу чтобы небыло ошибки, т.е. нужна пара !!!
+
   return $ret
 }
 # ------------------------------------------------------------------------------
 proc pi_add {name params} {
 
-  dict set ::PI  $name $params
+  dict set ::LIPS  $name $params
 
   set inp [dict get $params "inp"] ;# сколько берет из стека
   set out [dict get $params "out"] ;# сколько кладет
 
   set sum [expr {- $inp + $out}]
 
-  dict set ::PI $name "sum" $sum
+  dict set ::LIPS $name "sum" $sum
 }
 # ------------------------------------------------------------------------------
 # proc pi_init {} {
@@ -194,28 +201,12 @@ proc item_get_mainsrc {item} {
 
 }
 #-------------------------------------------------------------------------------
-proc prog_get_prg_src {prog prg_name} {
-
-  
-  return [dict get $prog  $prg_name "src"] 
-}
 #-------------------------------------------------------------------------------
 proc item_get_main_src {item} {
 
   set prog [item_get_prog $item]
 
   return [prog_get_prg_src $prog "main"]
-
-}
-#-------------------------------------------------------------------------------
-proc prog_set_prg_src {&prog prg_name prg_src} {
-
-  # TODO: наверное главная проблема - нужно сделать через ссылки на словари!!
-  # 
-
-  USE_REFS
-
-  dict set prog $prg_name "src" $prg_src  ;# занесем процедуру в библиотеку
 
 }
 #-------------------------------------------------------------------------------
@@ -6126,7 +6117,7 @@ proc make_mutant_from_item {item mutprob task} {
   set prg        [item_get_main_src $item] ;# исходник на JOY в виде строки?
   
   
-  set l [pi_calc_balans_list  $prg]
+  #set l [pi_calc_balans_list  $prg]
   #puts "gp_joyprg_mutate: l = $l"
 
   set prg_mutant [gp_joyprg_mutate  $task $prg $mutprob]
@@ -6773,13 +6764,13 @@ proc try_mutate_for_all_items {pop_items_old  task num_try} {
 
     set src [item_get_main_src $item_old]
 
-    set lst [pi_calc_balans_list $src]
+    #set lst [pi_calc_balans_list $src]
 
-    if {$::is_print >= 2} {
-      puts stderr ""
-      puts stderr [format "  item_old:  %-37s :   : %5.2f , lst =  %s " \
-		   $src $fitn_old $lst]
-    }
+    #if {$::is_print >= 2} {
+    #  puts stderr ""
+    #  puts stderr [format "  item_old:  %-37s :   : %5.2f , lst =  %s " \
+    		   $src $fitn_old $lst]
+    #}
 
     set item_new [try_mutate_to_best  $num_try $task $fitnessfunc $tobest  \
 		    $item_old $fitn_old]

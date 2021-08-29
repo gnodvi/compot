@@ -433,8 +433,8 @@ proc NEXT_01 {args} {
   pi_add p3  {"inp" 0 "out" 0}
   pi_add p5  {"inp" 0 "out" 0}
 
-  set ::PI_begin 0
-  set ::PI_final 0
+  set ::LIPS_begin 0
+  set ::LIPS_final 0
 
   #------------------------------------------------------
 
@@ -737,8 +737,8 @@ proc pi_init_TEST_xx {} {
   pi_add *   {"inp" 2 "out" 1}
   pi_add +   {"inp" 2 "out" 1}
 
-  set ::PI_begin 1
-  set ::PI_final 1
+  set ::LIPS_begin 1
+  set ::LIPS_final 1
 
 }
 #-------------------------------------------------------------------------------
@@ -804,8 +804,8 @@ proc TEST_xx {args} {
 #   pi_add *   {"inp" 2 "out" 1}
 #   pi_add +   {"inp" 2 "out" 1}
 
-#   set ::PI_begin 1
-#   set ::PI_final 1
+#   set ::LIPS_begin 1
+#   set ::LIPS_final 1
 
   pi_init_TEST_xx 
 
@@ -960,17 +960,17 @@ proc TEST_xx {args} {
   return
 }
 #-------------------------------------------------------------------------------
-proc TEST_auto {args} {
+proc TEST_lips {args} {
 
   puts ""
-  puts "TEST_auto"
+  puts "TEST_lips"
   puts ""
 
   pi_init_TEST_xx 
 
 
-  #puts "::PI = [set $::PI]"
-  puts "::PI = $::PI"
+  #puts "::LIPS = [set $::LIPS]"
+  puts "::LIPS = $::LIPS"
   puts ""
   pi_print 
   puts ""
@@ -988,27 +988,8 @@ proc TEST_auto {args} {
   #set l [pi_calc_balans_list $begin $prg $final]
   set lst [pi_calc_balans_list $prg]
 
-  puts "full balans: $::PI_begin | $prg | $::PI_final,  lst = $lst   ???"
+  puts "full balans: $::LIPS_begin | $prg | $::LIPS_final,  lst = $lst   ???"
 
-
-  #set prog [list \
-  #            "main"    [list "src" [list_create {*}$src1]] \
-  #            "kvadrat" [list "src" [list_create  dup *] ]  ]
-
-  #set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
-  #set src [item_get_main_src $item]
-      
-  #set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
-  # ::gp
-  
-  #SET $::gp_dict "p222" {src { p1 p1 p1 }}
-  #SET $::gp_dict "p5" {src { p3 p1 p1 }}
-  #gp_dict_add_by_src { p1 p1 p1 }
-  #gp_dict_add_by_src { p1 p1 p1 p1 p1 }
-  #gp_dict_add_by_src { p000 p001 p1 p1 p1 }
-  #SET $::gp_dict "p5" {src { p1 p1 p1 }}
-
-  #set ::gp_dict_AUTO $auto
 
 }
 #-------------------------------------------------------------------------------
@@ -1018,11 +999,11 @@ proc TEST_auto {args} {
 #
 # TODO :
 
-# 1) печатать подробно все шаги 
-# 2) при клонировании рефакторить с выделением новых библю функций
-# 3) в библ. добавить крайние значения, т.е. контекст и + статистика использования
-# 4) мутировать не произвольно а в соотвт. с плюсовой статистикой 
-# 5) возможно запоминать хорошие "практики мутирования"
+# +) печатать подробно все шаги 
+# +) при клонировании рефакторить с выделением новых библю функций
+# -) в библ. добавить крайние значения, т.е. контекст и + статистика использования
+# -) мутировать не произвольно а в соотвт. с плюсовой статистикой 
+# -) возможно запоминать хорошие "практики мутирования"
 #
 
 # В общем, надо отслеживать и использовать, следующие статистики :

@@ -161,8 +161,7 @@ proc r_one {a} {
   #  # 
   #  if       {[set prg [v0_find_joyprog $a]] != {}} {
   
-  #    eval r $prg ;# рекурсивно выполняем
-  
+  #    eval r $prg ;# рекурсивно выполняем 
   #    continue
   #  } 
   #}
@@ -170,13 +169,15 @@ proc r_one {a} {
   
   # 2) теперь смотрим в подключенных библиотеках c "prog"
   # 
-  if       {[set prg [v0_find_prg_in_librarys $a]] != {}} {
+  if       {[set progbody [biblio_find_progbody  $a]] != {}} {
     
+    set src [dict get $progbody "src"]
+
     #puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    #puts "prg = $prg"
+    #puts "src = $src"
     #puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     
-    eval r $prg ;# рекурсивно выполняем
+    eval r $src ;# рекурсивно выполняем
     #
     # TODO отслеживать глуибну рекурсии, чтобы при аварии откатываться
     # на начало рекурсии ??
@@ -1354,12 +1355,12 @@ proc run_v1_prog {prog} {
   set src [prog_get_prg_src $prog "main"]
 
 
-  librarys_push $prog ;# запихнуть локальную библиотеку в стек библиотек
+  biblio_push $prog ;# запихнуть "локальную библиотеку" в стек библиотек
                        # (в данном случае - это сама программа)
 
   run_v1_src $src     ;# выполнить исходник
 
-  librarys_pop        ;# убрать библиотеку из стека  
+  biblio_pop        ;# убрать библиотеку из стека  
 
   return 
 }
@@ -1511,9 +1512,9 @@ proc TEST_dict_NEW {} {
              ]
 
 
-  librarys_push $bibl ;# запихнуть в глобальную библиотеку 
+  biblio_push $bibl ;# запихнуть в глобальную библиотеку 
 
-  # ::LI - но работаем с ним как со стеком
+  # ::BIBLIO - но работаем с ним как со стеком
 
   run_v1_prog  $prog 
 
@@ -1521,44 +1522,35 @@ proc TEST_dict_NEW {} {
 
 }
 #-------------------------------------------------------------------------------
-proc TEST_dict_CMD {} {
+proc TEST_dict_VER {} {
 
-  set seed "@"
+  # тестируем систему выполнения команд с некоторой вероятностью
+  # 
 
-  #-------------------------------------
-  if {$seed == "@"} {
+  global argc argv argv0
 
-    set seed [clock seconds]
-  }
+  set seed  [dict_parse $argv "-seed"  @] ;# каждый вызов случаен
 
-  comm_random_seed $seed 
+  comm_random_seed_null $seed ;# случайно 
 
-  #-------------------------------------
 
   v1_init_all       ;# начальная инициализация
 
   puts ""
 
-  #run_v1_src {666 . }
-
-  # seed
-
-  set cmd1 [dict_create  "cmd" 1 "ver" 0.5]
+  set cmd1 [dict_create  "cmd" 1 "ver" 0.5] ;# команда с заданной вероятностью исполнения
   set cmd2 [dict_create  "cmd" 2 "ver" 0.5]
   set cmd3 [dict_create  "cmd" 3 "ver" 0.5]
 
   puts ""
 
   #set ::R_ONE_CMD 1
-
-  #run_v1_src "$cmd1 $cmd2 $cmd3 $cmd3"
   run_v1_src "$cmd1 $cmd2 $cmd3"
 
   #puts ""
   r  .s ;# посмотреть стек
 
   #set ver [GET $cmd1 "ver"]
-
   #puts "ver = $ver"
 
   #if {$ver == {}} {
