@@ -9,7 +9,6 @@ source "f-1111.tl"  ;#
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 # формируется динамически (словарная библиотека)
 
 set ::gp_dict [dict_create]
@@ -3150,11 +3149,13 @@ proc set_clean_items_proc {clean_items  &prog} {
 
     # тут надо бы сразу добавлять в библиотеку !!
     #
+    #set prog "" ;# <-------- & для Jim?
+
     prog_set_prg_src  prog $proc_name $subs
 
     # на место строки записываем уже готовое имя процедуры
     # 
-    lappend clean_items_with_proc [list $proc_name $nums $w]
+    lappend  clean_items_with_proc [list $proc_name $nums $w]
   }
 
   return $clean_items_with_proc
@@ -3737,19 +3738,24 @@ proc get_arglist {instr} {
     
 # }
 #-------------------------------------------------------------------------------
-proc only_names_from_gpdict {} {
+proc only_names_from_gpdict {gp_dict} {
 
 
-  set d [set $::gp_dict]
+  set d [set $gp_dict]   ;# сделали из указателя простой словарь
 
-  set ret [dict keys $d]
+  set ret [dict keys $d] ;# только ключи
 
   return $ret
 }
 #-------------------------------------------------------------------------------
 # сфомируем совокупный на этот момент список: GP_LIST = gp_list + gp_dict
+#
+# !!!! TODO !!! они же разной структуры !!
+#   gp_list - это простой список имен
+#   gp_dict - рефльный словарь со структурой "src" ...
+#
 #-------------------------------------------------------------------------------
-proc make_GP_LIST {gp_list} {
+proc make_GP_LIST {gp_list gp_dict} {
 
 
   if {$::AUTO} {
@@ -3759,11 +3765,11 @@ proc make_GP_LIST {gp_list} {
     lappend GP_LIST  {*}$gp_list ;# это заданные в задаче
     
     
-    set names [only_names_from_gpdict] ;# формируется динамически
+    set names [only_names_from_gpdict $gp_dict] ;# формируется динамически
     
     lappend GP_LIST {*}$names ;# добавили в общий список откуда выбираем
     
-    #puts stderr "::gp_dict = [set $::gp_dict]"
+    #puts stderr "gp_dict = [set $gp_dict]"
     #puts stderr "names = $names, GP_LIST = $GP_LIST"
 
     return $GP_LIST
@@ -3795,7 +3801,7 @@ proc randinstr_MAIN {gp_list} {
   #  set  instr  [lrand_new $gp_list] 
   #} else {
 
-  set GP_LIST [make_GP_LIST  $gp_list]
+  set GP_LIST [make_GP_LIST  $gp_list $::gp_dict]
 
   set   instr [lrand_new     $GP_LIST] ;# нет уверенности в этой функции!
   #set   instr [lrand  $GP_LIST] ;#
@@ -3975,6 +3981,38 @@ proc make_simple_main_prog {src} {
 
 
   return [list "main" [list "src" $src]]
+}
+#-------------------------------------------------------------------------------
+proc ONE_TEST {} {
+
+
+  set_argc_argv_null 
+
+  #-----------------------------------------------
+
+  #tcltest::test intro-111 {
+  #  "EXAMPLE"
+  #
+  #} -body {
+  #  expr 3 * 5
+  #} -result 15
+
+  #-----------------------------------------------
+
+    
+  proc_name_index_init
+  
+  set src {p0 p0  p1 p1 p1  p2 p2  p2 p2  p1 p1 p1  p3 p3}
+  
+  set prog [make_simple_main_prog $src]
+  
+  set prog [libra_refactoring $prog] 
+  
+  return [canonical_form $prog]
+  
+
+  # {main {p0 p0 proc1 proc2 proc2 proc1 p3 p3} proc1 {p1 p1 p1} proc2 {p2 p2}}
+
 }
 #-------------------------------------------------------------------------------
 proc ALL_TESTS {} {

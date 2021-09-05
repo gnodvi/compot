@@ -12,11 +12,11 @@ if [info exists ::F_0000_TL] {
 #
 #-------------------------------------------------------------------------------
 
-set ::BIBLIO {} ;# это должен быть стек, в который будем складывать
+set ::BIBLIO {} ;# - список (стек), в который будем складывать
 #              словари-библиотеки (общая по задаче, локальные по программе)
 
 
-set ::joy_proglist {} ;# будет dict - библиотека процедур
+set ::joy_proglist {}  ;# будет dict - библиотека процедур
 
 
 # список, заполняемый процедурой [v0_make_tclproc] 
@@ -57,8 +57,8 @@ proc biblio_pop {} {
   return $element
 }
 #-------------------------------------------------------------------------------
-proc biblio_find_progbody {progname} {
-
+proc biblio_find_progbody {progname} \
+{
 
   # перебираем все библиотеки в списке, начиная с верхушки стека
   # 
@@ -89,27 +89,34 @@ set ::joy_ST {}  ;# The VM stack
 
 
 #-------------------------------------------------------------------------------
+proc joyprogs_create {} {
+
+  set jp [dict_create]
+
+  return $jp
+}
+#-------------------------------------------------------------------------------
 proc joy_init {} {
 
 
-  set ::joy_proglist [dict_create]
+  #set ::joy_proglist [dict_create]
 
-  #if {$::NEW} {
+  set ::joy_proglist [joyprogs_create]
+
 
   biblio_push $::joy_proglist ;# запихнуть указатель на СИСТЕМНУЮ библиотеку 
                                  # в стек БИБЛИО
-  #}
 
   return
 }
 ################################################################################
-#-------------------------------------------------------------------------------
+
 # Определение Joy-процедуры; 
 # тело (body) задается в виде списка.
 #
 #-------------------------------------------------------------------------------
-proc v0_:_prg {name body} {
-
+#proc v0_:_prg {name body} {}
+proc v0_make_joyprog {name body} {
 
   # TODO: слишком простая схема, нужна структура [list "src" $body]
   # 
@@ -118,6 +125,10 @@ proc v0_:_prg {name body} {
 
   return
 }
+
+#interp alias {} v0_:_prg {} v0_make_joyprog
+alias v0_:_prg v0_make_joyprog
+
 #-------------------------------------------------------------------------------
 # Определение процедур сделано в стиле Forth, поскольку выглядит много более
 # компактно , чем Joy-евское  DEFINE n == args;
@@ -150,6 +161,7 @@ proc prog_get_prg_src {prog prg_name} {
 
   
   return [dict get $prog  $prg_name "src"] 
+}
 #-------------------------------------------------------------------------------
 proc prog_set_prg_src {&prog prg_name prg_src} {
 
@@ -161,32 +173,34 @@ proc prog_set_prg_src {&prog prg_name prg_src} {
   dict set prog $prg_name "src" $prg_src  ;# занесем процедуру в библиотеку
 
 }
-}
 #-----------------------------------------------------------------------------
 ################################################################################
+
+set  ::NEW_tclproc 0
+
 #-------------------------------------------------------------------------------
 proc v0_make_tclproc {name  arglist body} {
 
+  if {$::NEW_tclproc} {
 
-  lappend ::joy_tcl_list $name   ;# добавить имя в список инструкций
+    dict_set $::joy_tcl_list $name {}
+
+  } else {
+    lappend ::joy_tcl_list $name   ;# добавить имя в список инструкций
+  }
   
   proc $name $arglist $body ;# создать процедуру (средствами Tcl) 
-
-}
-#-------------------------------------------------------------------------------
-proc v0_make_tclproc_alias {aliasname realname} {
-
-
-  lappend ::joy_tcl_list $aliasname   ;# добавить имя в список инструкций
-
-  alias $aliasname $realname
 
 }
 #-------------------------------------------------------------------------------
 proc v0_make_tclproc_alias_NEW {aliasname realname} {
 
 
-  lappend ::joy_tcl_list $aliasname   ;# добавить имя в список инструкций
+  if {$::NEW_tclproc} {
+    dict_set $::joy_tcl_list $aliasname {}
+  } else {
+    lappend ::joy_tcl_list $aliasname   ;# добавить имя в список инструкций
+  }
 
   # ??
   # 
@@ -198,14 +212,27 @@ proc v0_make_tclproc_alias_NEW {aliasname realname} {
 #-------------------------------------------------------------------------------
 proc v0_find_tclproc {name} {
 
-  foreach i $::joy_tcl_list {
+  if {$::NEW_tclproc} {
 
-    if {$i == $name} {
 
-      return $i
+    if {[dict exist ::joy_tcl_list $name]} {
+      
+      return $name
+    } 
+
+  } else {
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    foreach i $::joy_tcl_list {
+      
+      if {$i == $name} {
+        
+        return $name
+      }
     }
-  }
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  }
+  
   return {};
 }
 ################################################################################
@@ -241,7 +268,6 @@ proc v0_print_stack {} {
   }
 
 }
-
 #-------------------------------------------------------------------------------
 # проверить что стек длиной по крайней мере 'n', иначе 
 # принудить вызвавшую процедуру "закончить"

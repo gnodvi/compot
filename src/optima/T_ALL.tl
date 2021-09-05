@@ -19,29 +19,7 @@ package require compot::common
 
 puts ""
 
-#puts ""
-
-#-------------------------------------------------------------------------------
-
-#source "T_JKL.tl"
-
-# puts ""
-
-# run_numer_tests  n . E/OUT 
-
-puts ""
-
 run_numer_tests  t . E/OUT 
-
-puts ""
-
-# run_numer_tests  j . E/OUT 
-
-# puts ""
-
-#-------------------------------------------------------------------------------
-
-#source "T_FGH.tl"
 
 puts ""
 
@@ -53,29 +31,14 @@ run_numer_tests  g . E/OUT
 
 puts ""
 
-# run_numer_tests  h . E/OUT 
-
-# puts ""
-
 #-------------------------------------------------------------------------------
 
-#source "T_PRS.tl"
+#  time ./T_ALL.tl
 
-puts ""
+# real	1m3.387s
+# user	0m51.480s
+# sys	0m10.932s
 
-# run_numer_tests  r . E/OUT 
-
-# puts ""
-
-# run_numer_tests  s . E/OUT 
-
-# puts ""
-
-# run_numer_tests  t . E/OUT 
-
-# puts ""
-
-#-------------------------------------------------------------------------------
 #
 ################################################################################
 
