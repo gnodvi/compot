@@ -34,14 +34,21 @@ GNUPLOTI_DIR = P
 GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
 GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
 
+LITTLE_DIR = O/little
+
 #-------------------------------------------------------------------------------
 
 PROGS =  c_test T/c_capt.so # h-graf 
 
 #all:   PLOTER__ $(PROGS)   
 
-all:   $(PROGS)   
+all:   $(PROGS)  LITTLE__  
 
+
+#-------------------------------------------------------------------------------
+
+LITTLE__ :
+	(cd $(LITTLE_DIR); make)
 
 #-------------------------------------------------------------------------------
 
@@ -75,6 +82,7 @@ T/c_capt.o: c_capt.cc
 #-------------------------------------------------------------------------------
 
 clean : 
+	(cd $(LITTLE_DIR); make clean)
 	rm -f T/*.o $(PROGS)
 #	(cd P; make clean)
 

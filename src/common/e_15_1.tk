@@ -1,0 +1,453 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" "$@"
+
+package require Tk
+
+#-------------------------------------------------------------------------------
+
+#   # touch 'auto_path', so that package can be found even
+#   #  it has not been installed in 'standard' directories.
+
+set auto_path [linsert $auto_path 0 "COMPOT"]
+
+package require compot::common 
+
+source "e_0000.tl"
+
+#-------------------------------------------------------------------------------
+
+# lappend auto_path \
+#   [file join [file dirname [info script]] "DIALOG"] 
+
+#
+
+if {0} {
+  package require compot::dialog
+} else {
+
+  source "d-ker0.tl"
+  source "d-kern.tl"
+  source "d_plot.tk"
+}
+#-------------------------------------------------------------------------------
+# перейти в текущую директорию! ???????
+
+#cd [file normalize [file dirname [info script]]]
+#
+
+set thisDir [file normalize [file dirname [info script]]]
+
+cd $thisDir
+
+#-------------------------------------------------------------------------------
+proc create_scrolled_map_NEW {fid_parent  w_reg h_reg} {
+
+
+  set c ${fid_parent}.c ;# будем создавать под эти именем "плавающий холст"
+
+  ScrolledCanvas_NEW $c  [list 0 0 $w_reg $h_reg] 
+
+  #return
+
+  #-----------------------------------------------------
+
+  set filename  "e-map.gif"
+  set imagename "sectional"
+
+  image create photo $imagename -file $filename -gamma 1
+  #
+  # создали изображение типа "photo" и именем "sectional" ?? (внутренне имя !!)
+
+
+  $c.canvas create image  $w_reg $h_reg  -image "sectional" -anchor se
+
+  #$c.canvas create image 40 40 -image gliders -anchor center -tag movable
+  #$c.canvas create image 40 40 -image gliderpair -anchor center -tag  movable
+
+  #-----------------------------------------------------
+
+  $c.canvas xview moveto .35 ;# как процент окна будет нвидим слева
+  $c.canvas yview moveto .35 ;# как процент окна будет нвидим вверху
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# proc loops_move_all_drons {dx dy} {
+
+#   if {1} {
+
+#     # можно идти по своему списку и т.д.
+#     # 
+#     foreach dron $::drons_list {
+      
+#       dron_move_on_canvas  $dron $dx $dy 
+#     }
+    
+#   } else {
+
+#     # а можно воспользоваться системным списком канваса
+#     # 
+#     #.f1.c.canvas find withtag "DRON"
+#   }
+
+# }
+#-------------------------------------------------------------------------------
+#
+# Связм, определенные для окна верхнего уровня, могут использоваться
+# содержащимеся в нем компонентами ! стр.626
+#
+#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#
+#------------------------------------------------------------------------------
+proc dron_create {x y radius color} {
+
+  set dron [dict_create]
+
+  set xc [- $x $radius]
+  set yc $y
+
+  SET $dron "X" $x 
+  SET $dron "Y" $y 
+
+  SET $dron "RADIUS" $radius
+  SET $dron "XC" $xc
+  SET $dron "YC" $yc            
+
+  SET $dron "P" [YDrawCirc  .f1.c.canvas  $x $y  10 $color] 
+
+  SET $dron "COLOR" $color
+
+  SET $dron "LINES" [list_create]
+
+  return $dron
+}
+#------------------------------------------------------------------------------
+proc vizo_create {} {
+
+  set ::count 0
+
+
+}
+#------------------------------------------------------------------------------
+proc vizo_add_dron {x y radius color} {
+
+
+  set dron [dron_create  $x $y $radius $color]
+
+  lappend ::drons_list $dron ;# затолкали в список
+
+}
+#------------------------------------------------------------------------------
+# proc get_new_drons_list {} {
+
+
+# }
+#------------------------------------------------------------------------------
+proc draw_dron_lines {dron  x y  x_new y_new} {
+
+
+  set color [GET $dron "COLOR"]
+
+  set line  [.f1.c.canvas create line  $x $y $x_new $y_new -fill $color -width 3]
+
+  set lines_ptr [GET $dron "LINES"]
+
+  lappend $lines_ptr $line
+
+  set lines [set $lines_ptr]
+  set len   [llength $lines]
+  #puts "dron = $dron  lines = $lines  len = $len" 
+
+  set max 15
+
+  if {$len >= $max} {
+    
+    set line [lindex $lines [- $len $max]]
+    #puts "line fo delete = $line"
+
+    #.f1.c.canvas delete $line ;# удалили, а может надо просто скрыть?
+
+    .f1.c.canvas itemconfigure $line -fill "white"
+
+    #set options [.f1.c.canvas itemconfigure $line]
+    #puts "options = $options"
+
+    # тут бы лучше список укоротить ?
+  }
+
+}
+#------------------------------------------------------------------------------
+proc dron_calc_new_position {dron} {
+
+
+  set r [GET $dron "RADIUS"] ;
+  set t [expr $::count * 0.2]
+
+  set xc [GET $dron "XC"] 
+  set yc [GET $dron "YC"] 
+
+  set x_new [expr {$xc + $r * cos ($t)}]
+  set y_new [expr {$yc + $r * sin ($t)}]
+
+  return [list $x_new $y_new]
+}
+#------------------------------------------------------------------------------
+proc dron_move  {dron x_new y_new} {
+
+
+  set x [GET $dron "X"] 
+  set y [GET $dron "Y"] 
+
+  set dx [-  $x_new $x ]
+  set dy [-  $y_new $y]
+
+  #------------------------------------------
+
+  # сначала линии - траектории / инверсный след
+  # 
+
+  draw_dron_lines  $dron  $x $y  $x_new $y_new
+
+
+  # а потом уже сам дрон, так лучше ?
+
+  set p [GET $dron "P"] ;# сам дрон
+  
+  .f1.c.canvas move $p  $dx $dy ;# двигаем "дрон" относитеными смещениями
+
+  #------------------------------------------
+
+  SET $dron "X" $x_new
+  SET $dron "Y" $y_new
+
+}
+#------------------------------------------------------------------------------
+proc vizo_run {} {
+
+
+  puts "count = $::count"
+
+  incr ::count
+
+  # наверное, тут надо получить новый дрон-лист, проанализироват, сравнить
+  # со старым, дозалить, пеерсчитать приращения и отрисовать
+  #
+  #set new_drons_lists [get_new_drons_list]
+
+
+  foreach dron $::drons_list {
+
+    foreach {x_new y_new} [dron_calc_new_position $dron] {}
+
+    # "пеерсылаем" эти значения
+    # 
+  
+    dron_move  $dron $x_new $y_new 
+  }
+
+
+  draw_info_frame
+
+  # через 1 секунду повторить рекурсивно эту процедуру
+  # 
+  after 500 [list vizo_run]
+
+}
+#-------------------------------------------------------------------------------     
+proc info_proc {fid from message mes1 mes2 mes3 mes4 } {
+                       
+  
+  switch -glob $message  {
+
+  "YCREATE" {
+
+    #set plot [plot_test3_prepare_NEW]
+      
+    #WIN_set $fid "plot"  $plot
+    #WIN_set $fid "ti"    0 ;# $ti
+  }
+    
+  "YDRAW" {
+    #set w $mes3
+    #set h $mes4
+
+    #YPaintRectFB $fid 0 0 $w $h [WND_color $fid] "red"       
+
+    YPaintRectFB $fid  10 10 30 30 "red"    "white"       
+    YPaintRectFB $fid  50 10 30 30 "green"  "white"       
+    YPaintRectFB $fid  90 10 30 30 "orange" "white"       
+
+    #puts "page2_proc: YDRAW"
+
+    #set x0  10
+    #set y0  10
+    #set w0  [- $w 20]
+    #set h0  [- $h 20]
+
+    #set plot [WIN_get $fid "plot"]
+    #set ti  0
+
+    #YWnd $fid.plot "main_plot_proc_NEW" "BigWindow"  $x0 $y0 $w0 $h0   \
+    \#  0 0 0 [list $plot $ti] "grey"
+  }
+  
+  }
+
+  #   RETURN_TRUE;
+  return
+}
+#-------------------------------------------------------------------------------
+proc draw_info_frame {} {
+
+  set fid .f2
+
+  set r 10
+
+  set x  20
+  set y 100
+
+
+  #YPaintRectF $fid  [- $x $r] [- $y $r] 200 200  "blue"
+  #
+  # а лучше бы просто весь канвас очистит?
+
+  set objs [$fid find withtag "all"] ;# список всех объектов
+
+  #puts "objs = $objs"
+
+  $fid delete {*}$objs ;# всех поудаляли с канваса
+
+  
+  foreach dron $::drons_list {
+
+    set color  [GET $dron "COLOR"]
+    set xdron  [GET $dron "X"]
+    set ydron  [GET $dron "Y"]
+
+    YDrawCirc $fid  $x $y $r  $color
+
+    set text [format "X= %2.1f  Y= %2.1f" $xdron $ydron]
+
+    $fid create text [+ $x 30] $y -text $text -fill $color -anchor w \
+               -font {couruer 7}
+#               -font {couruer 11}
+    
+    incr y [+ $r 20]
+  }
+
+
+  return
+}     
+#-------------------------------------------------------------------------------     
+proc MAIN_P2_new {fid_parent  xx yy ww hh} {
+
+
+  # панелька "t" для карты
+
+  set x1 10
+  set y1 10
+
+  set w1 [expr $ww * 0.70] ;# [expr $ww  - 20]
+  set h1 [expr $hh  - 20]  ;# [expr $hh * 0.8]
+
+  # при изменении размера - меняет геометрию - YPlace
+  # 
+  YPlaceFrame [N $fid_parent "f1"]  $x1 $y1  $w1 $h1  "gray"
+
+
+  # панелька "b" для другого
+
+  set x2 [int [expr $x1 + $w1 + 10]]
+  set y2 [int $y1]
+
+  set w2 [expr $ww - $x2 - 10] 
+  set h2 $h1  
+  
+
+  set name [N $fid_parent "f2"]
+
+
+  # можно фрейм
+  # 
+  #YPlaceFrame  $name  $x2 $y2 $w2 $h2  "blue"
+
+  # а можно и канвас 
+  # 
+  YPlaceCanvas $name  $x2 $y2 $w2 $h2  -bg "blue" 
+
+
+  #draw_info_frame
+
+  #YWnd [N $fid_parent "f2"] info_proc ""  $x2 $y2 $w2 $h2  0 0 0 0 "blue"
+  #YWnd [N $fid_parent "f2"] info_proc ""  400 $y2 $w2 $h2  0 0 0 0 "blue"
+
+}
+#------------------------------------------------------------------------------
+proc Main {} {
+
+  global argc argv
+ 
+
+  get_123_geom_NEW  x0 y0 w0 h0  x1 y1 w1 h1  x2 y2 w2 h2
+
+  # чтобы вставлять в другое окно:
+  # 
+  #   set x1 100
+  #   set y1 100
+  
+  #   set w1 800 ;# 640
+  #   set h1 700 ;# 480
+  
+  #wm withdraw . ;# чтобы коренвое не рисовалось ?
+
+
+  YBigWindowOld . "MAIN_P2_new"  $x1 $y1 $w1 $h1  -title "MAIN DISPLAW"                      
+
+  set w_reg 1359
+  set h_reg 1836
+
+  create_scrolled_map_NEW  .f1 $w_reg $h_reg
+
+  set map_xc [expr $w_reg / 2]
+  set map_yc [expr $h_reg / 2]
+
+
+  set l [vizo_create]
+
+  # добавляем дронов
+  # 
+  vizo_add_dron          $map_xc $map_yc  40    "red"
+  vizo_add_dron  [+ $map_xc  60] $map_yc  50  "green"
+  vizo_add_dron  [+ $map_xc 140] $map_yc 100 "orange"
+
+  # и крутим ими
+  # 
+  puts ""
+  puts ""
+
+  vizo_run ;# т.е. эта процедура не "зависает"
+
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+  #YCanvasFrame .f1.c.canvas.info 50 50 100 100  "blue" - но не то!
+
+  return
+}
+#-------------------------------------------------------------------------------
+
+
+Main
+
+#-------------------------------------------------------------------------------
+#
+################################################################################
+

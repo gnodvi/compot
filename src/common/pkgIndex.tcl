@@ -2,6 +2,16 @@
 
 
 #-------------------------------------------------------------------------------
+
+package ifneeded compot::dialog 1.0 "
+
+  source [file join $dir "d-ker0.tl"]
+  source [file join $dir "d-kern.tl"]
+  source [file join $dir "d_plot.tk"]
+
+  package provide compot::dialog 1.0
+"
+#-------------------------------------------------------------------------------
 # package ifneeded compot::random 1.0 "
 
 #   source [file join $dir "../../ext/random/g-rand.tl"]
@@ -45,6 +55,7 @@ package ifneeded compot::common 1.0 "
 #  source [file join $dir "b-com0.tl"]
 #  load   [file join $dir ./a_capt.so] Capture
 
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 

@@ -2,51 +2,40 @@
 #
 #-------------------------------------------------------------------------------
 
-#MAIN_SRC_DIR = .
+TENSOR_DIR = ../tensor		
 
-include ./Make.mak
+#OTHERS_DIR = ../others
 
+HPOKER_DIR = ../hpoker
 
-COMMON_DIR = ../common
-#DIALOG_DIR = ../dialog
-
-#JOY_GP_DIR = ../joy-gp
-
-TEST-S_DIR = ../others/m
-
-UGRAPH_DIR = ../ugraph
+##LISPER_DIR = ../lisper
 
 #-------------------------------------------------------------------------------
 
 
-all:  COMMON__  TEST-S__  UGRAPH__ ##JOY_GP__  DIALOG__ 
+all:  TENSOR__ # HPOKER__ # OTHERS__ LISPER__  
 
 #-------------------------------------------------------------------------------
 
-COMMON__ :
-	(cd $(COMMON_DIR); make)
+TENSOR__ :
+	(cd $(TENSOR_DIR); make)
 
-#DIALOG__ :
-#	(cd $(DIALOG_DIR); make)
+# OTHERS__ :
+# 	(cd $(OTHERS_DIR); make)
 
+HPOKER__ :
+	(cd $(HPOKER_DIR); make)
 
-# JOY_GP__ :
-# 	(cd $(JOY_GP_DIR); make)
-
-TEST-S__ :
-	(cd $(TEST-S_DIR); make)
-
-UGRAPH__ :
-	(cd $(UGRAPH_DIR); make)
+# LISPER__ :
+# 	(cd $(LISPER_DIR); make)
 
 #-------------------------------------------------------------------------------
 
 clean : 
-	(cd $(COMMON_DIR); make clean)
-#	(cd $(DIALOG_DIR); make clean)
-##	(cd $(JOY_GP_DIR); make clean)
-	(cd $(TEST-S_DIR); make clean)
-	(cd $(UGRAPH_DIR); make clean)
+	(cd $(TENSOR_DIR); make clean)
+#	(cd $(HPOKER_DIR); make clean)
+#	(cd $(OTHERS_DIR); make clean)
+##	(cd $(LISPER_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
