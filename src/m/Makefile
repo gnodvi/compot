@@ -7,6 +7,8 @@
 include ./Make.mak
 
 
+TENSOR_DIR = ../arrays		
+
 COMMON_DIR = ../common
 #DIALOG_DIR = ../dialog
 
@@ -19,9 +21,12 @@ UGRAPH_DIR = ../ugraph
 #-------------------------------------------------------------------------------
 
 
-all:  COMMON__  TEST-S__  UGRAPH__ ##JOY_GP__  DIALOG__ 
+all:  TENSOR__ COMMON__  TEST-S__  UGRAPH__ ##JOY_GP__  DIALOG__ 
 
 #-------------------------------------------------------------------------------
+
+TENSOR__ :
+	(cd $(TENSOR_DIR); make)
 
 COMMON__ :
 	(cd $(COMMON_DIR); make)
@@ -42,6 +47,7 @@ UGRAPH__ :
 #-------------------------------------------------------------------------------
 
 clean : 
+	(cd $(TENSOR_DIR); make clean)
 	(cd $(COMMON_DIR); make clean)
 #	(cd $(DIALOG_DIR); make clean)
 ##	(cd $(JOY_GP_DIR); make clean)

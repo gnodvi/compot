@@ -2,8 +2,6 @@
 #
 #-------------------------------------------------------------------------------
 
-TENSOR_DIR = ../tensor		
-
 #OTHERS_DIR = ../others
 
 HPOKER_DIR = ../hpoker
@@ -13,12 +11,9 @@ HPOKER_DIR = ../hpoker
 #-------------------------------------------------------------------------------
 
 
-all:  TENSOR__ # HPOKER__ # OTHERS__ LISPER__  
+all:  # HPOKER__ # OTHERS__ LISPER__  
 
 #-------------------------------------------------------------------------------
-
-TENSOR__ :
-	(cd $(TENSOR_DIR); make)
 
 # OTHERS__ :
 # 	(cd $(OTHERS_DIR); make)
@@ -32,7 +27,6 @@ HPOKER__ :
 #-------------------------------------------------------------------------------
 
 clean : 
-	(cd $(TENSOR_DIR); make clean)
 #	(cd $(HPOKER_DIR); make clean)
 #	(cd $(OTHERS_DIR); make clean)
 ##	(cd $(LISPER_DIR); make clean)
