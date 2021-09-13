@@ -6,7 +6,8 @@
 #
 
 #. ./E/lib.sh
-source ./E/lib.sh
+#source ./E/lib.sh
+. ./E/lib.sh
 
 echo ""
 

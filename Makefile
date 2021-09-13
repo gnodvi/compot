@@ -8,8 +8,12 @@ all:
 	(cd src/m; make)
 
 test:  
-	sh T.sh
+	(cd .; T.sh)
 
+#	sh T.sh
+#	$(shell ./T.sh)
+
+#	(cd ext/m; M)
 #	(cd ext/m; M)
 #	(cd src/m; M)
 
