@@ -55,7 +55,8 @@ proc draw_plot_to_gui {plot} {
   
   # чмиаем локально сохраненный файл  t_save.pl
   #   
-  run_command "COMPOT/src/dialog/d_plot.tk 6 > /dev/null" ;# отдельной программой!
+  # run_command "COMPOT/src/dialog/d_plot.tk 6 > /dev/null" ;# отдельной программой!
+  run_command "COMPOT/src//common/d_plot.tk 6 > /dev/null" ;# отдельной программой!
   
   #plot_print_gui_NEW $plot ;# можно и так, но тогда это уже будет графическая
   # программа ! а не хотелось бы ?                     

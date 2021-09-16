@@ -40,11 +40,12 @@ proc draw_plot_to_gui {plot} {
   puts ""
   puts ""
   
-  plot_save_NEW  $plot "./t_save.pl"    
+  plot_save_NEW  $plot "./h_save.pl"    
   
   # чмиаем локально сохраненный файл  t_save.pl
   #   
-  run_command "../dialog/d_plot.tk 6 > /dev/null" ;# отдельной программой!
+  #run_command "../dialog/d_plot.tk 6 > /dev/null" ;# отдельной программой!
+  run_command "COMPOT/src/common/d_plot.tk 6 > /dev/null" ;# отдельной программой!
   
   #plot_print_gui_NEW $plot ;# можно и так, но тогда это уже будет графическая
   # программа ! а не хотелось бы ?                     
@@ -736,7 +737,7 @@ proc tao_save {tao i} {
     #set numer [format "%04d" [GET $tao "STEP"]]
     set numer [format "%02d" [GET $tao "STEP"]]
 
-    dict_save $tao "TAO" "t_save.$numer"
+    dict_save $tao "TAO" "h_save.$numer"
   }
 
   return

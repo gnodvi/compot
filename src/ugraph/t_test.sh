@@ -14,9 +14,10 @@ SIZES="87x47+400+200"
 
 md=`date +%m%d%H%M`
 
-exit
+#exit
 
-DIR=../../../../Y/t_test/$md
+#DIR=../../../../Y/t_test/$md
+DIR=./Y/$md
 
 #-------------------------------------------------------------------------------
 
@@ -28,11 +29,13 @@ cp $PROG      $DIR ; \
 cp t_meta.tl  $DIR ; \
 cp g-graf.tl  $DIR ; \
 \
-cd $DIR ; ln -s ../../../compot  COMPOT; \
+cd $DIR ; ln -s ../C  COMPOT; \
 xterm -fn $FNAME -geometry $SIZES -bg black -fg white -cr yellow   -e mc \
 )
 
 echo ""
+
+#cd $DIR ; ln -s ../../../compot  COMPOT; \
 
 #-------------------------------------------------------------------------------
 

@@ -17,9 +17,10 @@ package require compot::common
 # ;-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "../g-graf.tl"
+  #source "../g-graf.tl"
+  source "g-graf.tl"
 
-  source "e_meta.tl"
+  source "h_meta.tl"
 
   global argc argv
 

@@ -18,9 +18,9 @@ puts ""
 
 #-------------------------------------------------------------------------------
 
-# run_numer_tests  e . E/OUT 
+run_numer_tests  e . E/OUT 
 
-# puts ""
+puts ""
 
 run_numer_tests  g . E/OUT 
 

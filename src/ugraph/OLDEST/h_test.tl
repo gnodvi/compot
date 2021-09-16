@@ -25,7 +25,7 @@ package require compot::common
 
 source "g-graf.tl"
 
-source "e_meta.tl"
+source "h_meta.tl"
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -176,8 +176,8 @@ proc MAIN_NEW {} {
       MAKE_GLOBAL_NAME_set_timed ;# временные метки в глобальные имена
       set ::is_meta_saving 1 ;# запуск теста с сохранением разрезов!
   
-      set nn    300  
-      set nums  300 
+      set nn    30 ;# 0  
+      set nums  30 ;# 0 
 
       $prog  $nn $nums
     }
