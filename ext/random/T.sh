@@ -15,13 +15,13 @@ run_tests  g  E/OUT .
 
 echo ""
  
-run_tests  k  E/OUT .
+# run_tests  k  E/OUT .
 
-echo ""
+# echo ""
  
-run_tests  r  E/OUT .
+# run_tests  r  E/OUT .
 
-echo ""
+# echo ""
  
 
 #-------------------------------------------------------------------------------

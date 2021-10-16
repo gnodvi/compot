@@ -19,6 +19,7 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
 # сюда уже входит f-sort.tl !!
 # 
 package require compot::common 
+package require compot::random 
 
 #-------------------------------------------------------------------------------
 proc sort_test {} {

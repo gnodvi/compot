@@ -284,6 +284,20 @@ proc random_double_range {min max} {
 
 #   return ( (max-min) * (((double) random_rand()) / (double) RANDOM_RAND_MAX) + min );
 }
+# /*----------------------------------------------------------------------------*/
+proc random_test {} {
+
+
+  puts ""
+  puts "Testing random numbers."
+  puts ""
+  
+  foreach i {1 2 3 4 5} {
+    puts "[gaul_random_int_range 1 9]  [random_double_range 1.0 9.0]"
+  }
+
+  puts ""
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 

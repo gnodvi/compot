@@ -16,14 +16,14 @@ set COMPOT "./COMPOT"
 #set auto_path [linsert $auto_path 0 $COMPOT]
 
 set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
-set auto_path [linsert $auto_path 0 $COMPOT/ext/random] ;# for JIM
+#set auto_path [linsert $auto_path 0 $COMPOT/ext/random] ;# for JIM
 
 #-------------------------------------------------------------------------------
 
 #source "a-comm.tl"
 
 package require compot::common 
-#package require compot::random 
+package require compot::random 
 
 
 #-------------------------------------------------------------------------------

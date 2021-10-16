@@ -14,14 +14,23 @@ package ifneeded compot::dialog 1.0 "
 #-------------------------------------------------------------------------------
 # package ifneeded compot::random 1.0 "
 
-#   source [file join $dir "../../ext/random/g-rand.tl"]
-#   source [file join $dir "../../ext/random/a-comr.tl"]
+
+#   load   [file join "$dir/T" "r_tcl.so"] Random 
+
+#   source [file join $dir "r-knut.tl"]
+#   source [file join $dir "random.tl"]
 
 #   package provide compot::random 1.0
 # "
 #-------------------------------------------------------------------------------
+package ifneeded compot::random 1.0 "
 
-set auto_path [linsert $auto_path 0 "./COMPOT/ext/random"]
+
+  package provide compot::random 1.0
+"
+#-------------------------------------------------------------------------------
+
+#set auto_path [linsert $auto_path 0 "./COMPOT/ext/random"]
 
 package ifneeded compot::common 1.0 "
 
@@ -43,10 +52,17 @@ package ifneeded compot::common 1.0 "
   source [file join $dir "f-tour.tl"]
   source [file join $dir "f-sort.tl"]
 
-  package require compot::random 
+
+
+  load   [file join "$dir/T" "r_tcl.so"] Random 
+
+  source [file join $dir "r-knut.tl"]
+  source [file join $dir "random.tl"]
 
   package provide compot::common 1.0
 "
+
+#  package require compot::random 
 
 
 #-------------------------------------------------------------------------------

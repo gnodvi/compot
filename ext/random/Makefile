@@ -67,7 +67,7 @@ CURDIR="$(shell pwd)"
 
 #------------------------------------------------------------------
 
-PROGS = r_test T/r_tcl.so T/r_jim.so    T/g-rand.o g_test    
+PROGS =  T/g-rand.o g_test  ## r_test T/r_tcl.so T/r_jim.so       
 
 all: $(PROGS)
 
