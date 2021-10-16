@@ -9,7 +9,7 @@ package require Tk ;# тогда в Windows CMD виден вывод в STDOUT
 #-------------------------------------------------------------------------------
 
 #set ::COMPOT "COMPOT"
-set ::COMPOT "../.."
+#set ::COMPOT "../.."
  
 #-------------------------------------------------------------------------------
 
@@ -596,7 +596,7 @@ proc PAGE21_proc {mop from message mes1 mes2 mes3 mes4  args} {
 
     YCanvasScript  $fid.label  120 30 200 200  "white" "O/N/d-volt.tk" {}    
 
-    #YCanvasScript_NEW  $fid.label  20 30 250 200  "white" "e-volt.tk" {} 
+    #YCanvasScript_NEW  $fid.label  20 30 250 200  "white" "t-volt.tk" {} 
   }
   
   }

@@ -4,6 +4,8 @@
 
 #MAIN_SRC_DIR = ../h
 
+#include ./Make.mak
+
 include ./Make.mak
 
 #-------------------------------------------------------------------------------
@@ -42,13 +44,13 @@ PROGS =  c_test T/c_capt.so # h-graf
 
 #all:   PLOTER__ $(PROGS)   
 
-all:   $(PROGS)  #LITTLE__  
+all:    LITTLE__ ##$(PROGS)   
 
 
 #-------------------------------------------------------------------------------
 
-#LITTLE__ :
-#	(cd $(LITTLE_DIR); make)
+LITTLE__ :
+	(cd $(LITTLE_DIR); make)
 
 #-------------------------------------------------------------------------------
 
@@ -82,7 +84,7 @@ T/c_capt.o: c_capt.cc
 #-------------------------------------------------------------------------------
 
 clean : 
-#	(cd $(LITTLE_DIR); make clean)
+	(cd $(LITTLE_DIR); make clean)
 	rm -f T/*.o $(PROGS)
 #	(cd P; make clean)
 

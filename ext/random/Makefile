@@ -67,7 +67,7 @@ CURDIR="$(shell pwd)"
 
 #------------------------------------------------------------------
 
-PROGS = k_test T/g-rand.o g_test T/k_tcl.so T/k_jim.so
+PROGS = r_test T/r_tcl.so T/r_jim.so    T/g-rand.o g_test    
 
 all: $(PROGS)
 
@@ -91,18 +91,18 @@ g_test: g_test.c  $(H-FILES)  T/g-rand.o
 
 #------------------------------------------------------------------
 
-k_test: k_test.c k-main.h T/k-main.o
-	gcc ${FLAGS} -o $@ $< T/k-main.o
+r_test: r_test.c r-main.h T/r-main.o
+	gcc ${FLAGS} -o $@ $< T/r-main.o
 
-T/k-main.o: k-main.c k-main.h
+T/r-main.o: r-main.c r-main.h
 	gcc ${FLAGS} -c $<  -o $@
 
 #-------------------------------------------------------------------------------
 
-T/k_tcl.so: T/k-init.o T/k-main.o
+T/r_tcl.so: T/r-init.o T/r-main.o
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
 
-T/k-init.o: k-init.c
+T/r-init.o: r-init.c
 	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
 
 #------------------------------------------------------------------
@@ -113,10 +113,10 @@ endif
 
 JIM_DIR = ./JIM
 
-SRC =  k-main.c k-init.c
-DEP =  k-main.h
+SRC =  r-main.c r-init.c
+DEP =  r-main.h
 
-T/k_jim.so:  $(SRC) $(DEP)
+T/r_jim.so:  $(SRC) $(DEP)
 	build-jim-ext -I$(JIM_DIR) -I$(JIM_DIR) $(BUILDOPTS) -D_JIM -o $@ $(SRC)
 
 #------------------------------------------------------------------

@@ -10,18 +10,18 @@ include ./Make.mak
 TENSOR_DIR = ../arrays		
 
 COMMON_DIR = ../common
-#DIALOG_DIR = ../dialog
-
-#JOY_GP_DIR = ../joy-gp
+DIALOG_DIR = ../dialog
 
 TEST-S_DIR = ../others/m
 
-UGRAPH_DIR = ../ugraph
+ORIGIN_DIR = ../origin
+
+TESTER_DIR = ../tester
 
 #-------------------------------------------------------------------------------
 
 
-all:  TENSOR__ COMMON__  TEST-S__  UGRAPH__ ##JOY_GP__  DIALOG__ 
+all:  TENSOR__ COMMON__  TEST-S__  ORIGIN__ DIALOG__ ##TESTER__   
 
 #-------------------------------------------------------------------------------
 
@@ -31,28 +31,28 @@ TENSOR__ :
 COMMON__ :
 	(cd $(COMMON_DIR); make)
 
-#DIALOG__ :
-#	(cd $(DIALOG_DIR); make)
+DIALOG__ :
+	(cd $(DIALOG_DIR); make)
 
 
-# JOY_GP__ :
-# 	(cd $(JOY_GP_DIR); make)
+#TESTER__ :
+#	(cd $(JOY_GP_DIR); make)
 
 TEST-S__ :
 	(cd $(TEST-S_DIR); make)
 
-UGRAPH__ :
-	(cd $(UGRAPH_DIR); make)
+ORIGIN__ :
+	(cd $(ORIGIN_DIR); make)
 
 #-------------------------------------------------------------------------------
 
 clean : 
 	(cd $(TENSOR_DIR); make clean)
 	(cd $(COMMON_DIR); make clean)
-#	(cd $(DIALOG_DIR); make clean)
-##	(cd $(JOY_GP_DIR); make clean)
+	(cd $(DIALOG_DIR); make clean)
+#	(cd $(TESTER_DIR); make clean)
 	(cd $(TEST-S_DIR); make clean)
-	(cd $(UGRAPH_DIR); make clean)
+	(cd $(ORIGIN_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

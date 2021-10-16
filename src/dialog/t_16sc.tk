@@ -18,7 +18,7 @@ set auto_path [linsert $auto_path 0 $COMPOT]
 #
 package require compot::common 
 
-source "e_0000.tl"
+source "t_0000.tl"
 
 #-------------------------------------------------------------------------------
 # перейти в текущую директорию! ???????

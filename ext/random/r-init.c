@@ -26,7 +26,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "k-main.h"
+#include "r-main.h"
 
 //#define NO_CONST 1   ?????????
  
@@ -200,7 +200,7 @@ int
 Random_Init (Gen_Interp *interp) 
 #else
 int 
-Jim_k_jimInit (Gen_Interp *interp) 
+Jim_r_jimInit (Gen_Interp *interp) 
 #endif
 {
 

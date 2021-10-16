@@ -38,7 +38,7 @@ proc RAND {} {
   #  my_source "g-rand.tl"
   #  my_source "random.tl"
 
-  source "knuth.tl"
+  source "r-knut.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
@@ -73,6 +73,23 @@ proc TEST_all {} {
   }
 
   puts ""
+}
+#-------------------------------------------------------------------------------
+proc TEST {} {
+
+  #  my_source "g-rand.tl"
+  #  my_source "random.tl"
+
+  source "r-knut.tl"
+
+  global argc argv
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+
+  # a~.jm RAND permutation_test
+  # a~.jm RAND random_test
+  # a~.jm RAND TEST_lrand
+
 }
 #-------------------------------------------------------------------------------
 
