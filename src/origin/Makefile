@@ -34,21 +34,23 @@ GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
 
 #-------------------------------------------------------------------------------
 
-PROGS =  e-graf 
+PROGS =  e_meta 
 
 all:   $(PROGS)   
 
 
 #-------------------------------------------------------------------------------
 
-e-graf : T/e-graf.o  T/e_meta.o                                  
-	$(GCC) -o $@ $< $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
-
 T/e-graf.o : e-graf.c                                   
 	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
 
-T/e_meta.o : e_meta.c                                   
-	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+#T/e_meta.o : e_meta.c                                   
+#	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+
+
+
+e_meta :  e_meta.c T/e-graf.o                                    
+	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
 #-------------------------------------------------------------------------------
 

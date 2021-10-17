@@ -9,19 +9,22 @@ exec tclsh "$0" ${1+"$@"}
 
 set ::COMPOT "COMPOT"
  
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 
 set auto_path [linsert $auto_path 0 "COMPOT/src/common"]
-#
+
 package require compot::common 
 
+#-------------------------------------------------------------
 
-lappend auto_path \
-  [file join [file dirname [info script]] "."] 
+# lappend auto_path \
+#   [file join [file dirname [info script]] "."] 
+
+set auto_path [linsert $auto_path 0 "COMPOT/src/dialog"]
 
 package require compot::dialog 
 
-#-------------------------------------------------------------------------------
+#-------------------------------------------------------------
 
 set auto_path [linsert $auto_path 0 "COMPOT/ext/tcl-tk/snit"]
 
