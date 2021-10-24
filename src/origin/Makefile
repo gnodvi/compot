@@ -41,15 +41,14 @@ all:   $(PROGS)
 
 #-------------------------------------------------------------------------------
 
-T/e-graf.o : e-graf.c                                   
+T/e-comm.o : e-comm.c e-comm.h                                  
 	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
 
-#T/e_meta.o : e_meta.c                                   
-#	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+T/e-graf.o : e-graf.c e-graf.h                                  
+	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
 
 
-
-e_meta :  e_meta.c T/e-graf.o                                    
+e_meta :  e_meta.c T/e-comm.o T/e-graf.o                                    
 	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
 #-------------------------------------------------------------------------------
