@@ -15,22 +15,140 @@ set auto_path [linsert $auto_path 0 "COMPOT/src/common"]
 
 package require compot::common 
 
-#-------------------------------------------------------------
 
-# lappend auto_path \
-#   [file join [file dirname [info script]] "."] 
+global argc argv
 
-set auto_path [linsert $auto_path 0 "COMPOT/src/dialog"]
+if {$argc == 0} { ;# без параметров запускаем графику
 
-package require compot::dialog 
-
-#-------------------------------------------------------------
-
-set auto_path [linsert $auto_path 0 "COMPOT/ext/tcl-tk/snit"]
-
-package require snit
+  set is_tk 1
+} else {
+  set is_tk 0
+}
 
 #-------------------------------------------------------------------------------
+
+
+
+
+#-------------------------------------------------------------------------------
+
+# все вынести в плоскую модель:
+# 
+
+set ::cells   20
+set ::delay  200
+
+array unset ::data
+
+set ::indices {}
+
+#-------------------------------------------------------------------------------
+proc compute_list_indices {} {
+
+
+  array unset ::data
+
+
+  # NEXT, compute the list of indices
+  # 
+  set ::indices {}
+  
+  for {set i 0} {$i < $::cells} {incr i 1} {
+  for {set j 0} {$j < $::cells} {incr j 1} {
+    lappend ::indices $i,$j
+  }
+  }
+  
+  for {set i 0} {$i < $::cells} {incr i 1} {
+  for {set j 0} {$j < $::cells} {incr j 1} {
+      
+    # Initialize the corresponding data structure
+    set ::data($i,$j) 0
+    
+    # Cache the coordinates of each neighbor.
+    set ::data($i,$j-neighbors) ""
+    
+    foreach {iof jof} {-1 -1  -1 0  -1 1  0 -1  
+      0 1  1 -1  1 0  1 1} {
+      set r [expr {($i + $iof) % $::cells}]
+      set c [expr {($j + $jof) % $::cells}]
+      lappend ::data($i,$j-neighbors) "$r,$c"
+    }
+    
+  }}
+  
+  return
+}
+#-------------------------------------------------------------------------------
+proc set_figure_glider {} {
+
+  set ::data(6,4)  1
+  set ::data(5,5)  1
+  set ::data(5,6)  1
+  set ::data(6,6)  1
+  set ::data(7,6)  1
+  
+  return
+}
+#-------------------------------------------------------------------------------
+proc generate_step_calc {} {
+
+
+  # Count the neighbors of each cell.  During start up we cached the
+  # coordinates of the neighbors of each cell, so now we can just
+  # iterate over them quickly.
+  
+  foreach ij $::indices {
+    set nCount 0
+    
+    foreach neighbor $::data($ij-neighbors) {
+      incr nCount $::data($neighbor)
+    }
+    
+    set count($ij) $nCount
+  }
+  
+  
+  # Set the new contents of each cell based on the count.
+  set changes 0
+  
+  foreach ij $::indices {
+    
+    if {$count($ij) < 2 || $count($ij) > 3} {
+
+      if {$::data($ij)} {
+        # Cell is dead
+        #$self clearcell $ij
+        set ::data($ij) 0
+        incr changes
+      }
+    } elseif {$count($ij) == 3} {
+
+      # Cell is born, if there wasn't one
+      if {!$::data($ij)} {
+        #$self setcell $ij
+        set ::data($ij) 1
+        incr changes
+      }
+    }
+  }
+  
+  return $changes
+}
+#-------------------------------------------------------------------------------
+if {$is_tk} {
+#-------------------------------------------------------------------------------
+
+  set auto_path [linsert $auto_path 0 "$::COMPOT/src/dialog"]
+  package require compot::dialog 
+
+  set auto_path [linsert $auto_path 0 "$::COMPOT/ext/tcl-tk/snit"]
+  package require snit
+
+  package require "Tk"
+
+  source "u-snit.tl"
+
 #-------------------------------------------------------------------------------
 proc SnitWnd {fid compName snitwidget  x y w h  args} {
 
@@ -160,18 +278,6 @@ proc YButtonPack {fid text comm args} {
 # it can be manipulated individually.
 
 #-------------------------------------------------------------------------------
-
-# все вынести в плоскую модель:
-# 
-
-set ::cells   20
-set ::delay  200
-
-array unset ::data
-
-set ::indices {}
-
-#-------------------------------------------------------------------------------
 #
 # ВиджетАдаптор меняет поведение уже существуещего виджета, в отличие  от
 # обычного Виджета, где в основе лежит Frame.
@@ -213,6 +319,10 @@ snit::widgetadaptor LIFEBOARD {
 
     $self configurelist $args
     
+    compute_list_indices 
+
+    set_figure_glider
+
 
     # NEXT, set up the board.
     $self SetupBoard
@@ -259,7 +369,7 @@ snit::widgetadaptor LIFEBOARD {
 
     # Destroy any previous definition
     $self delete all
-    array unset data
+    #array unset ::data
 
     set  cells $options(-cells)
     set pixels $options(-pixels)
@@ -289,6 +399,7 @@ snit::widgetadaptor LIFEBOARD {
     #
     for {set i 0} {$i < $::cells} {incr i 1} {
     for {set j 0} {$j < $::cells} {incr j 1} {
+
         # Compute the upper left corner of the circle
         set p0 [expr {$i*$pixels + 1}]
         set q0 [expr {$j*$pixels + 1}]
@@ -306,39 +417,11 @@ snit::widgetadaptor LIFEBOARD {
         
       }
     }
-
-
-    
+   
     #--------------------------------------------
-
-    # NEXT, compute the list of indices
+    #compute_list_indices 
     # 
-    set ::indices {}
-
-    for {set i 0} {$i < $::cells} {incr i 1} {
-    for {set j 0} {$j < $::cells} {incr j 1} {
-        lappend ::indices $i,$j
-      }
-    }
-    
-    for {set i 0} {$i < $::cells} {incr i 1} {
-    for {set j 0} {$j < $::cells} {incr j 1} {
-
-        # Initialize the corresponding data structure
-        set data($i,$j) 0
-        
-        # Cache the coordinates of each neighbor.
-        set data($i,$j-neighbors) ""
-
-        foreach {iof jof} {-1 -1  -1 0  -1 1  0 -1  
-          0 1  1 -1  1 0  1 1} {
-          set r [expr {($i + $iof) % $::cells}]
-          set c [expr {($j + $jof) % $::cells}]
-          lappend data($i,$j-neighbors) "$r,$c"
-        }
-
-    }}
-    # 
+    $self generate_step_gui 
     #--------------------------------------------
 
 
@@ -352,7 +435,7 @@ snit::widgetadaptor LIFEBOARD {
 
     # FIRST, toggle the cell in the array.
 
-    if {$data($ij) == 0} {
+    if {$::data($ij) == 0} {
       $self   setcell $ij
     } else { 
       $self clearcell $ij
@@ -366,7 +449,7 @@ snit::widgetadaptor LIFEBOARD {
   method setcell {ij} {
 
     $hull itemconfigure $ij -fill forestgreen
-    set data($ij) 1
+    set ::data($ij) 1
   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
   # clearcell ij
@@ -376,7 +459,7 @@ snit::widgetadaptor LIFEBOARD {
   method clearcell {ij} {
 
     $hull itemconfigure $ij -fill white
-    set data($ij) 0
+    set ::data($ij) 0
   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
   # clear
@@ -387,7 +470,7 @@ snit::widgetadaptor LIFEBOARD {
 
     foreach ij $::indices {
 
-      if {$data($ij)} {
+      if {$::data($ij)} {
         $self clearcell $ij
       }
     }
@@ -398,42 +481,29 @@ snit::widgetadaptor LIFEBOARD {
   # The generate function takes the cells on the board through one 
   # generation.
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method generate_step_gui {} {
+
+    foreach ij $::indices {
+
+      if {$::data($ij) == 0} {
+        $hull itemconfigure $ij -fill white
+      } else {
+        $hull itemconfigure $ij -fill forestgreen
+      }
+    }
+    
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   method generate {} {
 
-    # Count the neighbors of each cell.  During start up we cached the
-    # coordinates of the neighbors of each cell, so now we can just
-    # iterate over them quickly.
+    set changes [generate_step_calc]
 
-    foreach ij $::indices {
-      set nCount 0
-      
-      foreach neighbor $data($ij-neighbors) {
-        incr nCount $data($neighbor)
-      }
-      
-      set count($ij) $nCount
-    }
-    
-    # Set the new contents of each cell based on the count.
-    set changes 0
+    # сделать графику в конце
+    #
+    $self generate_step_gui 
 
-    foreach ij $::indices {
 
-      if {$count($ij) < 2 || $count($ij) > 3} {
-        if {$data($ij)} {
-          # Cell is dead
-          $self clearcell $ij
-          incr changes
-        }
-      } elseif {$count($ij) == 3} {
-        # Cell is born, if there wasn't one
-        if {!$data($ij)} {
-          $self setcell $ij
-          incr changes
-        }
-      }
-    }
-    
     return $changes
   }
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
@@ -446,7 +516,8 @@ snit::widgetadaptor LIFEBOARD {
     if {[$self generate] > 0} {
 
       # после небольшой паузы циклично вызываем сами себя
-      # 
+      # (пока есть изменения, потом встали?)
+
       after $options(-delay) [list $self run]
     }
   }
@@ -643,6 +714,8 @@ snit::widget LIFE_MAIN {
   return
 }
 #-------------------------------------------------------------------------------
+} ;# is_tk
+#-------------------------------------------------------------------------------
 proc MAIN {} {
 
   global argc argv
@@ -660,10 +733,27 @@ proc MAIN {} {
 #-------------------------------------------------------------------------------
 proc TEST {} {
 
-    puts ""
-    puts "TEST"
-    puts ""
+  puts ""
+  puts "TEST"
+  puts ""
 
+  set delay 200
+
+  compute_list_indices 
+  
+  set_figure_glider
+
+  #set changes [generate_step_calc]
+
+  #if {[$self generate] > 0} {
+    
+    # после небольшой паузы циклично вызываем сами себя
+    # (пока есть изменения, потом встали?)
+    
+  #  after $delay [list ]
+  #}
+
+  return
 }
 #-------------------------------------------------------------------------------
 
@@ -671,20 +761,11 @@ global argc argv
 
 if {$argc == 0} { ;# без параметров запускаем графику
 
-  package require "Tk"
-
-  #source "d-kern.tl"
-
-  #package require snit
-  #source "COMPOT/guiarm/O/OLD/d-snit.tl"
-  #source "${::COMPOT}/guiarm/O/OLD/d-snit.tl"
-
-  #source "./O/tk-old/d-snit.tl"
-  source "u-snit.tl"
-
   MAIN
 
 } else { ;# а с параметрами только сонсольные ьесьы
+
+  #console hide
 
   TEST
 
