@@ -18,7 +18,10 @@ package require compot::common
 
 global argc argv
 
-if {$argc == 0} { ;# без параметров запускаем графику
+set ::isgui   [dict_parse $argv "-isgui"     0] 
+
+
+if {$::isgui == 1} { ;# без параметров запускаем графику
 
   set is_tk 1
 } else {
@@ -26,16 +29,12 @@ if {$argc == 0} { ;# без параметров запускаем графику
 }
 
 #-------------------------------------------------------------------------------
-
-
-
-
 #-------------------------------------------------------------------------------
 
 # все вынести в плоскую модель:
 # 
 
-set ::cells   20
+set ::csize   20
 set ::delay  200
 
 array unset ::data
@@ -53,14 +52,14 @@ proc compute_list_indices {} {
   # 
   set ::indices {}
   
-  for {set i 0} {$i < $::cells} {incr i 1} {
-  for {set j 0} {$j < $::cells} {incr j 1} {
+  for {set i 0} {$i < $::csize} {incr i 1} {
+  for {set j 0} {$j < $::csize} {incr j 1} {
     lappend ::indices $i,$j
   }
   }
   
-  for {set i 0} {$i < $::cells} {incr i 1} {
-  for {set j 0} {$j < $::cells} {incr j 1} {
+  for {set i 0} {$i < $::csize} {incr i 1} {
+  for {set j 0} {$j < $::csize} {incr j 1} {
       
     # Initialize the corresponding data structure
     set ::data($i,$j) 0
@@ -68,25 +67,35 @@ proc compute_list_indices {} {
     # Cache the coordinates of each neighbor.
     set ::data($i,$j-neighbors) ""
     
-    foreach {iof jof} {-1 -1  -1 0  -1 1  0 -1  
-      0 1  1 -1  1 0  1 1} {
-      set r [expr {($i + $iof) % $::cells}]
-      set c [expr {($j + $jof) % $::cells}]
+    foreach {iof jof} {    \
+       -1 -1  -1 0  -1 +1  \
+        0 -1         0 +1  \
+       +1 -1  +1 0  +1 +1  \
+                       } {
+      set r [expr {($i + $iof) % $::csize}] ;# ??
+      set c [expr {($j + $jof) % $::csize}]
+
       lappend ::data($i,$j-neighbors) "$r,$c"
     }
     
   }}
   
+
+  set_figure "glider5"
+
   return
 }
 #-------------------------------------------------------------------------------
-proc set_figure_glider {} {
+proc set_figure {name} {
 
-  set ::data(6,4)  1
-  set ::data(5,5)  1
-  set ::data(5,6)  1
-  set ::data(6,6)  1
-  set ::data(7,6)  1
+
+  if {$name == "glider5"} {
+    set ::data(6,4)  1
+    set ::data(5,5)  1
+    set ::data(5,6)  1
+    set ::data(6,6)  1
+    set ::data(7,6)  1
+  }
   
   return
 }
@@ -135,6 +144,7 @@ proc generate_step_calc {} {
   
   return $changes
 }
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 if {$is_tk} {
 #-------------------------------------------------------------------------------
@@ -290,7 +300,7 @@ snit::widgetadaptor LIFEBOARD {
   delegate option * to hull
   
   # By default, 20x20 cells
-  option -cells 20
+  #option -cells 20
   # By default, each cell is 20x20 pixels
   option -pixels 20
  
@@ -321,7 +331,7 @@ snit::widgetadaptor LIFEBOARD {
     
     compute_list_indices 
 
-    set_figure_glider
+    #set_figure "glider5"
 
 
     # NEXT, set up the board.
@@ -371,34 +381,44 @@ snit::widgetadaptor LIFEBOARD {
     $self delete all
     #array unset ::data
 
-    set  cells $options(-cells)
+    #set  cells $options(-cells)
     set pixels $options(-pixels)
 
 
-    # посчитаем размер доски в пикселах :
-    # 
-    set size [expr {$::cells * $pixels}]
+    if {0} {
+      # посчитаем размер доски в пикселах :
+      # 
+      set ::boardsize [expr {$::csize * $pixels}]
+      puts "::boardsize = $::boardsize"
+
+    } else {
+      # А надо бы наоборот!
+      set ::boardsize 400
+      set pixels [expr {$::boardsize / $::csize}]
+    }
+
     
     # FIRST, set the size of the canvas
-    $hull configure -width $size -height $size
+    $hull configure -width $::boardsize -height $::boardsize
     
     # NEXT, draw the grid lines.
-    for {set i 1} {$i < $::cells} {incr i 1} {
+
+    for {set i 1} {$i < $::csize} {incr i 1} {
       set pos [expr {$i * $pixels}]
       
       # Draw a vertical line $i cells over
-      $hull create line 0 $pos $size $pos -fill cyan
+      $hull create line 0 $pos $::boardsize $pos -fill cyan
       
       # Draw a horizontal line $i cells down
-      $hull create line $pos 0 $pos $size -fill cyan
+      $hull create line $pos 0 $pos $::boardsize -fill cyan
     }
     
 
     # NEXT, add a circle object to each cell
     #
     #
-    for {set i 0} {$i < $::cells} {incr i 1} {
-    for {set j 0} {$j < $::cells} {incr j 1} {
+    for {set i 0} {$i < $::csize} {incr i 1} {
+    for {set j 0} {$j < $::csize} {incr j 1} {
 
         # Compute the upper left corner of the circle
         set p0 [expr {$i*$pixels + 1}]
@@ -419,7 +439,6 @@ snit::widgetadaptor LIFEBOARD {
     }
    
     #--------------------------------------------
-    #compute_list_indices 
     # 
     $self generate_step_gui 
     #--------------------------------------------
@@ -612,7 +631,7 @@ snit::widget LIFE_BOT {
   # Delegate -cells and -pixels to the board, so that clients can
   # specify the board size; delegate other options to the hull.
 
-  delegate option  -cells to board
+  #delegate option  -cells to board
   delegate option -pixels to board
   delegate option       * to hull
 
@@ -636,7 +655,7 @@ snit::widget LIFE_BOT {
 
     #INSTALL board "LIFEBOARD" {-cells 10} 
     #INSTALL board "LIFEBOARD" {} 
-    pack   $board -pady 30 -pady 30
+    pack   $board -pady 10 -pady 10
     
     # так мы принудительно устанавливаем размер, который на самом деле
     # задается для этой доски жестко !
@@ -695,7 +714,9 @@ snit::widget LIFE_MAIN {
     
     #SnitWnd  $win.bot bot "LIFE_BOT" $bot_x $bot_y $bot_w $bot_h  -bg "blue"
     #
-    INSTALL  bot  "LIFE_BOT" {-bg "blue" -cells 10}
+    #INSTALL  bot  "LIFE_BOT" {-bg "blue" -cells 10}
+    INSTALL  bot  "LIFE_BOT" {-bg "blue" }
+
     #INSTALL  bot  "LIFE_BOT" {-bg "blue"}
     YPlace  $bot  $bot_x $bot_y $bot_w $bot_h
 
@@ -716,9 +737,65 @@ snit::widget LIFE_MAIN {
 #-------------------------------------------------------------------------------
 } ;# is_tk
 #-------------------------------------------------------------------------------
-proc MAIN {} {
+proc draw_cells {count changes} {
 
-  global argc argv
+
+  for {set j 0} {$j < $::csize} {incr j 1} {
+
+    puts ""
+
+  for {set i 0} {$i < $::csize} {incr i 1} {
+      
+    # Initialize the corresponding data structure
+    set d $::data($i,$j)
+
+    puts -nonewline "$d "
+  }}
+
+  puts ""
+  puts ""
+
+  puts [format "count = %3d , changes = %3d" $count $changes]
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc run_test {nums delay isprint} {
+
+
+  compute_list_indices 
+  
+  #set_figure "glider5"
+
+  set count   0
+  set changes 0
+
+  while {1} {
+
+    if {$nums != -1 && $count >  $nums} break
+
+    if {$isprint} {
+      draw_cells $count $changes
+    }
+
+    set changes [generate_step_calc]
+
+    if {$changes == 0} break;
+    
+    mysleep $delay
+    incr count
+  }
+
+  draw_cells $count $changes
+
+  puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc run_gui {} {
+
+  #global argc argv
 
   set xx 250
   set yy 250
@@ -731,45 +808,51 @@ proc MAIN {} {
   return
 }
 #-------------------------------------------------------------------------------
-proc TEST {} {
+proc MAIN {} {
 
-  puts ""
-  puts "TEST"
-  puts ""
-
-  set delay 200
-
-  compute_list_indices 
+  global argc argv
   
-  set_figure_glider
-
-  #set changes [generate_step_calc]
-
-  #if {[$self generate] > 0} {
+  
+  set nums    [dict_parse $argv "-nums"     -1] ;# -1 - бесконечно
+  set delay   [dict_parse $argv "-delay"   200] ;# ms
+  set isprint [dict_parse $argv "-isprint"   1]
+  set ::csize [dict_parse $argv "-size"     20]  
+  
+  
+  if {$::isgui == 1} { ;# без параметров запускаем графику
     
-    # после небольшой паузы циклично вызываем сами себя
-    # (пока есть изменения, потом встали?)
+    run_gui
     
-  #  after $delay [list ]
-  #}
+  } else { ;# а с параметрами только сонсольные ьесьы
+    
+    puts ""
+    puts "TEST"
+    puts ""
+        
+    run_test  $nums $delay $isprint 
+    
+  }
 
-  return
 }
 #-------------------------------------------------------------------------------
 
-global argc argv
+MAIN
 
-if {$argc == 0} { ;# без параметров запускаем графику
+#-------------------------------------------------------------------------------
 
-  MAIN
+# time u_life.tk -size 30 -nums 1000 -delay 0 -isprint 0
 
-} else { ;# а с параметрами только сонсольные ьесьы
+# count = 1001 , changes =   4
 
-  #console hide
+# real	0m6.053s
+# user	0m6.036s
+# sys	0m0.024s
 
-  TEST
+# ?
 
-}
+# real	0m5.999s
+# user	0m5.972s
+# sys	0m0.028s
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
