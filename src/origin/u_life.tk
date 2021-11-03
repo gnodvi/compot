@@ -21,7 +21,7 @@ global argc argv
 set ::isgui   [dict_parse $argv "-isgui"     0] 
 
 
-if {$::isgui == 1} { ;# без параметров запускаем графику
+if {$::isgui == 1} { 
 
   set is_tk 1
 } else {
