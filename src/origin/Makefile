@@ -34,22 +34,61 @@ GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
 
 #-------------------------------------------------------------------------------
 
-PROGS =  e_meta 
+ARCHPATH := $(shell dpkg-architecture -qDEB_BUILD_MULTIARCH)
+
+TCLTK_CONF_DIR?=/usr/lib/$(ARCHPATH)/tcl8.6
+
+include $(TCLTK_CONF_DIR)/tclConfig.sh
+
+#----------------------------------------------------------
+
+TCL_INCS=$(TCL_INCLUDE_SPEC) 
+
+TCL_LIB_SPEC_clean	= $(subst ', , $(TCL_LIB_SPEC))
+
+TCL_LIBS=$(TCL_LIB_SPEC_clean) 
+
+TCL_STUB_LIB_SPEC_clean = $(subst ', , $(TCL_STUB_LIB_SPEC))
+
+#-------------------------------------------------------------------------------
+
+PROGS =  e_test T/e_tcl.so  T/e_jim.so
 
 all:   $(PROGS)   
 
 
 #-------------------------------------------------------------------------------
 
-T/e-comm.o : e-comm.c e-comm.h                                  
-	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
-
-T/e-graf.o : e-graf.c e-graf.h                                  
-	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+T/e-0000.o : e-0000.c e-0000.h                                  
+	$(GCC) -D_GNUPLOT -o $@ -c $< $(GNUPLOTI_INC)
+#	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
 
 
-e_meta :  e_meta.c T/e-comm.o T/e-graf.o                                    
+e_test :  e_test.c T/e-0000.o                                    
 	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
+
+#------------------------------------------------------------------
+
+
+T/e-init.o: e-init.c
+	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
+
+T/e_tcl.so: T/e-init.o T/e-0000.o $(GNUPLOTI_LIB)
+	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
+
+#------------------------------------------------------------------
+
+ifdef NOTEST
+BUILDOPTS := --notest
+endif
+
+JIM_DIR = ./JIM
+
+SRC =  e-0000.c e-init.c ##  p_comm.c p_gnup.c p_plot.c
+DEP =  e-0000.h
+
+T/e_jim.so:  $(SRC) $(DEP) 
+	build-jim-ext --notest $(BUILDOPTS) -D_JIM -o $@ $(SRC) $(GNUPLOTI_INC) ##-lpgnup  -L./P/T
 
 #-------------------------------------------------------------------------------
 

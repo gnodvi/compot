@@ -18,7 +18,11 @@ package require compot::common
 
 global argc argv
 
-set ::isgui   [dict_parse $argv "-isgui"     0] 
+if {$argc == 0} {
+  set ::isgui 1
+} else {
+  set ::isgui   [dict_parse $argv "-isgui" 0] 
+}
 
 
 if {$::isgui == 1} { 
@@ -157,61 +161,11 @@ if {$is_tk} {
 
   package require "Tk"
 
-  source "u-snit.tl"
-
 #-------------------------------------------------------------------------------
-proc SnitWnd {fid compName snitwidget  x y w h  args} {
-
-  #set win $fid
-
-  #INSTALL $compName  $snitwidget {-bg "green"}
-  #YPlace  $compName  $x $y $w $h
-
-  #return - нет, такое не пройдет !!
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  if {! [winfo exists $fid]} {
-    set cmd [list install $compName using $snitwidget $fid ]
-    uplevel $cmd $args
-  } 
-
-  upvar  $compName C ;# свяжемся с переменной верхнего уровня
-  YPlace $C  $x $y $w $h
-
-
-  return
-}
 #-------------------------------------------------------------------------------
-proc YPlaceIn {fid  x y args} {
 
-  # по умолчанию считам, что рисуем в рамках родительского (в иерархии) окна:
-  # 
-  set parent [winfo parent $fid]
+source "u-snit.tl"
 
-  # точно фиксируем начальные координаты, а вот остальное - опционно
-  # 
-  eval {place $fid -in $parent -x $x -y $y } $args
-
-}
-#-------------------------------------------------------------------------------
-# TODO:
-# - надо бы везед делать install (но это уже для SNIT только) !!
-# - более гибко задавать параметры !
-#-------------------------------------------------------------------------------
-proc YButtonPack {fid text comm args} {
-
-  if {! [winfo exists $fid]} {
-
-    button $fid -text $text -command $comm
-  } 
-
-  # надо именно здесь, чтобы и за один (первый) проход отрисовывать!
-  # 
-  eval {pack $fid}  $args
-
-  return
-}
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 # TITLE:

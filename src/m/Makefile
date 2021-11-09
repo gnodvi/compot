@@ -16,12 +16,12 @@ TEST-S_DIR = ../others/m
 
 ORIGIN_DIR = ../origin
 
-TESTER_DIR = ../tester
+POKERS_DIR = ../pokers
 
 #-------------------------------------------------------------------------------
 
 
-all:  TENSOR__ COMMON__  TEST-S__  ORIGIN__ DIALOG__ ##TESTER__   
+all:  TENSOR__ COMMON__  TEST-S__  ORIGIN__ DIALOG__ ##POKERS__   
 
 #-------------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ DIALOG__ :
 	(cd $(DIALOG_DIR); make)
 
 
-#TESTER__ :
+#POKERS__ :
 #	(cd $(JOY_GP_DIR); make)
 
 TEST-S__ :
@@ -50,7 +50,7 @@ clean :
 	(cd $(TENSOR_DIR); make clean)
 	(cd $(COMMON_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
-#	(cd $(TESTER_DIR); make clean)
+#	(cd $(POKERS_DIR); make clean)
 	(cd $(TEST-S_DIR); make clean)
 	(cd $(ORIGIN_DIR); make clean)
 

@@ -35,11 +35,18 @@ P_TEST_C = p_test.c
 
 #-------------------------------------------------------------------------------
 
-PROGS =  $(P_TEST) $(PLOTER) 
+PROGS =  $(P_TEST) $(PLOTER) T/libpgnup.so 
 
 all: $(PROGS)
 
 #-------------------------------------------------------------------------------
+
+# T/e_tcl.so: T/e-init.o T/e-0000.o $(GNUPLOTI_LIB)
+# 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
+
+T/libpgnup.so: T/p_comm.o T/p_gnup.o T/p_plot.o
+	gcc  -shared -fPIC -o $@ $^ 
+
 #-------------------------------------------------------------------------------
 
 P_COMM_C = p_comm.c
