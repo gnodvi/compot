@@ -52,7 +52,7 @@ TCL_STUB_LIB_SPEC_clean = $(subst ', , $(TCL_STUB_LIB_SPEC))
 
 #-------------------------------------------------------------------------------
 
-PROGS =  e_test T/e_tcl.so  T/e_jim.so
+PROGS =  e_test T/e_jim.so ## T/e_tcl.so  
 
 all:   $(PROGS)   
 
@@ -82,7 +82,7 @@ ifdef NOTEST
 BUILDOPTS := --notest
 endif
 
-JIM_DIR = ./JIM
+#JIM_DIR = ./JIM
 
 SRC =  e-0000.c e-init.c ##  p_comm.c p_gnup.c p_plot.c
 DEP =  e-0000.h

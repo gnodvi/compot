@@ -75,6 +75,7 @@ proc test_01 {} {
   
   #   //GrafInit (pg, YCONST, 0.0, 0.0, YCONST, NOT, 0.0);
   #   GrafInit (pg, YRAND, 0.0, 0.0, YRAND, NOT, NOT);
+  mg_graf_init $pg 
   
   #   EDGE (pg, 0, 1) = 1;
   #   EDGE (pg, 1, 2) = 1;
