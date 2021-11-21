@@ -258,54 +258,6 @@ proc item_get_chromo_len {item} {
   return [llength $tmp]
 }
 #-------------------------------------------------------------------------------
-proc item_as_string {item ch_form} {
-
-  if {$ch_form == ""} {
-    set ch_form [GET $e ch_form] ;# локальная переменная
-  }
-
-  set ch  [item_get_mainsrc $item]
-  
-  set buf {}
-
-  foreach c $ch {
-
-    append buf [format $ch_form $c]
-  } 
-  
-  return $buf
-}
-#-------------------------------------------------------------------------------
-proc item_print_ch {item {name "ch=   "} {out "stdout"} {ch_form "%s "}} {
-
-
-  puts -nonewline $out $name
-  
-  set buf [item_as_string  $item $ch_form]
-  
-  puts -nonewline $out $buf
-
-  flush $out  ;# все данные должны быть выведены
-}
-#-------------------------------------------------------------------------------
-proc item_print_oneline {item {out "stdout"} {ch_form "%s "}} {
-
-
-  set fi [item_get_fitn $item]
-  
-  if {[string equal $fi $::GA_NOT_FIT]} {
-
-    puts -nonewline $out "fitn = NOT_FITNESS"
-  } else {
-    #puts -nonewline $out "fitn = [format "%9.3f"  $fi]"
-    puts -nonewline $out "fitn = [format " %8.3f"  $fi]"
-  }
-  
-  #item_print_ch $item "   ch=  " $out $ch_form
-  item_print_ch $item " :   " $out $ch_form
-  
-  puts $out ""
-}
 #-------------------------------------------------------------------------------
 proc item_make {{src @}} {
 
@@ -685,22 +637,62 @@ proc pop_get_entity_ {p i} {
   return $r
 }
 #-------------------------------------------------------------------------------
-proc pop_print_lite_ {p {out "stdout"}} {
+#-------------------------------------------------------------------------------
+proc item_as_string {item ch_form} {
 
+  if {$ch_form == ""} {
+    set ch_form [GET $e ch_form] ;# локальная переменная
+  }
+
+  set ch  [item_get_mainsrc $item]
+  
+  set buf {}
+
+  foreach c $ch {
+
+    append buf [format $ch_form $c]
+  } 
+  
+  return $buf
+}
+#-------------------------------------------------------------------------------
+proc item_print_ch {item {name "ch=   "} {out "stdout"} {ch_form "%s "}} {
+
+
+  puts -nonewline $out $name
+  
+  set buf [item_as_string  $item $ch_form]
+  
+  puts -nonewline $out $buf
+
+  flush $out  ;# все данные должны быть выведены
+}
+#-------------------------------------------------------------------------------
+proc item_print_oneline {item {out "stdout"} {ch_form "%s "}} {
+
+
+  set fi [item_get_fitn $item]
+  
+  if {[string equal $fi $::GA_NOT_FIT]} {
+
+    puts -nonewline $out "fitn = NOT_FITNESS"
+  } else {
+    puts -nonewline $out "fitn = [format "%8.3f"  $fi]"
+  }
+  
+  item_print_ch $item " :   " $out $ch_form
+  
+  puts $out ""
+}
+#-------------------------------------------------------------------------------
+proc itemlist_print {itemlist ind_form gen_form {out "stdout"}} {
 
   set i 0  
-  set tmp [GET $p itemlist]
-  
-  set ch_form [GET $p "ch_form"]
 
-  #puts "pop_print_lite_: ch_form = $ch_form"
-
-  foreach e $tmp {
+  foreach item $itemlist {
     
-    #puts -nonewline $out [format "   i = %3d   " $i]
-    puts -nonewline $out [format " %4d)   " $i]
-    
-    item_print_oneline $e $out $ch_form
+    puts -nonewline $out [format $ind_form $i]    
+    item_print_oneline $item $out $gen_form
 
     incr i
   }
@@ -708,7 +700,20 @@ proc pop_print_lite_ {p {out "stdout"}} {
   return
 }
 #-------------------------------------------------------------------------------
-proc pop_print_ {p {out "stdout"}} {
+proc pop_print_lite {p {out "stdout"}} {
+
+
+  set itemlist [GET $p itemlist]
+  set gen_form   [GET $p "ch_form"]
+  set ind_form   " %4d)   "
+
+
+  itemlist_print $itemlist $ind_form $gen_form $out
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc pop_print {p {out "stdout"}} {
 
 
   puts $out "---------------------- POPULATION PRINT -------------------------------"
@@ -716,8 +721,11 @@ proc pop_print_ {p {out "stdout"}} {
   puts $out "Generation = [GET $p generation]"
   puts $out ""
   
-  pop_print_lite_ $p $out
+
+  pop_print_lite $p $out
   
+  # дополнительная инфа ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   set best  [GET $p best]
   
   puts $out ""
@@ -736,13 +744,6 @@ proc pop_print_ {p {out "stdout"}} {
   
   puts $out " "
   puts $out "-----------------------------------------------------------------------"
-
-}
-#-------------------------------------------------------------------------------
-proc pop_print {pop {out "stdout"}} {
-
-
-  pop_print_ $pop $out
 
 }
 #-------------------------------------------------------------------------------
@@ -5900,7 +5901,7 @@ proc ga_evolution_main {task pop max_generations args} {
     puts ""
     puts "FINAL RESULT: "
     puts ""
-    pop_print_ $pop
+    pop_print $pop
     puts ""
   }
 
@@ -6043,6 +6044,7 @@ proc gp_crossover {a b} {
 
   list $x0 $x1
 }
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -6261,6 +6263,9 @@ proc make_mutated_from_items {task sorted_items m mutprob} {
 
   return $mutated
 }
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc get_rand_offspring {leaders l} {
@@ -7453,7 +7458,7 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
   # идем в глубину
   # цикл последовательных мутаций item_old -> item_new -> item_old
   # 
-  if {$::is_print >= 2} {puts stderr ""}
+  if {$::is_print >= 2} {puts stderr "  try i = $i ............"}
 
   for {set j 0} {$j < $num_try} {incr j} {
 
@@ -7535,17 +7540,24 @@ proc try_mutate_for_all_items {pop_items_old  task num_try} {
   
 
   if {$::is_print >= 2} {
-    puts stderr "try_mutate_for_all_items: "
+    puts stderr "try_mutate_for_all_items: \n"
+    set ind_form  "    %d]   "
+    set gen_form  "%s " 
+    itemlist_print $pop_items_old $ind_form $gen_form stderr 
+    puts stderr ""
   }
 
   # идем циклом и каждого бота пытаемся смутировать к лучшему
   #
   foreach item_old $pop_items_old {
 
+    if {$::is_print >= 2} {
+      puts stderr "  item_old:  [item_get_main_src $item_old] "
+    }
+
     set fitn_old  [item_get_fitn   $item_old] 
 
-    set src [item_get_main_src $item_old]
-
+    #set src [item_get_main_src $item_old]
     #set lst [pi_calc_balans_list $src]
 
     #if {$::is_print >= 2} {
@@ -7558,7 +7570,7 @@ proc try_mutate_for_all_items {pop_items_old  task num_try} {
 		    $item_old $fitn_old]
 
     if {$::is_print >= 2} {
-      puts stderr "  item_new:  [item_get_main_src $item_new] "
+      puts stderr "  item_new:  [item_get_main_src $item_new] \n"
     }
 
     lappend pop_items_new  $item_new
