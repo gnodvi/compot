@@ -2113,12 +2113,14 @@ proc ANTS_gp {} {
 
   set task [task_create  -fit_func FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
     
-  run_gp_evolution_for_task \
-      $task \
+  set ::is_print 1
+
+  run_gp_evolution_for_task        \
+      $task                        \
       0 "make_rand_prgpop_unikum"  \
-      $individuals  $len $nums \
-      1                     \
-      -mutprob          0.1 \
+      $individuals  $len $nums     \
+      $::is_print                  \
+      -mutprob          0.1        \
       -game_print_proc  0 
 
 
@@ -2164,15 +2166,16 @@ proc ANTS_gp_new {} {
     randinstr    "randinstr_MAIN" \
     quotes_proc  "quotes_proc_NULL"
 
+  set ::is_print 1
 
   set task [task_create  -fit_func FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   run_gp_evolution_for_task \
-      $task \
+      $task                        \
       0 "make_rand_prgpop_unikum"  \
-      $individuals  $len $nums \
-      1                     \
-      -mutprob          0.1 \
+      $individuals  $len $nums     \
+      $::is_print                  \
+      -mutprob          0.1        \
       -game_print_proc  game_print 
   
 }

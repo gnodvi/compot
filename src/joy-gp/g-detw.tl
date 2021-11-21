@@ -128,8 +128,7 @@ proc ga_deterministiccrowding {task pop max_generations} \
     # --------------------------------------------------
 
     if [is_check_generation_break  $pop $task \
-          $max_generations \
-          1] {
+          $max_generations ] {
       
       return false
     }

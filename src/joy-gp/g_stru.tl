@@ -1190,6 +1190,8 @@ proc _dc_test {} \
 
   parse_opts_3   num_runs population_size max_generations  3 120 500
 
+  set ::is_print 1
+
   #----------------------------------------------------------------------
   #
   for {set i 0} {$i < $num_runs} {incr i} {

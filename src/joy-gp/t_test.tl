@@ -406,6 +406,7 @@ proc NEXT_01 {args} {
   set len         [dict_parse $argo "-size" 10] 
   set nums        [dict_parse $argo "-nums"  4]
   set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
+  set ::is_print  [dict_parse $argo "-print" 1] 
 
   # флажки для новейших алгоритмов
   # 
@@ -726,6 +727,9 @@ proc pi_init_TEST_xx {} {
 
 }
 #-------------------------------------------------------------------------------
+# 
+# 
+#-------------------------------------------------------------------------------
 proc TEST_xx {args} {
 
 
@@ -889,6 +893,8 @@ proc TEST_xx {args} {
                               -game_print_proc 0 \
                               -mutprob         0.2
 
+    # -> calc_BOT33 -> gp_evolution_main ->
+
     puts ""
     puts "===================================================================="
 
@@ -979,12 +985,13 @@ proc TEST_lips {args} {
 #-------------------------------------------------------------------------------
 #
 # t~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -news 1 -print 2
-# t~.tl TEST TEST_xx -nums 5 -news 1 -func 'x pow 3 plus x' -news 1 -print 2 -seed 13 -auto 1
+# t~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -news 1 -print 2 -seed 13 -auto 1
 #
 # TODO :
 
 # +) печатать подробно все шаги 
 # +) при клонировании рефакторить с выделением новых библю функций
+
 # -) в библ. добавить крайние значения, т.е. контекст и + статистика использования
 # -) мутировать не произвольно а в соотвт. с плюсовой статистикой 
 # -) возможно запоминать хорошие "практики мутирования"

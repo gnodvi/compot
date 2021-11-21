@@ -873,13 +873,10 @@ proc ga_entity_seed {pop task adam} \
 #-------------------------------------------------------------------------------
 proc  gaul_population_fill {pop task num args} {
 
-  set print $::is_print
-  #set print [dict_parse print
-
 
   set proc_seed [GET $pop "seedproc"]
 
-  if {$print >= 3} {
+  if {$::is_print >= 3} {
     puts ""
     puts "    [procname] ........... num = $num pop = $pop proc_seed = $proc_seed"
     puts ""
@@ -895,7 +892,7 @@ proc  gaul_population_fill {pop task num args} {
     $proc_seed  $pop $task $adam
 
 
-    if {$print >= 3} {
+    if {$::is_print >= 3} {
 
       # проконтролируем печатью
       # 
@@ -911,7 +908,7 @@ proc  gaul_population_fill {pop task num args} {
   }
   #----------------------------------------------------------
 
-  if {$print >= 2} {
+  if {$::is_print >= 2} {
     puts ""
   }
 
@@ -970,8 +967,7 @@ proc generation_hook_check {pop generation} \
   return $ret
 }
 # //----------------------------------------------------------------------------
-proc is_check_generation_break {pop task max_generations 
-                                is_print} {
+proc is_check_generation_break {pop task max_generations} {
 
   set generation [GET $pop "generation"]
 
@@ -986,7 +982,7 @@ proc is_check_generation_break {pop task max_generations
   set fitn0  [format "%7.3f"  $fitn0]  
   set index  [format "% 3d"   $generation]
   
-  if {$is_print >= 1} {
+  if {$::is_print >= 1} {
     
     #     if {$is_print >= 2} {puts ""}
     #     puts -nonewline [format "  step %3d  ...  f0 = $fitn0  " $index]
@@ -1078,7 +1074,7 @@ proc pop_initial_fill {pop task  args} {
 
   if {$size < $stable_size} {
     
-    gaul_population_fill  $pop $task [expr {$stable_size - $size}]  -print $::is_print
+    gaul_population_fill  $pop $task [expr {$stable_size - $size}] 
   }
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1111,7 +1107,7 @@ proc ga_population_seed {pop task} {
     puts "[procname]  ......... \n"
   }
 
-  return [gaul_population_fill  $pop $task [GET $pop stable_size]   -print $::is_print]
+  return [gaul_population_fill  $pop $task [GET $pop stable_size] ]
 }
 # //----------------------------------------------------------------------------
 
@@ -2745,7 +2741,6 @@ set ::len_is_constant 0
 #-------------------------------------------------------------------------------
 proc make_prgpop {task randpop_proc 
                   population_size len 
-                  is_print 
                 } {
 
   set gp_list [GET $task gp_list]
@@ -2768,10 +2763,18 @@ proc make_prgpop {task randpop_proc
                 $population_size  $minlen $maxlen \
                 $gp_list   $::randinstr $::quotes_proc ]
   
-  if {$is_print} {
+  if {$::is_print} {
     puts ""
-    puts "[procname]: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  \n"
-    puts stderr "randpop_proc= $randpop_proc, population_size= $population_size, minlen= $minlen, maxlen= $maxlen gp_list= $gp_list, randinstr= $::randinstr, quotes_proc= $::quotes_proc"
+    puts "[procname]: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    puts ""
+    puts stderr "randpop_proc = $randpop_proc"
+    puts stderr "randinstr    = $::randinstr"
+    puts stderr "quotes_proc  = $::quotes_proc"
+    puts ""
+
+    puts stderr "population_size = $population_size, minlen = $minlen, maxlen = $maxlen"
+    puts stderr "gp_list         = $gp_list"
+
     puts ""
     puts "prgpop = $prgpop"
     puts ""
@@ -2785,17 +2788,13 @@ proc make_prgpop {task randpop_proc
 #-------------------------------------------------------------------------------
 proc make_itemlist {task randpop_proc 
                      population_size len 
-                     is_print 
                    } {
-
-  
-  set prgpop [make_prgpop  $task $randpop_proc \
-                $population_size $len \
-                $is_print]
-
-
-  # TODO:
+ 
+  # делаем стартовую популяцию prg
   # 
+  set prgpop [make_prgpop  $task $randpop_proc \
+                $population_size $len]
+ 
   # а вот здесь уже можно сделать реальные программы с "main" и т.д.
   #
   set itemlist [make_itemlist_from_prgpop  $prgpop]
@@ -5718,13 +5717,13 @@ proc print_item_for_step {item i task  game_print_proc} {
   return
 }
 # ------------------------------------------------------------------------------
-proc pop_print_step_info {pop task is_print args} {
+proc pop_print_step_info {pop task args} {
 
   set printproc [dict_parse $args "-printproc" 0]
 
   set i [GET $pop generation]
 
-  if {$is_print > 1} {
+  if {$::is_print > 1} {
     puts ""
     puts "-------------------------------------------------------------------"
     puts ""
@@ -5734,7 +5733,7 @@ proc pop_print_step_info {pop task is_print args} {
   set itemlist [GET $pop  "itemlist"] 
   set best_item [lindex $itemlist 0]
   
-  if {$is_print} {  
+  if {$::is_print} {  
     print_item_for_step  $best_item $i  $task $printproc
   }
   
@@ -5745,13 +5744,6 @@ proc pop_print_step_info {pop task is_print args} {
 proc pop_evolution {pop task max_generations evolfunc args} {
 
 
-  set print [dict_parse $args "-print" 0]
-
-  #puts "[procname]:  print = $print"
-  #exit
-
-  #----------------------------------------------
-  #  
   # если какие-то недосчитаны, то посчитать фитнес
   
   pop_calc_fitness_nov  $pop $task
@@ -5765,18 +5757,17 @@ proc pop_evolution {pop task max_generations evolfunc args} {
   # кое-что напечатаем
   #
 
-  pop_print_step_info  $pop $task $print {*}$args
+  pop_print_step_info  $pop $task {*}$args
   
   #----------------------------------------------
   # проверяем не пора ли закончить цикл
   #   
 
-  if [is_check_generation_break  $pop $task $max_generations $print] \
+  if [is_check_generation_break  $pop $task $max_generations] \
     { 
       return false
     }
   
-  #----------------------------------------------
   # 
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -5819,7 +5810,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
  
     # Score and sort the initial population members.
     #  
-    pop_initial_fill $pop $task   -print $print 
+    pop_initial_fill $pop $task  
 
     pop_calc_fitness_nov  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
 
@@ -5858,7 +5849,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
       set pop [lindex $pops $i]
 
-      if {! [pop_evolution  $pop $task $max_generations "ga_evolution_6" -print $print]} {
+      if {! [pop_evolution  $pop $task $max_generations "ga_evolution_6"]} {
         set complete TRUE
         break;
       }        
@@ -5883,8 +5874,6 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 proc ga_evolution_main {task pop max_generations args} {
 
 
-  set print [dict_parse $args "-print" 0]
-
   # Do all the generations:
   # 
   # Stop when (a) max_generations reached, or
@@ -5896,17 +5885,17 @@ proc ga_evolution_main {task pop max_generations args} {
   #------------------------------------------------
   while {1} {
 
-    if {! [pop_evolution  $pop $task $max_generations "ga_evolution_6" -print $print]} {
+    if {! [pop_evolution  $pop $task $max_generations "ga_evolution_6"]} {
       break;
     }
 
-    if {$print >= 2} {pop_print $pop "stderr"}
+    if {$::is_print >= 2} {pop_print $pop "stderr"}
 
   } 
   # /* Generation loop. */
   #------------------------------------------------
   
-  if {$print > 2} {
+  if {$::is_print > 2} {
 
     puts ""
     puts "FINAL RESULT: "
@@ -5920,23 +5909,20 @@ proc ga_evolution_main {task pop max_generations args} {
 # //------------------------------------------------------------------------------
 proc ga_evolution {task pop  max_generations args} {
 
-  #set print $::is_print
-  set print [dict_parse $args -print 0]
-
 
   # Score and sort the initial population members.
   # инициация итемов функцией [GET $pop seedproc] 
   #  
-  pop_initial_fill  $pop $task   -print $print
+  pop_initial_fill  $pop $task 
  
-  if {$print > 2} {
+  if {$::is_print > 2} {
     pop_print $pop
     #puts ""
   }
 
 
   #set generation [ga_evolution_main  $task $pop $max_generations {*}$args]
-  set generation [ga_evolution_main  $task $pop $max_generations -print $print]
+  set generation [ga_evolution_main  $task $pop $max_generations -print $::is_print]
 
 
   return $generation
@@ -6558,369 +6544,23 @@ proc gp_dict_add_item {item} {
   return [gp_dict_add_by_src $src]
 
 }
-#-------------------------------------------------------------------------------
-# обрабатываем популяцию, выделяя паттерны в библиотеки.
-# 
-# 
-#-------------------------------------------------------------------------------
-proc works_on_gp_dict {sorted_items} {
-
-  # но пока самы простейший случай - берем самого успешного итема и делаем
-  # его исходник частью библиотеки/
-  # не сильно улучшает, если искать среди всего списка?
-
-  # TODO:
-  # 
-  # - по всему списку успешных программ выбирать максимально совпадающие шаблоны
-  # - обновлять статистический рейтин?
-  # - обновлять статистику контекста?
-  # - удалять уже не актуальные?
-  
-
-  if {1} {
-
-    set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
-    set src [item_get_main_src $item]
-      
-    set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
-
-  } else {
-
-    foreach item $sorted_items { 
-      #set item [lindex $sorted_items 0] ;# будем пока брать лучшиего    
-      #set src [item_get_main_src $item]
-      #set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
-      
-      #if {$add_ok} {
-      #break
-      #}
-    }
-  }
-  
-  return
-}
-#-------------------------------------------------------------------------------
-# создание новой популяции на основе списка лидеров (меньшего размера)
-# циклическим клонированием
-# 
-#-------------------------------------------------------------------------------
-proc cyclic_clone_from_leaders {leaders_items new_len} {
-
-  set new_items {} ;# будем формировать новую популяцию длиной 'new_len'
-
-  set old_len [llength $leaders_items]
-  set       j 0 ;# индекс по списку лидеров
-
-  if {$::is_print >= 2} {
-    puts -nonewline stderr "cyclic_clone_from_leaders: "
-  }
-
-  while {1} {
-
-    if {[llength $new_items] ==  $new_len} {break}
-
-    if {$j == $old_len} {      
-      set j 0 ;# начнем клонирование с начала списка лидеров
-      
-      if {$::is_print >= 2} {puts -nonewline stderr "- "}
-    }
-
-    lappend new_items [lindex $leaders_items $j]
-
-    incr j
-    
-    if {$::is_print >= 2} {puts -nonewline stderr "$j "}
-  }
-
-  if {$::is_print >= 2} {puts stderr ""}
-
-  return $new_items
-}
-#-------------------------------------------------------------------------------
-proc is_progress {tobest fitn_old fitn_new} {
-
-  
-  if {$tobest == "MIN" && $fitn_new < $fitn_old} {
-    set ret 1
-  } else {
-    set ret 0
-  }
-
-  return $ret
-}
-#-------------------------------------------------------------------------------
-proc get_best_from_history {history tobest} {
-
-
-  set best_item {}
-  set best_fitn {}
-
-  for {set i 0} {$i < [llength $history]} {incr i} {
-
-    set h [lindex $history $i]
-
-    set item [lindex $h 0]
-    set fitn [lindex $h 1]
-
-    if {$i == 0} {
-      set best_item $item
-      set best_fitn $fitn
-
-      #puts "best_item1 = $best_item"
-    } else {
-
-      set is_progress [is_progress  $tobest $best_fitn $fitn]
-  
-      if {$is_progress} {    
-        set best_item $item
-        set best_fitn $fitn
-      } 
-    }
-
-  }
-
-  #puts "best_item = $best_item"
-
-  return $best_item
-}
-#-------------------------------------------------------------------------------
-proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} {
-
-  # TODO: 
-
-  # - при первом улучшении - заканчиваем цикд
-  # - если дошли до конца, т.е. улучшений не было, то 2 варианта (рандомно):
-  #   - либо оставляем старый вариант(т.е. нет мутации), но надо учитывать всю популяцию!
-  #   - либо берем из списка истории мутаций - самый лучший вариант (хоть и хуже начального)
-
-  set history {}
-  #lappend history [list $item_old $fitn_old] ;# положили первую пару
-
-  set mutprob 1.0
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # седлаем несколько попыток улучшить этот итем
-  # 
-  for {set i 0} {$i < 4} {incr i} {
-
-  set item_old $item_start
-  set fitn_old $fitn_start
-
-  # идем в глубину
-  # цикл последовательных мутаций item_old -> item_new -> item_old
-  # 
-  if {$::is_print >= 2} {puts stderr ""}
-
-  for {set j 0} {$j < $num_try} {incr j} {
-
-    #item_print_fitness    $item_old 0 
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    set item_new [make_mutant_from_item  $item_old $mutprob     $task] ;# сделали мутанта    
-
-    item_calc_fitness                    $item_new $fitnessfunc $task  ;# посчитали его
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    #item_print_fitness  $item_new 1   
-    #set src   [item_get_main_src   $item] 
-    
-    set fitn_new  [item_get_fitn   $item_new] 
-    
-    # посмотрим, есть ли уже улучшение от начального
-    #
-    set is_progress [is_progress  $tobest $fitn_start $fitn_new]
-    
-
-    if {$::is_print >= 2} {
-      puts stderr [format "          :  %-37s : $is_progress : %5.2f" \
-		     [item_get_main_src $item_new] $fitn_new]
-    }
-
-
-    if {$is_progress} {    
-      return $item_new ;# если есть, то заканчиваем и выходим с этим результатом
-    }
-
-    lappend history [list $item_new $fitn_new] ;# положили в историю
-    #
-    # TODO: но надо бы туда положить еще и метод мутации?    
-   
-    set item_old $item_new ;# готовимся к  след. шагу цикла
-    # т.е. мы сделали неудачную мутацию, на надеемся на будущие улучшения
-  }
-  }
-
-  if {$::is_print >= 2} {puts stderr ""}
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-
-  # улучшений не было, тогда:
-
-  set r [comm_random_int_minmax_1  1 10]
-
-  if {$r <= 3} {
-
-    set item_best $item_start ;# оставили начальный вариант
-
-  } else {
-
-    # возьмем лучший из истории (исключая начальный)
-    # TODO: жедательно отличающийся от начального, если фитнесы равны!
-    # 
-    set item_best [get_best_from_history  $history $tobest]
-  }
-
- 
-  return $item_best
-}
-#-------------------------------------------------------------------------------
-proc try_mutate_for_all_items {pop_items_old  task num_try} {
-
-
-  set fitnessfunc [GET $task "fit_func"]  
-
-  # "MIN" ;# т.е. чем меьше, тем лучше
-  # "MAX" 
-  # 
-  set tobest [GET $task "fit_tobest"]
-
-  set pop_items_new {} ;# сюда будем формировать новых мутантов
-  
-
-  if {$::is_print >= 2} {
-    puts stderr "try_mutate_for_all_items: "
-  }
-
-  # идем циклом и каждого бота пытаемся смутировать к лучшему
-  #
-  foreach item_old $pop_items_old {
-
-    set fitn_old  [item_get_fitn   $item_old] 
-
-    set src [item_get_main_src $item_old]
-
-    #set lst [pi_calc_balans_list $src]
-
-    #if {$::is_print >= 2} {
-    #  puts stderr ""
-    #  puts stderr [format "  item_old:  %-37s :   : %5.2f , lst =  %s " \
-    		   $src $fitn_old $lst]
-    #}
-
-    set item_new [try_mutate_to_best  $num_try $task $fitnessfunc $tobest  \
-		    $item_old $fitn_old]
-
-    if {$::is_print >= 2} {
-      puts stderr "  item_new:  [item_get_main_src $item_new] "
-    }
-
-    lappend pop_items_new  $item_new
-
-  }
-
-  return $pop_items_new
-}
-#-------------------------------------------------------------------------------
-# основная эволюционная программа (для GP)
-#-------------------------------------------------------------------------------
-proc gp_evolution_4 {pop task args} {
-
-
-  # предполагается что итемы тут уже отсортированы !!
-  # 
-  set sorted_items [GET $pop "itemlist"]
-
-  # это слишком простой вариант, нужно сначала добавлять, потом
-  #            пересчитывать и потом уже убивать слабых ?
-
-  set len [llength $sorted_items]
-
-  set l [expr {$len/2}]     ;# размер лидирующей группы
-
-  #---------------------------------------
-
-  if {$::is_print >= 2} {
-    puts stderr ""
-    puts stderr "gp_evolution_4: len = $len, l = $l"
-  }
-   
-  #---------------------------------------
-  # 1)
-  # выделяем лидеров популяции  (1/3)
-
-  
-  set leaders_items [lrange $sorted_items 0 [expr {$l - 1}]]
-  
-  #---------------------------------------
-  # 2) выделяем библиотечные шаблоны
-
-  if {$::AUTO} {
-
-    works_on_gp_dict $leaders_items
-  }
-
-  #---------------------------------------
-  # 3) MUTATION
-   
-  if {$::NEWS} {
-    
-    # совсем новый механизм: (форк от лучших и затем мутация)
-
-    # TODO: клонировать с рефакторингом (::AUTO)
-    # 
-    set pop_items [cyclic_clone_from_leaders $leaders_items $len]
-
-    set pop_items [try_mutate_for_all_items   $pop_items $task $::DEEP]
-
-  } else {
-    
-    set mutprob [dict_parse  $args "-mutprob" 0.1]
-
-    set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
-
-    set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
-    
-    #dict_print_real_all_in_list  "[procname]"  $mutated_items
-      
-    #---------------------------------------
-    # 4) 
-    # склеиваем три популяции итемов (лидеров, отпрысков, мутантов)
-    # создавая популяцию исходников для следующей итерации.
-    #
-    
-    # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]   
-    set pop_items   [concat  $leaders_items  $mutated_items]   
-  }
-
-    
-  #---------------------------------------
-  # записываем их в популяцию
-
-  SET $pop "itemlist" $pop_items
-
-
-  if {$::is_print >= 2} {
-    puts ""
-    puts stderr "  ::gp_dict = [set $::gp_dict]"
-  }
-   
-  return $pop_items
-}
 # ------------------------------------------------------------------------------
 proc gp_evolution_main {task  pop max_generations 
-                          {is_print        1}    
                           {step_print_proc 0}    
                           {mutprob         0.1}   
                         } {
+
+  if {$::is_print >= 2} {
+    puts stderr "gp_evolution_main -> pop_evolution -> gp_evolution_4"
+  }
+
+  SET $pop "generation" 0
 
   while {1} {
 
     set ret [pop_evolution  $pop $task $max_generations \
                "gp_evolution_4" \
-                -print $is_print  -mutprob $mutprob -printproc $step_print_proc]
+                -mutprob $mutprob -printproc $step_print_proc]
     
     if {! $ret} {break}
   }
@@ -6943,7 +6583,7 @@ proc calc_BOT33  {obj args} {
     set max_generations [dict_parse $args "-nums" ] 
   }
   
-  set print            [dict_parse $args "-print"           1]
+  #set print            [dict_parse $args "-print"           1]
   set game_print_proc  [dict_parse $args "-game_print_proc" 0]
   set mutprob          [dict_parse $args "-mutprob"         0.1]
    
@@ -6953,27 +6593,18 @@ proc calc_BOT33  {obj args} {
   #  
 
   set  pop [GET $obj "pop"]
-  # 
-  SET $pop "generation" 0
-  SET $pop "itemlist"   {}
 
   set population_size [GET $pop "stable_size"]
   set len_chromosomes [GET $pop "len_chromosomes"]
   
-  #################################################
-
-  #dict_print_real $task
-  #exit
 
   set itemlist [make_itemlist $task \
                    $randpop_proc \
-                   $population_size $len_chromosomes   $print]
+                   $population_size $len_chromosomes]
   
   SET $pop "itemlist" $itemlist
   
-
   gp_evolution_main  $task $pop  $max_generations \
-    $print           \
     $game_print_proc \
     $mutprob  
   
@@ -7050,7 +6681,7 @@ proc run_gp_evolution_for_task {
   calc_BOT33  $obj \
     -nums           $max_generations  \
     -task            $task            \
-    -print           $print           \
+    -print           $::is_print       \
     -randpop_proc    $randpop_proc    \
     {*}$args
 
@@ -7202,7 +6833,7 @@ proc _gp_test {} {
   puts ""
 
 
-  set print 1
+  set ::is_print 1
   set gp_list   "1 2 3 4 5 6 7 8 9" ;#   
 
     
@@ -7212,7 +6843,7 @@ proc _gp_test {} {
       $task \
       $seed $randpop_proc   \
       $bnums  $bsize $steps \
-      $print                \
+      $::is_print                \
       -mutprob          0.1 \
       -game_print_proc  0   \
 
@@ -7743,5 +7374,370 @@ proc super_ga {task seed_proc step_proc   args} {
 
 
 }
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#
+#
+#
+#-------------------------------------------------------------------------------
+proc is_progress {tobest fitn_old fitn_new} {
+
+  
+  if {$tobest == "MIN" && $fitn_new < $fitn_old} {
+    set ret 1
+  } else {
+    set ret 0
+  }
+
+  return $ret
+}
+#-------------------------------------------------------------------------------
+proc get_best_from_history {history tobest} {
+
+
+  set best_item {}
+  set best_fitn {}
+
+  for {set i 0} {$i < [llength $history]} {incr i} {
+
+    set h [lindex $history $i]
+
+    set item [lindex $h 0]
+    set fitn [lindex $h 1]
+
+    if {$i == 0} {
+      set best_item $item
+      set best_fitn $fitn
+
+      #puts "best_item1 = $best_item"
+    } else {
+
+      set is_progress [is_progress  $tobest $best_fitn $fitn]
+  
+      if {$is_progress} {    
+        set best_item $item
+        set best_fitn $fitn
+      } 
+    }
+
+  }
+
+  #puts "best_item = $best_item"
+
+  return $best_item
+}
+#-------------------------------------------------------------------------------
+proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} {
+
+  # TODO: 
+
+  # - при первом улучшении - заканчиваем цикд
+  # - если дошли до конца, т.е. улучшений не было, то 2 варианта (рандомно):
+  #   - либо оставляем старый вариант(т.е. нет мутации), но надо учитывать всю популяцию!
+  #   - либо берем из списка истории мутаций - самый лучший вариант (хоть и хуже начального)
+
+  set history {}
+  #lappend history [list $item_old $fitn_old] ;# положили первую пару
+
+  set mutprob 1.0
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # седлаем несколько попыток улучшить этот итем
+  # 
+  for {set i 0} {$i < 4} {incr i} {
+
+  set item_old $item_start
+  set fitn_old $fitn_start
+
+  # идем в глубину
+  # цикл последовательных мутаций item_old -> item_new -> item_old
+  # 
+  if {$::is_print >= 2} {puts stderr ""}
+
+  for {set j 0} {$j < $num_try} {incr j} {
+
+    #item_print_fitness    $item_old 0 
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    set item_new [make_mutant_from_item  $item_old $mutprob     $task] ;# сделали мутанта    
+
+    item_calc_fitness                    $item_new $fitnessfunc $task  ;# посчитали его
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    #item_print_fitness  $item_new 1   
+    #set src   [item_get_main_src   $item] 
+    
+    set fitn_new  [item_get_fitn   $item_new] 
+    
+    # посмотрим, есть ли уже улучшение от начального
+    #
+    set is_progress [is_progress  $tobest $fitn_start $fitn_new]
+    
+
+    if {$::is_print >= 2} {
+      puts stderr [format "          :  %-37s : $is_progress : %5.2f" \
+		     [item_get_main_src $item_new] $fitn_new]
+    }
+
+
+    if {$is_progress} {    
+      return $item_new ;# если есть, то заканчиваем и выходим с этим результатом
+    }
+
+    lappend history [list $item_new $fitn_new] ;# положили в историю
+    #
+    # TODO: но надо бы туда положить еще и метод мутации?    
+   
+    set item_old $item_new ;# готовимся к  след. шагу цикла
+    # т.е. мы сделали неудачную мутацию, на надеемся на будущие улучшения
+  }
+  }
+
+  if {$::is_print >= 2} {puts stderr ""}
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+
+  # улучшений не было, тогда:
+
+  set r [comm_random_int_minmax_1  1 10]
+
+  if {$r <= 3} {
+
+    set item_best $item_start ;# оставили начальный вариант
+
+  } else {
+
+    # возьмем лучший из истории (исключая начальный)
+    # TODO: жедательно отличающийся от начального, если фитнесы равны!
+    # 
+    set item_best [get_best_from_history  $history $tobest]
+  }
+
+ 
+  return $item_best
+}
+#-------------------------------------------------------------------------------
+proc try_mutate_for_all_items {pop_items_old  task num_try} {
+
+
+  set fitnessfunc [GET $task "fit_func"]  
+
+  # "MIN" ;# т.е. чем меьше, тем лучше
+  # "MAX" 
+  # 
+  set tobest [GET $task "fit_tobest"]
+
+  set pop_items_new {} ;# сюда будем формировать новых мутантов
+  
+
+  if {$::is_print >= 2} {
+    puts stderr "try_mutate_for_all_items: "
+  }
+
+  # идем циклом и каждого бота пытаемся смутировать к лучшему
+  #
+  foreach item_old $pop_items_old {
+
+    set fitn_old  [item_get_fitn   $item_old] 
+
+    set src [item_get_main_src $item_old]
+
+    #set lst [pi_calc_balans_list $src]
+
+    #if {$::is_print >= 2} {
+    #  puts stderr ""
+    #  puts stderr [format "  item_old:  %-37s :   : %5.2f , lst =  %s " \
+    		   $src $fitn_old $lst]
+    #}
+
+    set item_new [try_mutate_to_best  $num_try $task $fitnessfunc $tobest  \
+		    $item_old $fitn_old]
+
+    if {$::is_print >= 2} {
+      puts stderr "  item_new:  [item_get_main_src $item_new] "
+    }
+
+    lappend pop_items_new  $item_new
+
+  }
+
+  return $pop_items_new
+}
+#-------------------------------------------------------------------------------
+# обрабатываем популяцию, выделяя паттерны в библиотеки.
+# 
+# 
+#-------------------------------------------------------------------------------
+proc works_on_gp_dict {sorted_items} {
+
+  # но пока самы простейший случай - берем самого успешного итема и делаем
+  # его исходник частью библиотеки/
+  # не сильно улучшает, если искать среди всего списка?
+
+  # TODO:
+  # 
+  # - по всему списку успешных программ выбирать максимально совпадающие шаблоны
+  # - обновлять статистический рейтин?
+  # - обновлять статистику контекста?
+  # - удалять уже не актуальные?
+  
+
+  if {1} {
+
+    set item [lindex $sorted_items 0] ;# будем пока брать лучшиего
+    set src [item_get_main_src $item]
+      
+    set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
+
+  } else {
+
+    foreach item $sorted_items { 
+      #set item [lindex $sorted_items 0] ;# будем пока брать лучшиего    
+      #set src [item_get_main_src $item]
+      #set add_ok [gp_dict_add_by_src $src] ;# 0 - такой src уже есть, 1 - норм
+      
+      #if {$add_ok} {
+      #break
+      #}
+    }
+  }
+  
+  return
+}
+#-------------------------------------------------------------------------------
+# создание новой популяции на основе списка лидеров (меньшего размера)
+# циклическим клонированием
+# 
+#-------------------------------------------------------------------------------
+proc cyclic_clone_from_leaders {leaders_items new_len} {
+
+  set new_items {} ;# будем формировать новую популяцию длиной 'new_len'
+
+  set old_len [llength $leaders_items]
+
+  if {$::is_print >= 2} {
+    puts -nonewline stderr "cyclic_clone_from_leaders: old_len= $old_len, new_len= $new_len:  "
+  }
+
+  set       j 0 ;# индекс по списку лидеров
+
+  while {1} {
+
+    if {[llength $new_items] ==  $new_len} {break} ;# достигли резудьтата, заканчиваем
+
+    if {$j == $old_len} { ;#          завершился список лидеров     
+      set j 0 ;# продолжим клонирование с начала списка лидеров
+      
+      if {$::is_print >= 2} {puts -nonewline stderr "_ "}
+    }
+
+    lappend new_items [lindex $leaders_items $j]
+
+    incr j
+    
+    if {$::is_print >= 2} {puts -nonewline stderr "$j "}
+  }
+
+  if {$::is_print >= 2} {puts stderr ""}
+
+  #exit ;# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! for DEBUG
+
+  return $new_items
+}
+#-------------------------------------------------------------------------------
+# основная эволюционная программа (для GP)
+#-------------------------------------------------------------------------------
+proc gp_evolution_4 {pop task args} {
+
+
+  # предполагается что итемы тут уже отсортированы !!
+  # 
+  set sorted_items [GET $pop "itemlist"]
+
+  # это слишком простой вариант, нужно сначала добавлять, потом
+  #            пересчитывать и потом уже убивать слабых ?
+
+  set len [llength $sorted_items]
+
+  set l [expr {$len/2}]     ;# размер лидирующей группы
+
+  #---------------------------------------
+  # 1)
+  # выделяем лидеров популяции  (1/3)
+
+  
+  set leaders_items [lrange $sorted_items 0 [expr {$l - 1}]]
+  
+  #---------------------------------------
+
+  if {$::is_print >= 2} {
+    puts stderr ""
+    puts stderr "gp_evolution_4: len(sorted_items) = $len, l(leaders_items) = $l"
+  }
+   
+  #---------------------------------------
+  # 2) выделяем библиотечные шаблоны
+
+  if {$::AUTO} {
+
+    works_on_gp_dict $leaders_items
+  }
+
+  #---------------------------------------
+  # 3) MUTATION
+   
+  if {$::NEWS} {
+    
+    # совсем новый механизм: (форк от лучших и затем мутация)
+
+    # TODO: клонировать с рефакторингом (::AUTO)
+    # 
+    set pop_items [cyclic_clone_from_leaders $leaders_items $len]
+
+    set pop_items [try_mutate_for_all_items   $pop_items $task $::DEEP]
+
+  } else {
+    
+    set mutprob [dict_parse  $args "-mutprob" 0.1]
+
+    set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
+
+    set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
+    
+    #dict_print_real_all_in_list  "[procname]"  $mutated_items
+      
+    #---------------------------------------
+    # 4) 
+    # склеиваем три популяции итемов (лидеров, отпрысков, мутантов)
+    # создавая популяцию исходников для следующей итерации.
+    #
+    
+    # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]   
+    set pop_items   [concat  $leaders_items  $mutated_items]   
+  }
+
+    
+  #---------------------------------------
+  # записываем их в популяцию
+
+  SET $pop "itemlist" $pop_items
+
+
+  if {$::is_print >= 2} {
+    puts ""
+    puts stderr "  ::gp_dict = [set $::gp_dict]"
+  }
+   
+  return $pop_items
+}
+# ------------------------------------------------------------------------------
+#
+#
+#
+# ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
