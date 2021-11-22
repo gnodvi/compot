@@ -27,11 +27,15 @@ FDIR_ROOT=S/R
 #FLTK_INCS = -I$(FDIR_ROOT)
 #FLTK_LIBS = -L$(FDIR_LIB) -lfltk
 
-FLTK_INCS = -I$(FDIR_ROOT)/include
-FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk $(IMAGELIBS)
+#FLTK_INCS = -I$(FDIR_ROOT)/include
+#FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk $(IMAGELIBS)
 
-#FLTK_INCS = `pkg-config --cflags fltk`
-#FLTK_LIBS = `pkg-config --libs fltk` $(IMAGELIBS)
+# FLTK_INCS = `pkg-config --cflags fltk`
+# FLTK_LIBS = `pkg-config --libs fltk` $(IMAGELIBS)
+
+FLTK_INCS = `fltk-config --cflags`
+FLTK_LIBS = `fltk-config --ldflags` 
+
 
 YZONE_OPTS = -w -g 
 YZONE_INCS = -I$(YDIR_INC)

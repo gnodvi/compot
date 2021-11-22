@@ -35,7 +35,7 @@ P_TEST_C = p_test.c
 
 #-------------------------------------------------------------------------------
 
-PROGS =  $(P_TEST) $(PLOTER) T/libpgnup.so 
+PROGS =  $(P_TEST) $(PLOTER) ##T/libpgnup.so 
 
 all: $(PROGS)
 
