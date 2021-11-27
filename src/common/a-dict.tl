@@ -1436,12 +1436,13 @@ proc dict_print {pd {mainname ""}  {is_real "false"} {ofile "stdout"}
   if {$mainname != ""} {
 
     #set name $mainname
-    puts $ofile ""
+    #puts $ofile ""
     puts $ofile "set $mainname $name"
+    puts $ofile ""
   }
 
 
-  puts $ofile ""
+  #puts $ofile ""
 
   if {$is_real} {
     puts $ofile "set $name \{"

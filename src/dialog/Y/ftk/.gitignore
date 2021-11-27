@@ -1,4 +1,6 @@
 
+etc/*.txt
+etc/*.log
 d_gui
 d_new
 

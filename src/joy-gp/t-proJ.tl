@@ -681,7 +681,10 @@ proc argo_print {argo} {
   puts "argo = $argo"
   puts ""
 
-  dict_print $argo 
+  #dict_print_real $argo 
+  #dict_print $argo  "ARGO" "true" 
+  dict_print $argo  "" "true" 
+
 
 }
 #-------------------------------------------------------------------------------
