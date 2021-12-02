@@ -1455,13 +1455,13 @@ GrafCalcOut (int mod, GRAF *graf, ZT_OUT *p_out, int xnum,
     step = 0;
     Do_Open_Close (p_out, mod, xnum,  is_win, is_gnu);
     
-    return;
+    return NULL;
   }
   /* --------------- завершение вывода --*/
   if (mod == 3) {
     Do_Open_Close (p_out, mod, xnum,  is_win, is_gnu);
     //DemOut (p_out);
-    return;
+    return NULL;
   }
   //======================================
   
@@ -1569,7 +1569,7 @@ GrafCalcOut (int mod, GRAF *graf, ZT_OUT *p_out, int xnum,
   
   step++;
 
-  return;
+  return NULL;
 }
 /*-------------------------------GrafCheck-------------------------------------*/
 /*                                                                             */
@@ -1906,8 +1906,9 @@ test_11 ()
   int     num_r, num_d;
 
 
-  nn = 6;
+  nn = 6; // 000 ; // 6;
   pg = GrafCreate (nn);
+  
   //GrafInit (pg, YCONST, 0.0, 0.0, YCONST, 5.0, 0.0);
   GrafInit (pg, YRAND, 0.0,5.0, YRAND, 0.0,5.0);
   

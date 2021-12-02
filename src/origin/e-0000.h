@@ -197,6 +197,8 @@ int dao_loop1 (int is_win, int is_gnu);
 
 typedef int (*DAO_LOOP) (int, int);
 
-void  test_01 ();
+void  test_01 (void);
+void  test_11 (void);
+void  test_00 (int);
 
 /*-----------------------------------------------------------------------------*/ 

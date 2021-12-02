@@ -102,7 +102,7 @@ main (int argc, char *argv[])
      break;
 
     case 'h': 
-      get_options_print_help (); 
+      //get_options_print_help (); 
       break;
 
       //default:      

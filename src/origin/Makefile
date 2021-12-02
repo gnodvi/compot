@@ -2,7 +2,7 @@
 #
 #-------------------------------------------------------------------------------
 
-#include ../n//Make.mak
+include ../common//Make.mak
 
 #-------------------------------------------------------------------------------
 
@@ -52,29 +52,27 @@ TCL_STUB_LIB_SPEC_clean = $(subst ', , $(TCL_STUB_LIB_SPEC))
 
 #-------------------------------------------------------------------------------
 
-PROGS =  e_test T/e_jim.so ## T/e_tcl.so  
+PROGS =  e_test T/e_tcl.so  T/e_jim.so 
 
 all:   $(PROGS)   
 
 
 #-------------------------------------------------------------------------------
 
-T/e-0000.o : e-0000.c e-0000.h                                  
-	$(GCC) -D_GNUPLOT -o $@ -c $< $(GNUPLOTI_INC)
-#	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
-
-
 e_test :  e_test.c T/e-0000.o                                    
 	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
+T/e-0000.o : e-0000.c e-0000.h                                  
+#	$(GCC) -D_GNUPLOT -o $@ -c $< $(GNUPLOTI_INC)
+	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+
 #------------------------------------------------------------------
 
-
-T/e-init.o: e-init.c
-	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
-
-T/e_tcl.so: T/e-init.o T/e-0000.o $(GNUPLOTI_LIB)
+T/e_tcl.so: T/e-init.o T/e-0000.o ##$(GNUPLOTI_LIB)
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
+
+T/e-init.o: e-init.c e-0000.h
+	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $< $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
 
 #------------------------------------------------------------------
 
