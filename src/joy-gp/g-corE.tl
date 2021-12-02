@@ -6046,51 +6046,94 @@ proc gp_crossover {a b} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+proc get_i_context {prg i} {
+
+
+
+  return [list p100 p200 p300]
+}
 #-------------------------------------------------------------------------------
+proc run_mutate_cmd {mcmd &prg} {
+
+  USE_REFS
+
+
+  set cmd [lindex $mcmd 0]
+  set i   [lindex $mcmd 1]
+  set gen [lindex $mcmd 2]
+
+
+
+  switch -- $cmd {
+
+    "not" {
+    }  
+    "del" {
+      ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
+      set prg  [lreplace $prg $i $i] ;# удаляем
+    }  
+    "set" {
+      lset prg $i $gen  ;# либо заменяем итем 
+    }  
+    "add" {
+      set prg  [linsert  $prg $i $gen]  ;# либо добавляем
+    }
+  } 
+
+}
 #-------------------------------------------------------------------------------
-proc mutate_gen_in_joyprg_by_mode {&program i prob gp_list  mode} {
+proc mutate_gen_in_joyprg_by_mode {&prg prob gp_list  mode i} {
 
   USE_REFS
 
   set r [random_double 1.0]
   
   if {$r > $prob} {
-    return ;# ничего не делаем, уходим
+    set mcmd "not  @ @"  
+    return $mcmd ;# ничего не делаем, уходим
   }
 
-  # делаем мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # 
+  # сначала сформируем команду мутации
 
-  if {$mode == 0} {
+  if {$mode == "del"} {
     
-    if {[llength $program] <= 1} {
-      return ;# ничего не делаем, слишком уже короткая программа
-    }
+    if {[llength $prg] <= 1} {
 
-    # удалим итем
-    #
-    ##set program  [lremove $program $i] ;# invalid command name "lremove"
-    set program  [lreplace $program $i $i] 
+      set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
+    } else {
+      set mcmd "del $i @" ;# удалим gen
+    }
 
   } else {
 
     # выберем из списка (или списков !!!)
     # 
-    set item [randinstr_MAIN $gp_list]
+    set gen [randinstr_MAIN $gp_list]
 
-  
-    switch -- $mode {
-      1 {
-        lset program $i $item                     ;# либо заменяем итем 
-      }  
-      2 {
-        set program  [linsert $program $i $item]  ;# либо добавляем
-      }
-    } 
+    set mcmd "$mode $i $gen"  ;# либо заменяем  
+
+
+    #switch -- $mode {
+    #  "set" {
+    #    set mcmd "set $i $gen"  ;# либо заменяем  
+    #  }  
+    #  "add" {
+    #    set mcmd "add $i $gen"  ;# либо добавляем
+    #  }
+    #} 
   }
 
+  set context [get_i_context $prg $i]
 
-  return
+  lappend mcmd $context ;# добавим в описание команды мутации контекст точки воздействия
+
+  # а вот теперь выполним команду мутации:
+
+  run_mutate_cmd $mcmd prg
+
+  return $mcmd
 }
 #-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа
@@ -6104,6 +6147,12 @@ proc gp_joyprg_mutate {task prg mutprob} {
   # gaul_mutation {pop task}
   # ga_mutate_printable_singlepoint_drift {pop father son}
 
+  set mutate_cmd ""
+
+  # 0 - удаляем 
+  # 1 - заменяем
+  # 2 - добавляем
+      
   set gp_list [GET $task gp_list]
 
   if {$::NEWS} {
@@ -6112,12 +6161,11 @@ proc gp_joyprg_mutate {task prg mutprob} {
     # 
 
     #~~~~~~~~~~~~~~~~~~~~~~~`
-    #~~~~~~~~~~~~~~~~~~~~~~~`
 
-    set mode [lrand "0 1 2"]
+    set mode [lrand "del set add"]
     set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
 
-    mutate_gen_in_joyprg_by_mode  prg  $i $mutprob $gp_list  $mode 
+    set mutate_cmd [mutate_gen_in_joyprg_by_mode  prg  $mutprob $gp_list  $mode $i] 
 
   } else {
 
@@ -6125,34 +6173,34 @@ proc gp_joyprg_mutate {task prg mutprob} {
     # 
     for {set i 0} {$i < [llength $prg]} {incr i} {
       
-      set mode [lrand "0 1 2"]
+      set mode [lrand "del set add"]
       
-      # 0 - удаляем 
-      # 1 - заменяем
-      # 2 - добавляем
-      
-      mutate_gen_in_joyprg_by_mode  prg  $i $mutprob $gp_list  $mode 
+      mutate_gen_in_joyprg_by_mode  prg  $mutprob $gp_list  $mode $i 
     }
   }
+
   
-  return $prg
+  return [list $prg $mutate_cmd]
 }
 #------g-------------------------------------------------------------------------
 proc make_mutant_from_item {item mutprob task} {
 
-  set prg        [item_get_main_src $item] ;# исходник на JOY в виде строки?
+  set prg   [item_get_main_src $item] ;# исходник на JOY в виде строки?
   
   
   #set l [pi_calc_balans_list  $prg]
-  #puts "gp_joyprg_mutate: l = $l"
 
-  set prg_mutant [gp_joyprg_mutate  $task $prg $mutprob]
+  set ret [gp_joyprg_mutate  $task $prg $mutprob]
   
-  set mutant [item_make $prg_mutant]  ;# цельный агента-мутанта
+  set prg_mutant [lindex $ret 0]
+  set mutate_cmd [lindex $ret 1]
+  #foreach {prg_mutant mutate_cmd} $ret {}
+  
+  set mutant [item_make $prg_mutant]  ;# цельный агент-мутант
   
   # пока фитнеса нет, только программы
 
-  return $mutant
+  return [list $mutant $mutate_cmd]
 }
 #-------------------------------------------------------------------------------
 proc is_items_equal {item1 item2} {
@@ -6193,8 +6241,11 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
 
   for {set i 0} {$i < $num_probes} {incr i} {
     
-    set mutant [make_mutant_from_item  $parent $mutprob $task]
+    set ret [make_mutant_from_item  $parent $mutprob $task]
     
+    set mutant     [lindex $ret 0]
+    set mutate_cmd [lindex $ret 1]
+
     if [is_this_mutant_unikum $mutant $items] {
       break
     }
@@ -7466,12 +7517,15 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    set item_new [make_mutant_from_item  $item_old $mutprob     $task] ;# сделали мутанта    
+    set ret [make_mutant_from_item  $item_old $mutprob  $task] ;# сделали мутанта    
 
-    item_calc_fitness                    $item_new $fitnessfunc $task  ;# посчитали его
-    
+    set item_new   [lindex $ret 0] ;# мутант
+    set mutate_cmd [lindex $ret 1] ;# команда мутации
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    item_calc_fitness   $item_new $fitnessfunc $task  ;# посчитали мутанта
+    
     #item_print_fitness  $item_new 1   
     #set src   [item_get_main_src   $item] 
     
@@ -7488,25 +7542,34 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
     }
 
 
-    if {$is_progress} {    
-      return $item_new ;# если есть, то заканчиваем и выходим с этим результатом
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if {$is_progress} {   
+      # все хорошо, сохраняем удачную команду мутации с контекстом
+      set progress_abs [expr {abs ($fitn_new - $fitn_start)}]
+
+      # !!!!!!!!!!!!!!1
+      # save_good_mutate_cmd  $mutate_cmd $progress_abs
+
+      # и выходим
+      return $item_new 
     }
 
     lappend history [list $item_new $fitn_new] ;# положили в историю
     #
-    # TODO: но надо бы туда положить еще и метод мутации?    
+    # TODO: но надо бы туда положить еще и метод мутации? 
+    #       нет, его надо в отдельную историю, глобальную, чтобы пользоваться
+    #   
    
     set item_old $item_new ;# готовимся к  след. шагу цикла
     # т.е. мы сделали неудачную мутацию, на надеемся на будущие улучшения
+
   }
-  }
+  } ;# закончиличь ничем все попытки улучшить исходный итем
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if {$::is_print >= 2} {puts stderr ""}
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-
-  # улучшений не было, тогда:
+  # улучшений не было, тогда возьмем хоть что-то из истории:
 
   set r [comm_random_int_minmax_1  1 10]
 
