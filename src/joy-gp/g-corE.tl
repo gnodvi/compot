@@ -687,7 +687,7 @@ proc item_print_oneline {item {out "stdout"} {ch_form "%s "}} {
 #-------------------------------------------------------------------------------
 proc itemlist_print {itemlist ind_form gen_form {out "stdout"}} {
 
-  set i 0  
+  set i 1 ;# лучше с 1  ??  
 
   foreach item $itemlist {
     
@@ -5725,7 +5725,7 @@ proc pop_print_step_info {pop task args} {
   set i [GET $pop generation]
 
   if {$::is_print > 1} {
-    puts ""
+   # puts ""
     puts "-------------------------------------------------------------------"
     puts ""
     gp_pop_all_print  $pop 
@@ -6050,7 +6050,8 @@ proc get_i_context {prg i} {
 
 
 
-  return [list p100 p200 p300]
+  #return [list p100 p200 p300]
+  return {}
 }
 #-------------------------------------------------------------------------------
 proc run_mutate_cmd {mcmd &prg} {
@@ -6082,14 +6083,15 @@ proc run_mutate_cmd {mcmd &prg} {
 
 }
 #-------------------------------------------------------------------------------
-proc mutate_gen_in_joyprg_by_mode {&prg prob gp_list  mode i} {
+proc make_cmd_by_mode {&prg prob gp_list  mode i} {
 
   USE_REFS
 
   set r [random_double 1.0]
   
   if {$r > $prob} {
-    set mcmd "not  @ @"  
+    #set mcmd "not  @ @"  
+    set mcmd "not "  
     return $mcmd ;# ничего не делаем, уходим
   }
 
@@ -6101,9 +6103,11 @@ proc mutate_gen_in_joyprg_by_mode {&prg prob gp_list  mode i} {
     
     if {[llength $prg] <= 1} {
 
-      set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
+      #set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
+      set mcmd "not" 
     } else {
-      set mcmd "del $i @" ;# удалим gen
+      #set mcmd "del $i @" ;# удалим gen
+      set mcmd "del $i" ;# удалим gen
     }
 
   } else {
@@ -6129,11 +6133,40 @@ proc mutate_gen_in_joyprg_by_mode {&prg prob gp_list  mode i} {
 
   lappend mcmd $context ;# добавим в описание команды мутации контекст точки воздействия
 
+
+#   # а вот теперь выполним команду мутации:
+
+#   run_mutate_cmd $mcmd prg
+
+  return $mcmd
+}
+#-------------------------------------------------------------------------------
+proc mutate_gen_in_joyprg_by_mode {&prg prob gp_list  mode i} {
+
+  USE_REFS
+
+  set mcmd [make_cmd_by_mode  prg $prob $gp_list  $mode $i]
+
   # а вот теперь выполним команду мутации:
 
   run_mutate_cmd $mcmd prg
 
   return $mcmd
+}
+#-------------------------------------------------------------------------------
+proc find_in_good {} {
+
+  set cmd {}
+
+  # lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
+
+  if {$::good_mutate_cmd_list != {}} {
+
+    set progress_cmd [lindex $::good_mutate_cmd_list 0] ;# пока просто первую пару
+    set cmd [lindex $progress_cmd 1]
+  }
+
+  return $cmd
 }
 #-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа
@@ -6147,7 +6180,7 @@ proc gp_joyprg_mutate {task prg mutprob} {
   # gaul_mutation {pop task}
   # ga_mutate_printable_singlepoint_drift {pop father son}
 
-  set mutate_cmd ""
+  set mutate_cmd {}
 
   # 0 - удаляем 
   # 1 - заменяем
@@ -6160,12 +6193,27 @@ proc gp_joyprg_mutate {task prg mutprob} {
     # по новому алгоритму - хотим ьенять точечно и семантически осмыслено 
     # 
 
-    #~~~~~~~~~~~~~~~~~~~~~~~`
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # ищем мутирующую команду в списке сохраненных
+    # 
+    # lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
 
-    set mode [lrand "del set add"]
-    set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
+    #set mutate_cmd [find_in_good]
 
-    set mutate_cmd [mutate_gen_in_joyprg_by_mode  prg  $mutprob $gp_list  $mode $i] 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # если нет, то формируем мутирующую команду случайным образом
+    # 
+    if {$mutate_cmd == {}} {
+
+      set mode [lrand "del set add"]
+      set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
+      
+      set mutate_cmd [make_cmd_by_mode  prg $mutprob $gp_list  $mode $i]
+    }
+
+    run_mutate_cmd $mutate_cmd prg
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   } else {
 
@@ -6252,6 +6300,7 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
   }
 
   return $mutant
+  #return [list $mutant $mutate_cmd]
 }
 #-------------------------------------------------------------------------------
 proc make_mutated_from_items {task sorted_items m mutprob} {
@@ -7484,7 +7533,17 @@ proc get_best_from_history {history tobest} {
   return $best_item
 }
 #-------------------------------------------------------------------------------
-proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} {
+
+set ::good_mutate_cmd_list {}
+
+#-------------------------------------------------------------------------------
+proc save_good_mutate_cmd {mutate_cmd progress_abs} {
+
+  lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
+
+}
+#-------------------------------------------------------------------------------
+proc try_mutate_to_best {deep_mutate task fitnessfunc tobest item_start fitn_start} {
 
   # TODO: 
 
@@ -7501,7 +7560,22 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # седлаем несколько попыток улучшить этот итем
   # 
-  for {set i 0} {$i < 4} {incr i} {
+  # TODO:
+
+  # 1) попытки должны быть боле осознанными, учитывать статистику
+  # 2) учитывать как хорошую так и плохую статистику 
+  # 3) понять как сочетать шаблоны действий и шаблоны конечных состояний или
+  #    выбрать одно общее понятие?
+  # 4) зачем я клонирую (дублирую), если все равно потом делаю попытки?
+
+  # puts ""
+#   if {$::is_print >= 2} {
+#     puts stderr [format "  ............................             is_progress : fitness "]
+#   }
+
+  set ::max_try_variant 2
+
+  for {set i 1} {$i <= $::max_try_variant} {incr i} {
 
   set item_old $item_start
   set fitn_old $fitn_start
@@ -7509,9 +7583,12 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
   # идем в глубину
   # цикл последовательных мутаций item_old -> item_new -> item_old
   # 
-  if {$::is_print >= 2} {puts stderr "  try i = $i ............"}
+  if {$::is_print >= 2} {
+    #puts stderr [format "  try $i ......................             is_progress : fitness "]
+    puts stderr [format "  try $i ..."]
+  }
 
-  for {set j 0} {$j < $num_try} {incr j} {
+  for {set j 0} {$j < $deep_mutate} {incr j} {
 
     #item_print_fitness    $item_old 0 
     
@@ -7531,28 +7608,33 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
     
     set fitn_new  [item_get_fitn   $item_new] 
     
-    # посмотрим, есть ли уже улучшение от начального
+    # посмотрим, есть ли уже улучшение от начального ??
+    # так может не от начального, а от текущего, пока мы идем в глубину ..
     #
-    set is_progress [is_progress  $tobest $fitn_start $fitn_new]
+    #set is_progress [is_progress  $tobest $fitn_start $fitn_new]
+    set is_progress [is_progress  $tobest $fitn_old $fitn_new]
     
 
     if {$::is_print >= 2} {
-      puts stderr [format "          :  %-37s : $is_progress : %5.2f" \
-		     [item_get_main_src $item_new] $fitn_new]
+      puts stderr [format "          :  %-37s : $is_progress :   %5.2f   <- $mutate_cmd " \
+		     [item_get_main_src $item_new] $fitn_new 
+                  ]
     }
 
 
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if {$is_progress} {   
       # все хорошо, сохраняем удачную команду мутации с контекстом
-      set progress_abs [expr {abs ($fitn_new - $fitn_start)}]
 
-      # !!!!!!!!!!!!!!1
-      # save_good_mutate_cmd  $mutate_cmd $progress_abs
+      #set progress_abs [expr {abs ($fitn_new - $fitn_start)}]
+      set progress_abs [expr {abs ($fitn_new - $fitn_old)}]
+      save_good_mutate_cmd  $mutate_cmd $progress_abs
 
-      # и выходим
-      return $item_new 
+      # и выходим ????
+      #return $item_new 
     }
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     lappend history [list $item_new $fitn_new] ;# положили в историю
     #
@@ -7562,6 +7644,7 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
    
     set item_old $item_new ;# готовимся к  след. шагу цикла
     # т.е. мы сделали неудачную мутацию, на надеемся на будущие улучшения
+    set fitn_old $fitn_new
 
   }
   } ;# закончиличь ничем все попытки улучшить исходный итем
@@ -7589,7 +7672,7 @@ proc try_mutate_to_best {num_try task fitnessfunc tobest item_start fitn_start} 
   return $item_best
 }
 #-------------------------------------------------------------------------------
-proc try_mutate_for_all_items {pop_items_old  task num_try} {
+proc try_mutate_for_all_items {pop_items_old  task deep_mutate} {
 
 
   set fitnessfunc [GET $task "fit_func"]  
@@ -7604,6 +7687,7 @@ proc try_mutate_for_all_items {pop_items_old  task num_try} {
 
   if {$::is_print >= 2} {
     puts stderr "try_mutate_for_all_items: \n"
+
     set ind_form  "    %d]   "
     set gen_form  "%s " 
     itemlist_print $pop_items_old $ind_form $gen_form stderr 
@@ -7612,32 +7696,39 @@ proc try_mutate_for_all_items {pop_items_old  task num_try} {
 
   # идем циклом и каждого бота пытаемся смутировать к лучшему
   #
-  foreach item_old $pop_items_old {
+  set index 1
 
-    if {$::is_print >= 2} {
-      puts stderr "  item_old:  [item_get_main_src $item_old] "
-    }
+  foreach item_old $pop_items_old {
 
     set fitn_old  [item_get_fitn   $item_old] 
 
-    #set src [item_get_main_src $item_old]
-    #set lst [pi_calc_balans_list $src]
+    set src [item_get_main_src $item_old]
+    set lst [pi_calc_balans_list $src]
 
     #if {$::is_print >= 2} {
-    #  puts stderr ""
-    #  puts stderr [format "  item_old:  %-37s :   : %5.2f , lst =  %s " \
-    		   $src $fitn_old $lst]
+    # puts stderr "  item_old:  [item_get_main_src $item_old] "
     #}
 
-    set item_new [try_mutate_to_best  $num_try $task $fitnessfunc $tobest  \
+    if {$::is_print >= 2} {
+
+      puts stderr \
+        [format "  $index] ............................          is_progress : fitness : balans" \
+           $index]
+      puts stderr [format "  item_old:  %-37s :   :   %5.2f : %s " \
+    		   $src $fitn_old $lst]
+    }
+
+    set item_new [try_mutate_to_best  $deep_mutate $task $fitnessfunc $tobest  \
 		    $item_old $fitn_old]
 
     if {$::is_print >= 2} {
-      puts stderr "  item_new:  [item_get_main_src $item_new] \n"
+      puts stderr "  item_new:  [item_get_main_src $item_new]"
+      puts stderr "  ::good_mutate_cmd_list = $::good_mutate_cmd_list"
+      puts stderr "\n"
     }
 
     lappend pop_items_new  $item_new
-
+    incr index
   }
 
   return $pop_items_new
@@ -7802,9 +7893,11 @@ proc gp_evolution_4 {pop task args} {
   SET $pop "itemlist" $pop_items
 
 
+  if {$::AUTO} {
   if {$::is_print >= 2} {
     puts ""
     puts stderr "  ::gp_dict = [set $::gp_dict]"
+  }
   }
    
   return $pop_items

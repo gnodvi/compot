@@ -279,199 +279,6 @@ proc test_pGP {} {
   return
 }
 ################################################################################
-################################################################################
-
-# Основные идеи:
-
-# -) поиск и выделение частей-функций в программах, занесение их в библиотеку,
-#   и рефакторинг шаблонов, как основной путь эволюции;
-
-# -) шаблоны вырезаются и записываются в библиотеку вместе c некоторой инфой об 
-#   их окружении; эта инфа используется как "описание типов" для адекватной
-#   подстройки программ в эволюции;
-
-# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
-# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
-# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
-
-# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
-
-
-
-# -) универсальная передача параметров через args (dict_print);
-
-# -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
-#                "окружению" потом)
-# -) лучшие проги заносим в ::mainlib (аналог как у новосибирцев)
-# -) 
-# -) запуск joy_run ? с использованием сторонних библиотек (::mainlib);
-
-# run_v1_src_or_prog ->  run_v1_src   $proga 
-#                    ->  run_v1_prog  $prog  - будет через библиотеки !!
-
-
-# +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
-# +) слияние нескольких программ с локальными библиотеками : commit
-# -) слияние и рtфакторинг с использованием общей библиотеки.
-
-# +) перевод всех алгоритмов : prg --> prog ;
-# -) поиск лучшего решения путем рефакторинга;
-
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#
-# соревнование-тест (пока с одним участником)
-
-# О.Г. Монахов, Э.А.Монахова, 2017
-#
-# Параллельный алгоритм 
-# многовариантного эволюционного синтеза нелинейных моделей
-#
-#
-
-# x^3 + x^2      :  dup dup dup * + * 
-# x^3 + x^2 + x  :  dup dup dup dup * nop + * + 
-
-#
-# TODO:
-
-#   этот примитивный генетичекий алгоритм очень плохо сходится. нужно делать 
-#   рефакторинг, 
-#   выделение блоков и статистику по расположению этих блоков относительно друг 
-#   друга 
-#   (.е. это уже начальное понятие типа данных), а также об их эффективном 
-#   вкладе в результат..
-#  
-#  
-
-# упростил пока (сразу заношу в стек X несколько раз (dup dup dup dup dup dup)
-
-# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 -news 1 -list "* +" -print 2 -func 'x ** 3 + x ** 2 + x' 
-
-# Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  * + * + * +
-
-#         sin ( x ** 2 + x      )            =  * + sin      
-#         sin ( x ** 2 + x ** 2 )            =  + * sin      
-#         sin ( x ** 2 + x ** 3 )            =  * + * sin      
-# Test2:  sin ( x ** 2 + x ** 4 )            =  * * + * sin
-
-# Test3:  sin (exp(sin(exp(sin(x)))))        =  
-# Test4:  sin (x ** 3) + exp (x)             =  
-# Test5:  sin (2 * x) + 1/(x ** 2) - x ** 3  =  
-# Test6:  (x + 2) / exp (a * x - 5)          =  
-
-#-------------------------------------------------------------------------------
-
-# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
-# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
-  
-# OUT:
-# l~.tl TEST TEST_xx  -seed    0 -lpop  5 -size 6 -nums -1 -vers gp -print 2 
-# l~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
-
-#-------------------------------------------------------------------------------
-
-#-------------------------------------------------------------------------------
-
-# Вспомогательные тесты:
-
-# l~.tl ANTS ANTS_gp 2012  10 15 2
-# l~.tl TEST TEST_pp 2014
-
-# l~.tl TEST TEST_makeparas
-# l~.tl TEST TEST_randprog @
-# l~.tl TEST TEST_randprog 2014
-
-################################################################################
-
-# TODO: на простейшей "программы" отладить все механмзмы
-#       SP - статистического программирования
-
-#t~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
-
-#-------------------------------------------------------------------------------
-proc NEXT_01 {args} {
-
-  if {$args == ""} {
-    global argc argv argv0
-    set argo [lrange $argv 2 end]
-  } else {
-    set argo $args
-  }
-  
-  argo_print $argo 
-
-  set seed        [dict_parse $argo "-seed" 2016]
-  set individuals [dict_parse $argo "-lpop" 10]
-  set len         [dict_parse $argo "-size" 10] 
-  set nums        [dict_parse $argo "-nums"  4]
-  set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
-  set ::is_print  [dict_parse $argo "-print" 1] 
-
-  # флажки для новейших алгоритмов
-  # 
-  # 
-  set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
-  set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
-  
-  pi_add p1  {"inp" 0 "out" 0}
-  pi_add p3  {"inp" 0 "out" 0}
-  pi_add p5  {"inp" 0 "out" 0}
-
-  set ::LIPS_begin 0
-  set ::LIPS_final 0
-
-  #------------------------------------------------------
-
-  set ::sum_target 20
-
-
-  puts "individuals  = $individuals" ;# колич-во ботов
-  puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
-  puts "nums         = $nums"        ;# шагов эволюции  
-  puts "gp_list      = $gp_list"     ;#   
-
-  puts "::sum_target = $::sum_target" ;# к чему стремимся, что надо получить 
-  puts ""
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  set is_print 1
-  #DebugOn
-
-  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-    
-  set pb [mp_create]
-
-  mp_init $pb 
-
-  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" \
-                         -gp_list  $gp_list]
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
-  ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
-  ##                                            -list,\{,p1,p3,p5,\}
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  run_gp_evolution_for_task    \
-      $task                    \
-      $seed $rand_prgpop_proc  \
-      $individuals  $len $nums \
-      $is_print                \
-      -print        $is_print  \
-      -mutprob          0.1    \
-      -game_print_proc  0      \
-    {*}$argo
-  
-
-  puts ""
-  gp_dict_print 
-
-  return
-}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc get_x_list {xmin xmax nums} {
@@ -730,6 +537,39 @@ proc pi_init_TEST_xx {} {
 # 
 # 
 #-------------------------------------------------------------------------------
+proc TEST_lips {args} {
+
+  puts ""
+  puts "TEST_lips"
+  puts ""
+
+  pi_init_TEST_xx 
+
+
+  #puts "::LIPS = [set $::LIPS]"
+  puts "::LIPS = $::LIPS"
+  puts ""
+  pi_print 
+  puts ""
+
+  #set b [pi_calc_balans_prg  "dup dup"]
+
+  #set begin 1
+  #set final 1
+  #set prg   "dup dup * +"
+  set prg   "* dup dup +"
+
+  #set f [pi_calc_balans_full  $begin $prg $final]
+  #set f [pi_calc_balans_full  $prg]
+
+  #set l [pi_calc_balans_list $begin $prg $final]
+  set lst [pi_calc_balans_list $prg]
+
+  puts "full balans: $::LIPS_begin | $prg | $::LIPS_final,  lst = $lst   ???"
+
+
+}
+#-------------------------------------------------------------------------------
 proc TEST_xx {args} {
 
 
@@ -764,7 +604,7 @@ proc TEST_xx {args} {
   ;# 1 - кладем сразу начальное значение x в стек несколько раз с запасом dup dup dup
 
   if {$::INIT} {
-    set gp_list     [dict_parse $argv "-list"       "* nop +"]
+    set gp_list     [dict_parse $argv "-list"   "* nop +"]
   } else {
     set gp_list     [dict_parse $argv "-list"   "dup * +"]
   }
@@ -950,39 +790,6 @@ proc TEST_xx {args} {
   return
 }
 #-------------------------------------------------------------------------------
-proc TEST_lips {args} {
-
-  puts ""
-  puts "TEST_lips"
-  puts ""
-
-  pi_init_TEST_xx 
-
-
-  #puts "::LIPS = [set $::LIPS]"
-  puts "::LIPS = $::LIPS"
-  puts ""
-  pi_print 
-  puts ""
-
-  #set b [pi_calc_balans_prg  "dup dup"]
-
-  #set begin 1
-  #set final 1
-  #set prg   "dup dup * +"
-  set prg   "* dup dup +"
-
-  #set f [pi_calc_balans_full  $begin $prg $final]
-  #set f [pi_calc_balans_full  $prg]
-
-  #set l [pi_calc_balans_list $begin $prg $final]
-  set lst [pi_calc_balans_list $prg]
-
-  puts "full balans: $::LIPS_begin | $prg | $::LIPS_final,  lst = $lst   ???"
-
-
-}
-#-------------------------------------------------------------------------------
 #
 # t~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -news 1 -print 2
 # t~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -news 1 -print 2 -seed 13 -auto 1
@@ -1003,5 +810,206 @@ proc TEST_lips {args} {
 #   - полезность отдельных операций в рантайме (и сразу реагировать на крах?)
 
 #   - учитывать арность операций и текущий размер стека ?!!!! !!!!!!!!!!!!!
+
+#-------------------------------------------------------------------------------
+################################################################################
+
+# Основные идеи:
+
+# -) поиск и выделение частей-функций в программах, занесение их в библиотеку,
+#   и рефакторинг шаблонов, как основной путь эволюции;
+
+# -) шаблоны вырезаются и записываются в библиотеку вместе c некоторой инфой об 
+#   их окружении; эта инфа используется как "описание типов" для адекватной
+#   подстройки программ в эволюции;
+
+# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
+# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
+# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
+
+# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
+
+
+
+# -) универсальная передача параметров через args (dict_print);
+
+# -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
+#                "окружению" потом)
+# -) лучшие проги заносим в ::mainlib (аналог как у новосибирцев)
+# -) 
+# -) запуск joy_run ? с использованием сторонних библиотек (::mainlib);
+
+# run_v1_src_or_prog ->  run_v1_src   $proga 
+#                    ->  run_v1_prog  $prog  - будет через библиотеки !!
+
+
+# +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
+# +) слияние нескольких программ с локальными библиотеками : commit
+# -) слияние и рtфакторинг с использованием общей библиотеки.
+
+# +) перевод всех алгоритмов : prg --> prog ;
+# -) поиск лучшего решения путем рефакторинга;
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#
+# соревнование-тест (пока с одним участником)
+
+# О.Г. Монахов, Э.А.Монахова, 2017
+#
+# Параллельный алгоритм 
+# многовариантного эволюционного синтеза нелинейных моделей
+#
+#
+
+# x^3 + x^2      :  dup dup dup * + * 
+# x^3 + x^2 + x  :  dup dup dup dup * nop + * + 
+
+#
+# TODO:
+
+#   этот примитивный генетичекий алгоритм очень плохо сходится. нужно делать 
+#   рефакторинг, 
+#   выделение блоков и статистику по расположению этих блоков относительно друг 
+#   друга 
+#   (.е. это уже начальное понятие типа данных), а также об их эффективном 
+#   вкладе в результат..
+#  
+#  
+
+# упростил пока (сразу заношу в стек X несколько раз (dup dup dup dup dup dup)
+
+# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 -news 1 -list "* +" -print 2 -func 'x ** 3 + x ** 2 + x' 
+
+# Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  * + * + * +
+
+#         sin ( x ** 2 + x      )            =  * + sin      
+#         sin ( x ** 2 + x ** 2 )            =  + * sin      
+#         sin ( x ** 2 + x ** 3 )            =  * + * sin      
+# Test2:  sin ( x ** 2 + x ** 4 )            =  * * + * sin
+
+# Test3:  sin (exp(sin(exp(sin(x)))))        =  
+# Test4:  sin (x ** 3) + exp (x)             =  
+# Test5:  sin (2 * x) + 1/(x ** 2) - x ** 3  =  
+# Test6:  (x + 2) / exp (a * x - 5)          =  
+
+#-------------------------------------------------------------------------------
+
+# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
+# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+  
+# OUT:
+# l~.tl TEST TEST_xx  -seed    0 -lpop  5 -size 6 -nums -1 -vers gp -print 2 
+# l~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
+
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+
+# Вспомогательные тесты:
+
+# l~.tl ANTS ANTS_gp 2012  10 15 2
+# l~.tl TEST TEST_pp 2014
+
+# l~.tl TEST TEST_makeparas
+# l~.tl TEST TEST_randprog @
+# l~.tl TEST TEST_randprog 2014
+
+################################################################################
+
+# TODO: на простейшей "программы" отладить все механмзмы
+#       SP - статистического программирования
+
+#t~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
+
+#-------------------------------------------------------------------------------
+proc NEXT_01 {args} {
+
+  if {$args == ""} {
+    global argc argv argv0
+    set argo [lrange $argv 2 end]
+  } else {
+    set argo $args
+  }
+  
+  argo_print $argo 
+
+  set seed        [dict_parse $argo "-seed" 2016]
+  set individuals [dict_parse $argo "-lpop" 10]
+  set len         [dict_parse $argo "-size" 10] 
+  set nums        [dict_parse $argo "-nums"  4]
+  set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
+  set ::is_print  [dict_parse $argo "-print" 1] 
+
+  # флажки для новейших алгоритмов
+  # 
+  # 
+  set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
+  set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
+  
+  pi_add p1  {"inp" 0 "out" 0}
+  pi_add p3  {"inp" 0 "out" 0}
+  pi_add p5  {"inp" 0 "out" 0}
+
+  set ::LIPS_begin 0
+  set ::LIPS_final 0
+
+  #------------------------------------------------------
+
+  set ::sum_target 20
+
+
+  puts "individuals  = $individuals" ;# колич-во ботов
+  puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
+  puts "nums         = $nums"        ;# шагов эволюции  
+  puts "gp_list      = $gp_list"     ;#   
+
+  puts "::sum_target = $::sum_target" ;# к чему стремимся, что надо получить 
+  puts ""
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set is_print 1
+  #DebugOn
+
+  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+    
+  set pb [mp_create]
+
+  mp_init $pb 
+
+  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" \
+                         -gp_list  $gp_list]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
+  ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
+  ##                                            -list,\{,p1,p3,p5,\}
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  run_gp_evolution_for_task    \
+      $task                    \
+      $seed $rand_prgpop_proc  \
+      $individuals  $len $nums \
+      $is_print                \
+      -print        $is_print  \
+      -mutprob          0.1    \
+      -game_print_proc  0      \
+    {*}$argo
+  
+
+  #puts "!!!!!11"
+  #gp_dict_print 
+
+  return
+}
+###########################################################################################
+#
+# t~.tl TEST NEXT_01 -lpop 6 -nums 1 -news 1 -list "p1 p3 p5" -seed 2021 -print 3 -size 1 
+# t~.tl TEST NEXT_01 -lpop 2 -size 1 -nums 1 -seed 2021 -print 3 -news 1 -list 'p1 p5'
+
+# t~.tl TEST TEST_xx -lpop 6 -nums 1 -news 1 -print 2 
 
 ###########################################################################################
