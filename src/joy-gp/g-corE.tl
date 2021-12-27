@@ -6090,65 +6090,49 @@ proc run_mutate_cmd {mutate_cmd &prg} {
   set mutate_cmd_new {}
 
 
-  if {$::NEWS} {
-
-    set ret [dict get $context -i]
-    #puts "before = $before"
-    #puts "context = $context"
+  #puts stderr "prg = $prg, mutate_cmd = $mutate_cmd"
     
-    #return
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+  
+  set ret [dict get $context -i]
+  #puts "before = $before"
+  #puts "context = $context"
+  
+  #return
+  
+  # попробуем другим способом (сначала меняем подстроку)
+  set j 0 ;# 
+  
+  switch -- $cmd {
     
-    # попробуем другим способом (сначала меняем подстроку)
-    set j 0 ;# 
-    
-    switch -- $cmd {
-      
-      "not" {
-      }  
-      "del" {
-        ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
-        set ret  [lreplace $ret $j $j] ;# удаляем
-      }  
-      "set" {
-        lset ret $j $gen  ;# либо заменяем итем 
-      }  
-      "add" {
-        set ret  [linsert  $ret $j $gen]  ;# либо добавляем
-      }
-    } 
+    "not" {
+      #????????????????
+    }  
+    "del" {
+      ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
+      set ret  [lreplace $ret $j $j] ;# удаляем
+    }  
+    "set" {
+      lset ret $j $gen  ;# либо заменяем итем 
+    }  
+    "add" {
+      set ret  [linsert  $ret $j $gen]  ;# либо добавляем
+    }
+  } 
+  
+  
+  set prg  [lreplace $prg $index $index]       ;# удаляем из начального кусок
+  set prg  [linsert  $prg $index {*}$ret]  ;# заменяем его модификацией
+  
+  
+  lappend context -o $ret
 
-
-    set prg  [lreplace $prg $i $i]       ;# удаляем
-    set prg  [linsert  $prg $i {*}$ret]  ;# лдобавляем
-
-
-    #puts "ret = $ret"
-    
-    set mutate_cmd_new [list $index $context $mcmd $ret]
-    
-    return $mutate_cmd_new
-
-  } else {
-    
-    switch -- $cmd {
-      
-      "not" {
-      }  
-      "del" {
-        ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
-        set prg  [lreplace $prg $i $i] ;# удаляем
-      }  
-      "set" {
-        lset prg $i $gen  ;# либо заменяем итем 
-      }  
-      "add" {
-        set prg  [linsert  $prg $i $gen]  ;# либо добавляем
-      }
-    } 
-    
-  }
-
-
+  #set mutate_cmd_new [list $index $context $mcmd $ret]
+  set mutate_cmd_new [list $index $context]
+  
+  return $mutate_cmd_new
+  
 }
 #-------------------------------------------------------------------------------
 # а вот теперь выполним команду мутации:  
@@ -6158,55 +6142,56 @@ proc make_mutate_cmd_for_index {&prg prob gp_list  index} {
   USE_REFS
 
 
-  set r [random_double 1.0]
-  
+  set r [random_double 1.0] 
+
+
   if {$r > $prob} {
+
     set mcmd "not  @ @"  
     #set mcmd "not "  
-    return $mcmd ;# ничего не делаем, уходим ??
-  }
+    #return $mcmd ;# ничего не делаем, уходим ??
 
-
-  if {[llength $prg] <= 1} {
-    set mode [lrand "    set add"]
   } else {
-    set mode [lrand "del set add"]
-  }
-
-  #set mode [lrand "del set add"]
 
 
-  # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # 
-  # сначала сформируем команду мутации
-
-  if {$mode == "del"} {
+    if {[llength $prg] <= 1} {
+      set mode [lrand "    set add"]
+    } else {
+      set mode [lrand "del set add"]
+    }
     
-    #if {[llength $prg] <= 1} {
-
-    #  set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
-    #  #set mcmd "not" 
-    #} else {
-    set mcmd "del $index @" ;# удалим gen
-    #set mcmd "del $i" ;# удалим gen
-    #}
-
-  } else {
-
-    # выберем из списка (или списков !!!)
+    # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # 
-    set gen [randinstr_MAIN $gp_list]
-
-    set mcmd "$mode $index $gen"  ;# set or add 
+    # сначала сформируем команду мутации
+    
+    if {$mode == "del"} {
+      
+      #if {[llength $prg] <= 1} {
+      
+      #  set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
+      #  #set mcmd "not" 
+      #} else {
+      set mcmd "del $index @" ;# удалим gen
+      #set mcmd "del $i" ;# удалим gen
+      #}
+      
+    } else {
+      
+      # выберем из списка (или списков !!!)
+      # 
+      set gen [randinstr_MAIN $gp_list]
+      
+      set mcmd "$mode $index $gen"  ;# set or add 
+    }
+    
   }
-
-
+  
+  
   set context [get_i_context $prg $index]
-
+  
   set mutate_cmd [list $index $context $mcmd]
-
-  return $mutate_cmd
-
+  
+  return $mutate_cmd 
 }
 #-------------------------------------------------------------------------------
 proc find_in_goods {prg_current} {
