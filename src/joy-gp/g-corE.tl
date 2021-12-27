@@ -6048,52 +6048,133 @@ proc gp_crossover {a b} {
 #-------------------------------------------------------------------------------
 proc get_i_context {prg i} {
 
+  set len [llength $prg]
 
+  if {$i == 0} {
+    #set pre "B"
+    set pre {}
+  } else {
+    set pre [lindex $prg [- $i 1]]
+    #set pre [lrange $prg [- $i 1] [- $i 1]]
+    #set pre [list [lindex $prg [- $i 1]]]
+  }
 
-  #return [list p100 p200 p300]
-  return {}
+  set val [lindex $prg $i]
+
+  if {$i == [- $len 1]} {
+    #set suf "E"
+    set suf {}
+  } else {
+    set suf [lindex $prg end]
+  }
+
+  # сформировали контекст значения $val (которое стоит в позиции i)
+  # 
+
+  return [list -p $pre -i $val -s $suf]
 }
 #-------------------------------------------------------------------------------
-proc run_mutate_cmd {mcmd &prg} {
+proc run_mutate_cmd {mutate_cmd &prg} {
 
   USE_REFS
 
+  set index   [lindex $mutate_cmd 0]
+  set context [lindex $mutate_cmd 1]
+  set mcmd    [lindex $mutate_cmd 2]
 
   set cmd [lindex $mcmd 0]
   set i   [lindex $mcmd 1]
   set gen [lindex $mcmd 2]
 
+  set ret {}
+  set mutate_cmd_new {}
 
 
-  switch -- $cmd {
+  if {$::NEWS} {
 
-    "not" {
-    }  
-    "del" {
-      ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
-      set prg  [lreplace $prg $i $i] ;# удаляем
-    }  
-    "set" {
-      lset prg $i $gen  ;# либо заменяем итем 
-    }  
-    "add" {
-      set prg  [linsert  $prg $i $gen]  ;# либо добавляем
-    }
-  } 
+    set ret [dict get $context -i]
+    #puts "before = $before"
+    #puts "context = $context"
+    
+    #return
+    
+    # попробуем другим способом (сначала меняем подстроку)
+    set j 0 ;# 
+    
+    switch -- $cmd {
+      
+      "not" {
+      }  
+      "del" {
+        ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
+        set ret  [lreplace $ret $j $j] ;# удаляем
+      }  
+      "set" {
+        lset ret $j $gen  ;# либо заменяем итем 
+      }  
+      "add" {
+        set ret  [linsert  $ret $j $gen]  ;# либо добавляем
+      }
+    } 
+
+
+    set prg  [lreplace $prg $i $i]       ;# удаляем
+    set prg  [linsert  $prg $i {*}$ret]  ;# лдобавляем
+
+
+    #puts "ret = $ret"
+    
+    set mutate_cmd_new [list $index $context $mcmd $ret]
+    
+    return $mutate_cmd_new
+
+  } else {
+    
+    switch -- $cmd {
+      
+      "not" {
+      }  
+      "del" {
+        ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
+        set prg  [lreplace $prg $i $i] ;# удаляем
+      }  
+      "set" {
+        lset prg $i $gen  ;# либо заменяем итем 
+      }  
+      "add" {
+        set prg  [linsert  $prg $i $gen]  ;# либо добавляем
+      }
+    } 
+    
+  }
+
 
 }
 #-------------------------------------------------------------------------------
-proc make_cmd_by_mode {&prg prob gp_list  mode i} {
+# а вот теперь выполним команду мутации:  
+#-------------------------------------------------------------------------------
+proc make_mutate_cmd_for_index {&prg prob gp_list  index} {
 
   USE_REFS
+
 
   set r [random_double 1.0]
   
   if {$r > $prob} {
-    #set mcmd "not  @ @"  
-    set mcmd "not "  
-    return $mcmd ;# ничего не делаем, уходим
+    set mcmd "not  @ @"  
+    #set mcmd "not "  
+    return $mcmd ;# ничего не делаем, уходим ??
   }
+
+
+  if {[llength $prg] <= 1} {
+    set mode [lrand "    set add"]
+  } else {
+    set mode [lrand "del set add"]
+  }
+
+  #set mode [lrand "del set add"]
+
 
   # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # 
@@ -6101,14 +6182,14 @@ proc make_cmd_by_mode {&prg prob gp_list  mode i} {
 
   if {$mode == "del"} {
     
-    if {[llength $prg] <= 1} {
+    #if {[llength $prg] <= 1} {
 
-      #set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
-      set mcmd "not" 
-    } else {
-      #set mcmd "del $i @" ;# удалим gen
-      set mcmd "del $i" ;# удалим gen
-    }
+    #  set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
+    #  #set mcmd "not" 
+    #} else {
+    set mcmd "del $index @" ;# удалим gen
+    #set mcmd "del $i" ;# удалим gen
+    #}
 
   } else {
 
@@ -6116,57 +6197,48 @@ proc make_cmd_by_mode {&prg prob gp_list  mode i} {
     # 
     set gen [randinstr_MAIN $gp_list]
 
-    set mcmd "$mode $i $gen"  ;# либо заменяем  
-
-
-    #switch -- $mode {
-    #  "set" {
-    #    set mcmd "set $i $gen"  ;# либо заменяем  
-    #  }  
-    #  "add" {
-    #    set mcmd "add $i $gen"  ;# либо добавляем
-    #  }
-    #} 
+    set mcmd "$mode $index $gen"  ;# set or add 
   }
 
-  set context [get_i_context $prg $i]
 
-  lappend mcmd $context ;# добавим в описание команды мутации контекст точки воздействия
+  set context [get_i_context $prg $index]
 
+  set mutate_cmd [list $index $context $mcmd]
 
-#   # а вот теперь выполним команду мутации:
+  return $mutate_cmd
 
-#   run_mutate_cmd $mcmd prg
-
-  return $mcmd
 }
 #-------------------------------------------------------------------------------
-proc mutate_gen_in_joyprg_by_mode {&prg prob gp_list  mode i} {
-
-  USE_REFS
-
-  set mcmd [make_cmd_by_mode  prg $prob $gp_list  $mode $i]
-
-  # а вот теперь выполним команду мутации:
-
-  run_mutate_cmd $mcmd prg
-
-  return $mcmd
-}
-#-------------------------------------------------------------------------------
-proc find_in_good {} {
+proc find_in_goods {prg_current} {
 
   set cmd {}
 
-  # lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
 
-  if {$::good_mutate_cmd_list != {}} {
+  if {$::good_mutate_cmd_list == {}} {return $cmd} ;# нет ничего еще
 
-    set progress_cmd [lindex $::good_mutate_cmd_list 0] ;# пока просто первую пару
-    set cmd [lindex $progress_cmd 1]
+  set goods $::good_mutate_cmd_list ;# уже сортировано
+
+  #puts "goods = $goods"
+
+
+  foreach g $goods {
+    #set para [lindex $goods 0] ;# пока просто первую пару
+
+    set pro         [lindex $g  0] ;# прогресс этой команды
+    set mutate_cmd  [lindex $g  1] ;# сама команда (в которую включен контекст и )
+
+    set i    [lindex $mutate_cmd 0]
+    set cont [lindex $mutate_cmd 1]
+    set mcmd [lindex $mutate_cmd 2]
+    
+    #set cmd [lindex $mcmd 0]
+    #set i   [lindex $mcmd 1]
+    #set gen [lindex $mcmd 2]
+
+    #set val [lindex $context 1] ;# центральный маркер контекста
   }
 
-  return $cmd
+  return $mcmd
 }
 #-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа
@@ -6196,22 +6268,20 @@ proc gp_joyprg_mutate {task prg mutprob} {
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # ищем мутирующую команду в списке сохраненных
     # 
-    # lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
 
-    #set mutate_cmd [find_in_good]
+    #set mutate_cmd [find_in_goods $prg]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # если нет, то формируем мутирующую команду случайным образом
     # 
     if {$mutate_cmd == {}} {
 
-      set mode [lrand "del set add"]
       set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
       
-      set mutate_cmd [make_cmd_by_mode  prg $mutprob $gp_list  $mode $i]
+      set mutate_cmd [make_mutate_cmd_for_index  prg 1.0 $gp_list  $i]
     }
 
-    run_mutate_cmd $mutate_cmd prg
+    set mutate_cmd [run_mutate_cmd $mutate_cmd prg]
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -6221,9 +6291,9 @@ proc gp_joyprg_mutate {task prg mutprob} {
     # 
     for {set i 0} {$i < [llength $prg]} {incr i} {
       
-      set mode [lrand "del set add"]
+      set mutate_cmd [make_mutate_cmd_for_index  prg $mutprob $gp_list  $i]
       
-      mutate_gen_in_joyprg_by_mode  prg  $mutprob $gp_list  $mode $i 
+      run_mutate_cmd $mutate_cmd prg ;# а вот теперь выполним команду мутации:
     }
   }
 
@@ -6233,16 +6303,16 @@ proc gp_joyprg_mutate {task prg mutprob} {
 #------g-------------------------------------------------------------------------
 proc make_mutant_from_item {item mutprob task} {
 
-  set prg   [item_get_main_src $item] ;# исходник на JOY в виде строки?
+  # пока смотрим только отдельный исходник, без возможных библиотек
+  # 
+  set prg   [item_get_main_src $item] ;# исходник на JOY в виде строки
   
   
   #set l [pi_calc_balans_list  $prg]
 
-  set ret [gp_joyprg_mutate  $task $prg $mutprob]
-  
-  set prg_mutant [lindex $ret 0]
-  set mutate_cmd [lindex $ret 1]
-  #foreach {prg_mutant mutate_cmd} $ret {}
+  foreach {prg_mutant mutate_cmd} \
+    \
+    [gp_joyprg_mutate  $task $prg $mutprob]  {}
   
   set mutant [item_make $prg_mutant]  ;# цельный агент-мутант
   
@@ -6289,10 +6359,8 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
 
   for {set i 0} {$i < $num_probes} {incr i} {
     
-    set ret [make_mutant_from_item  $parent $mutprob $task]
-    
-    set mutant     [lindex $ret 0]
-    set mutate_cmd [lindex $ret 1]
+    foreach {mutant mutate_cmd} \
+      [make_mutant_from_item  $parent $mutprob $task] break
 
     if [is_this_mutant_unikum $mutant $items] {
       break
@@ -7537,9 +7605,31 @@ proc get_best_from_history {history tobest} {
 set ::good_mutate_cmd_list {}
 
 #-------------------------------------------------------------------------------
+proc  find_this_cmd {mutate_cmd} {
+
+  foreach l $::good_mutate_cmd_list {
+
+    set cmd [lindex $l 1]
+    if {$cmd == $mutate_cmd} {
+      return 1
+    }
+  }
+
+  return 0
+}
+#-------------------------------------------------------------------------------
 proc save_good_mutate_cmd {mutate_cmd progress_abs} {
 
-  lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
+  # только не надо добавлять уже существующие команды
+  # 
+  if {! [find_this_cmd  $mutate_cmd]} {
+  
+    lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
+  }
+
+  # здесь хорошо бы отсортировать
+  #
+  set ::good_mutate_cmd_list [lsort -decreasing  $::good_mutate_cmd_list]
 
 }
 #-------------------------------------------------------------------------------
@@ -7568,10 +7658,6 @@ proc try_mutate_to_best {deep_mutate task fitnessfunc tobest item_start fitn_sta
   #    выбрать одно общее понятие?
   # 4) зачем я клонирую (дублирую), если все равно потом делаю попытки?
 
-  # puts ""
-#   if {$::is_print >= 2} {
-#     puts stderr [format "  ............................             is_progress : fitness "]
-#   }
 
   set ::max_try_variant 2
 
@@ -7584,7 +7670,6 @@ proc try_mutate_to_best {deep_mutate task fitnessfunc tobest item_start fitn_sta
   # цикл последовательных мутаций item_old -> item_new -> item_old
   # 
   if {$::is_print >= 2} {
-    #puts stderr [format "  try $i ......................             is_progress : fitness "]
     puts stderr [format "  try $i ..."]
   }
 
@@ -7594,10 +7679,8 @@ proc try_mutate_to_best {deep_mutate task fitnessfunc tobest item_start fitn_sta
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    set ret [make_mutant_from_item  $item_old $mutprob  $task] ;# сделали мутанта    
-
-    set item_new   [lindex $ret 0] ;# мутант
-    set mutate_cmd [lindex $ret 1] ;# команда мутации
+    foreach {item_new mutate_cmd} \
+      [make_mutant_from_item  $item_old $mutprob $task]  break ;# сделали мутанта 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

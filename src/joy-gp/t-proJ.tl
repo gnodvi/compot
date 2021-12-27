@@ -134,7 +134,7 @@ proc TEST_trans_01 {} {
   #DebugOn
   v1_init_all  
 
-  check_tranform_s  $trans_rule_s  $prg1 calc_12345_results
+  check_tranform_s  $trans_rule_s $prg1  calc_12345_results
 
   return
 }
