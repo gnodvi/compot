@@ -28,17 +28,12 @@ prgpop = p1 p1 p3 p3 p3 p5 p3 p5 p3 p3
 
 000)     best =   15.000 :   p5 
 001)     best =   15.000 :   p5 
-002)     best =   12.000 :   p3 p5 
-003)     best =   12.000 :   p3 p5 
-004)     best =   11.000 :   p1 p5 p3 
-005)     best =    6.000 :   p1 p5 p5 p3 
-006)     best =    6.000 :   p1 p5 p5 p3 
-007)     best =    6.000 :   p1 p5 p5 p3 
-008)     best =    2.000 :   p5 p5 p5 p3 
-009)     best =    2.000 :   p5 p5 p5 p3 
-010)     best =    1.000 :   p5 p3 p5 p5 p3 
-011)     best =    1.000 :   p5 p3 p5 p5 p3 
-012)     best =    1.000 :   p5 p3 p5 p5 p3 
-013)     best =    1.000 :   p5 p3 p5 p5 p3 
-014)     best =    0.000 :   p5 p5 p5 p5 
+002)     best =   10.000 :   p5 p5 
+003)     best =   10.000 :   p5 p5 
+004)     best =    5.000 :   p5 p5 p5 
+005)     best =    5.000 :   p5 p5 p5 
+006)     best =    4.000 :   p5 p5 p1 p5 
+007)     best =    4.000 :   p5 p5 p1 p5 
+008)     best =    3.000 :   p5 p1 p5 p1 p5 
+009)     best =    0.000 :   p5 p5 p5 p5 
 

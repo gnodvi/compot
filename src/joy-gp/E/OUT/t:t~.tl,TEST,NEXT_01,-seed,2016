@@ -1,8 +1,9 @@
 
-argo = 
+argo = -seed 2016
 
 set DICT {
 
+  -seed 2016
 
 }
 

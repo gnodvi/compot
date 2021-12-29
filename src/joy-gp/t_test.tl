@@ -934,7 +934,7 @@ proc NEXT_01 {args} {
   
   argo_print $argo 
 
-  set seed        [dict_parse $argo "-seed" 2016]
+  set seed        [dict_parse $argo "-seed"  @]
   set individuals [dict_parse $argo "-lpop" 10]
   set len         [dict_parse $argo "-size" 10] 
   set nums        [dict_parse $argo "-nums"  4]
@@ -1009,6 +1009,7 @@ proc NEXT_01 {args} {
 #
 # t~.tl TEST NEXT_01 -lpop 6 -nums 1 -news 1 -list "p1 p3 p5" -seed 2021 -print 3 -size 1 
 # t~.tl TEST NEXT_01 -lpop 2 -size 1 -nums 1 -seed 2021 -print 3 -news 1 -list 'p1 p5'
+# t~.tl TEST NEXT_01 -lpop 2 -size 1 -nums -1 -print 3 -news 1 -list 'p1 p5'
 
 # t~.tl TEST TEST_xx -lpop 6 -nums 1 -news 1 -print 2 
 
