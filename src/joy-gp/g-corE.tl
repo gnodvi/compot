@@ -5925,9 +5925,7 @@ proc ga_evolution {task pop  max_generations args} {
   #set generation [ga_evolution_main  $task $pop $max_generations {*}$args]
   set generation [ga_evolution_main  $task $pop $max_generations -print $::is_print]
 
-
   return $generation
-
 }
 # //------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -6046,6 +6044,105 @@ proc gp_crossover {a b} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+# GOODS_MUTATE  GOODS_MUTATE  GOODS_MUTATE  GOODS_MUTATE  GOODS_MUTATE  
+#-------------------------------------------------------------------------------
+
+set ::is_find_in_goods 0
+
+set ::good_mutate_cmd_list {}
+
+#-------------------------------------------------------------------------------
+proc find_in_goods {prg_current} {
+
+  return {} ;# !!!!!!!!!!!!!!!!! TODO
+
+  #----------------------------------------
+
+  set cmd {}
+
+  if {$::good_mutate_cmd_list == {}} {return $cmd} ;# нет ничего еще
+
+  set goods $::good_mutate_cmd_list ;# уже сортировано, начиная с большего
+
+  #puts "goods = $goods"
+
+
+  foreach g $goods {
+
+    set pro         [lindex $g  0] ;# прогресс этой команды
+    set mutate_cmd  [lindex $g  1] ;# сама команда (в которую включен контекст и )
+
+    set index [lindex $mutate_cmd 0]
+    set mdict [lindex $mutate_cmd 1]
+    
+    set p   [dict get $mdict -p]
+    set inp [dict get $mdict -i]
+    set s   [dict get $mdict -s]
+
+    set cur [lrange $prg_current $index $index]
+
+    #if {[lindex $prg_current $index] == $i} {break}
+    if {$cur == $inp} {
+      #puts stderr "find_in_goods: cur = $cur, inp = $inp"
+      #break
+      return $mutate_cmd ;# полное совпадение
+    }
+    
+  }
+
+  # ничего и не найдено, а чего возвращаем??
+
+  #puts stderr "find_in_goods: prg = $prg_current, pro = $pro, mutate_cmd = $mutate_cmd"
+
+  return {} ;# $mutate_cmd
+}
+#-------------------------------------------------------------------------------
+proc  find_this_cmd {mutate_cmd} {
+
+  foreach l $::good_mutate_cmd_list {
+
+    set pro [lindex $l  0]  ;# прогресс этой команды
+    set mut [lindex $l  1]  ;# сама команда (в которую включен контекст и )
+
+    if {$mut == $mutate_cmd} {
+      return 1
+    }
+  }
+
+  return 0
+}
+#-------------------------------------------------------------------------------
+proc save_good_mutate_cmd {mutate_cmd progress_abs} {
+
+  # только не надо добавлять уже существующие команды ??
+  # 
+  if {! [find_this_cmd  $mutate_cmd]} {
+  
+    lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
+  }
+
+  # здесь хорошо бы отсортировать
+  #
+  set ::good_mutate_cmd_list [lsort -decreasing  $::good_mutate_cmd_list]
+
+}
+#-------------------------------------------------------------------------------
+proc good_mutate_print {} {
+
+
+  puts stderr "  ::good_mutate_cmd_list = "
+  
+  foreach g $::good_mutate_cmd_list  {
+
+    set pro         [lindex $g  0] ;# прогресс этой команды
+    set mutate_cmd  [lindex $g  1] ;# сама команда (в которую включен контекст и )
+
+    puts stderr [format "     % 4.2f  %s"  $pro $mutate_cmd]
+  }
+  
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 proc get_i_context {prg i} {
 
   set len [llength $prg]
@@ -6080,6 +6177,7 @@ proc do_out {&prg  mutate_cmd_new} {
 
   set index1  0 ;# [lindex $mutate_cmd_new  0]
   set index2  $index1 ;# пока заменяем только строку в один символ
+
   set context [lindex $mutate_cmd_new  1]
   set out     [lindex $mutate_cmd_new  2]
 
@@ -6136,18 +6234,6 @@ proc make_mutate_cmd_new {mutate_cmd_old} {
   
   return [list $index $context $out]  
 }
-#-------------------------------------------------------------------------------
-# proc run_mutate_cmd {mutate_cmd_old &prg} {
-
-#   USE_REFS
-
-#   set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd_old]
-
-#   do_out  prg $mutate_cmd_new
-
-  
-#   return $mutate_cmd_new  
-# }
 #-------------------------------------------------------------------------------
 # а вот теперь выполним команду мутации:  
 #-------------------------------------------------------------------------------
@@ -6208,55 +6294,8 @@ proc make_mutate_cmd_for_index {&prg prob gp_list  index} {
   return $mutate_cmd 
 }
 #-------------------------------------------------------------------------------
-proc find_in_goods {prg_current} {
-
-  return {} ;# !!!!!!!!!!!!!!!!! TODO
-
-  #----------------------------------------
-
-  set cmd {}
-
-  if {$::good_mutate_cmd_list == {}} {return $cmd} ;# нет ничего еще
-
-  set goods $::good_mutate_cmd_list ;# уже сортировано, начиная с большего
-
-  #puts "goods = $goods"
-
-
-  foreach g $goods {
-
-    set pro         [lindex $g  0] ;# прогресс этой команды
-    set mutate_cmd  [lindex $g  1] ;# сама команда (в которую включен контекст и )
-
-    set index [lindex $mutate_cmd 0]
-    set mdict [lindex $mutate_cmd 1]
-    
-    set p   [dict get $mdict -p]
-    set inp [dict get $mdict -i]
-    set s   [dict get $mdict -s]
-
-    set cur [lrange $prg_current $index $index]
-
-    #if {[lindex $prg_current $index] == $i} {break}
-    if {$cur == $inp} {
-      #puts stderr "find_in_goods: cur = $cur, inp = $inp"
-      #break
-      return $mutate_cmd ;# полное совпадение
-    }
-    
-  }
-
-  # ничего и не найдено, а чего возвращаем??
-
-  #puts stderr "find_in_goods: prg = $prg_current, pro = $pro, mutate_cmd = $mutate_cmd"
-
-  return {} ;# $mutate_cmd
-}
-#-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа
 # 
-set ::is_find_in_goods 0
-
 #-------------------------------------------------------------------------------
 proc gp_joyprg_mutate {task prg mutprob} {
 
@@ -7576,20 +7615,37 @@ proc super_ga {task seed_proc step_proc   args} {
   ga_evolution       $task $pop $max_generations  -print $print 	 
   
   #puts ""
-
+  return $pop
 
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #
-#
+
 #
 #-------------------------------------------------------------------------------
-proc is_progress {tobest fitn_old fitn_new} {
+# proc is_progress_OLD {tobest fitn_old fitn_new  fit_target} {
 
   
-  if {$tobest == "MIN" && $fitn_new < $fitn_old} {
+#   if {$tobest == "MIN" && $fitn_new < $fitn_old} {
+#     set ret 1
+#   } else {
+#     set ret 0
+#   }
+
+#   return $ret
+# }
+#-------------------------------------------------------------------------------
+proc is_progress {fitn_old fitn_new  fit_target} {
+
+  
+  set delta_old [expr {abs ($fitn_old - $fit_target)}] 
+  set delta_new [expr {abs ($fitn_new - $fit_target)}] 
+
+  # сравниваем расстояния до цели
+
+  if {$delta_new < $delta_old} {
     set ret 1
   } else {
     set ret 0
@@ -7598,7 +7654,7 @@ proc is_progress {tobest fitn_old fitn_new} {
   return $ret
 }
 #-------------------------------------------------------------------------------
-proc get_best_from_history {history tobest} {
+proc get_best_from_history {history fit_target} {
 
 
   set best_item {}
@@ -7618,7 +7674,7 @@ proc get_best_from_history {history tobest} {
       #puts "best_item1 = $best_item"
     } else {
 
-      set is_progress [is_progress  $tobest $best_fitn $fitn]
+      set is_progress [is_progress  $best_fitn $fitn  $fit_target]
   
       if {$is_progress} {    
         set best_item $item
@@ -7634,42 +7690,19 @@ proc get_best_from_history {history tobest} {
 }
 #-------------------------------------------------------------------------------
 
-set ::good_mutate_cmd_list {}
-
-#-------------------------------------------------------------------------------
-proc  find_this_cmd {mutate_cmd} {
-
-  foreach l $::good_mutate_cmd_list {
-
-    set cmd [lindex $l 1]
-    if {$cmd == $mutate_cmd} {
-      return 1
-    }
-  }
-
-  return 0
-}
-#-------------------------------------------------------------------------------
-proc save_good_mutate_cmd {mutate_cmd progress_abs} {
-
-  # только не надо добавлять уже существующие команды
-  # 
-  if {! [find_this_cmd  $mutate_cmd]} {
-  
-    lappend ::good_mutate_cmd_list [list $progress_abs $mutate_cmd]
-  }
-
-  # здесь хорошо бы отсортировать
-  #
-  set ::good_mutate_cmd_list [lsort -decreasing  $::good_mutate_cmd_list]
-
-}
-#-------------------------------------------------------------------------------
-
 set ::line_context_format "  %-31s : %-28s "
 
 #-------------------------------------------------------------------------------
-proc try_mutate_to_best {deep_mutate task  fitnessfunc tobest  item_start fitn_start} {
+proc try_mutate_to_best {deep_mutate task  item_start fitn_start} {
+
+
+  set fitnessfunc [GET $task "fit_func"]  
+
+  # "MIN" ;# т.е. чем меьше, тем лучше
+  # 
+  set tobest     [GET $task "fit_tobest"]
+
+  set fit_target [GET $task "fit_target"]
 
   # TODO: 
 
@@ -7732,28 +7765,31 @@ proc try_mutate_to_best {deep_mutate task  fitnessfunc tobest  item_start fitn_s
     # посмотрим, есть ли уже улучшение от начального ??
     # так может не от начального, а от текущего, пока мы идем в глубину ..
     #
-    set is_progress [is_progress  $tobest $fitn_old $fitn_new]
-    set progres_val [- $fitn_new $fitn_old]
+    set is_progress [is_progress  $fitn_old $fitn_new  $fit_target]
+
+    set progress_val [- $fitn_new $fitn_old]
 
     if {$::is_print >= 2} {
 
       puts stderr [format "          :$::line_context_format:  %5.2f :  %5.2f :  %d : " \
-		     $mutate_cmd  [item_get_main_src $item_new] $progres_val $fitn_new $is_progress 
+		     $mutate_cmd  [item_get_main_src $item_new] $progress_val $fitn_new $is_progress 
                   ]
     }
 
 
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if {$is_progress} {   
+    # да надо бы всех сохранять - это информация и опыт - пригодится!
+
+    #if {$is_progress} {   
       # все хорошо, сохраняем удачную команду мутации с контекстом
 
-      set progress_abs [expr {abs ($fitn_new - $fitn_old)}]
+      #set progress_abs [expr {abs ($fitn_new - $fitn_old)}]
 
-      save_good_mutate_cmd  $mutate_cmd $progress_abs
+      save_good_mutate_cmd  $mutate_cmd $progress_val
 
       # и выходим ????
       #return $item_new 
-    }
+    #}
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -7786,40 +7822,14 @@ proc try_mutate_to_best {deep_mutate task  fitnessfunc tobest  item_start fitn_s
     # возьмем лучший из истории (исключая начальный)
     # TODO: жедательно отличающийся от начального, если фитнесы равны!
     # 
-    set item_best [get_best_from_history  $history $tobest]
+    set item_best [get_best_from_history  $history $fit_target]
   }
 
  
   return $item_best
 }
 #-------------------------------------------------------------------------------
-proc good_mutate_print {} {
-
-
-  puts stderr "  ::good_mutate_cmd_list = "
-  
-  foreach g $::good_mutate_cmd_list  {
-
-    set pro         [lindex $g  0] ;# прогресс этой команды
-    set mutate_cmd  [lindex $g  1] ;# сама команда (в которую включен контекст и )
-
-    puts stderr [format "     % 4.2f  %s"  $pro $mutate_cmd]
-  }
-  
-}
-#-------------------------------------------------------------------------------
 proc try_mutate_for_all_items {pop_items_old  task deep_mutate} {
-
-
-  set fitnessfunc [GET $task "fit_func"]  
-
-  # "MIN" ;# т.е. чем меьше, тем лучше
-  # "MAX" 
-  # 
-  set tobest [GET $task "fit_tobest"]
-
-
-
 
 
   set pop_items_new {} ;# сюда будем формировать новых мутантов
@@ -7862,7 +7872,7 @@ proc try_mutate_for_all_items {pop_items_old  task deep_mutate} {
     		   "" $src  $fitn_old ]
     }
 
-    set item_new [try_mutate_to_best  $deep_mutate $task $fitnessfunc $tobest  \
+    set item_new [try_mutate_to_best  $deep_mutate $task \
 		    $item_old $fitn_old]
 
     if {$::is_print >= 2} {

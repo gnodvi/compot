@@ -49,7 +49,7 @@ v0_make_tclproc  p9 {} {
 
 }
 #-------------------------------------------------------------------------------
-proc calc_FITPROC_01 {joy_prg} {
+proc calc_FITPROC_01 {task joy_prg} {
 
   set fitness 0
 
@@ -57,40 +57,42 @@ proc calc_FITPROC_01 {joy_prg} {
 
   #puts stderr "joy_prg = $joy_prg  resul = $result"
 
-
   #   if {$result eq {}}  {
-  
   #     # здесь может быть просто списко или символ-строка, а не число!
   #     # 
   #     #puts "NOT run? NOT result !!"
   #     #exit
-  
-  #     incr fitness 50 ;# при каждой ошибке добавляем дельту
-  
+  #     incr fitness 50 ;# при каждой ошибке добавляем дельту  
   #   } else
   
-  if {! [string is integer $result]} {
+  #if {! [string is integer $result]} {
 
     # здесь может быть просто списко или символ-строка, а не число!
     # 
     #puts "NOT run? NOT result !!"
     #exit
 
-    incr fitness 50 ;# при каждой ошибке добавляем дельту
+  #  incr fitness 50 ;# при каждой ошибке добавляем дельту
     
-  } else {
+  #} else {
     
-    set delta [expr {abs($::sum_target-$result)}]  ;# ??
-    
-    #     if {$delta > 1000} {
-    #       # 
-    #       set delta 1000 ;# anti overflow ???
-    #     }
-
-    incr fitness $delta
-  }
-
+  set delta [expr {abs($::sum_target-$result)}]  ;# ??
   
+  #     if {$delta > 1000} {
+  #       # 
+  #       set delta 1000 ;# anti overflow ???
+  #     }
+  
+  incr fitness $delta
+  #}
+
+
+  #set fit_target [GET $task -fit_target]
+
+  #set fitness [expr {$::sum_target - $result}]
+  
+
+
   #return [expr {$fitness + [llength $joy_prg]}]
   #
   # давай пока длину не учитывать ?!
@@ -104,7 +106,7 @@ proc FITPROC_01 {p task args} {
 
   set joy_prg  [item_get_mainsrc $p]
 
-  return [calc_FITPROC_01 $joy_prg]
+  return [calc_FITPROC_01 $task $joy_prg]
 }
 #-------------------------------------------------------------------------------
 ################################################################################
@@ -127,53 +129,6 @@ proc _test_seed {pop task adam} {
   }
 
   return true;
-}
-#-------------------------------------------------------------------------------
-proc _test_score {this_entity  task} {
-
-
-  set len_chromo [GET $task "len_chromo"]  
-
-  set program {}
-
-  for {set i 0} {$i < $len_chromo} {incr i} {
-
-    set X [item_get_chromo_gen $this_entity  $i] 
-    
-    #puts -nonewline [format "  % 5.3f"  $X]
-
-    set cmd [dict_create  "cmd" p1 "ver" $X]
-    lappend program $cmd
-  }
-
-
-  set num_runs    7
-  set fitness_sum 0
-
-  for {set i 0} {$i < $num_runs} {incr i} {
-
-    set fitness [calc_FITPROC_01 $program]
-    #puts "fitness = $fitness"
-    incr fitness_sum $fitness
-  }
-
-  set fitness [expr {1.0 * $fitness_sum} / $num_runs]
-
-  set fitness [expr {-  $fitness}] 
-  #
-  # а теперь наоборот должно быть 
-  # fit_tobest = MAX, движемся к нулю сдева  : --> 0 
-  
-  #print_one_line  "--"  $fitness $this_entity
-
-  #puts -nonewline [format "  "]
-  #puts -nonewline [format ": fit = % f "  $fitness]
-  #puts ""
-
-  #set fitness 0.9
-  #puts "_test_score: program = $program, fitness = $fitness"
-
-  return $fitness
 }
 # //------------------------------------------------------------------------------
 proc _test_step {generation pop} {
@@ -198,6 +153,53 @@ proc _test_step {generation pop} {
 #
 # t~.tl TEST test_pGP -nums 2 -lpop 10 -seed @
 # 
+#-------------------------------------------------------------------------------
+proc _test_score {this_entity  task} {
+
+
+  set len_chromo [GET $task "len_chromo"]  
+
+  set program {}
+
+  for {set i 0} {$i < $len_chromo} {incr i} {
+
+    set X [item_get_chromo_gen $this_entity  $i] 
+    
+    #puts -nonewline [format "  % 5.3f"  $X]
+
+    set cmd [dict_create  "cmd" p1 "ver" $X]
+    lappend program $cmd
+  }
+
+
+  set num_runs    7
+  set fitness_sum 0
+
+  for {set i 0} {$i < $num_runs} {incr i} {
+
+    set fitness [calc_FITPROC_01 $task $program]
+    #puts "fitness = $fitness"
+    incr fitness_sum $fitness
+  }
+
+  set fitness [expr {1.0 * $fitness_sum} / $num_runs]
+
+  set fitness [expr {-  $fitness}] 
+  #
+  # а теперь наоборот должно быть 
+  # fit_tobest = MAX, движемся к нулю сдева  : --> 0 
+  
+  #print_one_line  "--"  $fitness $this_entity
+
+  #puts -nonewline [format "  "]
+  #puts -nonewline [format ": fit = % f "  $fitness]
+  #puts ""
+
+  #set fitness 0.9
+  #puts "_test_score: program = $program, fitness = $fitness"
+
+  return $fitness
+}
 #-------------------------------------------------------------------------------
 proc test_pGP {} {
 
@@ -244,7 +246,6 @@ proc test_pGP {} {
   #exit
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
   set task_rev [task_create  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
     
   #global argv
@@ -263,15 +264,22 @@ proc test_pGP {} {
 
 
   puts ""
-  exit
+  #exit
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set best 0
+  #pop_print $pop
+
+  set best [pop_get_entity_ $pop  0]
   
-  set best_entity [pop_get_entity_         $pop  $best]
-  set best_fit    [pop_get_entity_fitness_ $pop  $best]
+  set best_chromo [item_get_mainsrc $best]
+  set best_fit    [item_get_fitn    $best]
+
+  #set best 0
   
-  set best_chromo [item_get_mainsrc $best_entity]
+  #set best_entity [pop_get_entity_         $pop  $best]
+  #set best_fit    [pop_get_entity_fitness_ $pop  $best]
+  
+  #set best_chromo [item_get_mainsrc $best_entity]
   
   print_one_line  "Final"  $best_fit $best_chromo
   
@@ -923,6 +931,21 @@ proc TEST_xx {args} {
 #t~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
 
 #-------------------------------------------------------------------------------
+proc FITPROC_01_NEW {p task args} {
+
+  set joy_prg  [item_get_mainsrc $p]
+
+  set result [getresult_prg  $joy_prg]
+
+  #set fitness [expr {abs($::sum_target-$result)}]  ;# ??
+
+  #set fitness [expr {($::sum_target - $result)}] 
+  set fitness $result
+
+
+  return $fitness
+}
+#-------------------------------------------------------------------------------
 proc NEXT_01 {args} {
 
   if {$args == ""} {
@@ -978,8 +1001,11 @@ proc NEXT_01 {args} {
 
   mp_init $pb 
 
-  set task [task_create  -fit_func FITPROC_01  "-fit_tobest" "MIN" \
-                         -gp_list  $gp_list]
+  set task [task_create  \
+              -fit_func    FITPROC_01_NEW  \
+              -fit_tobest  "MIN"       \
+              -fit_target  20           \
+              -gp_list     $gp_list]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
