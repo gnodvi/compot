@@ -213,6 +213,8 @@ class MM:
 
         while tok not in (None, '$}'):
             
+            eprint ("tok = ", tok)
+
             if tok == '$c':
                 for tok in toks.readstat(): self.fs.add_c(tok)
             elif tok == '$v':
@@ -266,6 +268,7 @@ class MM:
             elif tok == '${': self.read(toks)
             elif tok[0] != '$': label = tok
             else: print('tok:', tok)
+            
             tok = toks.readc()
             
         self.fs.pop()
@@ -346,7 +349,13 @@ class MM:
 
         return [labels[i] for i in decompressed_ints]
 
-    def verify(self, stat_label, stat, proof):
+    def verify (self, stat_label, stat, proof):
+
+        print ("verify ...................... ")
+        print ("verify:  stat_label = ", stat_label)
+        print ("verify:  stat  = ", stat)
+        print ("verify:  proof = ", proof)
+
         stack = []
         stat_type = stat[0]
         if proof[0] == '(': proof = self.decompress_proof(stat, proof)
@@ -400,15 +409,20 @@ class MM:
     def dump(self): print(self.labels)
 
 #-------------------------------------------------------------------------------
+def eprint(*args, **kwargs):
+    
+    print(*args, file=sys.stderr, **kwargs)
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__':
 
-    #print ("")
-    print ("............")
-    print ("")
+    eprint ("")
+    eprint ("............ 01 \n")
     
     parser = OptionParser()
 
+    eprint ("............ 02 \n")
     #exit()
     
     parser.add_option ('-b', '--begin-label', dest='begin_label',
@@ -419,12 +433,30 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
+    eprint ("............ 03 \n")
+
+    #--------------------------------------
+
     mm = MM (options.begin_label, options.stop_label)
 
+    eprint ("............ 04 \n")
     #exit()
-    
-    mm.read (toks (sys.stdin))
+    #--------------------------------------
 
+    toks = toks (sys.stdin)
+
+    print (toks.lines_buf)
+    #print (toks.tokbuf)
+    #print (toks.imported_files)
+    
+    #--------------------------------------
+
+    #mm.read (toks (sys.stdin))
+    mm.read (toks)
+    
+    #print (toks.lines_buf)
+
+    eprint ("............ 05 \n")
     #mm.dump()
 
 #-------------------------------------------------------------------------------
