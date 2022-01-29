@@ -547,12 +547,9 @@ proc v1_init_all_operators {} {
 
   #v0_: i    {eval r [pop]}    tcl  
  
-  v0_: i       {
+  v0_: i  {
     set a [pop]  
-
-    #11_erase  a    
     eval r $a
-
   }  tcl  
 
   #--------------------------------------------------------------
@@ -1193,24 +1190,7 @@ proc TEST_vars {} {
 
 }
 #-------------------------------------------------------------------------------
-proc TEST_solv {} {
-
-  puts ""
-  puts "TEST_solv ..."
-  puts ""
-  
-  v1_init_all  
-  
-  #set ::NEWFORMAT 1
-
-  TEST_vars 
-
-  #-------------------------------------------------
-  # но это все были предварительные тесты по пере
-  # менным.
-  # дальше тесты на решение квадратного уровнения
-
-  puts ""
+proc TEST_solv_qroots_old {} {
 
   # :: solveq ( a b c -- x )
   #   b neg
@@ -1218,28 +1198,8 @@ proc TEST_solv {} {
   #   +
   #   2 a * / ;
   
-  v0_: neg {push [expr - [pop]]} tcl
-
-  v0_: solveq   =c =b =a        \
-    @b  neg                     \
-    @b @b  * 4 @a @c * * - sqrt \
-    +                           \
-    2 @a * /
-  
-  # TODO: все же сделать поудобнее операторы работы с переменными?
+  # проверим пошагово
   # 
-  # 
-  #d+
-
-  r c  2 -16 30 solveq  .s   ;# 2x^2 -16x + 30 = 0 ; D=4, x= (16 +- 4)/4. x1=3,  x2=5
-  r c  1   0 -4 solveq  .s   ;# x^2   +0x -  4 = 0                        x1=-2, x2=3
-
-  # чего-то странно, неверно считает ... проверим пошагово
-  # 
-
-  puts ""
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  puts ""
 
   r c  1 0 -1   ~c set ~b set ~a set  
 
@@ -1252,9 +1212,132 @@ proc TEST_solv {} {
   r    + .s 
   r    2 ~a $  * / .s 
 
+}
+#-------------------------------------------------------------------------------
+proc TEST_solv {} {
+
+  puts ""
+  puts "TEST_solv ..."
+  puts ""
+  
+  v1_init_all  
+  
+  #set ::NEWFORMAT 1
+
+  TEST_vars 
+
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+
+  # но это все были предварительные тесты по пере
+  # менным.
+  # дальше тесты на решение квадратного уровнения
+
+  v0_: neg {push [expr - [pop]]} tcl
+
+  TEST_solv_qroots_old
+
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+
+  v0_: solveq   =c =b =a        \
+    @b  neg                     \
+    @b @b  * 4 @a @c * * - sqrt \
+    +                           \
+    2 @a * /
+  
+  r c  2 -16 30 solveq  .s   ;# 2x^2 -16x + 30 = 0 ; D=4, x= (16 +- 4)/4. x1= 3, x2= 5
+  r c  1   0 -4 solveq  .s   ;# x^2   +0x -  4 = 0                        x1=-2, x2=+2
+
+
+# мз файла numlib.joy
+
+#     (* find roots of the quadratic equation with coefficients a b c :
+# 				  a * X^2  +  b * X   +  c  =  0	*)
+#     qroots ==					(*  a  b  c		*)
+# 	[	pop pop null ]			(* a = 0 ?		*)
+# 						(* degenerate cases:	*)
+# 	[	[   pop null ]			(* b = 0 ?		*)
+# 		[   [ null   ]			(* c = 0 ?		*)
+# 		    [ [_INF] ]			(* =>  [_INF]		*)
+# 		    [ [] ]			(* =>  []		*)
+# 		    ifte
+# 		    [ pop pop pop ] dip ]
+# 		[   0 swap - swap 1.0 * /	(* float divisor	*)
+# 		    [] cons popd ]		(* =>  [ -c/b ]		*)
+# 		ifte ]
+# 						(* standard cases:	*)
+# 	[	[   [ dup * swap ] dip
+# 		      4 * * - ] unary		(* b^2 - 4ac		*)
+# 		[   0 < ]			(* b^2 - 4ac negative ?	*)
+# 		[   pop pop pop [_COMPLEX] ]	(* =>  [_COMPLEX]	*)
+# 		[   [ 0 swap - 1.0 *		(* -b  (floated)	*)
+# 		      swap 2 * ] dip		(* 2a			*)
+# 		    [ 0 = ]			(* b^2 - 4ac zero ?	*)
+# 		    [ pop / [] cons ]		(* =>  [-b / 2a]	*)
+# 		    [ sqrt swapd dup2 - [+] dip	(*   -b+s      -b-s     *)
+# 			[] cons cons 		(* [ -b+s      -b-s    ]*)
+# 		      swap [/] cons map ]   (* =>  [(-b+s)/2a (-b-s)/2a]*)
+# 		    ifte ]
+# 		ifte ]
+# 	ifte;
+
+# если попробовать упростить
+
+# 	 	   [[ dup * swap ] dip
+# 		      4 * * - ] unary		(* b^2 - 4ac		*)
+#                   [ 0 swap - 1.0 *		(* -b  (floated)	*)
+# 		      swap 2 * ] dip		(* 2a			*)
+# 		    [ sqrt swapd dup2 - [+] dip	(*   -b+s      -b-s     *)
+# 			[] cons cons 		(* [ -b+s      -b-s    ]*)
+# 		      swap [/] cons map ]   (* =>  [(-b+s)/2a (-b-s)/2a]*)
+# 		    ifte 
+
+# как же сделать два значения?
+
+  #puts ""
+  #puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  #puts ""
+
+#  r c  5 2  swapd dup2 - {+} dip  .s 
+
+
   return
 }
 #-------------------------------------------------------------------------------
+proc TEST_test_NEW {} {
+
+  puts ""
+  puts "TEST_test_NEW ..."
+  puts ""
+  
+  v1_init_all  
+
+  v0_: dip  {
+    set l    [pop ]
+    set item [pop ]
+    lappend code $l i $item
+    
+    eval r   $code
+  }  tcl  
+
+  #r c  .s 
+  r c  1 2   ~+ i    .s 
+  r c  1 2 9 ~+ dip  .s 
+
+# 	swapd  ==  [swap] dip;
+# 	popd   ==  [pop ] dip;
+# 	dupd   ==  [dup ] dip;
+# 	rollup     ==  swap [swap] dip;
+# 	rolldown   ==  [swap] dip swap;
+# 	rotate     ==  swap [swap] dip swap;
+
+}  
+#-------------------------------------------------------------------------------
+# 
+# 
 #-------------------------------------------------------------------------------
 proc joy->v2-list data {
 
@@ -1336,7 +1419,9 @@ proc joy_functext_to_v1_code {functext} {
   return $code
 }
 #-------------------------------------------------------------------------------
-proc TEST_convert_joy_to_11 {} {
+# TEST_convert_joy_to_11
+#-------------------------------------------------------------------------------
+proc TEST_00_to_11 {} {
   
 
   set text_1 {
@@ -1446,9 +1531,19 @@ proc TEST_file_v1 {} {
 
   puts ""
 
-  run_joy_file_v1 "i__01.joy"
+  run_joy_file_v1 "F/j__00.joy"
 
   puts ""
+  puts "----------------------------------------------"
+  puts ""
+
+  run_joy_file_v1 "F/j__01.joy"
+
+#   puts ""
+#   puts "----------------------------------------------"
+#   puts ""
+
+#   run_joy_file_v1 "F/j__02.joy"
 
   return
 }
@@ -1763,6 +1858,7 @@ proc TEST_1111 {} {
   run_v1_src  {progtest1}
 
 }
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 # f~.tl 1111 TEST_1111

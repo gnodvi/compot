@@ -2889,6 +2889,23 @@ proc V3_INIT_02 {} {
     
     joy-call  $code
   }
+
+  #---------------------------------------------------------
+  # Finally, take a look at the combinators "i" and "dip":
+
+  #       [A] i   == A
+  #   [B] [A] dip == A [B] 
+  
+  # These combinators are special in that they dequote stack items, 
+  # removing their wrapping; in other words, these combinators execute 
+  # programs on the stack. The "i" combinator simply executes the top 
+  # item on the stack. 
+  # The "dip" combinator executes the top item "A", 
+  # but first it gets rid of the second item, which is restored after 
+  # the execution of "A" is complete. The "dip" combinator will prove 
+  # to be very versatile and 
+  # also quite fundamental. 
+  
   #---------------------------------------------------------
   v3_make_tclproc "abs" {
     
@@ -3057,7 +3074,7 @@ proc V3_INIT_03 {} {
     set b [pop ]
     set a [pop ]
     
-    joy-push-type  truth [expr {[joy-objval $a]&&[joy-objval $b]}]
+    joy-push-type  truth [expr {[joy-objval $a] && [joy-objval $b]}]
   }
   #---------------------------------------------------------
   v3_make_tclproc "or" {
@@ -4695,7 +4712,7 @@ proc TEST_test_11_22 {} {
   set src_22 {}
 
   convert_33_to_22  $src_33  src_22
-  convert_22_to_11  $src_22        src_11
+  convert_22_to_11  $src_22  src_11
 
   puts ""
   puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

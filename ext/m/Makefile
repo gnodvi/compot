@@ -13,14 +13,14 @@ CGPLIB_DIR = ../cgplib
 PLOTER_DIR = ../ploter		
 JIMTCL_DIR = ../jimtcl		
 LOGICS_DIR = ../logics		
-JOYJOY_DIR = ../joyjoy		
+OLDJOY_DIR = ../oldjoy		
 SROBOT_DIR = ../srobot		
 RANDOM_DIR = ../random		
 
 #-------------------------------------------------------------------------------
 
 
-all:  CGPLIB__ PLOTER__ JOYJOY__ JIMTCL__ LOGICS__ CAUL-S__ RANDOM__   
+all:  CGPLIB__ PLOTER__ OLDJOY__ JIMTCL__ LOGICS__ CAUL-S__ RANDOM__   
 
 #-------------------------------------------------------------------------------
 
@@ -36,8 +36,8 @@ PLOTER__ :
 LOGICS__ :
 	(cd $(LOGICS_DIR); make)
 
-JOYJOY__ :
-	(cd $(JOYJOY_DIR); make)
+OLDJOY__ :
+	(cd $(OLDJOY_DIR); make)
 
 SROBOTL__ :
 	(cd $(SROBOT_DIR); make)
@@ -59,7 +59,7 @@ clean :
 	(cd $(CGPLIB_DIR); make clean)
 	(cd $(PLOTER_DIR); make clean)
 	(cd $(LOGICS_DIR); make clean)
-	(cd $(JOYJOY_DIR); make clean)
+	(cd $(OLDJOY_DIR); make clean)
 	(cd $(SROBOT_DIR); make clean)
 
 	(cd $(JIMTCL_DIR); make clean)
