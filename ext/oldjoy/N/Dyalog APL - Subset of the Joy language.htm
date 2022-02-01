@@ -1,0 +1,472 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "HTTP://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="HTTP://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" >
+<head>
+<title>
+Dyalog APL - Subset of the Joy language.
+</title>
+<link rel="stylesheet" type="text/css" href="xhtml.css"/>
+<meta http-equiv="Content-Language" content="en-gb"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="author" content="The D-Functionistas"/>
+<meta name="description" content="Dyalog APL"/>
+<meta name="generator" content=""/>
+<meta name="keywords" content="apl,algorithms,computation,computers,computing,dfns,'direct definition',dyalog"/>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28909969-2 ']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</head>
+<body>
+<pre>
+stack ← {repl←0} ##.<a href="c_joy.htm">joy</a> program             ⍝ Subset of the Joy language.
+
+Evaluates character-vector Joy [program]:
+
+      joy'2 3 4 + *'                ⍝ 2×3+4
+14
+      joy'[1 2 3 4 5] 0 [+] fold'   ⍝ +/⍳5
+15
+      joy'[1 2 3 4 5] [dup *] map'  ⍝ (⍳5)*2
+[1 4 9 16 25]
+
+If an error occurs,  the stack and operator stream are returned with a │ between
+the offending operator and its argument(s).
+
+      joy'2 3 + 0 / 2 *'            ⍝ divide-by-0 error
+5 0│/ 2 *
+
+If optional left argument [repl←0] is set, [joy]  prompts  for  additional input
+after evaluating its argument expression. Such an interactive session is termin-
+ated by operator: quit.
+
+      1 joy'2 dup +'                ⍝ 1 joy ... =&gt; interactive session:
+                   4│[] cons        (* ⊂,⍵      *)
+                 [4]│[2 3]          (* ⍵,⊂2 3   *)
+           [4] [2 3]│swap           (* ⌽ ⍵      *)
+           [2 3] [4]│concat         (* ⊃,/⍵     *)
+             [2 3 4]│1 swons        (* ⍵ ,⍨ ⊂1  *)
+           [1 2 3 4]│[10 *] map     (* 10×¨⍵    *)
+       [10 20 30 40]│1 [*] fold     (* ×/⍵      *)
+              240000│quit           (* ⎕OFF ⍵   *)
+240000
+
+The Joy machine  consists  of a right-growing  stack of values to the left and a
+stream of operators to the right of separator: │.  The operator  immediately  to
+the right of the separator interacts with the item(s) to its left to reduce  the
+state of the machine.  This process repeats  until either an error occurs or the
+operator stream is exhausted. At this point, if left argument [repl] is 0, [joy]
+terminates  returning  the  current  machine  state.  Otherwise, if [repl] is 1,
+further  input  is solicited from the keyboard until operator &lt;quit&gt; is entered,
+as shown above.
+
+References
+----------
+Joy Programming Language:
+<a href="http://www.latrobe.edu.au/humanities/research/research-projects/past-projects/joy-programming-language">http://www.latrobe.edu.au/humanities/research/research-projects/past-projects/joy-programming-language</a>
+
+Various Joy resources from Kevin Albrecht:
+<a href="http://www.kevinalbrecht.com/code/joy-mirror/joy.html">http://www.kevinalbrecht.com/code/joy-mirror/joy.html</a>
+
+Concatenative Languages:
+<a href="http://concatenative.org/wiki/view/Concatenative%20language">http://concatenative.org/wiki/view/Concatenative%20language</a>
+
+Stevan Apter: Functional Programming in Joy and K:
+<a href="http://archive.vector.org.uk/art10000360">http://archive.vector.org.uk/art10000360</a>
+
+Stevan Apter: Interview with Manfred von Thun, the originator of Joy:
+<a href="http://archive.vector.org.uk/art10000350">http://archive.vector.org.uk/art10000350</a>
+
+Manfred von Thun: Joy in Joy - a metacircular interpreter:
+<a href="http://www.kevinalbrecht.com/code/joy-mirror/jp-joyjoy.html">http://www.kevinalbrecht.com/code/joy-mirror/jp-joyjoy.html</a>
+
+Stevan Apter's concatenative language XY has roots in both Joy and K:
+<a href="http://nsl.com/k/xy/xy.htm">http://nsl.com/k/xy/xy.htm</a>
+
+Brent Kerby: The Theory of Concatenative Combinators:
+<a href="http://tunes.org/%7Eiepos/joy.html">http://tunes.org/%7Eiepos/joy.html</a>
+
+Thanks to Stevan Apter for references.
+
+"Joy is a functional programming language which is not based on the  application
+ of functions to arguments but on the composition of functions.  It does not use
+ lambda-abstraction of expressions but instead it uses quotation of expressions.
+ A large number of combinators are used to perform dequotation,  they  have  the
+ effect of higher order functions.  Several of them can be used to eliminate re-
+ cursive definitions. Programs in Joy are compact and often look just like post-
+ fix notation.  Writing  programs  and reasoning about them is made easy because
+ there is no substitution of actual for formal parameters." Manfred von Thun.
+
+Playing with Joy
+----------------
+In an interactive session the separator, which is  placed  initially  at  column
+position ⌊⎕PW÷4, may be adjusted at any time by adding or removing spaces to its
+left during input:
+
+      1 joy''
+                    │2 3 +  (* separator starts at ⌊⎕pw÷4                   *)
+                   5│       (* move separator to left by deleting blanks    *)
+        5│
+        5│2 +               (* separator continues here until moved again   *)
+        7│
+             7│dup *        (* and so on                                    *)
+            49│
+            49│quit         (* remember to quit !                           *)
+49
+
+Library
+-------
+Script <a href="s__joy.htm">##.scripts._joy</a> contains a number of examples of simple Joy programs:
+
+    fac     factorial:              ⍵ fac → !⍵
+    fac-i   iterative factorial         ..
+    fac-r   recursive factorial         ..
+    fac-y   factorial Y                 ..
+    fib     fibonacci:              ⍵ fib → ⍵'th fibonacci number
+    fib-i   iterative fibonacci:        ..      ..      ..
+    fib-r   recursive fibonacci         ..      ..      ..
+    2∧      two-to-the-power-of:    2*⍵
+    seq     number sequence         [m..n]
+    ack     recursive Ackermann
+    ack-y   Ackermann Y
+    qsort   Quicksort               ⍵[⍋⍵]
+    Y       Y-combinator            [f]Y → f[f]Y
+    →       clear the stack
+
+Tracing
+¯¯¯¯¯¯¯
+The evaluation of a ⊢···⊣ bracketed expression is traced. Traced output is dist-
+inguished from regular output by leading dots ···.  Notice the traced  expansion
+of defined names (such as append == reverse cons reverse) in the following:
+
+      1 joy scripts._joy
+                    │4 [1 2 3] append 0 [+] fold    (* untraced *)
+                  10│→                              (* )reset   *)
+                    │
+                    │⊢4 [1 2 3] append⊣ 0 [+] fold  (* partial tracing *)
+····················│4 [1 2 3] append ⊣ 0 [+] fold
+···················4│[1 2 3] append ⊣ 0 [+] fold
+···········4 [1 2 3]│append ⊣ 0 [+] fold
+···········4 [1 2 3]│reverse cons reverse ⊣ 0 [+] fold
+···········4 [3 2 1]│cons reverse ⊣ 0 [+] fold
+···········[4 3 2 1]│reverse ⊣ 0 [+] fold
+···········[1 2 3 4]│⊣ 0 [+] fold
+                  10│quit
+10
+      joy'⊢3[1][*]primrec'                  ⍝ non-interactive [repl←0] trace
+····················│3 [1] [*] primrec
+···················3│[1] [*] primrec
+···············3 [1]│[*] primrec
+···········3 [1] [*]│primrec
+···········2 [1] [*]│primrec 3 swap *
+···········1 [1] [*]│primrec 2 swap * 3 swap *
+···········0 [1] [*]│primrec 1 swap * 2 swap * 3 swap *
+···················1│1 swap * 2 swap * 3 swap *
+·················1 1│swap * 2 swap * 3 swap *
+·················1 1│* 2 swap * 3 swap *
+···················1│2 swap * 3 swap *
+·················1 2│swap * 3 swap *
+·················2 1│* 3 swap *
+···················2│3 swap *
+·················2 3│swap *
+·················3 2│*
+6
+
+Here is a list of supported operators. Those marked "*" are implemented in Joy:
+
+supported operators ──┐
+    top of stack ───┐ │
+                    ↓ ↓
+                    a│dup      →                a a│
+*                 b a│dupd     →              b b a│
+                  b a│pop      →                  b│
+*                 b a│popd     →                  a│
+*               c b a│pop2     →                  c│
+*                   a│unit     →                [a]│
+                  b a│swap     →                a b│
+*               c b a│swapd    →              b c a│
+*               c b a│rotate   →              a b c│
+*               c b a│rollup   →              a c b│
+*               c b a│rolldown →              b a c│
+                a [b]│cons     →              [a b]│
+*               a [b]│append   →              [b a]│
+                [a b]│uncons   →              a [b]│
+                [b] a│swons    →              [a b]│
+*           a [f] [g]│cleave   →                   │a f a g
+              [a] [b]│concat   →              [a b]│
+*           x [a] [b]│enconcat →            [a x b]│
+*         [a b] [f] g│shunt    →                   │a f g b f g
+*             [a] [b]│swoncat  →              [b a]│
+                a [f]│dip      →                   │f a
+*             b a [f]│dip2     →                   │f b a
+*           c b a [f]│dip3     →                   │f c b a
+              [a b c]│reverse  →            [c b a]│
+*             [a] [f]│infra    →                  [│a f]
+        [a b ...] [f]│step     →                   │a f b f ...
+*       [a b ...] [f]│map      →        [f¨a b ...]│
+*     [a b ...] i [f]│fold     →      [f/i,a b ...]│
+*       [a b ...] [f]│filter   →  [{f¨⍵)/⍵}a b ...]│
+*       [a b ...] [f]│split    →                   │
+              n [ops]│times    →              ops⍣n│
+            b [t] [f]│branch   →                   │{b:t⋄f}
+*         [b] [t] [f]│ifte     →                   │{b:t⋄f}
+*         ... b a [f]│nullary  →            ... b a│a f
+*       ... c b a [f]│unary    →            ... c b│a f
+*    [[p]a][[q]b[d]] │cond     →                   │p:a⋄q:b⋄d
+                    a│null     →              a∊0[]│
+                    a│small    →      a∊0 1[][atom]│
+               .. b a│stack    →    .. b a [a b ..]│
+             .. [a b]│unstack  →                b a│
+*             [a ...]│size     →                 ≢⍵│
+                    n│succ     →                n+1│
+                    n│pred     →                n-1│
+                  [a]│i        →                   │a
+                    a│id       →                  a│
+            n [a] [f]│primrec  →      (n-1) [a] [f]│primrec n swap f
+        [x y] [a] [f]│primrec  →        [y] [a] [f]│primrec x swap f
+*      true [B][R][J]│linrec   →                   │B
+*     false [B][R][J]│linrec   →                   │R [T][B][R][J]linrec J
+     0/[] [B] [F] [J]│binrec   →                   │B
+    n/[a] [B] [F] [J]│binrec   →              n/[a]│F [B] [F] [J] binrec
+                     │                             │  [B] [F] [J] binrec J
+                  m n│+        →                m+n│
+                  m n│-        →                m-n│
+                  m n│*        →                m×n│
+                  m n│/        →                m÷n│
+                  m n│rem      →               ⌊m÷n│
+                  m n│div      →              0 n⊤m│
+                  m n│&lt;        →                m&lt;n│
+                  m n│&lt;=       →                m≤n│
+                  m n│=        →                m=n│
+                  m n│&gt;=       →                m≥n│
+                  m n│&gt;        →                m&gt;n│
+                  m n│!=       →                m≠n│
+*                   b│not      →               {!⍵}│
+
+In addition  to these  operators, keyword DEFINE is used to name word sequences.
+For example primitive combinator "swons" could have been defined:
+
+    DEFINE swons == swap cons .     (* note the terminating "." *)
+
+Bugs and restrictions
+---------------------
+- Only boolean and whole, non-negative "natural" numbers are supported: 0 1 2 ..
+- The only aggregate form is the List; there is no support for sets or strings.
+- In interactive mode, only single-line expressions may be entered.
+
+Requirements
+------------
+[joy] calls operator →<a href="n_nats.htm">nats</a>← for its natural-number arithmetic.
+
+Technical notes
+---------------
+[joy] is an exercise in tail-calling.  In essence, it's just  a  read-eval-print
+loop (or "REPL" see: <a href="http://en.wikipedia.org/wiki/Read-eval-print_loop)">http://en.wikipedia.org/wiki/Read-eval-print_loop)</a> of which
+the principal components are inner dfns: read, eval and prt:
+
+        ┌──read─→─eval─→─prt──┐
+        │                     │
+        └───────←──────←──────┘
+
+Each function takes (and notionally returns) the tuple (stk I ops) where:
+
+    stk: Items on Joy's stack, implemented as a →<a href="n_list.htm">list</a>←,
+      I: Position of │-separator in interactive session.
+    ops: Stream of yet-to-be-applied operators, also a →<a href="n_list.htm">list</a>←,
+
+.. together with an association list (see →<a href="n_alists.htm">alists</a>←) as left argument, which maps
+defined names to their values.
+
+So we can define the type of each of these (read, eval, prt) functions as:
+
+    read eval prt :: State ← Dict ∇ State       ⍝ :: "are of type"
+
+Defining names (with capital letters) for types helps to simplify:
+
+      joy   ::  ⍞ ← ∇ ⍞                         ⍝ type of this function
+     Repl   :=  State ← Dict ∇ State            ⍝ state reduction
+     Oper   :=  State ← Dict ∇ Sargs            ⍝ primitive operator
+    Sargs   :=  Stack, [Value]                  ⍝ vector: (⊂stack),args
+     Dict   :=  [Name] [Oseq]                   ⍝ name-value association tuple
+    State   :=  Stack Disp Oseq                 ⍝ machine state
+     Disp   :=  offset                          ⍝ (-ive during tracing)
+     List ⍵ :=  '∘' | ⍵ (List ⍵)                ⍝ f(fr(frr ...))
+     Oseq   :=  Word | List Word | List Oseq    ⍝ operator sequence
+    Stack   :=  List Value                      ⍝ value stack
+    Value   :=  Word  | List Value              ⍝ value
+     Word   :=  ⍞                               ⍝ character vector
+
+Within the code,  the convention for naming the first few items of lists borrows
+from  Lisp's: car cdr cadr cddr ... but using Joy's terms  "first"  and  "rest".
+So: f r fr rr ... for first, rest, first-of-rest rest-of-rest and so forth.
+
+Principal function "eval" is effectively a Select structure with a case for each
+of the supported operators.
+
+On entry, the  top few stack items and first operator are named and a case-match
+function is defined:
+
+    stk I(op ops)←⍵                     ⍝ stack and next operator
+    ...
+    f(fr rr)←f r←stk                    ⍝ top few stack items
+    c←{op≡⍵~' '}                        ⍝ case match ignoring blanks
+
+The line corresponding to each case has this structure:
+
+        c oper: ⍺(patn rgs efn)⍵
+where:
+         c: Matching function.
+      oper: Name of operator to match: 'cons', 'swap', etc.
+         ⍺: Current definition dictionary.
+      patn: A vector, the same length as the required number of arguments with
+            expected types:
+                0: number
+                1: non-zero number
+                ∧: boolean (true or false)
+                ⌷: list
+                ⍞: non-empty list
+                *: anything
+       rgs: A dyadic operator, which checks the conformability (type and number)
+            of arguments  and  then for failure calls "err" or for success calls
+            its continuation function efn:
+       efn: Evaluation function to call next.
+         ⍵: Operator-stream, including current operator.
+
+For example:
+
+    c'swons  ':⍺('⌷*'rgs{⍺ ∆((f fr)rr)I ops})⍵     ⍝    [a] b → [b a]
+    │ │        │ │   │  │                    │
+    │ │        │ │   │  │                    └── operator list
+    │ │        │ │   │  └─────────────────── evaluation fn for remaining ops
+    │ │        │ │   └────────────────────── argument conformability checking fn
+    │ │        │ └────────────────────────── argument pattern vector
+    │ │        └──────────────────────────── definitions
+    │ └───────────────────────────────────── operator
+    └─────────────────────────────────────── operator matching function
+
+Performance:
+
+For no particular reason, the arrangement of the cases within subfunction [eval]
+has been optimised for "Ackermann's function" (see <a href="s__joy.htm">##.scripts._joy</a>). The follow-
+ing operator counts are for the reduction of "3 3 ack", where * indicates a def-
+ined (non-primitive) operator:
+
+    dip      21942
+    cons     20754
+    i        10913
+    swap      9726
+    branch    8539
+*   nullary   8539
+*   swoncat   8539
+    unstack   8539
+    stack     8539
+    concat    8539
+    uncons    7352
+    small     4863
+*   cond      4863
+    pop       3677
+    null      3676
+*   ack       2432
+    pred      2431
+    succ      1188
+    dup       1187
+    DEFINE       1
+            ------
+    total   121866  (omitting * defined operators)
+            ------
+(<a href="n_muson.htm">muse:</a>
+
+    Case selection within subfunction [eval] is a sequence of  guards,  each  of
+    which applies  the  same  matching  function to a number of constant values.
+    This structure occurs frequently enough to make it an attractive  optimisat-
+    ion for the dfn evaluator. Such an optimisation might spot the sequence:
+
+        c←{op≡⍵~' '}
+        c'dip   ': ...      ⍝ case[0]
+        c'cons  ': ...      ⍝  ..  1
+        c'i     ': ...      ⍝  ..  2
+        c'swap  ': ...      ⍝  ..  3
+        ...                 ⍝  ..  n
+
+    and, noting that c is a pure function with no side-effects, convert it to:
+
+        → ((c¨'dip   ' 'cons  ' 'i     ' 'swap  ' ...)⍳1)⊃ L0 L1 L2 L3 ... Ldflt
+
+    where L0 L1 ... Ldflt are internal labels for the corresponding lines.
+
+    Then a clever optimiser might transform the above expression:
+
+        CV ←  'dip   ' 'cons  ' 'i     ' 'swap  ' ...         ⍝ vector of cases
+        LV ←   L0       L1       L2       L3      ...  Ldflt  ⍝ vector of labels
+
+        →((c¨CV)⍳1)⊃LV                  ⍝ expand function c
+           ¯
+    -&gt;  →(({op≡⍵~' '}¨CV)⍳1)⊃LV         ⍝ separation: {f g ⍵}¨ → {f ⍵}¨ {g ⍵}¨
+           ¯¯¯¯¯¯¯¯¯¯
+    -&gt;  →(({op≡⍵}¨{⍵~' '}¨CV)⍳1)⊃LV     ⍝ ⎕FX-time evaluation: {⍵~' '}¨CV → CV1
+                  ¯¯¯¯¯¯¯¯¯¯
+    -&gt;  →(({op≡⍵}¨ CV1)⍳1)⊃LV           ⍝ dfn to tacit form: {A f ⍵} → A∘f
+           ¯¯¯¯¯¯
+    -&gt;  →((op∘≡¨ CV1)⍳1)⊃LV             ⍝ decomposition:  A∘f¨ → (⊂A)f¨
+           ¯¯¯¯¯
+    -&gt;  →(((⊂op)≡¨ CV1)⍳1)⊃LV           ⍝ match-each: (⊂A)≡¨B → B∊⊂A
+           ¯¯¯¯¯¯¯¯¯¯¯
+    -&gt;  →((CV1∊⊂op)⍳1)⊃LV               ⍝ iota-1: (A∊⊂B)⍳1 → A⍳⊂B
+          ¯¯¯¯¯¯¯¯¯¯¯
+    -&gt;  →(CV1⍳⊂op)⊃LV                   ⍝ which is significantly faster.
+)
+
+Joy in Joy
+----------
+While some of Joy's primitive operations are coded directly in APL,  many (those
+marked (*) in the table above) are coded in Joy itself - see  towards the end of
+the code, via the link ##.joy  at the very top of this page.  The choice of this
+split between primitive and synthetic operators is an interesting one, amounting
+to choosing a "basis": a set of operators on which all the others are built. The
+split chosen for this implementation, as well as the Joy-coding of the operators
+reflect JMS's inexperience with the language and both could be greatly improved.
+For more about this, see the link to Manfred von Thun's Metacircular Interpreter
+above.
+
+Examples:
+
+      joy '2 3 +  4 5 *'                ⍝ 2+3 ⋄ 4×5
+5 20
+                                        ⍝ Interactive Joy session:
+      1 joy scripts._joy                ⍝ see: <a href="s__joy.htm">##.scripts._joy</a>
+                    │2 3 +
+                   5│4 5 *
+                5 20│swap
+                20 5│/
+                   4│→                  (* clear stack *)
+                    │
+                    │                   (* move separator to the right: *)
+                                    │
+                                    │0 9 seq                    (* ⍳10      *)
+               [0 1 2 3 4 5 6 7 8 9]│→                          (* →        *)
+                                    │0 11 seq [fib] map         (* fib¨⍳12  *)
+      [0 1 1 2 3 5 8 13 21 34 55 89]│0 [+] fold                 (* +/⍵      *)
+                                 232│→                          (* →        *)
+                                    │DEFINE sum == 0 [+] fold . (* sum ← +/ *)
+                                    │0 999 seq sum              (* +/⍳1000  *)
+                              499500│→ 30 fac                   (* !30      *)
+   265252859812191058636308480000000│→ 100 2∧                   (* 2*100    *)
+     1267650600228229401496703205376│→ 3 3 ack                  (* 3 ack 3  *)
+                                  61│→ [3 1 4 1 5] qsort        (* ⍵[⍋⍵]    *)
+                         [1 1 3 4 5]│→ quit                     (* )off     *)
+
+See also: <a href="n_nats.htm">nats</a> <a href="n_lisp.htm">lisp</a> <a href="n_bf.htm">bf</a> <a href="n_list.htm">list</a> <a href="n_repl.htm">repl</a>
+
+Back to: <a href="n_contents.htm">contents</a>
+
+Back to: <a href="http://dfns.dyalog.com/index.htm">Workspaces</a>
+</pre>
+</body>
+</html>

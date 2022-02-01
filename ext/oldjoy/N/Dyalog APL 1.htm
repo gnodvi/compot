@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "HTTP://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="HTTP://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" >
+<head>
+<title>
+Dyalog APL
+</title>
+<link rel="stylesheet" type="text/css" href="xhtml.css"/>
+<meta http-equiv="Content-Language" content="en-gb"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="author" content="The D-Functionistas"/>
+<meta name="description" content="Dyalog APL"/>
+<meta name="generator" content=""/>
+<meta name="keywords" content="apl,algorithms,computation,computers,computing,dfns,'direct definition',dyalog"/>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28909969-2 ']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</head>
+<body>
+<pre>
+DEFINE 
+
+fac ==                  (* primitive-recursive factorial *)
+    [1] [*] primrec ; 
+
+fac-i ==                (* iterative factorial:         *)
+    [1 1]               (* →                   n [1 1]│ *)
+    dip                 (* →                     1 1 n│ *)
+    [dup [*]dip succ]   (* →   1 1 n [dup [*]dip succ]│ *)
+    times               (* →     ({(×/⍵),1↓⍵+1}⍣n⊢1 1)│ *)
+    pop ;               (* →       ({(×/⍵),1↓⍵+1}⍣n⊢1)│ *)
+
+fac-r ==                (* recursive factorial: *)
+    [small]             (* test for 0 or 1      *)
+    []                  (* 0 → 0;  1 → 1        *)
+    [                   (*                   n│ *)
+        dup             (* →               n n│ *)
+        pred            (* →           n (n-1)│ *)
+        fac-r           (* →          n (!n-1)│ *)
+        *               (* →         (n×∇ n-1)│ *)
+    ]
+    ifte ;              (* if-then-else         *)
+
+Y ==  [dup cons] swoncat dup cons i ;   (* Y combinator *)
+
+fac-y ==                (* Y-combinator factorial: *)
+    [
+        [pop null]
+        [pop succ]
+        [[dup pred] dip i *]
+        ifte
+     ] Y ;
+
+fib ==                  (* binary recursive fibonacci *)
+    [small] []          (* 0 → 0; 1 →1          *)
+    [pred dup pred]     (* →           (n-1 2)│ *)
+    [+]                 (* →         (+/n-1 2)│ *)
+    binrec ;
+
+fib-i ==                (* iterative fibonacci:         *)
+    [0 1]               (* →                   n [0 1]│ *)
+    dip                 (* →                     0 1 n│ *)
+    [dup [+]dip swap]   (* →   0 1 n [dup [+]dip swap]│ *)
+    times               (* →         ({1↓⍵,+/⍵}⍣n⊢0 1)│ *)
+    pop ;
+
+fib-r ==                (* recursive fibonacci: *)
+    [small]             (* test for 0 or 1      *)
+    []                  (* 0 → 0; 1 → 1         *)
+    [                   (*                   n│ *)
+        pred            (* →             (n-1)│ *)
+        dup             (* →        (n-1)(n-1)│ *)
+        [fib-r]dip      (* →      (∇ n-1)(n-1)│ *)
+        pred            (* →      (∇ n-1)(n-2)│ *)
+        fib-r           (* →    (∇ n-1)(∇ n-2)│ *)
+        +               (* →   ((∇ n-1)+∇ n-2)│ *)
+    ]
+    ifte ;              (* if-then-else         *)
+
+2∧ ==                   (* 2-to-the-power   *)
+    [1]dip              (* →           1 n│ *)
+    [dup +]             (* →   1 n [dup +]│ *)
+    times ;             (* →     {⍵+⍵}⍣n⊢1│ *)
+
+seq ==                  (* [m .. n]         *)
+    [&gt;] [pop2 []]       (* m&gt;n:         []│ *)
+    [
+        [dup succ]dip   (* →       m ++m n│ *)
+        seq             (* →  m [++m .. n]│ *) 
+        cons            (* →      [m .. n]│ *) 
+    ]
+    ifte ;              (* if-then-else     *)
+
+(* Ackermann's function:
+ *  ack 0 n → n+1
+ *  ack m 0 → ack (m-1) 1
+ *  ack m n → ack (m-1) (ack m (n-1))
+ *)
+
+ack ==                  (* recursive Ackermann *)
+    [
+        [[pop null] popd succ]
+        [[    null] pop pred 1 ack]
+        [           [dup pred swap] dip pred ack ack]
+    ]cond ;
+
+ack-y ==                (* Y-combinator Ackermann *)
+    [                   (* Kubica M.              *)
+        [
+            [[pop pop null] pop popd succ]
+            [[    pop null] [pop pred 1]dip i]
+            [
+                [[dup pred swap]dip pred]dip
+                dup [i]dip i (* ack ack *)
+            ]
+         ] cond
+     ] Y ;
+
+qsort ==                (* quicksort *)
+    [small] []
+            [uncons [&gt;] split]
+    [enconcat]
+    binrec ;
+
+→ ==                    (*      rest│ *)    (* clear stack *)
+    []                  (* → rest []│ *)
+    unstack ;           (* →        │ *)
+.
+
+Back to: <a href="c__joy.htm">code</a>
+
+Back to: <a href="http://dfns.dyalog.com/index.htm">Workspaces</a>
+</pre>
+</body>
+</html>
