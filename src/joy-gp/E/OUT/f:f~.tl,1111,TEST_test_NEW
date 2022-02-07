@@ -19,33 +19,7 @@ A B A B
 
 -----------------------------------
 
-stack = 10
-stack = 9
-stack = 9 1
-stack = 8
-stack = 8 1
-stack = 7
-stack = 7 1
-stack = 6
-stack = 6 1
-stack = 5
-stack = 5 1
-stack = 4
-stack = 4 1
-stack = 3
-stack = 3 1
-stack = 2
-stack = 2 1
-stack = 1
-stack = 1 1
-stack = 0
-stack = 0 0
 0
 
-stack = 12 8
-stack = 8 4
-stack = 8 4 1
-stack = 4 0
-stack = 4 0 0
 4
 

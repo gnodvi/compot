@@ -88,8 +88,12 @@ proc prefix_work {a} {
   if {$pref == $::pref_quote} {
     
     # сделаем такое квотирование особым вспомогательным методом
-    # помещать в стек по сути, сразу очищая от квотирования
-    # 
+    # помещать в стек по сути, сразу очищая от квотирования - 
+    # облегчая работу функци pop, в которой группа из более чем 1-го
+    # элемента читается естественным для tcl способом.
+    # Но рвиьно ли это? Ведь может быть вариант с обратной группировкой
+    # в стеке (cons ?) и тогда нарушается структура программы - внутри
+    # по лигике должен быть квотированный элемент, а он уже раскрыт?
     
     push [string trim $a $::pref_quote]
     
@@ -390,7 +394,7 @@ proc cleave { g f x} {
 
 #-------------------------------------------------------------------------------
 
-# слишком упроещенная версия,к онфликтуют с ::tcl::mathfunc
+# слишком упроещенная версия, конфликтуют с ::tcl::mathfunc
 # 
 
 # proc max {x y} {expr {$x>$y ? $x:$y}}
@@ -401,9 +405,7 @@ proc cleave { g f x} {
 proc step {f list} {
 
   #foreach e $list {eval [list r ($e)] $f}
-
   #foreach e $list {eval [list r {nop $e}] $f}
-
   #foreach e $list {eval [list r '$e] $f} 
 
   foreach e $list {eval [list r ~$e] $f} 
@@ -472,12 +474,19 @@ proc rfold {f init list} {
 }
 #-------------------------------------------------------------------------------
 # фигня какая-то !
+
+#set ::quote_in_pop 1
+
 #-------------------------------------------------------------------------------
-proc quote {instr} {
+#if {! $::quote_in_pop} {
+#------------------------------------
+# proc quote {instr} {
 
-  eval $instr
+#   eval $instr
 
-}
+# }
+#------------------------------------
+#}
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
@@ -606,7 +615,14 @@ proc v1_init_all_operators {} {
   #v0_: pop     (pop)                          tcl
   #v0_: pop     ~pop                          tcl
 
-  v0_: pop     {quote pop}                    tcl
+  # ::quote_in_pop ?
+  #if {! $::quote_in_pop} {
+  #v0_: pop     {quote pop}                  tcl
+  v0_: pop     {eval pop}                  tcl
+  #}
+  # а вот JOY-процедура push не нужна, не имеет смысла, поскольку
+  # мы ее вызываем только из TCL-функции !?
+
   #?????????????????????????
 
   #--------------------------------------------------------------
@@ -682,7 +698,6 @@ proc v1_init_all_operators {} {
   v0_: ^          {puts "    = [pop]"} tcl ;# надо ли здесь так хитро?
 
   v0_: nop    {} tcl    ;# пустышка  !!!!! 
-  #v0_: quote      ;# пустышка, но ведь уже определена?
   
   v0_: old_concat {push [concat [pop] [pop]]} tcl ;# наоборот
   
@@ -729,6 +744,13 @@ proc v1_init {} {
     # пока не понятно как можно это организовать на нижнем физическом
     # уровне? т.е. как перейти от тьюринговой машины?
     
+    #v0_: pop     {quote pop}                  tcl
+    #if {$::quote_in_pop} {
+      #
+    #  set element [eval $element] ;# !!??
+      #return [eval $element]
+    #}
+
     return $element
   }
   #-----------------------------------------------------------------------------
@@ -874,7 +896,7 @@ proc TEST_simp {} {
 
 
   r c   ~3    .s  ;# т.е. в стеке уже не квотированный
-  r c   ~3  i .s
+  r c   ~3  i .s  ;# вроде работает
 
 
   puts ""
@@ -1806,13 +1828,13 @@ proc TEST_file_v1 {} {
 
   puts ""
 
-  run_joy_file_v1 "F/j__00.joy"
+  run_joy_file_v1 "OLDJOY/F/j__00.joy"
 
   puts ""
   puts "----------------------------------------------"
   puts ""
 
-  run_joy_file_v1 "F/j__01.joy"
+  run_joy_file_v1 "OLDJOY/F/j__01.joy"
 
 #   puts ""
 #   puts "----------------------------------------------"
@@ -1835,16 +1857,19 @@ proc TEST_test_NEW {} {
   v0_: neg   0 swap - 1.0 *
 
   v0_: dip  {
-    set l    [pop ]
-    set item [pop ]
-    lappend code $l i $item
+    set l    [pop ]          ;# верхний элемент
+    set item [pop ]          ;# 2-й элемент, который хотм выполнить
+    lappend code $l i $item  ;# составили подпрограмму : $l i $item
+
+    # вопрос - а если item был квотированной программой, два разных варианта?
+    # для группы квота останется, а для едиинчного элемента изчезнет в итоге?
     
     eval r   $code
   }  tcl  
 
-  v0_: dupd   ~dup  dip       ;# A B   -> A A B
-  v0_: swapd  ~swap dip       ;# A B C -> B A C
-  v0_: dup2    dupd dup swapd ;# A B   -> A B A B 
+  v0_: dupd    ~dup  dip       ;# A B   -> A A B
+  v0_: swapd   ~swap dip       ;# A B C -> B A C
+  v0_: dup2     dupd dup swapd ;# A B   -> A B A B 
 
 
   #r c  .s 
@@ -1918,17 +1943,17 @@ proc TEST_test_NEW {} {
     set do_part    [pop ]
     set while_part [pop ]
 
-    puts "stack = $::joy_ST"
+    #puts "stack = $::joy_ST"
 
     while {1} {
     
       eval r  $do_part
-      puts "stack = $::joy_ST"
+      #puts "stack = $::joy_ST"
 
       eval r  dup  ;# продублировали верхний элемент, чтобы использовать его в сравнении
 
       eval r  $while_part
-      puts "stack = $::joy_ST"
+      #puts "stack = $::joy_ST"
  
       set ret [pop]  ;# забрали результат сравнения
       #puts "ret = $ret, stack = $::joy_ST"
