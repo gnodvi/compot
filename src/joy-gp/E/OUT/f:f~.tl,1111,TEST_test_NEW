@@ -23,3 +23,27 @@ A B A B
 
 4
 
+-----------------------------------
+
+0 
+debug, stack = asas
+debug, stack = asas sdds
+asas sdds 
+
+-----------------------------------
+
+debug, stack = 1 null succ {dup pred} *
+debug, stack = 1
+debug, stack = 1 null
+debug, stack = 1 null succ
+debug, stack = 1 null succ {dup pred}
+debug, stack = 1 null succ {dup pred} null succ {dup pred} *
+debug, stack = 1 null succ {dup pred} null succ {dup pred} *
+debug, stack = 1 null succ {dup pred} {null succ {dup pred} *}
+debug, stack = 1 null succ {dup pred} {null succ {dup pred} *} linrec
+debug, stack = 1 null succ {dup pred} {null succ {dup pred} *} linrec *
+debug, stack = 1 null succ {dup pred} {null succ {dup pred} *} {linrec *}
+debug, stack = 1 null succ {dup pred} {null succ {dup pred} * linrec *}
+debug, stack = 1 null succ {dup pred null succ {dup pred} * linrec *}
+ 
+

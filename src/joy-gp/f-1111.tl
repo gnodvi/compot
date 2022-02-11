@@ -669,6 +669,8 @@ proc v1_init_all_operators {} {
   v0_: newstack  c
   v0_: odd  2 rem
   v0_: of  swap at
+
+  v0_: succ 1 +
   v0_: pred 1 -
 
   #v0_: product 1 (*) fold
@@ -678,7 +680,6 @@ proc v1_init_all_operators {} {
   v0_: reverse  {} swap {nop swons} step
 
   v0_: sign  {0 >}  {0 <} cleave -
-  v0_: succ  1 +
 
   #v0_: sum   0 (+) fold
   v0_: sum   0 ~+ fold
@@ -1446,18 +1447,6 @@ proc TEST_00_to_11 {} {
     [1 2 3 4]  [ [null]  [succ]  [dup pred]  [*]  linrec ]   map .
   }
 
-  #-------------------------------------------------------------
-
-  # 	linrec == (P T R1 R2)
-  # 	    $P $T
-  # 		    $R1
-  # 		    $P $T $R1 $R2 [] cons cons cons cons
-  # 		    [linrec] $R2 concat concat concat
-  # 		    ifte;
-  
-  # i_main i__01.joy
-
-  #-------------------------------------------------------------
 
 
   puts ""
@@ -1854,6 +1843,7 @@ proc TEST_test_NEW {} {
   
   v1_init_all  
 
+
   v0_: neg   0 swap - 1.0 *
 
   v0_: dip  {
@@ -1993,6 +1983,100 @@ proc TEST_test_NEW {} {
   puts ""
 
   r c  12 8  gcd  .s  ;# это верно ! !
+
+  puts ""
+  puts "-----------------------------------"
+  puts ""
+
+  v0_: null  {
+    set t    [pop ]          ;# верхний элемент
+    
+    if {$t == 0} {
+      push 1
+    } else {
+      push 0
+    }    
+  }  tcl  
+
+  v0_: DEBUG  {
+    puts "debug, stack = $::joy_ST"
+   }  tcl  
+
+  r c  4  null . 
+
+
+  v0_: pairlist   {} cons cons
+
+  r c  asas DEBUG sdds DEBUG pairlist .
+
+  puts ""
+  puts "-----------------------------------"
+  puts ""
+
+  #-------------------------------------------------------------
+  # i_main i__01.joy
+
+
+  #  4  [null] [succ] [dup pred] [*] linrec  . 
+  #
+  #  (* вычислим факториал для каждого элемента списка [1 2 3 4] *)
+  #  [1 2 3 4]  [ [null]  [succ]  [dup pred]  [*]  linrec ]   map .
+
+  #------------------------------------
+
+  # Joy has a useful device, the linrec combinator, which allows computation 
+  # of anonymous functions that might have been defined recursively using 
+  # a linear recursive pattern. 
+
+  # Whereas the ifte combinator requires three 
+  # quoted parameters, the linrec combinator requires four: 
+  # an if-part, 
+  # a then-part, a rec1-part and a rec2-part. Recursion occurs between 
+  # the two rec-parts. For example, the factorial function could be 
+  # computed by 
+  # 	succ == 1 +;
+  # 	pred == 1 -;
+  
+  # Здесь простая линейная рекурсия:
+  # if 0 then 1 else [дублируем и уменьшаем на 1, затем умножаем *]
+  
+  #------------------------------------
+  # так в оригинале:
+ 
+
+  #   if (result)                   // если условие [1] выполняется, то
+  #     exeterm (SAVED3->u.lis);    // выполнить [2] и все!
+  #   else                          // иначе :
+  #   
+  #     exeterm (SAVED2->u.lis);    // выполняем [3]
+  #     linrecaux ();               // вызываемся рекурсивно
+  #     exeterm (SAVED1->u.lis);    // выполняем [4]
+
+  #------------------------------------
+  # а это вариант в версии 3:
+
+
+  # 	linrec == (P T R1 R2)
+  # 	    $P $T
+  # 		    $R1
+  # 		    $P $T $R1 $R2 [] cons cons cons cons
+  # 		    [linrec] $R2 concat concat concat
+  # 		    ifte;
+  
+  # попробуем без особой надежды?
+
+
+  v0_: linrec_3   =R2 =R1 =T =P   DEBUG \
+    @P DEBUG @T DEBUG     \
+    @R1 DEBUG      \
+    \
+    @P @T @R1 @R2 DEBUG {} cons DEBUG cons cons cons  DEBUG \
+    ~linrec DEBUG @R2 DEBUG concat DEBUG concat DEBUG concat DEBUG    \
+    ifte 
+
+  r c  1  ~null ~succ {dup pred} ~* DEBUG linrec_3  . 
+
+  #r c  4  ~null ~succ {dup pred} ~* linrec  . 
 
 
 }  
