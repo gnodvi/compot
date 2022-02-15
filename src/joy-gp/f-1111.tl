@@ -67,38 +67,46 @@ proc prefix_work {a} {
   # TODO: Сделать в общем виде: по префиксу (1-2 символа?) выполняем
   #       не стандартные действия:
   
-  #       (name - поместить просто в стек (квотирование)
+  #       ~name - поместить просто в стек (квотирование)
   #       >name - записать значение из стека в переменную   set_name
   #       $name - записать значение из переменной в стек    get_name
   # 
   
-  # а наверное и не надо очищать от квоты?
-  # но тогда надо будет очищать во всех остальных местах, при получении
-  # 
   
+  #puts stderr "prefix_work, a = $a"
+
   if {[string length $a] == 1} {
 
-    #puts "a = $a"
     return 0
   }
 
   set pref [string index $a 0]
+  set next [string index $a 1]
   
   #-------------------------------------------------------------
   if {$pref == $::pref_quote} {
     
-    # сделаем такое квотирование особым вспомогательным методом
-    # помещать в стек по сути, сразу очищая от квотирования - 
-    # облегчая работу функци pop, в которой группа из более чем 1-го
-    # элемента читается естественным для tcl способом.
-    # Но рвиьно ли это? Ведь может быть вариант с обратной группировкой
-    # в стеке (cons ?) и тогда нарушается структура программы - внутри
-    # по лигике должен быть квотированный элемент, а он уже раскрыт?
-    
-    push [string trim $a $::pref_quote]
-    
-    #return "continue" 
-    retyrn 1
+    if {$next == " "} {
+      ;; # это одиночный символ квотирования в начале группы, наверное
+      ;; # пока ничего не делаем ?
+      #puts stderr "next eq spzce !!!!!"
+
+    } else {
+
+      # сделаем такое квотирование особым вспомогательным методом
+      # помещать в стек по сути, сразу очищая от квотирования - 
+      
+      # облегчая работу, например, функци pop, в которой группа из более чем 1-го
+      # элемента читается естественным для tcl способом.
+      
+      # Но правильно ли это? Ведь может быть вариант с иерархической группировкой
+      # в стеке (linrec ?) и тогда нарушается структура программы - внутри
+      # по лигике должен быть квотированный элемент, а он уже раскрыт?
+      
+      push [string trim $a $::pref_quote]
+      
+      return 1 ;#
+    }
   }    
   #-------------------------------------------------------------
   # v0_: set     {set ::[pop] [pop]}            tcl
@@ -588,7 +596,7 @@ proc v1_init_all_operators {} {
 
   v0_: dup     {push [set x [pop]] $x}        tcl
 
-  v0_: dupd    {push [lindex $::joy_ST end-1]}    tcl
+  #v0_: dupd    {push [lindex $::joy_ST end-1]}    tcl - неверно
   v0_: emit    {pn [format %c [pop]]}         tcl
 
   v0_: explode {push [split [pop] ""]}        tcl ;# string -> char list
@@ -699,6 +707,7 @@ proc v1_init_all_operators {} {
   v0_: ^          {puts "    = [pop]"} tcl ;# надо ли здесь так хитро?
 
   v0_: nop    {} tcl    ;# пустышка  !!!!! 
+  v0_: ~      {} tcl    ;# пустышка  !!!!! - и так получается
   
   v0_: old_concat {push [concat [pop] [pop]]} tcl ;# наоборот
   
@@ -781,7 +790,91 @@ proc v1_init_all {} {
     push [concat $l1 $l2] 
   } tcl
 
- 
+  # ---------------------------------------------
+
+  v0_: neg   0 swap - 1.0 *
+
+  #r c  1 2 9 {~ +} dip  .s 
+
+  v0_: dip  {
+    set cmd [pop ]    ;# команда или список команд
+    set tmp [pop ]    ;# 2-й элемент, который временно пропускаем
+
+    lappend code    $cmd i $tmp  ;# составили подпрограмму i - может и список выполнить
+
+    # вопрос - а если item был квотированной программой, два разных варианта?
+    # для группы квота останется, а для едиинчного элемента изчезнет в итоге?
+    #puts stderr "dip: code = $code"
+    
+    eval r   $code
+  }  tcl  
+
+  v0_: dupd    ~dup  dip       ;# A B   -> A A B
+  v0_: swapd   ~swap dip       ;# A B C -> B A C
+  v0_: dup2     dupd dup swapd ;# A B   -> A B A B 
+
+
+#   v0_: null  {
+#     set t    [pop ]          ;# верхний элемент
+    
+#     if {$t == 0} {
+#       push 1
+#     } else {
+#       push 0
+#     }    
+#   }  tcl  
+
+  v0_: DEBUG  {
+    puts "debug, stack = $::joy_ST"
+   }  tcl  
+
+
+  v0_: null  {
+    set t    [pop ]          ;# верхний элемент
+    push $t
+    
+    if {$t == 0} {
+      push 1
+    } else {
+      push 0
+    }    
+  }  tcl  
+
+
+  v0_: linrec  {
+
+    #puts "stack = $::joy_ST"
+
+    set 4_part [pop ]
+    set 3_part [pop ]
+    set 2_part [pop ]
+    set 1_part [pop ]
+
+    #puts ".... $1_part , len = [llength $1_part]"
+    #puts ".... $2_part , len = [llength $2_part]"
+    #puts ".... $3_part , len = [llength $3_part]"
+    #puts ".... $4_part , len = [llength $4_part]"
+
+    eval r  $1_part i   ; set ret [pop]
+
+    if $ret {
+      #puts "...1"
+      eval r  $2_part i
+
+    } else {
+      #puts "...2"
+
+      eval r  $3_part i   
+      #puts ".... $1_part $2_part $3_part $4_part"
+      r  $1_part $2_part $3_part $4_part linrec  ;#  !!! не надо eval, которая
+      # убивает группы !!!! 
+      eval r  $4_part i
+    }
+
+  }  tcl  
+
+
+
   return
 }
 #-------------------------------------------------------------------------------
@@ -1008,7 +1101,8 @@ proc selftesting {} {
 
   ? {r c  {a b c d} reverse}          {{d c b a}}
 
-  ? {r c  1 2 dupd}                   {1 2 1}
+  #? {r c  1 2 dupd}                   {1 2 1} - это неверно
+  ? {r c  1 2 dupd}                   {1 1 2}
   #? {r c  6 9  gcd}                   3
   ? {r c  true  yes no choice}        yes
   ? {r c  false yes no choice}        no
@@ -1338,7 +1432,12 @@ proc joy->v2-list data {
   #puts "data_string = $data_string"
   #puts "len = $len"
 
-  if {$len == 1} {return ~$data_string}
+  # если группа из одного элемента, то обрабатываем особым способом
+
+  if {$len == 1} {
+    #return ~$data_string
+    return [list ~ $data_string]
+  }
 
   set ret {}
   
@@ -1844,24 +1943,6 @@ proc TEST_test_NEW {} {
   v1_init_all  
 
 
-  v0_: neg   0 swap - 1.0 *
-
-  v0_: dip  {
-    set l    [pop ]          ;# верхний элемент
-    set item [pop ]          ;# 2-й элемент, который хотм выполнить
-    lappend code $l i $item  ;# составили подпрограмму : $l i $item
-
-    # вопрос - а если item был квотированной программой, два разных варианта?
-    # для группы квота останется, а для едиинчного элемента изчезнет в итоге?
-    
-    eval r   $code
-  }  tcl  
-
-  v0_: dupd    ~dup  dip       ;# A B   -> A A B
-  v0_: swapd   ~swap dip       ;# A B C -> B A C
-  v0_: dup2     dupd dup swapd ;# A B   -> A B A B 
-
-
   #r c  .s 
   r c  1 2   ~+ i    .s 
   r c  1 2 9 ~+ dip  .s 
@@ -1957,6 +2038,7 @@ proc TEST_test_NEW {} {
 
   #v0_: while  =D =B  @B @D @B @D ~while cons cons concat [] ifte
 
+
   #r c  10 {> 0} {1 - } while  .s  
   r c  10 {0 > } {1 - } while  .s  
 
@@ -1987,20 +2069,6 @@ proc TEST_test_NEW {} {
   puts ""
   puts "-----------------------------------"
   puts ""
-
-  v0_: null  {
-    set t    [pop ]          ;# верхний элемент
-    
-    if {$t == 0} {
-      push 1
-    } else {
-      push 0
-    }    
-  }  tcl  
-
-  v0_: DEBUG  {
-    puts "debug, stack = $::joy_ST"
-   }  tcl  
 
   r c  4  null . 
 
@@ -2076,10 +2144,41 @@ proc TEST_test_NEW {} {
 
   r c  1  ~null ~succ {dup pred} ~* DEBUG linrec_3  . 
 
-  #r c  4  ~null ~succ {dup pred} ~* linrec  . 
-
+  puts ""
+  puts "-----------------------------------"
+  puts ""
 
 }  
+#-------------------------------------------------------------------------------
+proc TEST_test_MIN {} {
+
+  puts ""
+  puts "TEST_test_MIN ..."
+  puts ""
+  
+  v1_init_all  
+
+
+  r c  1 2 9 ~+  DEBUG dip  .s 
+
+  r c  1 2 9 {~ +} dip  .s 
+
+ puts ""
+
+  # так в оригинале:
+ 
+
+  #   if (result)                   // если условие [1] выполняется, то
+  #     exeterm (SAVED3->u.lis);    // выполнить [2] и все!
+  #   else                          // иначе :
+  #   
+  #     exeterm (SAVED2->u.lis);    // выполняем [3]
+  #     linrecaux ();               // вызываемся рекурсивно
+  #     exeterm (SAVED1->u.lis);    // выполняем [4]
+
+  r c  5  {~ null} {~ succ} {dup pred} {~ *} linrec  . 
+
+}
 #-------------------------------------------------------------------------------
 
 # f~.tl 1111 TEST_file_v1

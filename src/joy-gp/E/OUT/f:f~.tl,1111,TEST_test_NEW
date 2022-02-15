@@ -47,3 +47,6 @@ debug, stack = 1 null succ {dup pred} {null succ {dup pred} * linrec *}
 debug, stack = 1 null succ {dup pred null succ {dup pred} * linrec *}
  
 
+-----------------------------------
+
+

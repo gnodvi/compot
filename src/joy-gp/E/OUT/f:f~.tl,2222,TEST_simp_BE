@@ -19,3 +19,21 @@ B 1 2 E
 B 1 2 E
 B 6 5 4 3 E
 
+-------------------------------------
+
+
+run_v2_src: PRG = c  ( 1 2 )  dup . . 
+
+stack= |                           |  instr= c  
+stack= |                           |  instr= (  
+stack= |                         ( |  instr= 1  
+stack= |                       ( 1 |  instr= 2  
+stack= |                     ( 1 2 |  instr= )  
+stack= |                   ( 1 2 ) |  instr= dup  
+stack= |           ( 1 2 ) ( 1 2 ) |  instr= .  
+( 1 2 )
+stack= |                   ( 1 2 ) |  instr= .  
+( 1 2 )
+stack= |                           |  instr=   
+
+
