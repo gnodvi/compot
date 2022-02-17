@@ -21,7 +21,7 @@ echo ""
 #EXT/P/ploter PLT 
 #EXT/PLOTER/ploter PLT 
 
-P/ploter/ploter PLT 
+P/ploter/ploter P/PLT 
 
 
 echo ""

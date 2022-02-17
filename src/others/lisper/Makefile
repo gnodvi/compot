@@ -42,7 +42,7 @@ PROGS = $(V_RSB3_SO)  $(G)/T/x_find.so
 all: ASDF $(PROGS)
 
 ASDF:
-	(cd COMMSH/LISP; make)
+	(cd BIN/LISP; make)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ $(B)/T/ltk.fas: $(B)/b-ltk+.cl
 
 clean :
 	rm -f T/*.o T/*.so $(PROGS)
-	(cd COMMSH/LISP; make clean)
+	(cd BIN/LISP; make clean)
 
 test:
 	T.sh

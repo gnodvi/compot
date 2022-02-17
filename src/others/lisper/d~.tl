@@ -7,7 +7,7 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 
 
-set COMPOT "COM" 
+set COMPOT "COMPOT" 
 
 set auto_path [linsert $auto_path 0 $COMPOT]
 

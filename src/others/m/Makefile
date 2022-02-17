@@ -10,8 +10,8 @@ SROBOT_DIR = ../srobot
 LOGICS_DIR = ../logics		
 
 TENSOR_DIR = ../arrays		
-#HPOKER_DIR = ../hpoker
-##LISPER_DIR = ../lisper
+HPOKER_DIR = ../hpoker
+LISPER_DIR = ../lisper
 ORIGIN_DIR = ../origin
 POKERS_DIR = ../pokers
 DIALOG_DIR = ../dialog
@@ -19,12 +19,12 @@ DIALOG_DIR = ../dialog
 #-------------------------------------------------------------------------------
 
 
-all:  CGPLIB__ PLOTER__ LOGICS__ CAUL-S__  TENSOR__ ORIGIN__  DIALOG__ ##POKERS__ # HPOKER__ # OTHERS__ LISPER__  
+all:  CGPLIB__ PLOTER__ LOGICS__  TENSOR__ ORIGIN__  DIALOG__ POKERS__ # CAUL-S__ # LISPER__  
 
 #-------------------------------------------------------------------------------
 
-CAUL-S__ :
-	(cd $(CAUL-S_DIR); make)
+#CAUL-S__ :
+#	(cd $(CAUL-S_DIR); make)
 
 CGPLIB__ :
 	(cd $(CGPLIB_DIR); make)
@@ -45,14 +45,12 @@ TENSOR__ :
 DIALOG__ :
 	(cd $(DIALOG_DIR); make)
 
-# OTHERS__ :
-# 	(cd $(OTHERS_DIR); make)
 
 # LISPER__ :
 # 	(cd $(LISPER_DIR); make)
 
-#POKERS__ :
-#	(cd $(JOY_GP_DIR); make)
+POKERS__ :
+	(cd $(POKERS_DIR); make)
 
 ORIGIN__ :
 	(cd $(ORIGIN_DIR); make)
@@ -66,10 +64,10 @@ clean :
 	(cd $(LOGICS_DIR); make clean)
 	(cd $(SROBOT_DIR); make clean)
 	(cd $(TENSOR_DIR); make clean)
-#	(cd $(POKERS_DIR); make clean)
+	(cd $(POKERS_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
 	(cd $(ORIGIN_DIR); make clean)
-##	(cd $(LISPER_DIR); make clean)
+	(cd $(LISPER_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

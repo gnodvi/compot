@@ -4,7 +4,7 @@
 
 #MAIN_SRC_DIR = .
 
-include ../../../Make.mak
+include ../../../C/Make.mak
 
 
 ASDF-L_DIR = ./ASDF
@@ -17,7 +17,8 @@ all:  ASDF-L__
 #-------------------------------------------------------------------------------
 
 ASDF-L__ :
-	(cd $(ASDF-L_DIR); make)
+	(cd $(ASDF-L_DIR);  make)
+	(cd   common-lisp;  SET.sh)
 
 #-------------------------------------------------------------------------------
 

@@ -1,1 +1,1 @@
-../../pokers/r_rsb3.cc
+../pokers/r_rsb3.cc
