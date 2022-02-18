@@ -1509,6 +1509,19 @@ proc joy_functext_to_v1_code {functext} {
   return $code
 }
 #-------------------------------------------------------------------------------
+proc run_joy_as_v1 {text_joy} {
+
+  set ndict [joy-compile_to_namecodedict \
+                $text_joy \
+                "joy_functext_to_v1_code"]
+
+
+  set v1_src [dict get $ndict {}]
+
+  run_v1_src  $v1_src 
+
+}
+#-------------------------------------------------------------------------------
 #
 # f~.tl 1111 TEST_00_to_11
 # 
@@ -1558,16 +1571,6 @@ proc TEST_00_to_11 {} {
   #
   set ::print_defines 1
 
-  set joy_functext_to_proc "joy_functext_to_v1_code" 
-
-  set ndict [joy-compile_to_namecodedict \
-                $text_1 \
-                $joy_functext_to_proc]
-
-  puts ""
-  puts "ndict = $ndict"
-  puts ""
-
   v1_init_all       ;# разные ништяки
 
   #v0_set_stack_null 
@@ -1576,12 +1579,31 @@ proc TEST_00_to_11 {} {
   v0_: string_filter  string_split swap pop
 
 
+
+  set ndict [joy-compile_to_namecodedict \
+                $text_1 \
+                "joy_functext_to_v1_code"]
+
+  puts ""
+  puts "ndict = $ndict"
+  puts ""
+
   set v1_src [dict get $ndict {}]
+
+  puts ""
+  puts "v1_src = $v1_src"
+  puts ""
 
   run_v1_src  $v1_src 
 
+  # ------------------------------
+  # и еще раз одной процедурой
+  # 
+  puts ""
+
+  run_joy_as_v1  $text_1
+
 }
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
   # может слишком усложнена иерархия, не нужно для процедур src ?????????
   # а может нужны все же ссылки на тексты? или ссылки на подпрограммы ???

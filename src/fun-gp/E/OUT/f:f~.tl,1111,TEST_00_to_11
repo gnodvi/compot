@@ -23,6 +23,17 @@ text_1 =
 
 ndict = {} {2 3 + . 2 3 + dup * . {1 2 3} {4 5 6 7} concat . {1 2 3 4} {dup *} map . 2 3 {+ 20 * 10 4 -} i . . {"John Smith"} {90 >} string_filter .}
 
+
+v1_src = 2 3 + . 2 3 + dup * . {1 2 3} {4 5 6 7} concat . {1 2 3 4} {dup *} map . 2 3 {+ 20 * 10 4 -} i . . {"John Smith"} {90 >} string_filter .
+
+5 
+25 
+1 2 3 4 5 6 7 
+1 4 9 16 
+6 
+100 
+JohnSmth 
+
 5 
 25 
 1 2 3 4 5 6 7 
