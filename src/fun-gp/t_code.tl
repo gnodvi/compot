@@ -67,6 +67,8 @@ proc solver_task_backspace_ver1 {s t n m} {
   return $f
 }
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 proc pred_i {} {
 
   incr ::i -1 ;# уменьшили i на единицу
@@ -89,67 +91,81 @@ proc if_si_tj_equal {todo} {
   }
 }
 # ------------------------------------------------------------------------------
-proc if_i_negative {} {
+proc set_f_0 {} {
 
-  uplevel 1  [list break]
-
-#  if {$::i < 0} {
-#
-#    uplevel 2 break
-#  } 
+  set ::f 0  
 
 }
 # ------------------------------------------------------------------------------
-proc while_1 {body} {
+proc set_f_1 {} {
 
-  while {1} {
+  set ::f 1
 
-    uplevel  $body
-  }
+}
+# ------------------------------------------------------------------------------
+proc break_if_i_negative {} {
 
+  if {$::i < 0} {
+  
+    return -code break
+  } 
+  
+}
+# ------------------------------------------------------------------------------
+proc break_if_j_negative {} {
+
+  if {$::j < 0} {
+  
+    return -code break
+  } 
+  
+}
+# ------------------------------------------------------------------------------
+proc break_if_i_equal_j {} {
+
+  
+  set si [string index $::s $::i]
+  set tj [string index $::t $::j]
+  
+  if { $si == $tj } {
+    return -code break
+  } ;# // символы равны, выходим на сдвиг в 1 символ
+
+}
+# ------------------------------------------------------------------------------
+proc setf0_and_break_if_i_negative {} {
+
+  if {$::i < 0} {
+  
+    set_f_0
+    return -code break
+  } 
+  
 }
 # ------------------------------------------------------------------------------
 proc solver_global_tcl {} {
 
-  set f  1  
-  
-  set ::i  [- $::n 1]
-  set ::j  [- $::m 1]
-  
   while {1} {
     
-    if {$::j < 0} {break}
+    break_if_j_negative 
     
     while {1} {
       
-      if {$::i < 0} {break} ;# и затем выйдем из цикла for
-      #if_i_negative 
+      break_if_i_negative 
 
-
-      set si [string index $::s $::i]
-      set tj [string index $::t $::j]
-      
-      if { $si == $tj } {
-        break
-      } ;# // символы равны, выходим на сдвиг в 1 символ
-
+      break_if_i_equal_j 
       
       # если не равны в исходной строке сдвигаемся на 2 символа
       pred_i
       pred_i
     }
     
-    if {$::i < 0} {
-      set f 0
-      break
-    }
+    setf0_and_break_if_i_negative 
     
-
     pred_i  ;# и дальше указатель в исходной строке на 1 символ влево
     pred_j
   }
-    
-  return $f
+   
 }
 # ------------------------------------------------------------------------------
 proc solver_task_backspace_ver2 {s t n m} {
@@ -162,27 +178,35 @@ proc solver_task_backspace_ver2 {s t n m} {
   set ::n $n
   set ::m $m
 
-  set f [solver_global_tcl]
+  set ::i  [- $::n 1]
+  set ::j  [- $::m 1]
+  
+  set_f_1  
+  
+  solver_global_tcl
     
-  return $f
+  return $::f
 }
 # ------------------------------------------------------------------------------
-proc test {} {
+proc solver_task_backspace_ver3 {s t n m} {
 
-  set i 0
+  # сделаем решение через глобальные переменные и укрупненные "макросы"
+  # 
 
-  while_1 {
+  set ::s $s
+  set ::t $t
+  set ::n $n
+  set ::m $m
 
-    if {$i == 10} {
-      break;
-    }
-
-    puts "i = $i"
-    incr i
-  }
-
+  set ::i  [- $::n 1]
+  set ::j  [- $::m 1]
+  
+  set_f_1  
+  
+  solver_global_fun
+    
+  return $::f
 }
-
 # ------------------------------------------------------------------------------
 proc main {} {
 
@@ -236,6 +260,15 @@ proc main {} {
     } else {
       puts  "NO"
     }
+    puts "~~~~~~~~~~~~"
+    
+    set f [solver_task_backspace_ver3  $s $t $n $m]
+
+    if {$f}  {
+      puts "YES"
+    } else {
+      puts  "NO"
+    }
     #-----------------------------------------
 
     
@@ -246,72 +279,163 @@ proc main {} {
   #   return 0;
 }
 #-------------------------------------------------------------------------------
-proc test_fun {} {
+proc fun_init_solver {} {
 
   source "f-0000.tl"  ;# общие части
   source "f-1111.tl"  ;# простой jOY 
+
+
+  v1_init_all  
+
+  set ::while_end 0 ;# !!!!!!!!!!!!!!1
+
+
+
+  v0_: while_1  {
+
+    set do_part    [pop ]
+
+    while {1} {
+    
+      #eval r  $do_part
+
+      r c
+      foreach d $do_part {
+        #puts "d = $d"
+        #eval r  $d
+        r  $d
+        #puts "stack = $::joy_ST"
+      }
+      #puts "--------------------- "
+
+
+      if {$::while_end} {
+        set ::while_end 0 ;# !!!!!!!!!!!!!!1
+        break
+      }
+
+    }
+    
+  }  tcl  
+
+
+  v0_: BREAK  {
+
+    set ::while_end 1
+    
+  } tcl
+
+
+}
+#-------------------------------------------------------------------------------
+proc test_fun {} {
 
   puts ""
   puts "test_fun ..."
   puts ""
   
-  v1_init_all  
+  fun_init_solver 
 
-  #r c  1 2   ~+ i    .s 
-  #r c  1 2 9 ~+ dip  .s 
+
   set ::i 0
 
-  set ::while_end 0 ;# !!!!!!!!!!!!!!1
+  v0_: if_i7  {
 
-  v0_: while_1  {
-
-    set do_part    [pop ]
-    #set while_part [pop ]
-
-    #puts "stack = $::joy_ST"
-
-    while {1} {
-    
-      eval r  $do_part
-      #eval r  $i $do_part
-      #eval r  $i 
-
-      if {$::i == 10} {break}
-      if {$::while_end} {break}
-
-      #incr ::i
-      #puts "stack = $::joy_ST"
-      #puts "i = $i"
-
-     
-      #eval r  dup  ;# продублировали верхний элемент, чтобы использовать его в сравнении
-
-      #eval r  $while_part
-      #puts "stack = $::joy_ST"
- 
-      #set ret [pop]  ;# забрали результат сравнения
-      #puts "ret = $ret, stack = $::joy_ST"
-
-      #if {$ret == 0} {
-      #  break
-      #} 
+    if {$::i == 7} {
+      puts " if_end_do_breka: ::i == $::i  -> do while end"
+      set ::while_end 1
     }
     
-  }  tcl  
+  } tcl
 
-  v0_: if_end_do_break  {
+  v0_: if_i5  {
+
+    set do_body [pop]
 
     if {$::i == 5} {
-      puts "::i == 5 ..... "
-      set ::while_end 1
+      r $do_body
     }
     
   } tcl
 
   #r c  10 {0 > } {1 - } while  .s  
 
-  r c  { {puts "ii = $::i"} tcl {incr ::i} tcl  if_end_do_break } while_1  
+  r c  { 
+    {puts -nonewline "ii = $::i"} tcl {incr ::i} tcl   ~BREAK if_i5 \
+    if_i7 {puts " .. "} tcl } while_1  
 
+  puts ""
+
+  return
+}
+# ------------------------------------------------------------------------------
+proc solver_global_fun {} {
+
+
+  fun_init_solver 
+
+
+  v0_: pred_i  ~pred_i tcl
+  v0_: pred_j  ~pred_j tcl
+
+  v0_: break_if_i_negative {
+    if {$::i < 0} {
+      set ::while_end 1
+    }    
+  }  tcl
+  
+  v0_: break_if_j_negative {
+    if {$::j < 0} {
+      set ::while_end 1
+    }    
+  }  tcl
+  
+
+  v0_: setf0_and_break_if_i_negative {
+    if {$::i < 0} {      
+      set_f_0
+      set ::while_end 1
+    } 
+  } tcl
+
+
+
+  r c  {
+    break_if_j_negative 
+    {
+      break_if_i_negative
+      break_if_i_equal_j
+      pred_i
+      pred_i
+      {puts "1 .... ::i = $::i, ::j = $::j"} tcl
+    } while_1  
+    setf0_and_break_if_i_negative 
+    pred_i
+    pred_j
+    {puts "2 .... ::i = $::i, ::j = $::j"} tcl
+  } while_1  
+
+
+
+  #   while {1} {
+  
+  #     break_if_j_negative 
+
+  #     while {1} {  
+  #       break_if_i_negative 
+  #       break_if_i_equal_j 
+  
+  #       # если не равны в исходной строке сдвигаемся на 2 символа
+  #       pred_i
+  #       pred_i
+  #     }
+  
+  #     setf0_and_break_if_i_negative 
+  
+  #     pred_i  ;# и дальше указатель в исходной строке на 1 символ влево
+  #     pred_j
+  #   }
+     
 }
 #-------------------------------------------------------------------------------
 
@@ -319,9 +443,9 @@ main
 
 puts ""
 
-test
+# test
 
-puts ""
+# puts ""
 
 test_fun
 
