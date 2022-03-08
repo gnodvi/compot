@@ -1,4 +1,15 @@
 
+argo = -seed 2002 -lpop 15 -size 15 -nums 2
+
+set DICT {
+
+  -seed 2002
+  -lpop 15
+  -size 15
+  -nums 2
+
+}
+
 
 make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

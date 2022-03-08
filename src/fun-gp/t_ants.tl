@@ -1921,7 +1921,7 @@ proc  polearr_make_full {w h val} {
 
 }
 # ;;;---------------------------------------------------------------------------
-proc arr_make_20 {} {
+proc pole_20e5 {} {
 
 
   # другой вариант: в лок.перем. записали имя глоб.переменной (в которой массив)
@@ -2086,6 +2086,168 @@ proc make_quotes_BE {prg} {
   return $newprg
 }
 #-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# k~.tl ANTS ANTS_gp_new  2002 15 15 2
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc check_prg_version {prg} {
+
+  # опреедлим формат исходного текста и запишем в нужную ячейку словаря
+
+  set BEG_index [lsearch $prg "BEG"]
+
+
+  if {$BEG_index == -1} {  ;# не найдено 
+    return "11"
+  } else {
+    return "22"
+  }
+
+}
+#---------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+#
+#k~.tl ANTS ANTS_newtest
+
+# ------------------------------------------------------------------------------
+proc item_print__ {pa} {
+
+  puts ""
+  puts "item_print__ ______________________________________| "
+  puts ""
+
+  puts "src = [item_get_main_src $pa]" 
+  puts ""
+  puts "___________________________________________________| "
+  puts ""
+
+}
+# ------------------------------------------------------------------------------
+proc item_run {item version} {
+
+
+  set src [item_get_main_src $item] 
+
+  puts "RUN $version ...... !! src = $src"
+
+
+  switch -- $version {
+
+    "11" { run_v1_src  $src }
+
+    "22" { run_v2_src  $src } 
+
+    "33" { run_v3_src  $src } 
+
+    default {}
+  }
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc ANTS_newtest_version {src version} {
+
+
+  v0_set_stack_null  
+
+  set pol    [pole_create  "pole_20e5"]
+  pole_init  $pol
+  
+  puts ""
+
+  set pa [item_make $src]
+
+  item_print__ $pa
+
+  item_run   $pa $version
+ 
+ 
+  pole_print  $pol
+  
+  set fit [pole_calc_fitness $pol]
+
+  puts ""
+  puts "ants_fitness = $fit"
+  puts ""
+
+}
+#-------------------------------------------------------------------------------
+proc ANTS_newtest {} {
+
+
+  #set  src11 {M M M M  L R  M M M M M  L R  M M   {   R M M M M M   }  i }
+
+  set  src22   { M M M M   R  M M  L  M M   BEG R M M M M M END  i}
+
+
+  #--------------------------------------------------
+
+  #convert_11_to_22 $src11  src22
+
+  ANTS_init "22" ;# начальная инициализация системы функций
+
+  ANTS_newtest_version $src22 "22"
+
+  #--------------------------------------------------
+
+  convert_22_to_11 $src22  src11
+
+  ANTS_init "11"
+
+  ANTS_newtest_version $src11 "11" 
+
+  #--------------------------------------------------
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc TEST_33 {} {
+
+
+  set  src_JY  { M M M M   R  M M  L  M M  [ R M M M M M ]  i}
+
+  ANTS_init "33"
+
+  set src_33 [compile_joy_to_33  $src_JY]
+
+  ANTS_newtest_version $src_33 "33" 
+
+
+}
+#---------------------------------------------------------------------------
+proc TEST_simple {} {
+
+  # простой алгоритм : есть жрачка - идем вперед, нет - крутимся вправо
+  # 
+
+  #--------------------------------------------------------- 
+
+  set src11 {{~ MOVE} {~ RIGHT} IF_FOOD_AHEAD}
+
+  ANTS_init "11" 
+
+  game_do_eval_steps_joy  $src11 50
+
+  #---------------------------------------------------------
+
+  convert_11_to_22 $src11  src22
+
+  ANTS_init "22" 
+
+  game_do_eval_steps_joy  $src22 50
+
+  #---------------------------------------------------------
+
+  #ANTS_init "33" 
+
+  #game_do_eval_steps_joy  $src33 50
+
+  #--------------------------------------------------------- 
+
+}
 #-------------------------------------------------------------------------------
 proc ANTS_gp {} {
 
@@ -2131,21 +2293,32 @@ proc FITPROC_ants20 {p task} {
 
   #v1_init_all ;# ???
 
-  #if {$::ITEMS_LIST} {
   set src  [item_get_mainsrc $p]
-  #} else {
-  #  set src $p
-  #}
 
 
   set n 1 ;# будем делать один повтор (т.е. никакой не конечный автомат)
 
-  set fitness [run_ants_game  $src  "arr_make_20" $n]
+  set fitness [run_ants_game  $src $::pole  $n]
  
-  # fit_tobest = MIN 
-  # fit_target = 0
-
   return $fitness
+}
+# ;;;---------------------------------------------------------------------------
+proc pole_20e7 {} {
+
+  # другой вариант: в лок.перем. записали имя глоб.переменной (в которой массив)
+  #
+  set parr [polearr_make_full  20 20 "."] 
+
+  # чтобы поменять соедржимое массива, сделаем:
+  #   
+  arr_set  $parr  0 5 "x"   ;# передадим имя глоб.переменной
+  arr_set  $parr  0 6 "x"   ;# передадим имя глоб.переменной
+  arr_set  $parr  0 7 "x"   
+  arr_set  $parr  1 7 "x"   
+  arr_set  $parr  2 7 "x"   
+  arr_set  $parr  3 7 "x"   
+
+  return [set $parr] ;# а здесь уже возвращаем сам массив (из глоб.переменной)
 }
 #-------------------------------------------------------------------------------
 proc ANTS_gp_new {} {
@@ -2153,9 +2326,32 @@ proc ANTS_gp_new {} {
   # простой лиенйный тест (без условий)
   # 
 
-  read_params  individuals len nums
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set gp_list  "M R L"
+  global argv
+  set argo [lrange $argv 2 end]
+  argo_print $argo 
+
+  #read_params  individuals len nums
+
+  set seed        [dict_parse $argo "-seed"  @]
+  set individuals [dict_parse $argo "-lpop" 10]
+  set len         [dict_parse $argo "-size" 10] 
+  set nums        [dict_parse $argo "-nums"  4]
+  set gp_list     [dict_parse $argo "-list" "M R L"] 
+  set ::is_print  [dict_parse $argo "-print" 1] 
+
+  # флажки для новейших алгоритмов
+  # 
+  # 
+  set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
+  set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
+
+  set ::pole  [dict_parse $argo "-pole" "pole_20e5"] 
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #set gp_list  "M R L"
   
   ANTS_init "11" ;# начальная инициализация системы функций
   
@@ -2166,7 +2362,7 @@ proc ANTS_gp_new {} {
     randinstr    "randinstr_MAIN" \
     quotes_proc  "quotes_proc_NULL"
 
-  set ::is_print 1
+  #set ::is_print 1
 
   set task [task_create  -fit_func FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
     
@@ -2179,180 +2375,18 @@ proc ANTS_gp_new {} {
       -game_print_proc  game_print 
   
 }
-# ------------------------------------------------------------------------------
-# k~.tl ANTS ANTS_gp_new  2002 15 15 2
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-proc check_prg_version {prg} {
-
-  # опреедлим формат исходного текста и запишем в нужную ячейку словаря
-
-  set BEG_index [lsearch $prg "BEG"]
-
-
-  if {$BEG_index == -1} {  ;# не найдено 
-    return "11"
-  } else {
-    return "22"
-  }
-
-}
-#---------------------------------------------------------------------------
-#---------------------------------------------------------------------------
-proc TEST_ {} {
-
-  # простой алгоритм : есть жрачка - идем вперед, нет - крутимся вправо
-  # 
-
-  set src11 {{nop MOVE} {nop RIGHT nop} IF_FOOD_AHEAD}
-  convert_11_to_22 $src11  src22
-
-  #set src22 { BEG nop MOVE END  BEG nop RIGHT nop END IF_FOOD_AHEAD }
-  #convert_22_to_11   $src22 src11
-
-
-  #set src {nop nop} ;# а этот почему-то зависает !!!
-
-  #---------------------------------------------------------
-
-  ANTS_init "22" 
-
-  game_do_eval_steps_joy  $src22 50
-
-  #--------------------------------------------------------- 
-
-  ANTS_init "11" 
-
-  game_do_eval_steps_joy  $src11 50
-
-}
-# ------------------------------------------------------------------------------
-#
-#k~.tl ANTS ANTS_newtest
-
-# ------------------------------------------------------------------------------
-proc item_print__ {pa} {
-
-  puts ""
-  puts "agent_print .................................... "
-  puts ""
-
-  puts "src = [item_get_main_src $pa]" 
-  puts ""
-
-}
-# ------------------------------------------------------------------------------
-proc item_run {item version} {
-
-
-  set src [item_get_main_src $item] 
-
-  puts "RUN $version ...... !!"
-
-
-  switch -- $version {
-
-    "11" { run_v1_src  $src }
-
-    "22" { run_v2_src  $src } 
-
-    "33" { run_v3_src  $src } 
-
-    default {}
-  }
-
-
-  return
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-proc ANTS_newtest_version {src version} {
-
-
-  v0_set_stack_null  
-
-  set pol    [pole_create  "arr_make_20"]
-  pole_init  $pol
-  
-  puts ""
-
-  set pa [item_make $src]
-
-  item_print__ $pa
-
-  item_run   $pa $version
- 
- 
-  pole_print  $pol
-  
-  set fit [pole_calc_fitness $pol]
-
-  puts ""
-  puts "ants_fitness = $fit"
-  puts ""
-
-}
 #-------------------------------------------------------------------------------
 
-
+# t~.tl ANTS ANTS_gp_new  -seed 2002  -lpop 10 -size 15 -nums -1 -print 2 -pole 'pole_20e7'
 
 #-------------------------------------------------------------------------------
-proc ANTS_newtest {} {
-
-
-  #set  src11 {M M M M  L R  M M M M M  L R  M M   {   R M M M M M   }  i }
-
-  set  src22   { M M M M   R  M M  L  M M   BEG R M M M M M END  i}
-
-
-  #--------------------------------------------------
-
-  #convert_11_to_22 $src11  src22
-
-  ANTS_init "22" ;# начальная инициализация системы функций
-
-  ANTS_newtest_version $src22 "22"
-
-  #--------------------------------------------------
-
-  convert_22_to_11 $src22  src11
-
-  ANTS_init "11"
-
-  ANTS_newtest_version $src11 "11" 
-
-  #--------------------------------------------------
-
-
-  return
-}
-#-------------------------------------------------------------------------------
-proc ANTS_33 {} {
-
-
-  set  src_JY  { M M M M   R  M M  L  M M  [ R M M M M M ]  i}
-
-  ANTS_init "33"
-
-  set src_33 [compile_joy_to_33  $src_JY]
-
-  ANTS_newtest_version $src_33 "33" 
-
-
-}
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#
+# 
 # TODO:
 
-# k~.tl ANTS ANTS_33 - системная библиотека не интегрирована ?
+# t~.tl ANTS TEST33 - системная библиотека не интегрирована ?
 
-
-
-
-# k~.tl ANTS ANTS_newtest
-# k~.tl ANTS TEST_
+# t~.tl ANTS ANTS_newtest
+# t~.tl ANTS TEST_simple
 
 
 # 1) все тесты должны быить двойными - т.е. отдельно выполняться (и совпадать) с
@@ -2362,10 +2396,8 @@ proc ANTS_33 {} {
 #    один код - одна версия, о ней - флажочек.
 #  
 
-# k~.tl ANTS ANTS_gp 2012  10 15 2
-
-# k~.tl ANTS ANTS_gp_new  2002 15 15 2
-
+# t~.tl ANTS ANTS_gp      2012  10 15 2
+# t~.tl ANTS ANTS_gp_new  2002  15 15 2
 
 # -----------------------------------------------
 
@@ -2375,17 +2407,16 @@ proc ANTS_33 {} {
 #    может быть фитнес должен быть не только у программы, но и у кусков?
 #    тогда куски ничем не отличаются от программ ??
 
+# t~.tl ANTS test_fitness_ants
+# t~.tl ANTS ANTS_gp    @ 15 15 5
 
-# k~.tl ANTS test_fitness_ants
-# k~.tl ANTS ANTS_gp    @ 15 15 5
 
-
-# k~.tl ALIB ANTS_t2 
-# k~.tl ALIB ANTS_test_shalito_old 
-# k~.tl ALIB ANTS_test_simple_old 
-# k~.tl ANTS ANTS_gp 2012  10 15 2 
-# k~.tl ANTS ANTS_gp_new  2002 15 15 2 
-# k~.tl ANTS ANTS_test_shalito_joy 50 
-# k~.tl ANTS  ANTS_test_simple_joy 
+# t~.tl ALIB ANTS_t2 
+# t~.tl ALIB ANTS_test_shalito_old 
+# t~.tl ALIB ANTS_test_simple_old 
+# t~.tl ANTS ANTS_gp 2012  10 15 2 
+# t~.tl ANTS ANTS_gp_new  2002 15 15 2 
+# t~.tl ANTS ANTS_test_shalito_joy 50 
+# t~.tl ANTS  ANTS_test_simple_joy 
 
 #-------------------------------------------------------------------------------
