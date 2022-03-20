@@ -940,8 +940,10 @@ proc FITPROC_01_NEW {p task args} {
   #set fitness [expr {abs($::sum_target-$result)}]  ;# ??
 
   #set fitness [expr {($::sum_target - $result)}] 
-  set fitness $result
 
+  #set fitness [expr {sqrt ( abs ($::sum_target * $::sum_target - $result * $result))}] 
+
+  set fitness $result
 
   return $fitness
 }
@@ -979,8 +981,7 @@ proc NEXT_01 {args} {
 
   #------------------------------------------------------
 
-  set ::sum_target 20
-
+  set ::sum_target [dict_parse $argo "-target" 20]
 
   puts "individuals  = $individuals" ;# колич-во ботов
   puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
@@ -1003,8 +1004,8 @@ proc NEXT_01 {args} {
 
   set task [task_create  \
               -fit_func    FITPROC_01_NEW  \
-              -fit_tobest  "MIN"       \
-              -fit_target  20           \
+              -fit_tobest  "MIN"        \
+              -fit_target  $::sum_target \
               -gp_list     $gp_list]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

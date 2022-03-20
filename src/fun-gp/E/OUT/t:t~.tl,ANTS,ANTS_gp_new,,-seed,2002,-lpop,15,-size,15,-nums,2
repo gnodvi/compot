@@ -15,11 +15,11 @@ make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
-prgpop = {M M R L L M M M} {R M M R R M R R R R M M L} {M L L R R R R M M M R} {L R M} {M M L} {R M M} {L R R M M L R} {L R} {R M M L R M M L R M R M M} {M R R} {R R L L R} {L L R L M} {R M L} {L M L R} {R L M M M L M R R R L}
+prgpop = {MOVE MOVE RIGHT LEFT LEFT MOVE MOVE MOVE} {RIGHT MOVE MOVE RIGHT RIGHT MOVE RIGHT RIGHT RIGHT RIGHT MOVE MOVE LEFT} {MOVE LEFT LEFT RIGHT RIGHT RIGHT RIGHT MOVE MOVE MOVE RIGHT} {LEFT RIGHT MOVE} {MOVE MOVE LEFT} {RIGHT MOVE MOVE} {LEFT RIGHT RIGHT MOVE MOVE LEFT RIGHT} {LEFT RIGHT} {RIGHT MOVE MOVE LEFT RIGHT MOVE MOVE LEFT RIGHT MOVE RIGHT MOVE MOVE} {MOVE RIGHT RIGHT} {RIGHT RIGHT LEFT LEFT RIGHT} {LEFT LEFT RIGHT LEFT MOVE} {RIGHT MOVE LEFT} {LEFT MOVE LEFT RIGHT} {RIGHT LEFT MOVE MOVE MOVE LEFT MOVE RIGHT RIGHT RIGHT LEFT}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
-000)     best =    5.000 :   M M R L L M M M 
+000)     best =    5.000 :   MOVE MOVE RIGHT LEFT LEFT MOVE MOVE MOVE 
 
 ================================================ 
 - - - . . x x x x x . . . . . . . . . . 
@@ -46,7 +46,7 @@ prgpop = {M M R L L M M M} {R M M R R M R R R R M M L} {M L L R R R R M M M R} {
 EAT = 0 / 5
 NUM = 8
 ================================================ 
-001)     best =    5.000 :   M M R L L M M M 
+001)     best =    5.000 :   MOVE MOVE RIGHT LEFT LEFT MOVE MOVE MOVE 
 
 ================================================ 
 - - - . . x x x x x . . . . . . . . . . 
@@ -73,7 +73,7 @@ NUM = 8
 EAT = 0 / 5
 NUM = 8
 ================================================ 
-002)     best =    5.000 :   M M R L L M M M 
+002)     best =    5.000 :   MOVE MOVE RIGHT LEFT LEFT MOVE MOVE MOVE 
 
 ================================================ 
 - - - . . x x x x x . . . . . . . . . . 
