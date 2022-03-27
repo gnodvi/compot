@@ -23,6 +23,9 @@ set ::gp_dict_NUMER 0 ;# для имен в динамическом словаре
 
 #------------------------------
 
+set ::A(news) 0
+
+
 set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
 
 set ::AUTO 0 ;# флажок применения динамического словаря
@@ -5568,7 +5571,8 @@ proc migration_right_to_left {pop0 pop1} {
 
   for {set i 0} {$i < $size1} {incr i} {
     
-    if {[comm_random_boolean_prob $migration_ratio]} {        
+    if {[comm_random_boolean_prob   $migration_ratio]} { 
+       
       ga_entity_clone  $pop0 [pop_get_entity_ $pop1  $i];
     }
   }
@@ -5612,11 +5616,11 @@ proc gaul_migration {task num_pops pops} {
   }
 
 
-#   for {set i 0} {$i < $num_pops} {incr i} \
-#   {
-#     set pop [lindex $pops $i]
-#     pop_sorting  $pop $task
-#   }
+  #   for {set i 0} {$i < $num_pops} {incr i} \
+    #   {
+  #     set pop [lindex $pops $i]
+  #     pop_sorting  $pop $task
+  #   }
 
   gaul_migration_by_pairs  $num_pops $pops
 
@@ -5629,12 +5633,12 @@ proc gaul_migration {task num_pops pops} {
   #set sort_driver [make_sortdriver_fromtask $task]
 
 
-#   for {set i 0} {$i < $num_pops} {incr i} \
-#   {
-#     set pop [lindex $pops $i]
-#     pop_sorting  $pop $task
-#   }
-
+  #   for {set i 0} {$i < $num_pops} {incr i} \
+    #   {
+  #     set pop [lindex $pops $i]
+  #     pop_sorting  $pop $task
+  #   }
+  
   return
 }
 # ------------------------------------------------------------------------------
@@ -5742,7 +5746,7 @@ proc pop_print_step_info {pop task args} {
 # ------------------------------------------------------------------------------
 # основная программа вызова "эволюционной" функции
 # ------------------------------------------------------------------------------
-proc pop_evolution {pop task max_generations evolfunc args} {
+proc pop_evolution {pop task max_generations  args} {
 
 
   # если какие-то недосчитаны, то посчитать фитнес
@@ -5769,8 +5773,9 @@ proc pop_evolution {pop task max_generations evolfunc args} {
       return false
     }
   
-  # 
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # 
+  set evolfunc  [dict_parse $args "-evol"  "NOTEVOLFUNC"]
 
   $evolfunc  $pop $task {*}$args 
 
@@ -5799,6 +5804,11 @@ proc pop_evolution {pop task max_generations evolfunc args} {
 # //		const int	max_generations
 # //
 # //  return:	number of generation performed
+# ------------------------------------------------------------------------------
+# 
+# 
+# g_stru.jm _05_test  2 10 1
+# 
 # ------------------------------------------------------------------------------
 proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
@@ -5850,7 +5860,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
       set pop [lindex $pops $i]
 
-      if {! [pop_evolution  $pop $task $max_generations "ga_evolution_6"]} {
+      if {! [pop_evolution  $pop $task $max_generations -evol "ga_evolution_6"]} {
         set complete TRUE
         break;
       }        
@@ -5886,7 +5896,7 @@ proc ga_evolution_main {task pop max_generations args} {
   #------------------------------------------------
   while {1} {
 
-    if {! [pop_evolution  $pop $task $max_generations "ga_evolution_6"]} {
+    if {! [pop_evolution  $pop $task $max_generations -evol "ga_evolution_6"]} {
       break;
     }
 
@@ -6797,14 +6807,14 @@ proc gp_evolution_main {task  pop max_generations
   if {$::is_print >= 2} {
     puts stderr "gp_evolution_main -> pop_evolution -> gp_evolution_4"
   }
-
+ 
   SET $pop "generation" 0
 
   while {1} {
 
     set ret [pop_evolution  $pop $task $max_generations \
-               "gp_evolution_4" \
-                -mutprob $mutprob -printproc $step_print_proc]
+               -evol "gp_evolution_4" \
+               -mutprob $mutprob -printproc $step_print_proc]
     
     if {! $ret} {break}
   }
@@ -6823,6 +6833,7 @@ proc calc_BOT33  {obj args} {
   #dict_print_real $task
   #exit
 
+  #????
   if {! [info exists max_generations]} {
     set max_generations [dict_parse $args "-nums" ] 
   }
@@ -6913,23 +6924,30 @@ proc run_gp_evolution_for_task {
   #-------------------------------------
 
   set obj \
-    [BOT33 new  -lpop $population_size -lsrc $len_chromosomes \
-       -task $task {*}$args]
+    [BOT33 new  \
+       {*}$args \
+       -lpop $population_size -lsrc $len_chromosomes -task $task \
+      ]
 
     
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
   #RUN1 "calc_" $obj \
+  #puts "nums = $nums !!"
+  puts stderr "max_generations = $max_generations !!!!!!!!!!!!!!!!!!!!!!!!!!"
 
+  # важно сначала выдать {*}$args а затем индивидуальные парамеры
+  # 
   calc_BOT33  $obj \
+    {*}$args                          \
     -nums           $max_generations  \
     -task            $task            \
-    -print           $::is_print       \
+    -print           $::is_print      \
     -randpop_proc    $randpop_proc    \
-    {*}$args
 
-#    -game_print_proc $game_print_proc \
+
+  # -game_print_proc $game_print_proc \
 
   return
 }

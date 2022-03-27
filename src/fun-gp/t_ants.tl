@@ -2359,17 +2359,29 @@ proc ANTS_gp_new {} {
   set individuals [dict_parse $argo "-lpop" 10]
   set len         [dict_parse $argo "-size" 10] 
   set nums        [dict_parse $argo "-nums"  4]
-  #set gp_list     [dict_parse $argo "-list" "M R L"] 
-  set gp_list     [dict_parse $argo "-list" "MOVE RIGHT LEFT"] 
+  set gp_list     [dict_parse $argo "-list" "M R L"] 
+  #set gp_list     [dict_parse $argo "-list" "MOVE RIGHT LEFT"] 
   set ::is_print  [dict_parse $argo "-print" 1] 
 
+
+  set ::pole  [dict_parse $argo "-pole" "pole_20e5"] 
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # флажки для новейших алгоритмов
   # 
   # 
   set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
   set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
 
-  set ::pole  [dict_parse $argo "-pole" "pole_20e5"] 
+
+  pi_add  M  {"inp" 0 "out" 0}
+  pi_add  R  {"inp" 0 "out" 0}
+  pi_add  L  {"inp" 0 "out" 0}
+
+  set ::LIPS_begin 0
+  set ::LIPS_final 0
+
+  # t~.tl ANTS ANTS_gp_new  -lpop 10 -size 15 -nums -1 -print 1 -pole pole_20a5 -seed 2022 -news 1
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2390,7 +2402,7 @@ proc ANTS_gp_new {} {
     
   run_gp_evolution_for_task \
       $task                        \
-      0 "make_rand_prgpop_unikum"  \
+      $seed "make_rand_prgpop_unikum"  \
       $individuals  $len $nums     \
       $::is_print                  \
       -mutprob          0.1        \

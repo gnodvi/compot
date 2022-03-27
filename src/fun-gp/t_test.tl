@@ -19,35 +19,15 @@ v0_make_tclproc  null {} {
 
 }
 #-------------------------------------------------------------------------------
-v0_make_tclproc  p1 {} {
 
-  incr ::sum +1
+v0_make_tclproc  p1 {} {incr ::sum +1}
+v0_make_tclproc  p3 {} {incr ::sum +3}
+v0_make_tclproc  p5 {} {incr ::sum +5}
 
-}
-#-------------------------------------------------------------------------------
-v0_make_tclproc  m1 {} {
+v0_make_tclproc  m1 {} {incr ::sum -1}
+v0_make_tclproc  m3 {} {incr ::sum -3}
+v0_make_tclproc  m3 {} {incr ::sum -5}
 
-  incr ::sum -1
-
-}
-#-------------------------------------------------------------------------------
-v0_make_tclproc  p3 {} {
-
-  incr ::sum +3
-
-}
-#-------------------------------------------------------------------------------
-v0_make_tclproc  p5 {} {
-
-  incr ::sum +5
-
-}
-#-------------------------------------------------------------------------------
-v0_make_tclproc  p9 {} {
-
-  incr ::sum +9
-
-}
 #-------------------------------------------------------------------------------
 proc calc_FITPROC_01 {task joy_prg} {
 
@@ -937,13 +917,13 @@ proc FITPROC_01_NEW {p task args} {
 
   set result [getresult_prg  $joy_prg]
 
-  #set fitness [expr {abs($::sum_target-$result)}]  ;# ??
+  set fitness [expr {abs($::sum_target-$result)}]  ;# ??
 
   #set fitness [expr {($::sum_target - $result)}] 
 
   #set fitness [expr {sqrt ( abs ($::sum_target * $::sum_target - $result * $result))}] 
 
-  set fitness $result
+  #set fitness $result
 
   return $fitness
 }
@@ -963,21 +943,38 @@ proc NEXT_01 {args} {
   set individuals [dict_parse $argo "-lpop" 10]
   set len         [dict_parse $argo "-size" 10] 
   set nums        [dict_parse $argo "-nums"  4]
-  set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
   set ::is_print  [dict_parse $argo "-print" 1] 
+  set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
 
+  set tclinit     [dict_parse $argo "-tcl"  ""]
+
+  eval $tclinit
+
+  puts "tclinit = $tclinit"
+  puts "nums = $nums"
+  puts ""
+  #exit
+    
   # флажки для новейших алгоритмов
   # 
   # 
   set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
   set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
   
-  pi_add p1  {"inp" 0 "out" 0}
-  pi_add p3  {"inp" 0 "out" 0}
-  pi_add p5  {"inp" 0 "out" 0}
+  # TODO 
+  # - автоматическое добавление этих параметров и их динамическая корректировка
+  # - более гибкое задание вариантов алгоритмов и их параметров? -algo ??
+
+  pi_add  p1  {"inp" 0 "out" 0}
+  pi_add  p3  {"inp" 0 "out" 0}
+  pi_add  p5  {"inp" 0 "out" 0}
+
+  pi_add  m1  {"inp" 0 "out" 0}
 
   set ::LIPS_begin 0
   set ::LIPS_final 0
+
+  # t~.tl TEST NEXT_01 -nums -1 -seed @ -target 5 -news 1 -list "p1 p3 m1" -print 2
 
   #------------------------------------------------------
 
@@ -1004,16 +1001,18 @@ proc NEXT_01 {args} {
 
   set task [task_create  \
               -fit_func    FITPROC_01_NEW  \
-              -fit_tobest  "MIN"        \
-              -fit_target  $::sum_target \
+              -fit_tobest  "MIN"           \
+              -fit_target  0               \
               -gp_list     $gp_list]
 
+#              -fit_target  $::sum_target \
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
   ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
   ##                                            -list,\{,p1,p3,p5,\}
 
+  puts stderr  "nums = $nums !!"
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   run_gp_evolution_for_task    \
@@ -1021,10 +1020,10 @@ proc NEXT_01 {args} {
       $seed $rand_prgpop_proc  \
       $individuals  $len $nums \
       $is_print                \
+      {*}$argo                 \
       -print        $is_print  \
       -mutprob          0.1    \
       -game_print_proc  0      \
-    {*}$argo
   
 
   #puts "!!!!!11"

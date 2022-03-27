@@ -7,6 +7,9 @@ set DICT {
 
 }
 
+tclinit = 
+nums = 4
+
 individuals  = 10
 len          = 10
 nums         = 4
@@ -22,9 +25,9 @@ prgpop = {p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1 p1}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
-000)     best =    1.000 :   p1 
-001)     best =    1.000 :   p1 
-002)     best =    1.000 :   p1 
-003)     best =    1.000 :   p1 
-004)     best =    1.000 :   p1 
+000)     best =   11.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 
+001)     best =    9.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+002)     best =    8.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+003)     best =    7.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+004)     best =    6.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
 
