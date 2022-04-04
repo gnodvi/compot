@@ -4,14 +4,15 @@ seed = 0
 init = 0
 list = dup * +
 
-make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 
 prgpop = {dup dup * +} {dup dup dup + * dup} * {dup * * *} {dup dup +}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
-000)     best =    0.000 :   dup dup * + 
+step 000)     best =    0.000 :   dup dup * + 
 
 ====================================================================
 

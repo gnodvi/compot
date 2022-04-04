@@ -217,8 +217,6 @@ proc test_pGP {} {
   #set is_print 1
   #DebugOn
 
-  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-    
   set pb [mp_create]
 
   mp_init $pb 
@@ -716,10 +714,11 @@ proc TEST_xx {args} {
   # запускаем эволюцию GP напрямую, через функцию
 
     run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
-                              $lpop $size        \
-                              $nums $print       \
-                              -game_print_proc 0 \
-                              -mutprob         0.2
+      -lpop $lpop  -size $size -nums $nums      \
+
+#      $lpop $size $nums  \
+    # -printproc 0 \
+    #                           -mutprob         0.2
 
     # -> calc_BOT33 -> gp_evolution_main ->
 
@@ -961,6 +960,7 @@ proc NEXT_01 {args} {
   set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
   set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
   
+
   # TODO 
   # - автоматическое добавление этих параметров и их динамическая корректировка
   # - более гибкое задание вариантов алгоритмов и их параметров? -algo ??
@@ -968,7 +968,6 @@ proc NEXT_01 {args} {
   pi_add  p1  {"inp" 0 "out" 0}
   pi_add  p3  {"inp" 0 "out" 0}
   pi_add  p5  {"inp" 0 "out" 0}
-
   pi_add  m1  {"inp" 0 "out" 0}
 
   set ::LIPS_begin 0
@@ -993,16 +992,8 @@ proc NEXT_01 {args} {
   set is_print 1
   #DebugOn
 
-  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-    
-  set pb [mp_create]
-
-  mp_init $pb 
-
   set task [task_create  \
-              -fit_func    FITPROC_01_NEW  \
-              -fit_tobest  "MIN"           \
-              -fit_target  0               \
+              -fit_func  FITPROC_01_NEW  -fit_tobest  "MIN" -fit_target  0  \
               -gp_list     $gp_list]
 
 #              -fit_target  $::sum_target \
@@ -1015,15 +1006,21 @@ proc NEXT_01 {args} {
   puts stderr  "nums = $nums !!"
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  set pb [mp_create]
+  mp_init $pb 
+
+  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+
+  
   run_gp_evolution_for_task    \
       $task                    \
       $seed $rand_prgpop_proc  \
-      $individuals  $len $nums \
-      $is_print                \
+      -lpop $individuals  -size $len  -nums $nums \
       {*}$argo                 \
-      -print        $is_print  \
-      -mutprob          0.1    \
-      -game_print_proc  0      \
+
+  # -print        $is_print  \
+  # -mutprob          0.1    \
+  #     -printproc  0      \
   
 
   #puts "!!!!!11"
@@ -1031,12 +1028,71 @@ proc NEXT_01 {args} {
 
   return
 }
+#-------------------------------------------------------------------------------
+proc NEXT_test {} {
+
+  puts ""
+  puts "NEXT_test"
+  puts ""
+
+  set gp_list "p1 p3" 
+  #set gp_list "dup * +"
+
+  #  mp_init $pb \
+  #    randinstr    "randinstr_MAIN" \
+  #    quotes_proc  "quotes_proc_NULL"
+  #    quotes_proc  "make_quotes_TCL"
+  
+  set ::sum_target 10
+
+  set task [task_create  \
+              -fit_func  FITPROC_01_NEW  -fit_tobest  "MIN" -fit_target  0  \
+	      -gp_list  $gp_list]
+  
+  v1_init
+  #v1_init_all
+  
+  set ::randinstr   "randinstr_MAIN"
+  set ::quotes_proc "quotes_proc_NULL"
+
+  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+
+  set population_size  5
+  set len_chromosomes  3
+  set randpop_proc   "make_rand_prgpop"
+  
+  set itemlist [make_itemlist $task \
+                   $randpop_proc \
+                   $population_size $len_chromosomes]
+  
+
+  itemlist_calc_fitness_nov  $itemlist $task
+
+  itemlist_print $itemlist " %4d)   " "%s " stdout
+
+  
+  pi_add  p1  {"inp" 0 "out" 0}
+  pi_add  p3  {"inp" 0 "out" 0}
+
+  #set pop_items [try_mutate_for_all_items   $pop_items $task $::DEEP]
+  set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
+
+  puts ""
+  itemlist_print $pop_items " %4d)   " "%s " stdout
+
+
+  # set mutprob [dict_parse  $args "-mutprob" 0.1]
+  # set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
+  # set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
+  
+  return
+}
 ###########################################################################################
 #
-# t~.tl TEST NEXT_01 -lpop 6 -nums 1 -news 1 -list "p1 p3 p5" -seed 2021 -print 3 -size 1 
-# t~.tl TEST NEXT_01 -lpop 2 -size 1 -nums 1 -seed 2021 -print 3 -news 1 -list 'p1 p5'
-# t~.tl TEST NEXT_01 -lpop 2 -size 1 -nums -1 -print 3 -news 1 -list 'p1 p5'
 
-# t~.tl TEST TEST_xx -lpop 6 -nums 1 -news 1 -print 2 
+# t~.tl TEST NEXT_test
+
+# t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
+# t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1
 
 ###########################################################################################

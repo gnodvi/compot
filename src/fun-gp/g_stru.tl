@@ -976,7 +976,7 @@ dict_class_create  BOT05 {BOT} {
       0.25		         \
       0.0001        
     
-    lappend pops $pop
+    lappend pops $pop ;# добавили популяцию в список !!
   }
   
   
@@ -995,7 +995,7 @@ proc  calc_BOT05 {obj args} {
   
   set num_pops [llength $pops]
   
-  set ret [ga_evolution_archipelago  $num_pops $pops  $max_generations $task]
+  set ret [ga_evolution_archipelago  $task $num_pops $pops  $max_generations ]
   
   return $ret
 }

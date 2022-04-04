@@ -2319,10 +2319,11 @@ proc ANTS_gp {} {
   run_gp_evolution_for_task        \
       $task                        \
       0 "make_rand_prgpop_unikum"  \
-      $individuals  $len $nums     \
-      $::is_print                  \
-      -mutprob          0.1        \
-      -game_print_proc  0 
+      -lpop $individuals  -size $len  -nums $nums   \
+      \
+
+  # -mutprob          0.1        \
+  #     -printproc  0 
 
 
   return
@@ -2403,10 +2404,11 @@ proc ANTS_gp_new {} {
   run_gp_evolution_for_task \
       $task                        \
       $seed "make_rand_prgpop_unikum"  \
-      $individuals  $len $nums     \
-      $::is_print                  \
-      -mutprob          0.1        \
-      -game_print_proc  game_print 
+      -lpop $individuals  -size $len  -nums $nums   \
+      -printproc  game_print                \
+
+  # -mutprob          0.1        \
+  #     -printproc  game_print 
   
 }
 #-------------------------------------------------------------------------------

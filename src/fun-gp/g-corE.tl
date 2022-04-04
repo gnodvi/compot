@@ -33,6 +33,7 @@ set ::AUTO 0 ;# флажок применения динамического словаря
 set ::DEEP 5 ;# глубина последовательности мутации
 
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # программная статистика
 
 set ::LIPS {}
@@ -299,17 +300,6 @@ proc item_get_prog {item} {
 
 }
 #-------------------------------------------------------------------------------
-proc item_calc_fitness {item fitnessfunc task} {
-
-  
-  set fitn  [$fitnessfunc  $item $task]  
-
-  incr ::eval_count
-
-  item_set_fitn  $item  $fitn
-  
-}
-#-------------------------------------------------------------------------------
 
 set ::is_fitn_first 1
 
@@ -398,8 +388,16 @@ dict_class_create POP {} {
 
   SET $obj "stable_size"     [dict_parse $args "-lpop"] 
   SET $obj "len_chromosomes" [dict_parse $args "-lsrc"] 
+
+  # TODO - надо вводить -printchform и по умолчанию % s
+  # 
+  # 
+  #SET $obj "ch_form"         "% 6.3f " ;#  " %02d"   ????????????????????????/
+  SET $obj "ch_form"   [dict_parse $args "-printchform"  "% 6.3f "] 
+
+  #SET $obj "ch_form"  "% s "
+  # g_orov.jm -test 1 -lpop 40 -nums 40
   
-  SET $obj "ch_form"         "% 6.3f " ;#  " %02d"   
   SET $obj "generation_hook" NULL
   
   SET $obj best            {}     
@@ -678,7 +676,7 @@ proc item_print_oneline {item {out "stdout"} {ch_form "%s "}} {
   
   if {[string equal $fi $::GA_NOT_FIT]} {
 
-    puts -nonewline $out "fitn = NOT_FITNESS"
+    puts -nonewline $out "fitn = NOT_FITS"
   } else {
     puts -nonewline $out "fitn = [format "%8.3f"  $fi]"
   }
@@ -719,7 +717,7 @@ proc pop_print_lite {p {out "stdout"}} {
 proc pop_print {p {out "stdout"}} {
 
 
-  puts $out "---------------------- POPULATION PRINT -------------------------------"
+  puts $out "---------------------- POPULATION PRINT ---------------------------"
   puts $out ""
   puts $out "Generation = [GET $p generation]"
   puts $out ""
@@ -746,7 +744,7 @@ proc pop_print {p {out "stdout"}} {
   }
   
   puts $out " "
-  puts $out "-----------------------------------------------------------------------"
+  puts $out "-------------------------------------------------------------------"
 
 }
 #-------------------------------------------------------------------------------
@@ -919,6 +917,17 @@ proc  gaul_population_fill {pop task num args} {
   return 1 ;# true
 }
 #-------------------------------------------------------------------------------
+proc item_calc_fitness {item fitnessfunc task} {
+
+  
+  set fitn  [$fitnessfunc  $item $task]  
+
+  incr ::eval_count
+
+  item_set_fitn  $item  $fitn
+  
+}
+#-------------------------------------------------------------------------------
 proc pop_calc_fitness_all {pop task} {
 
   set fitnessfunc [GET $task "fit_func"]  
@@ -932,29 +941,53 @@ proc pop_calc_fitness_all {pop task} {
   return
 }
 # //------------------------------------------------------------------------------
+proc item_calc_fitness_nov {item fitnessfunc task} {
+
+
+  set fit [item_get_fitn  $item]
+  
+  if {[string equal $fit  $::GA_NOT_FIT]} {
+    
+    item_calc_fitness  $item $fitnessfunc  $task
+  }
+
+}
+# //------------------------------------------------------------------------------
 # //  synopsis:	Fitness evaluations.
 # //		Evaluate all previously unevaluated entities.
 # //		No adaptation.
 # //  parameters:	population *pop
 # //  return:	none
 # //------------------------------------------------------------------------------
+proc itemlist_calc_fitness_nov {itemlist task} \
+{
+
+  #set itemlist    [GET $pop  "itemlist"] 
+ 
+  set fitnessfunc [GET $task "fit_func"]
+ 
+  foreach item $itemlist {
+
+    item_calc_fitness_nov  $item $fitnessfunc  $task
+  }
+
+  return
+}
+# //------------------------------------------------------------------------------
 proc pop_calc_fitness_nov {pop task} \
 {
 
-  set fitnessfunc [GET $task "fit_func"]
   set itemlist    [GET $pop  "itemlist"] 
 
-  
-  foreach item $itemlist {
+  itemlist_calc_fitness_nov  $itemlist $task
+  return
 
-    set fit [item_get_fitn  $item]
+  # set fitnessfunc [GET $task "fit_func"]
+ 
+  # foreach item $itemlist {
 
-    if {[string equal $fit  $::GA_NOT_FIT]} {
-
-      item_calc_fitness  $item $fitnessfunc  $task
-    }
-
-  }
+  #   item_calc_fitness_nov  $item $fitnessfunc  $task
+  # }
 
   return
 }
@@ -2477,8 +2510,7 @@ proc dict_parse_all_minus {d args} {
 
 }
 #-------------------------------------------------------------------------------
-proc task_create {args} \
-{
+proc task_create {args} {
 
   set t [dict_create]
 
@@ -5707,7 +5739,7 @@ proc print_item_for_step {item i task  game_print_proc} {
   set ftn [item_get_fitn      $item]
 
 
-  puts [format "%03d)     best = % 8.3f :   $prg " $i $ftn ]
+  puts [format "step %03d)  best= % 7.3f :   $prg " $i $ftn ]
   
   # здксь печатаем пользовательскую картинку, типа поля игрового
   # 
@@ -5791,6 +5823,54 @@ proc pop_evolution {pop task max_generations  args} {
   
   return 1 ;# true
 }
+# //----------------------------------------------------------------------------
+# //  synopsis:	Main genetic algorithm routine.  Performs GA-based
+# //		optimisation on the given population.
+# //		This is a generation-based GA.
+# //		ga_genesis(), or equivalent, must be called prior to
+# //		this function.
+# //  parameters:
+# //  return:
+# //----------------------------------------------------------------------------
+proc ga_evolution_main {task pop max_generations args} {
+
+
+  # Do all the generations:
+  # 
+  # Stop when (a) max_generations reached, or
+  #           (b) "pop->generation_hook" returns FALSE.  
+
+  #if {$::is_print >= 2} {
+  #  puts stderr "gp_evolution_main -> pop_evolution -> gp_evolution_4"
+  #}
+ 
+  SET $pop "generation" 0
+
+
+  #------------------------------------------------
+  while {1} {
+
+    set ret [pop_evolution  $pop $task $max_generations {*}$args]
+    
+    if {! $ret} {break;}
+
+    if {$::is_print >= 2} {pop_print $pop "stderr"}
+
+  } 
+  # /* Generation loop. */
+  #------------------------------------------------
+  
+  if {$::is_print > 2} {
+
+    puts ""
+    puts "FINAL RESULT: "
+    puts ""
+    pop_print $pop
+    puts ""
+  }
+
+  return [GET $pop "generation"]
+}
 # //------------------------------------------------------------------------------
 # //  synopsis:	Main genetic algorithm routine.  Performs GA-based
 # //		optimisation on the given populations using a simple
@@ -5806,11 +5886,10 @@ proc pop_evolution {pop task max_generations  args} {
 # //  return:	number of generation performed
 # ------------------------------------------------------------------------------
 # 
-# 
 # g_stru.jm _05_test  2 10 1
 # 
 # ------------------------------------------------------------------------------
-proc ga_evolution_archipelago {num_pops pops  max_generations task} {
+proc ga_evolution_archipelago {task  num_pops pops  max_generations } {
 
   set print $::is_print
 
@@ -5835,14 +5914,11 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
 
   set complete ::false ;# Whether evolution is terminated
   
-  #set fit_target [GET $task "fit_target"]
-  #set fit_error  [GET $task "fit_error"]
-
 
   while {1} {
 
     #     if {$generation >= $max_generations} {break}
-    if {$complete != $::false}            {break}
+    if {$complete != $::false}   {break}
 
     # // Migration step.
     # //
@@ -5861,6 +5937,7 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
       set pop [lindex $pops $i]
 
       if {! [pop_evolution  $pop $task $max_generations -evol "ga_evolution_6"]} {
+	
         set complete TRUE
         break;
       }        
@@ -5872,50 +5949,6 @@ proc ga_evolution_archipelago {num_pops pops  max_generations task} {
   } 
   
   return $generation
-}
-# //----------------------------------------------------------------------------
-# //  synopsis:	Main genetic algorithm routine.  Performs GA-based
-# //		optimisation on the given population.
-# //		This is a generation-based GA.
-# //		ga_genesis(), or equivalent, must be called prior to
-# //		this function.
-# //  parameters:
-# //  return:
-# //----------------------------------------------------------------------------
-proc ga_evolution_main {task pop max_generations args} {
-
-
-  # Do all the generations:
-  # 
-  # Stop when (a) max_generations reached, or
-  #           (b) "pop->generation_hook" returns FALSE.  
-
-  SET $pop "generation" 0
-
-
-  #------------------------------------------------
-  while {1} {
-
-    if {! [pop_evolution  $pop $task $max_generations -evol "ga_evolution_6"]} {
-      break;
-    }
-
-    if {$::is_print >= 2} {pop_print $pop "stderr"}
-
-  } 
-  # /* Generation loop. */
-  #------------------------------------------------
-  
-  if {$::is_print > 2} {
-
-    puts ""
-    puts "FINAL RESULT: "
-    puts ""
-    pop_print $pop
-    puts ""
-  }
-
-  return [GET $pop "generation"]
 }
 # //------------------------------------------------------------------------------
 proc ga_evolution {task pop  max_generations args} {
@@ -5933,7 +5966,8 @@ proc ga_evolution {task pop  max_generations args} {
 
 
   #set generation [ga_evolution_main  $task $pop $max_generations {*}$args]
-  set generation [ga_evolution_main  $task $pop $max_generations -print $::is_print]
+  set generation [ga_evolution_main  $task $pop $max_generations \
+		    -print $::is_print -evol "ga_evolution_6"]
 
   return $generation
 }
@@ -6798,30 +6832,6 @@ proc gp_dict_add_item {item} {
   return [gp_dict_add_by_src $src]
 
 }
-# ------------------------------------------------------------------------------
-proc gp_evolution_main {task  pop max_generations 
-                          {step_print_proc 0}    
-                          {mutprob         0.1}   
-                        } {
-
-  if {$::is_print >= 2} {
-    puts stderr "gp_evolution_main -> pop_evolution -> gp_evolution_4"
-  }
- 
-  SET $pop "generation" 0
-
-  while {1} {
-
-    set ret [pop_evolution  $pop $task $max_generations \
-               -evol "gp_evolution_4" \
-               -mutprob $mutprob -printproc $step_print_proc]
-    
-    if {! $ret} {break}
-  }
-  
-
-  return
-}
 #-----------------------------------------------------------
 proc calc_BOT33  {obj args} {
   
@@ -6839,8 +6849,8 @@ proc calc_BOT33  {obj args} {
   }
   
   #set print            [dict_parse $args "-print"           1]
-  set game_print_proc  [dict_parse $args "-game_print_proc" 0]
-  set mutprob          [dict_parse $args "-mutprob"         0.1]
+  # set game_print_proc  [dict_parse $args "-printproc" 0]
+  # set mutprob          [dict_parse $args "-mutprob"         0.1]
    
   set randpop_proc     [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
 
@@ -6859,9 +6869,12 @@ proc calc_BOT33  {obj args} {
   
   SET $pop "itemlist" $itemlist
   
-  gp_evolution_main  $task $pop  $max_generations \
-    $game_print_proc \
-    $mutprob  
+  # gp_evolution_main  $task $pop  $max_generations \
+  #   $game_print_proc \
+  #   $mutprob  
+  
+  ga_evolution_main  $task $pop  $max_generations {*}$args \
+    -evol "gp_evolution_4"  
   
   return
 }
@@ -6906,11 +6919,24 @@ proc make_sortdriver_fromtask {task} {
 #-------------------------------------------------------------------------------
 proc run_gp_evolution_for_task {
                        task
-                       seed randpop_proc 
-                       population_size  len_chromosomes max_generations   
-                       print 
+                       seed randpop_proc    
                        args
                      } {
+
+
+  # TODO - вводить как опции/параметры
+  # 
+  # set population_size  [dict_parse $args "-lpop" $population_size]
+  # set len_chromosomes  [dict_parse $args "-size" $len_chromosomes]
+  # set max_generations  [dict_parse $args "-nums" $max_generations]
+
+  set population_size  [dict_parse $args "-lpop" 10]
+  set len_chromosomes  [dict_parse $args "-size"  2]
+  set max_generations  [dict_parse $args "-nums"  2]
+  
+  #puts stderr "population_size = $population_size !!!!!!!!!!!!!!!"
+  #puts stderr "len_chromosomes = $len_chromosomes !!!!!!!!!!!!!!!"
+  #puts stderr "max_generations = $max_generations !!!!!!!!!!!!!!!"
 
   #-------------------------------------
   if {$seed == "@"} {
@@ -6922,32 +6948,35 @@ proc run_gp_evolution_for_task {
   comm_random_seed $seed 
 
   #-------------------------------------
+  # -lsrc $len_chromosomes  ??? почему ен -size ??
 
-  set obj \
-    [BOT33 new  \
-       {*}$args \
-       -lpop $population_size -lsrc $len_chromosomes -task $task \
+  set obj [BOT33 new \
+       {*}$args      \
+       -lsrc $len_chromosomes  -printchform  "% s " \
       ]
-
+   
+  #	     -lpop $population_size -lsrc $len_chromosomes -task $task \
     
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   # и  выпоняем эволюционный поиск 
 
   #RUN1 "calc_" $obj \
   #puts "nums = $nums !!"
-  puts stderr "max_generations = $max_generations !!!!!!!!!!!!!!!!!!!!!!!!!!"
+  #puts stderr "max_generations = $max_generations !!!!!!!!!!!!!!!!!!!!!!!!!!"
 
   # важно сначала выдать {*}$args а затем индивидуальные парамеры
   # 
+
+
   calc_BOT33  $obj \
     {*}$args                          \
-    -nums           $max_generations  \
     -task            $task            \
     -print           $::is_print      \
     -randpop_proc    $randpop_proc    \
 
 
-  # -game_print_proc $game_print_proc \
+#    -nums           $max_generations  \
+  # -printproc $game_print_proc \
 
   return
 }
@@ -7102,12 +7131,14 @@ proc _gp_test {} {
   set task [task_create "-fit_func" $fitnessfunc "-fit_tobest" MAX -gp_list $gp_list]
   
   run_gp_evolution_for_task \
-      $task \
-      $seed $randpop_proc   \
-      $bnums  $bsize $steps \
-      $::is_print                \
-      -mutprob          0.1 \
-      -game_print_proc  0   \
+    $task \
+    $seed $randpop_proc   \
+    -lpop $bnums  -size $bsize -nums $steps \
+      \
+
+#    $bnums  $bsize $steps \
+  # -mutprob          0.1 \
+  #     -printproc  0   \
 
 
   return
@@ -8015,6 +8046,7 @@ proc gp_evolution_4 {pop task args} {
   if {$::is_print >= 2} {
     puts stderr ""
     puts stderr "gp_evolution_4: len(sorted_items) = $len, l(leaders_items) = $l"
+    puts stderr ""
   }
    
   #---------------------------------------
