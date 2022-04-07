@@ -30,6 +30,8 @@ package require compot::common
 #-------------------------------------------
 
 ####source "f-0000.tl"  - включается далее в g-corE.tl
+
+source "f-prog.tl"
 source "g-corE.tl"
 
 #source "g-diff.tl"

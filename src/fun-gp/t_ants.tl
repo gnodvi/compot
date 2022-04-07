@@ -2088,43 +2088,6 @@ proc read_params {&individuals &len &nums} {
  
   return
 }
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-proc lappend_BE_list {prg i1 i2 &ret} {
-
-  USE_REFS
-
-  set B "BEG"
-  set E "END"
-
-  #set B  "{"
-  #set E  "}"
-
-  # потом формируем саму пару:
-  #
-
-  lappend ret $B
-  
-  for {set i $i1} {$i <= $i2} {incr i} {
-    lappend ret [lindex $prg $i]
-  }
-  
-  lappend ret $E
-  
-  return
-}
-#-------------------------------------------------------------------------------
-proc make_quotes_BE {prg} {
-
-  set n [llength $prg]
-
-  set paras  [make_paras $n]
-
-  set newprg [make_quotes_by_paras  $prg $paras $n  "lappend_BE_list"]
-
-  return $newprg
-}
-#-------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # k~.tl ANTS ANTS_gp_new  2002 15 15 2
 
@@ -2318,7 +2281,7 @@ proc ANTS_gp {} {
 
   run_gp_evolution_for_task        \
       $task                        \
-      0 "make_rand_prgpop_unikum"  \
+      0 \
       -lpop $individuals  -size $len  -nums $nums   \
       \
 
@@ -2403,7 +2366,7 @@ proc ANTS_gp_new {} {
     
   run_gp_evolution_for_task \
       $task                        \
-      $seed "make_rand_prgpop_unikum"  \
+      $seed \
       -lpop $individuals  -size $len  -nums $nums   \
       -printproc  game_print                \
 

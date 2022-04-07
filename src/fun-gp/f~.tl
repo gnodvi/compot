@@ -348,8 +348,8 @@ proc TEST {} {
   source "f-2222.tl"  
   source "f-3333.tl"
 
-  source "f-comm.tl"
   source "f-libs.tl"
+  source "f-prog.tl"
 
   source "f_test.tl"
 

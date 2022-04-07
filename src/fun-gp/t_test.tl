@@ -630,7 +630,7 @@ proc TEST_xx {args} {
   #set ::quotes_proc "make_quotes_TCL"
   #set ::quotes_proc  "quotes_proc_NULL" 
 
-  set rand_prgpop_proc "make_rand_prgpop"
+  #set rand_prgpop_proc "make_rand_prgpop"
   
   set pb [mp_create]
 
@@ -713,7 +713,7 @@ proc TEST_xx {args} {
   #
   # запускаем эволюцию GP напрямую, через функцию
 
-    run_gp_evolution_for_task $task $seed $rand_prgpop_proc \
+    run_gp_evolution_for_task $task $seed \
       -lpop $lpop  -size $size -nums $nums      \
 
 #      $lpop $size $nums  \
@@ -1009,12 +1009,12 @@ proc NEXT_01 {args} {
   set pb [mp_create]
   mp_init $pb 
 
-  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   
   run_gp_evolution_for_task    \
       $task                    \
-      $seed $rand_prgpop_proc  \
+      $seed \
       -lpop $individuals  -size $len  -nums $nums \
       {*}$argo                 \
 
@@ -1055,14 +1055,13 @@ proc NEXT_test {} {
   set ::randinstr   "randinstr_MAIN"
   set ::quotes_proc "quotes_proc_NULL"
 
-  set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   set population_size  5
   set len_chromosomes  3
-  set randpop_proc   "make_rand_prgpop"
+  #set randpop_proc   "make_rand_prgpop"
   
   set itemlist [make_itemlist $task \
-                   $randpop_proc \
                    $population_size $len_chromosomes]
   
 
@@ -1074,13 +1073,37 @@ proc NEXT_test {} {
   pi_add  p1  {"inp" 0 "out" 0}
   pi_add  p3  {"inp" 0 "out" 0}
 
-  #set pop_items [try_mutate_for_all_items   $pop_items $task $::DEEP]
-  set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
+  #set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
+
+  #puts ""
+  #itemlist_print $pop_items " %4d)   " "%s " stdout
 
   puts ""
-  itemlist_print $pop_items " %4d)   " "%s " stdout
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #
+  # хорошо бы попробовать по одному итему поработать ..
 
+  set item_old [lindex $itemlist 0]
+
+  item_print $item_old
+  
+  set fitn_old  [item_get_fitn   $item_old] 
+  set item_new  [try_mutate_to_best  $::DEEP $task \
+		   $item_old $fitn_old]
+
+  item_print $item_new
+
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+  
+  set prgpop [make_prgpop  $task \
+                $population_size $len_chromosomes]
+ 
+  puts "prgpop = $prgpop"
+  
+ 
   # set mutprob [dict_parse  $args "-mutprob" 0.1]
   # set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
   # set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
@@ -1091,6 +1114,9 @@ proc NEXT_test {} {
 #
 
 # t~.tl TEST NEXT_test
+# t~.tl TEST TEST_randprog 2014
+# t~.tl TEST TEST_makeparas
+
 
 # t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
 # t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1
