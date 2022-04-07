@@ -65,10 +65,10 @@ proc ANTS {} {
   source "f-2222.tl"  ;
   source "f-3333.tl"  ; #  ????? dict_create
 
-  #source "f-prog.tl"
+  source "f-prog.tl"
   source "g-corE.tl" 
 
-  source "t-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
+  #source "t-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
   source "t_ants.tl"
 
   global argc argv
@@ -92,13 +92,13 @@ proc ANTS {} {
 #-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "f-0000.tl"  ;# общие части
-  source "f-1111.tl"  ;# простой jOY
-  
+  #source "f-0000.tl"  ;# общие части
+  #source "f-1111.tl"  ;# простой jOY  
   #source "f-prog.tl"
+  
   source "g-corE.tl"
 
-  source "t-proJ.tl"  ; # тесты на JOY
+  #source "t-proJ.tl"  ; # тесты на JOY
   source "t_test.tl"  ; #
   
   global argc argv

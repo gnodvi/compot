@@ -31,14 +31,34 @@ package require compot::common
 
 ####source "f-0000.tl"  - включается далее в g-corE.tl
 
-source "f-prog.tl"
-source "g-corE.tl"
+#source "f-0000.tl"  ;# общие части
+#source "f-1111.tl"  ;# 
+#source "f-prog.tl"  ;# 
 
-#source "g-diff.tl"
-source "g-detw.tl"
-source "g-tabu.tl"
-source "g-sima.tl"
+#source "g-corE.tl"
 
+# source "g-detw.tl"
+# source "g-tabu.tl"
+# source "g-sima.tl"
+
+#-------------------------------------------------------------------------------
+proc TEST {} {
+
+  source "f-0000.tl"  ;# общие части
+  source "f-1111.tl"  
+  source "f-2222.tl"  
+  source "f-3333.tl"
+
+  source "f-libs.tl"
+  source "f-prog.tl"
+
+  source "f_test.tl"
+
+  global argc argv
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
 #-------------------------------------------------------------------------------
 # установить ссылку для конкретного окружения
 

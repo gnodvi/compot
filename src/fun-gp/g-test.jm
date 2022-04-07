@@ -20,6 +20,10 @@ set auto_path [linsert $auto_path 0 $COMPOT/ext/random] ;# for JIM
 package require compot::common 
 
 
+# source "f-0000.tl"  ;# общие части
+# source "f-1111.tl"  ;# 
+# source "f-prog.tl"  ;# 
+
 source "g-corE.tl"
 
 #source "g-diff.tl"
