@@ -4,32 +4,22 @@
 
 
 ################################################################################
-################################################################################
-################################################################################
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-# NEXT_01  - простейший тест из плюсов и минусов
 
-set ::sum        0  ;# начальное значение сумматора 
-set ::sum_target 0  ;# к чему стремимся, что надо получить 
 
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-v0_make_tclproc  null {} {
 
-  set ::sum 0
 
-}
-#-------------------------------------------------------------------------------
-
-v0_make_tclproc  p1 {} {incr ::sum +1}
-v0_make_tclproc  p3 {} {incr ::sum +3}
-v0_make_tclproc  p5 {} {incr ::sum +5}
-
-v0_make_tclproc  m1 {} {incr ::sum -1}
-v0_make_tclproc  m3 {} {incr ::sum -3}
-v0_make_tclproc  m3 {} {incr ::sum -5}
-
+################################################################################
+#
+# Новый метод (pGP - probabalistic):
+# 
+# 1) фиксируем "программу" максимального размера с избыточным кол-ом операторов
+# 2) каждый оператор идет с вероятность его выполения
+# 3) фитнес-значене = сумме попыток выполнения вероятностной программы
+# 4) ищем решение в виде вщественной хромомомы (а может и округляя вероятности)
+# 
 #-------------------------------------------------------------------------------
 proc calc_FITPROC_01 {task joy_prg} {
 
@@ -37,42 +27,9 @@ proc calc_FITPROC_01 {task joy_prg} {
 
   set result [getresult_prg  $joy_prg]
 
-  #puts stderr "joy_prg = $joy_prg  resul = $result"
-
-  #   if {$result eq {}}  {
-  #     # здесь может быть просто списко или символ-строка, а не число!
-  #     # 
-  #     #puts "NOT run? NOT result !!"
-  #     #exit
-  #     incr fitness 50 ;# при каждой ошибке добавляем дельту  
-  #   } else
-  
-  #if {! [string is integer $result]} {
-
-    # здесь может быть просто списко или символ-строка, а не число!
-    # 
-    #puts "NOT run? NOT result !!"
-    #exit
-
-  #  incr fitness 50 ;# при каждой ошибке добавляем дельту
-    
-  #} else {
-    
   set delta [expr {abs($::sum_target-$result)}]  ;# ??
   
-  #     if {$delta > 1000} {
-  #       # 
-  #       set delta 1000 ;# anti overflow ???
-  #     }
-  
   incr fitness $delta
-  #}
-
-
-  #set fit_target [GET $task -fit_target]
-
-  #set fitness [expr {$::sum_target - $result}]
-  
 
 
   #return [expr {$fitness + [llength $joy_prg]}]
@@ -90,16 +47,6 @@ proc FITPROC_01 {p task args} {
 
   return [calc_FITPROC_01 $task $joy_prg]
 }
-#-------------------------------------------------------------------------------
-################################################################################
-#
-# Новый метод (pGP - probabalistic):
-# 
-# 1) фиксируем "программу" максимального размера с избыточным кол-ом операторов
-# 2) каждый оператор идет с вероятность его выполения
-# 3) фитнес-значене = сумме попыток выполнения вероятностной программы
-# 4) ищем решение в виде вщественной хромомомы (а может и округляя вероятности)
-# 
 #-------------------------------------------------------------------------------
 proc _test_seed {pop task adam} {
 
@@ -135,6 +82,9 @@ proc _test_step {generation pop} {
 #
 # t~.tl TEST test_pGP -nums 2 -lpop 10 -seed @
 # 
+# вероятностное программирование (в программе каждый итем задан словарем 
+# с вероятностью)
+# 
 #-------------------------------------------------------------------------------
 proc _test_score {this_entity  task} {
 
@@ -160,6 +110,7 @@ proc _test_score {this_entity  task} {
   for {set i 0} {$i < $num_runs} {incr i} {
 
     set fitness [calc_FITPROC_01 $task $program]
+
     #puts "fitness = $fitness"
     incr fitness_sum $fitness
   }
@@ -167,6 +118,7 @@ proc _test_score {this_entity  task} {
   set fitness [expr {1.0 * $fitness_sum} / $num_runs]
 
   set fitness [expr {-  $fitness}] 
+
   #
   # а теперь наоборот должно быть 
   # fit_tobest = MAX, движемся к нулю сдева  : --> 0 
@@ -523,6 +475,7 @@ proc pi_init_TEST_xx {} {
 }
 #-------------------------------------------------------------------------------
 # 
+# t~.tl TEST TEST_lips
 # 
 #-------------------------------------------------------------------------------
 proc TEST_lips {args} {
@@ -837,98 +790,6 @@ proc TEST_xx {args} {
 
 ################################################################################
 #-------------------------------------------------------------------------------
-
-# TODO :
-
-# +) печатать подробно все шаги 
-# +) при клонировании рефакторить с выделением новых библю функций
-
-# -) в библ. добавить крайние значения, т.е. контекст и + статистика использования
-# -) мутировать не произвольно а в соотвт. с плюсовой статистикой 
-# -) возможно запоминать хорошие "практики мутирования"
-#
-
-# В общем, надо отслеживать и использовать, следующие статистики :
-#   - динамические шаблоны полезных мутаций
-#   - статическое распределение шаблонов по популяции (библиотеки?)
-#   - полезность отдельных операций в рантайме (и сразу реагировать на крах?)
-
-#   - учитывать арность операций и текущий размер стека ?!!!! !!!!!!!!!!!!!
-
-#-------------------------------------------------------------------------------
-
-# Основные идеи:
-
-# -) поиск и выделение частей-функций в программах, занесение их в библиотеку,
-#   и рефакторинг шаблонов, как основной путь эволюции;
-
-# -) шаблоны вырезаются и записываются в библиотеку вместе c некоторой инфой об 
-#   их окружении; эта инфа используется как "описание типов" для адекватной
-#   подстройки программ в эволюции;
-
-# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
-# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
-# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
-
-# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
-
-
-
-# -) универсальная передача параметров через args (dict_print);
-
-# -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
-#                "окружению" потом)
-# -) лучшие проги заносим в ::mainlib (аналог как у новосибирцев)
-# -) 
-# -) запуск joy_run ? с использованием сторонних библиотек (::mainlib);
-
-# run_v1_src_or_prog ->  run_v1_src   $proga 
-#                    ->  run_v1_prog  $prog  - будет через библиотеки !!
-
-
-# +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
-# +) слияние нескольких программ с локальными библиотеками : commit
-# -) слияние и рtфакторинг с использованием общей библиотеки.
-
-# +) перевод всех алгоритмов : prg --> prog ;
-# -) поиск лучшего решения путем рефакторинга;
-
-#-------------------------------------------------------------------------------
-
-# Вспомогательные тесты:
-
-# l~.tl ANTS ANTS_gp 2012  10 15 2
-# l~.tl TEST TEST_pp 2014
-
-# l~.tl TEST TEST_makeparas
-# l~.tl TEST TEST_randprog @
-# l~.tl TEST TEST_randprog 2014
-
-################################################################################
-
-# TODO: на простейшей "программы" отладить все механмзмы
-#       SP - статистического программирования
-
-#t~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
-
-#-------------------------------------------------------------------------------
-proc FITPROC_01_NEW {p task args} {
-
-  set joy_prg  [item_get_mainsrc $p]
-
-  set result [getresult_prg  $joy_prg]
-
-  set fitness [expr {abs($::sum_target-$result)}]  ;# ??
-
-  #set fitness [expr {($::sum_target - $result)}] 
-
-  #set fitness [expr {sqrt ( abs ($::sum_target * $::sum_target - $result * $result))}] 
-
-  #set fitness $result
-
-  return $fitness
-}
-#-------------------------------------------------------------------------------
 proc NEXT_01 {args} {
 
   if {$args == ""} {
@@ -1030,95 +891,17 @@ proc NEXT_01 {args} {
 
   return
 }
-#-------------------------------------------------------------------------------
-proc NEXT_test {} {
 
-  puts ""
-  puts "NEXT_test"
-  puts ""
+################################################################################
 
-  set gp_list "p1 p3" 
-  #set gp_list "dup * +"
+# TODO: на простейшей "программы" отладить все механмзмы
+#       SP - статистического программирования
 
-  #  mp_init $pb \
-  #    randinstr    "randinstr_MAIN" \
-  #    quotes_proc  "quotes_proc_NULL"
-  #    quotes_proc  "make_quotes_TCL"
-  
-  set ::sum_target 10
+#t~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
 
-  set task [task_create  \
-              -fit_func  FITPROC_01_NEW  -fit_tobest  "MIN" -fit_target  0  \
-	      -gp_list  $gp_list]
-  
-  v1_init
-  #v1_init_all
-  
-  set ::randinstr   "randinstr_MAIN"
-  set ::quotes_proc "quotes_proc_NULL"
 
-  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-
-  set population_size  5
-  set len_chromosomes  3
-  #set randpop_proc   "make_rand_prgpop"
-  
-  set itemlist [make_itemlist $task \
-                   $population_size $len_chromosomes]
-  
-
-  itemlist_calc_fitness_nov  $itemlist $task
-
-  itemlist_print $itemlist " %4d)   " "%s " stdout
-
-  
-  pi_add  p1  {"inp" 0 "out" 0}
-  pi_add  p3  {"inp" 0 "out" 0}
-
-  #set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
-
-  #puts ""
-  #itemlist_print $pop_items " %4d)   " "%s " stdout
-
-  puts ""
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #
-  # хорошо бы попробовать по одному итему поработать ..
-
-  set item_old [lindex $itemlist 0]
-
-  item_print $item_old
-  
-  set fitn_old  [item_get_fitn   $item_old] 
-  set item_new  [try_mutate_to_best  $::DEEP $task \
-		   $item_old $fitn_old]
-
-  item_print $item_new
-
-  puts ""
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  puts ""
-  
-  set prgpop [make_prgpop  $task \
-                $population_size $len_chromosomes]
- 
-  puts "prgpop = $prgpop"
-  
- 
-  # set mutprob [dict_parse  $args "-mutprob" 0.1]
-  # set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
-  # set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
-  
-  return
-}
-###########################################################################################
-#
-
-# t~.tl TEST NEXT_test
-# t~.tl TEST TEST_randprog 2014
-# t~.tl TEST TEST_makeparas
-
+# l~.tl ANTS ANTS_gp 2012  10 15 2
+# l~.tl TEST TEST_pp 2014
 
 # t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
 # t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1

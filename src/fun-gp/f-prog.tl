@@ -9,6 +9,42 @@ if [info exists ::F_PROG_TL] {
 }
 
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# /*
+#  * Constant definitions.
+#  */
+
+# // к сожалению DBL_MAX и DBL_MIN используется в алгоритмах мутации, случ. чисел
+# // и т.д. поэтому просто так поменять не получистя !
+# // 
+
+# /* Define lower bound on fitness. */
+# #define GA_MIN_FITNESS			-DBL_MAX
+
+# DBL_MAX is defined in <float.h>. Its availability in <limits.h> on unix 
+# DBL_MAX = 1.79769e+308
+#
+
+set ::DBL_MAX  999999999999999999
+set ::DBL_MIN -999999999999999999
+
+
+# set ::DBL_MIN 0.000000 
+# set ::DBL_MAX 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.000000 
+
+#set ::GA_MIN_FITNESS 999999999999999999
+#set ::GA_MIN_FITNESS [expr {- $::DBL_MAX}]
+
+#set ::GA_MIN_FITNESS  $::DBL_MIN
+#set ::GA_MIN_FITNESS  $::DBL_MAX
+
+#set ::GA_MIN_FITNESS  -9999 
+set ::GA_NOT_FIT   "NOT-FIT"
+;#  - почему-то ошибка на  g_ping.tl _sa  1 1 1
+#                                неверная инициация?  @@@@@@@
+#set ::GA_MIN_FITNESS  ABCD 
+
 # ------------------------------------------------------------------------------
 # g~.jm ALL_TESTS
 
@@ -418,9 +454,18 @@ proc itemlist_print {itemlist ind_form gen_form {out "stdout"}} {
 
 set ::len_is_constant 0
 
-set ::randinstr   "randinstr_MAIN"
+#set ::randinstr   "randinstr_MAIN"
 set ::quotes_proc "quotes_proc_NULL"
 
+
+
+set ::A(news) 0
+
+set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
+
+set ::DEEP 5 ;# глубина последовательности мутации
+
+set ::AUTO 0 ;# флажок применения динамического словаря
 
 #-------------------------------------------------------------------------------
 # сфомируем совокупный на этот момент список: GP_LIST = gp_list + gp_dict
@@ -439,6 +484,7 @@ proc only_names_from_gpdict {gp_dict} {
 
   return $ret
 }
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc make_GP_LIST {gp_list gp_dict} {
 
@@ -558,17 +604,27 @@ proc make_quotes_BE {prg} {
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-# 
+proc GET_default {d name defvalue} {
+
+  set ret [GET $d $name]
+
+  if {$ret == ""} {
+    set ret $defvalue
+  }
+
+  return $ret
+} 
 #-------------------------------------------------------------------------------
 # создать случайную программу (список?) длиной не больше 'n' или равно ??
 # 
 #-------------------------------------------------------------------------------
-proc make_randprog {task  n 
-                    {randinstr   "randinstr_MAIN"  } 
+proc make_randprog {task  n  
                     {quotes_proc "quotes_proc_NULL"}} {
 
 
-  set gp_list [GET $task gp_list]
+  #set quotes_proc [GET_default $task "qproc" "quotes_proc_NULL"]
+
+  set gp_list [GET $task "gp_list"]
 
   #set randinstr   [GET $task randinstr]
   #set quotes_proc [GET $task quotes_proc]
@@ -634,7 +690,7 @@ proc make_randprog {task  n
 #-------------------------------------------------------------------------------
 proc make_rand_prgpop_unikum {task n 
                               minlen maxlen 
-                              gp_list randinstr quotes_proc} {
+                              gp_list quotes_proc} {
 
   set prgpop {}
 
@@ -651,7 +707,7 @@ proc make_rand_prgpop_unikum {task n
     #          $gp_list  $randinstr $quotes_proc]
     
     set p [make_randprog  $task [comm_random_int_minmax  $minlen $maxlen] \
-            $randinstr \
+            \
             $quotes_proc]
 
 
@@ -729,14 +785,14 @@ proc make_prgpop {task
   
   set prgpop [make_rand_prgpop_unikum  $task \
                 $population_size  $minlen $maxlen \
-                $gp_list   $::randinstr $::quotes_proc ]
+                $gp_list  $::quotes_proc ]
   
   if {$::is_print} {
     puts ""
     puts "[procname]: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     puts ""
     #puts stderr "randpop_proc = $randpop_proc"
-    puts stderr "randinstr    = $::randinstr"
+    #puts stderr "randinstr    = $::randinstr"
     puts stderr "quotes_proc  = $::quotes_proc"
     puts ""
 
@@ -2884,12 +2940,12 @@ proc mp_init {pb args} {
   dict with args {} ;# name value - присвоили переменным значения (локально?)
 
 
-  set ::randinstr   "randinstr_MAIN"
+#  set ::randinstr   "randinstr_MAIN"
   set ::quotes_proc "quotes_proc_NULL"
 
   # ?? проверяем существование локальных переменных ??
   #
-  if [info exists "randinstr"]   {set ::randinstr   $randinstr}
+#  if [info exists "randinstr"]   {set ::randinstr   $randinstr}
   if [info exists "quotes_proc"] {set ::quotes_proc $quotes_proc}
 
 }
@@ -3202,6 +3258,9 @@ proc make_quotes_TCL {prg} {
 #-------------------------------------------------------------------------------
 proc TEST_randprog {} {
 
+
+  # f~.tl TEST TEST_randprog 2014
+  #incr ::ind0
   incr ::ind0
 
   #set ind 1 ;# один параметр у нас уже есть - имя "TEST_randprog"
@@ -3221,7 +3280,7 @@ proc TEST_randprog {} {
   set gp_list     "+ - * dup i" 
 
   #------------------------------------------
-  set ::randinstr randinstr_MAIN
+  #set ::randinstr randinstr_MAIN
 
   set ::quotes_proc "make_quotes_TCL"
   #set ::quotes_proc "quotes_proc_NULL"
@@ -3237,7 +3296,8 @@ proc TEST_randprog {} {
               -gp_list    $gp_list]
   
 
-  set prg [make_randprog  $task $n $::randinstr $::quotes_proc]
+  #set prg [make_randprog  $task $n $::randinstr $::quotes_proc]
+  set prg [make_randprog  $task $n $::quotes_proc]
 
   #set prg "dup *"
 
@@ -3549,7 +3609,7 @@ proc task_create {args} {
   SET $t fit_target  0
   SET $t fit_error   0.01
 
-  SET $t randinstr   "randinstr_MAIN" 
+  #SET $t randinstr   "randinstr_MAIN" 
   SET $t quotes_proc "quotes_proc_NULL"
 
 
@@ -3570,5 +3630,200 @@ proc task_print {t} {
   return $t
 }
 ################################################################################
+################################################################################
+################################################################################
+#-------------------------------------------------------------------------------
+
+# NEXT_01  - простейший тест из плюсов и минусов
+
+set ::sum        0  ;# начальное значение сумматора 
+set ::sum_target 0  ;# к чему стремимся, что надо получить 
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+v0_make_tclproc  null {} {
+
+  set ::sum 0
+
+}
+#-------------------------------------------------------------------------------
+
+v0_make_tclproc  p1 {} {incr ::sum +1}
+v0_make_tclproc  p3 {} {incr ::sum +3}
+v0_make_tclproc  p5 {} {incr ::sum +5}
+
+v0_make_tclproc  m1 {} {incr ::sum -1}
+v0_make_tclproc  m3 {} {incr ::sum -3}
+v0_make_tclproc  m3 {} {incr ::sum -5}
+
+#-------------------------------------------------------------------------------
+proc FITPROC_01_NEW {p task args} {
+
+  set joy_prg  [item_get_mainsrc $p]
+
+  set result [getresult_prg  $joy_prg]
+
+  set fitness [expr {abs($::sum_target-$result)}]  ;# ??
+
+  #set fitness [expr {($::sum_target - $result)}] 
+  #set fitness [expr {sqrt ( abs ($::sum_target * $::sum_target - $result * $result))}] 
+  #set fitness $result
+
+  return $fitness
+}
+#-------------------------------------------------------------------------------
+proc NEXT_test {} {
+
+  puts ""
+  puts "NEXT_test"
+  puts ""
+
+  set gp_list "p1 p3" 
+  #set gp_list "dup * +"
+
+  #  mp_init $pb \
+  #    randinstr    "randinstr_MAIN" \
+  #    quotes_proc  "quotes_proc_NULL"
+  #    quotes_proc  "make_quotes_TCL"
+  
+  pi_add  p1  {"inp" 0 "out" 0}
+  pi_add  p3  {"inp" 0 "out" 0}
+
+  set ::sum_target 10
+
+  #set ::randinstr   "randinstr_MAIN"
+  set ::quotes_proc "quotes_proc_NULL"
+
+  set task [task_create  \
+              -fit_func  FITPROC_01_NEW  -fit_tobest  "MIN" -fit_target  0  \
+	      -gp_list  $gp_list]
+  
+  v1_init
+  #v1_init_all
+  
+  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
+
+  set population_size  5
+  set len_chromosomes  3
+  #set randpop_proc   "make_rand_prgpop"
+  
+  set itemlist [make_itemlist $task \
+                   $population_size $len_chromosomes]
+  
+
+  itemlist_calc_fitness_nov  $itemlist $task
+
+  itemlist_print $itemlist " %4d)   " "%s " stdout
+
+  
+  #set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
+
+  #puts ""
+  #itemlist_print $pop_items " %4d)   " "%s " stdout
+
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+
+  set prgpop [make_prgpop  $task \
+                $population_size $len_chromosomes]
+ 
+  puts "prgpop = $prgpop"
+  
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+  
+  # set mutprob [dict_parse  $args "-mutprob" 0.1]
+  # set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
+  # set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
+  
+  # хорошо бы попробовать по одному итему поработать ..
+
+  set item_old [lindex $itemlist 0]
+
+  item_print $item_old
+  
+  set fitn_old  [item_get_fitn   $item_old] 
+  set item_new  [try_mutate_to_best  $::DEEP $task \
+		   $item_old $fitn_old]
+
+  item_print $item_new
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# TODO :
+
+# +) печатать подробно все шаги 
+# +) при клонировании рефакторить с выделением новых библю функций
+
+# -) в библ. добавить крайние значения, т.е. контекст и + статистика использования
+# -) мутировать не произвольно а в соотвт. с плюсовой статистикой 
+# -) возможно запоминать хорошие "практики мутирования"
+#
+
+# В общем, надо отслеживать и использовать, следующие статистики :
+#   - динамические шаблоны полезных мутаций
+#   - статическое распределение шаблонов по популяции (библиотеки?)
+#   - полезность отдельных операций в рантайме (и сразу реагировать на крах?)
+
+#   - учитывать арность операций и текущий размер стека ?!!!! !!!!!!!!!!!!!
+
+#-------------------------------------------------------------------------------
+
+# Основные идеи:
+
+# -) поиск и выделение частей-функций в программах, занесение их в библиотеку,
+#   и рефакторинг шаблонов, как основной путь эволюции;
+
+# -) шаблоны вырезаются и записываются в библиотеку вместе c некоторой инфой об 
+#   их окружении; эта инфа используется как "описание типов" для адекватной
+#   подстройки программ в эволюции;
+
+# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
+# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
+# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
+
+# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
+
+
+# -) универсальная передача параметров через args (dict_print);
+
+# -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
+#                "окружению" потом)
+# -) лучшие проги заносим в ::mainlib (аналог как у новосибирцев)
+# -) 
+# -) запуск joy_run ? с использованием сторонних библиотек (::mainlib);
+
+# run_v1_src_or_prog ->  run_v1_src   $proga 
+#                    ->  run_v1_prog  $prog  - будет через библиотеки !!
+
+
+# +) обратный анфакторинг (распаковка процедур) : make_unfactoring_prog
+# +) слияние нескольких программ с локальными библиотеками : commit
+# -) слияние и рtфакторинг с использованием общей библиотеки.
+
+# +) перевод всех алгоритмов : prg --> prog ;
+# -) поиск лучшего решения путем рефакторинга;
+
+#--------------------------------------------
+
+# Вспомогательные тесты:
+
+# l~.tl TEST TEST_makeparas
+# l~.tl TEST TEST_randprog @
+# l~.tl TEST TEST_randprog 2014
+
+
+# t~.tl TEST NEXT_test
+# t~.tl TEST TEST_randprog 2014
+# t~.tl TEST TEST_makeparas
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
