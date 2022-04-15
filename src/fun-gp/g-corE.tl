@@ -4139,9 +4139,9 @@ proc calc_BOT33  {obj args} {
   #exit
 
   #????
-  if {! [info exists max_generations]} {
-    set max_generations [dict_parse $args "-nums" ] 
-  }
+  #if {! [info exists max_generations]} {
+  set max_generations [dict_parse $args "-nums" ] 
+  #}
   
   #set print            [dict_parse $args "-print"           1]
   # set game_print_proc  [dict_parse $args "-printproc" 0]

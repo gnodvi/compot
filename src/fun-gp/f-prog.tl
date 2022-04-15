@@ -100,17 +100,124 @@ proc argo_print {argo} {
 
 }
 # ------------------------------------------------------------------------------
+################################################################################
+proc dict_parse_all_minus {d args} {
+
+  dict for {key value} $args {
+
+    set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
+
+    SET $d  $key $value
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc task_create {args} {
+
+  set t [dict_create]
+
+
+  SET $t fit_tobest  "MIN" ;# т.е. чем меьше, тем лучше 
+  SET $t fit_target  0
+  SET $t fit_error   0.01
+
+  #SET $t randinstr   "randinstr_MAIN" 
+  SET $t quotes_proc "quotes_proc_NULL"
+
+  
+  SET $t ios_BEGIN {} ;# входы/выходы списком типов
+  SET $t ios_FINAL {}
+
+  #SET $t ios_begin  0 ;# входы/выходы размерами списков IOS_begin
+  #SET $t ios_final  0
+
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  #
+  dict_parse_all_minus $t {*}$args ;# заносив убирая минусы если что-то есть !
+  #
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  set ios_BEGIN [GET $t ios_BEGIN] 
+  set ios_FINAL [GET $t ios_FINAL] 
+
+  SET $t ios_begin  [llength $ios_BEGIN] ;# входы/выходы размерами списков IOS_begin
+  SET $t ios_final  [llength $ios_BEGIN] ;#  
+
+
+  return $t
+}
+#-------------------------------------------------------------------------------
+proc task_print {t} {
+
+  puts "-------------------------- task --------------"
+  puts "fit_func = [GET $t fit_func]"
+  puts "fit_target   = [GET $t fit_target]" 
+  puts "fit_error    = [GET $t fit_error]" 
+  puts "-------------------------- task --------------"
+  puts ""
+
+  return $t
+}
+################################################################################
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # программная статистика
 
-set ::LIPS {}
+set ::IOS {}      ;# можно вполне оставить как есть
 
-set ::LIPS_begin 0
-set ::LIPS_final 0
+#set ::IOS_begin 0 ;# эти параметры нужно в TASK -ios_begin 
+#set ::IOS_final 0
 
 # ------------------------------------------------------------------------------
-proc pi_print {} {
+proc ios_add_new {name INP OUT} {
 
-  dict for {key value} $::LIPS {
+  set params {}
+  
+  #set   I [dict get $params "I"] ;#  входные типы
+  #set   O [dict get $params "O"] ;# выходные типы
+
+  set inp [llength $INP] ;# [dict get $params "inp"] ;# сколько берет из стека
+  set out [llength $OUT] ;# [dict get $params "out"] ;# сколько кладет
+
+  set sum [expr {- $inp + $out}]
+
+  dict set params "inp" $inp
+  dict set params "out" $out
+  
+  dict set params "INP" $INP
+  dict set params "OUT" $OUT
+    
+  #puts "ios_add_new: params = $params"
+
+  dict set ::IOS  $name $params    ;# name {"inp" 0 "out" 0}
+  dict set ::IOS  $name "sum" $sum ;# name {"inp" 0 "out" 0  "sum" 0}
+}
+# ------------------------------------------------------------------------------
+# proc ios_add {name params} {
+
+#   set   I [dict get $params "I"] ;#  входные типы
+#   set   O [dict get $params "O"] ;# выходные типы
+
+  
+#   ios_add_new $name $I $O
+#   return
+
+
+#   set inp [llength $I] ;# [dict get $params "inp"] ;# сколько берет из стека
+#   set out [llength $O] ;# [dict get $params "out"] ;# сколько кладет
+
+#   set sum [expr {- $inp + $out}]
+
+#   dict set $params "inp" $inp
+#   dict set $params "out" $out
+
+#   dict set ::IOS  $name $params    ;# name {"inp" 0 "out" 0}
+#   dict set ::IOS  $name "sum" $sum ;# name {"inp" 0 "out" 0  "sum" 0}
+# }
+# ------------------------------------------------------------------------------
+proc ios_print {} {
+
+  dict for {key value} $::IOS {
 
     #set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
     #SET $d  $key $value
@@ -120,15 +227,15 @@ proc pi_print {} {
 
 }
 # ------------------------------------------------------------------------------
-proc pi_calc_balans_prg {prg} {
+proc ios_calc_balans_prg {prg} {
 
   set balans 0
 
   foreach p $prg {
 
-    #set inp [dict get $::LIPS $p "inp"] ;# сколько берет из стека
-    #set out [dict get $::LIPS $p "out"] ;# сколько кладет
-    set sum [dict get $::LIPS $p "sum"] ;# суммарный баланс
+    #set inp [dict get $::IOS $p "inp"] ;# сколько берет из стека
+    #set out [dict get $::IOS $p "out"] ;# сколько кладет
+    set sum [dict get $::IOS $p "sum"] ;# суммарный баланс
 
     #incr balans [expr {- $inp + $out}]
     incr balans $sum
@@ -139,17 +246,19 @@ proc pi_calc_balans_prg {prg} {
   return $balans
 }
 # ------------------------------------------------------------------------------
-proc pi_calc_balans_full {prg} {
+proc ios_calc_balans_full {ios_begin prg ios_fina} {
 
-  set balans [pi_calc_balans_prg  $prg]
+  
+  set balans [ios_calc_balans_prg  $prg]
 
-  return [expr {$::LIPS_begin + $balans - $::LIPS_final}]
+  return [expr {$ios_begin + $balans - $ios_final}]
 }
 # ------------------------------------------------------------------------------
-proc pi_calc_balans_list {prg} {
+proc ios_calc_balans_list {ios_begin prg ios_final} {
 
 
-  set balans $::LIPS_begin ;# сразу жобавим начальную арность стека
+  set balans $ios_begin ;# сразу жобавим начальную арность стека
+  
   set ret {}
   set len [llength $prg]
 
@@ -157,11 +266,11 @@ proc pi_calc_balans_list {prg} {
 
     set p [lindex $prg $i]
 
-    set sum [dict get $::LIPS $p "sum"] ;# суммарный баланс
+    set sum [dict get $::IOS $p "sum"] ;# суммарный баланс
     incr balans $sum
 
     if {$i == [- $len 1]} {
-      incr balans -$::LIPS_final ;# последний элемент уже сравним с нужным выходным
+      incr balans -$ios_final ;# последний элемент уже сравним с нужным выходным
     }
 
     lappend ret $balans
@@ -178,27 +287,8 @@ proc pi_calc_balans_list {prg} {
   return $ret
 }
 # ------------------------------------------------------------------------------
-proc pi_add {name params} {
-
-  dict set ::LIPS  $name $params
-
-  set inp [dict get $params "inp"] ;# сколько берет из стека
-  set out [dict get $params "out"] ;# сколько кладет
-
-  set sum [expr {- $inp + $out}]
-
-  dict set ::LIPS $name "sum" $sum
-}
 # ------------------------------------------------------------------------------
-# proc pi_init {} {
-
-#   pi_init_TEST_xx
-#   pi_init_NEXT_01 
-
-# }
-# ------------------------------------------------------------------------------
-
-#pi_init 
+#ios_init 
 #-------------------------------------------------------------------------------
 
 #namespace import ::struct::*
@@ -448,18 +538,17 @@ proc itemlist_print {itemlist ind_form gen_form {out "stdout"}} {
 }
 #-------------------------------------------------------------------------------
 ################################################################################
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+################################################################################
 
 
-set ::len_is_constant 0
+#set ::len_is_constant 0
 
 #set ::randinstr   "randinstr_MAIN"
-set ::quotes_proc "quotes_proc_NULL"
+#set ::quotes_proc "quotes_proc_NULL"
 
 
 
-set ::A(news) 0
+##set ::A(news) 0
 
 set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
 
@@ -618,13 +707,13 @@ proc GET_default {d name defvalue} {
 # создать случайную программу (список?) длиной не больше 'n' или равно ??
 # 
 #-------------------------------------------------------------------------------
-proc make_randprog {task  n  
-                    {quotes_proc "quotes_proc_NULL"}} {
+proc make_randprog {task  n} {
 
 
   #set quotes_proc [GET_default $task "qproc" "quotes_proc_NULL"]
 
-  set gp_list [GET $task "gp_list"]
+  set quotes_proc  [GET $task "quotes_proc"]
+  set gp_list      [GET $task "gp_list"]
 
   #set randinstr   [GET $task randinstr]
   #set quotes_proc [GET $task quotes_proc]
@@ -690,7 +779,7 @@ proc make_randprog {task  n
 #-------------------------------------------------------------------------------
 proc make_rand_prgpop_unikum {task n 
                               minlen maxlen 
-                              gp_list quotes_proc} {
+                              gp_list} {
 
   set prgpop {}
 
@@ -706,9 +795,7 @@ proc make_rand_prgpop_unikum {task n
     #          $attempts $max_attempts          \
     #          $gp_list  $randinstr $quotes_proc]
     
-    set p [make_randprog  $task [comm_random_int_minmax  $minlen $maxlen] \
-            \
-            $quotes_proc]
+    set p [make_randprog  $task [comm_random_int_minmax  $minlen $maxlen]]
 
 
     # проверим, есть ли уже такой итем (программа) в популяции
@@ -772,11 +859,11 @@ proc make_prgpop {task
   #
 
   #----------------------------------------
-  if {$::len_is_constant} {
-    set minlen $len
-  } else {
-    set minlen 1
-  }
+  #if {$::len_is_constant} {
+  #  set minlen $len
+  #} else {
+  set minlen 1
+  #}
 
   set maxlen $len
   #----------------------------------------
@@ -785,7 +872,7 @@ proc make_prgpop {task
   
   set prgpop [make_rand_prgpop_unikum  $task \
                 $population_size  $minlen $maxlen \
-                $gp_list  $::quotes_proc ]
+                $gp_list]
   
   if {$::is_print} {
     puts ""
@@ -793,7 +880,7 @@ proc make_prgpop {task
     puts ""
     #puts stderr "randpop_proc = $randpop_proc"
     #puts stderr "randinstr    = $::randinstr"
-    puts stderr "quotes_proc  = $::quotes_proc"
+    #puts stderr "quotes_proc  = $::quotes_proc"
     puts ""
 
     puts stderr "population_size = $population_size, minlen = $minlen, maxlen = $maxlen"
@@ -2474,7 +2561,7 @@ proc make_mutant_from_item {item mutprob task} {
   set prg   [item_get_main_src $item] ;# исходник на JOY в виде строки
   
   
-  #set l [pi_calc_balans_list  $prg]
+  #set l [ios_calc_balans_list  $prg]
 
   foreach {prg_mutant mutate_cmd} \
     \
@@ -2831,7 +2918,7 @@ proc try_mutate_for_all_items {pop_items_old  task deep_mutate} {
     set fitn_old  [item_get_fitn   $item_old] 
 
     set src [item_get_main_src $item_old]
-    set lst [pi_calc_balans_list $src]
+    #set lst [ios_calc_balans_list $src]
 
     #if {$::is_print >= 2} {
     # puts stderr "  item_old:  [item_get_main_src $item_old] "
@@ -2927,28 +3014,28 @@ proc itemspop_print {itemspop} {
   return
 }
 #-------------------------------------------------------------------------------
-proc mp_create {} {
+# proc mp_create {} {
 
 
-  v1_init_all  ;# !!!!!!!!!!! ???
+#   v1_init_all  ;# !!!!!!!!!!! ???
 
-}
+# }
 #-------------------------------------------------------------------------------
-proc mp_init {pb args} {
+# proc mp_init {pb args} {
 
 
-  dict with args {} ;# name value - присвоили переменным значения (локально?)
+#   dict with args {} ;# name value - присвоили переменным значения (локально?)
 
 
-#  set ::randinstr   "randinstr_MAIN"
-  set ::quotes_proc "quotes_proc_NULL"
+# #  set ::randinstr   "randinstr_MAIN"
+# #  set ::quotes_proc "quotes_proc_NULL"
 
-  # ?? проверяем существование локальных переменных ??
-  #
-#  if [info exists "randinstr"]   {set ::randinstr   $randinstr}
-  if [info exists "quotes_proc"] {set ::quotes_proc $quotes_proc}
+#   # ?? проверяем существование локальных переменных ??
+#   #
+# #  if [info exists "randinstr"]   {set ::randinstr   $randinstr}
+# #  if [info exists "quotes_proc"] {set ::quotes_proc $quotes_proc}
 
-}
+# }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc test_joy_savestack {} {
@@ -3256,67 +3343,6 @@ proc make_quotes_TCL {prg} {
   return $newprg
 }
 #-------------------------------------------------------------------------------
-proc TEST_randprog {} {
-
-
-  # f~.tl TEST TEST_randprog 2014
-  #incr ::ind0
-  incr ::ind0
-
-  #set ind 1 ;# один параметр у нас уже есть - имя "TEST_randprog"
-  set ind $::ind0
-
-  #global argc
-  #set ind $argc
-  #
-  read_seedflag  ind 
-
-  #   set minlen 1
-  #   set maxlen 8
-  #
-
-  set n 10
-
-  set gp_list     "+ - * dup i" 
-
-  #------------------------------------------
-  #set ::randinstr randinstr_MAIN
-
-  set ::quotes_proc "make_quotes_TCL"
-  #set ::quotes_proc "quotes_proc_NULL"
-  #------------------------------------------
-
-
-  v1_init  ;# ERROR = can't use non-numeric string as operand of "*"
-            # NOT result !!
-  # stack= | 3 {i dup dup i i dup - +} {2op *} |  instr= tcl  
-  # ERROR = can't use non-numeric string as operand of "*"
-
-  set task [task_create  \
-              -gp_list    $gp_list]
-  
-
-  #set prg [make_randprog  $task $n $::randinstr $::quotes_proc]
-  set prg [make_randprog  $task $n $::quotes_proc]
-
-  #set prg "dup *"
-
-  set x 3 
-
-  DebugOn
-  d+
-  set result [getresult_prg_val_11  $prg $x]
- 	
-  puts ""
-
-  if {$result eq {}}  {
-    puts "NOT result !!"
-  } else {
-    puts "x= $x  result= $result"
-  }
-  
-}
-#-------------------------------------------------------------------------------
 proc randinstr_or_LIST {gp_list} {
 
   # здесь уже можно подумать, а не сделать ли квотированный список
@@ -3400,6 +3426,7 @@ proc make_randtrueprog {gp_list num_max ind_max fitnessfunc_check} {
 #-------------------------------------------------------------------------------
 proc TEST_pp {} {
 
+  incr ::ind0
   incr ::ind0
 
   set ind $::ind0 
@@ -3517,10 +3544,17 @@ proc make_quotes_by_paras {prg paras n lappend_list_proc} {
 #-------------------------------------------------------------------------------
 proc TEST_makeparas {} {
 
+
+  # f~.tl TEST TEST_makeparas 2014
+  incr ::ind0
+  incr ::ind0
+
+  read_seedflag ::ind0
+  #---------------------------------
+
   set n 10
 
   puts ""
-
 
   set prg [make_test_prg $n]    ;# 0 1 2 .. n - самая простая программа из n оп.
 
@@ -3588,50 +3622,52 @@ proc itemlist_calc_fitness_nov {itemlist task} \
   return
 }
 ################################################################################
-#-------------------------------------------------------------------------------
-proc dict_parse_all_minus {d args} {
-
-  dict for {key value} $args {
-
-    set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
-
-    SET $d  $key $value
-  }
-
-}
-#-------------------------------------------------------------------------------
-proc task_create {args} {
-
-  set t [dict_create]
-
-
-  SET $t fit_tobest  "MIN" ;# т.е. чем меьше, тем лучше 
-  SET $t fit_target  0
-  SET $t fit_error   0.01
-
-  #SET $t randinstr   "randinstr_MAIN" 
-  SET $t quotes_proc "quotes_proc_NULL"
-
-
-  dict_parse_all_minus $t {*}$args ;# заносив убирая минусы !
-
-  return $t
-}
-#-------------------------------------------------------------------------------
-proc task_print {t} {
-
-  puts "-------------------------- task --------------"
-  puts "fit_func = [GET $t fit_func]"
-  puts "fit_target   = [GET $t fit_target]" 
-  puts "fit_error    = [GET $t fit_error]" 
-  puts "-------------------------- task --------------"
-  puts ""
-
-  return $t
-}
 ################################################################################
-################################################################################
-################################################################################
+  #set itemlist [make_itemlist $task \
+  #                 $population_size $len_chromosomes]
+  
+
+  #itemlist_calc_fitness_nov  $itemlist $task
+  #itemlist_print $itemlist " %4d)   " "%s " stdout
+
+  
+  #set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
+  #puts ""
+  #itemlist_print $pop_items " %4d)   " "%s " stdout
+
+  #puts ""
+  #puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  #puts ""
+
+  #set prgpop [make_prgpop  $task \
+  #              $population_size $len_chromosomes]
+ 
+  #puts "prgpop = $prgpop"
+  
+  #puts ""
+  #puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  #puts ""
+  
+  # set mutprob [dict_parse  $args "-mutprob" 0.1]
+  # set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
+  # set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
+  
+  # хорошо бы попробовать по одному итему поработать ..
+
+  #set item_old [lindex $itemlist 0]
+
+  #item_print $item_old
+  
+  #set fitn_old  [item_get_fitn   $item_old] 
+  #set item_new  [try_mutate_to_best  $::DEEP $task \
+		   $item_old $fitn_old]
+
+  #item_print $item_new
+
+  #puts ""
+  #puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  #puts ""
+  
 #-------------------------------------------------------------------------------
 
 # NEXT_01  - простейший тест из плюсов и минусов
@@ -3661,6 +3697,8 @@ proc FITPROC_01_NEW {p task args} {
 
   set joy_prg  [item_get_mainsrc $p]
 
+
+
   set result [getresult_prg  $joy_prg]
 
   set fitness [expr {abs($::sum_target-$result)}]  ;# ??
@@ -3672,87 +3710,107 @@ proc FITPROC_01_NEW {p task args} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
+proc TEST_randprog {} {
+
+
+  # f~.tl TEST TEST_randprog 2014
+  incr ::ind0
+  incr ::ind0
+
+  read_seedflag ::ind0
+
+  #   set minlen 1
+  #   set maxlen 8
+  #
+
+  set n 10
+
+  set gp_list     "+ - * dup i" 
+
+  #------------------------------------------
+  #set ::randinstr randinstr_MAIN
+
+  #set ::quotes_proc "make_quotes_TCL"
+  #set ::quotes_proc "quotes_proc_NULL"
+  #------------------------------------------
+
+
+  v1_init  ;# ERROR = can't use non-numeric string as operand of "*"
+            # NOT result !!
+  # stack= | 3 {i dup dup i i dup - +} {2op *} |  instr= tcl  
+  # ERROR = can't use non-numeric string as operand of "*"
+
+  set task [task_create  \
+	      -quotes_proc "make_quotes_TCL" \
+              -gp_list     $gp_list \
+	      -ios_BEGIN {N} -ios_FINAL {N} \
+	     ]
+  
+
+  #set prg [make_randprog  $task $n $::randinstr $::quotes_proc]
+  set prg [make_randprog  $task $n]
+
+  #set prg "dup *"
+
+  set x 3 
+
+  DebugOn
+  d+
+  set result [getresult_prg_val_11  $prg $x]
+ 	
+  puts ""
+
+  if {$result eq {}}  {
+    puts "NOT result !!"
+  } else {
+    puts "x= $x  result= $result"
+  }
+  
+}
+#-------------------------------------------------------------------------------
 proc NEXT_test {} {
 
-  puts ""
-  puts "NEXT_test"
+
+  # f~.tl TEST NEXT_test 2014
+  incr ::ind0
+  incr ::ind0
+
+  read_seedflag ::ind0
+  #----------------------------------
+
   puts ""
 
   set gp_list "p1 p3" 
   #set gp_list "dup * +"
 
-  #  mp_init $pb \
-  #    randinstr    "randinstr_MAIN" \
-  #    quotes_proc  "quotes_proc_NULL"
-  #    quotes_proc  "make_quotes_TCL"
-  
-  pi_add  p1  {"inp" 0 "out" 0}
-  pi_add  p3  {"inp" 0 "out" 0}
+  ios_add_new  p1  {} {}
+  ios_add_new  p3  {} {}
 
   set ::sum_target 10
 
-  #set ::randinstr   "randinstr_MAIN"
-  set ::quotes_proc "quotes_proc_NULL"
-
   set task [task_create  \
+	      -quotes_proc "quotes_proc_NULL" \
               -fit_func  FITPROC_01_NEW  -fit_tobest  "MIN" -fit_target  0  \
 	      -gp_list  $gp_list]
   
   v1_init
-  #v1_init_all
   
-  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
-
-  set population_size  5
   set len_chromosomes  3
-  #set randpop_proc   "make_rand_prgpop"
   
-  set itemlist [make_itemlist $task \
-                   $population_size $len_chromosomes]
-  
+  set p [make_randprog  $task [comm_random_int_minmax 1 $len_chromosomes]]
 
-  itemlist_calc_fitness_nov  $itemlist $task
-
-  itemlist_print $itemlist " %4d)   " "%s " stdout
-
-  
-  #set pop_items [try_mutate_for_all_items   $itemlist $task $::DEEP]
-
-  #puts ""
-  #itemlist_print $pop_items " %4d)   " "%s " stdout
-
-  puts ""
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  puts ""
-
-  set prgpop [make_prgpop  $task \
-                $population_size $len_chromosomes]
- 
-  puts "prgpop = $prgpop"
-  
-  puts ""
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  puts ""
-  
-  # set mutprob [dict_parse  $args "-mutprob" 0.1]
-  # set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
-  # set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
-  
-  # хорошо бы попробовать по одному итему поработать ..
-
-  set item_old [lindex $itemlist 0]
-
-  item_print $item_old
-  
-  set fitn_old  [item_get_fitn   $item_old] 
-  set item_new  [try_mutate_to_best  $::DEEP $task \
-		   $item_old $fitn_old]
-
-  item_print $item_new
+  puts "p = $p"
 
   return
 }
 #-------------------------------------------------------------------------------
+
+# f~.tl TEST NEXT_test
+
+# f~.tl TEST TEST_randprog @
+# f~.tl TEST TEST_makeparas
+# f~.tl TEST TEST_trans_01
+# f~.tl TEST TEST_pp @
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -3784,13 +3842,6 @@ proc NEXT_test {} {
 #   их окружении; эта инфа используется как "описание типов" для адекватной
 #   подстройки программ в эволюции;
 
-# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
-# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
-# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
-
-# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
-
-
 # -) универсальная передача параметров через args (dict_print);
 
 # -) gp_list --> ::mainlib (с индексом пригодности и его привязкой к 
@@ -3810,19 +3861,58 @@ proc NEXT_test {} {
 # +) перевод всех алгоритмов : prg --> prog ;
 # -) поиск лучшего решения путем рефакторинга;
 
-#--------------------------------------------
+#-------------------------------------------------------------------------------
+# 
+# f~.tl TEST TEST_lips
+# 
+#-------------------------------------------------------------------------------
+proc ios_init_TEST_xx {} {
 
-# Вспомогательные тесты:
+  #::IOS
+  
+  ios_add_new  nop {}    {} 
+  ios_add_new  dup {A  } {A A} 
+  ios_add_new  *   {N N} {N  }
+  ios_add_new  +   {N N} {N  }
 
-# l~.tl TEST TEST_makeparas
-# l~.tl TEST TEST_randprog @
-# l~.tl TEST TEST_randprog 2014
+  #set ::IOS_begin 1
+  #set ::IOS_final 1
+
+}
+#-------------------------------------------------------------------------------
+proc TEST_lips {args} {
+
+  puts ""
+  puts "TEST_lips"
+  puts ""
+
+  ios_init_TEST_xx 
 
 
-# t~.tl TEST NEXT_test
-# t~.tl TEST TEST_randprog 2014
-# t~.tl TEST TEST_makeparas
+  #puts "::IOS = [set $::IOS]"
+  puts "::IOS = $::IOS"
+  puts ""
+  ios_print 
+  puts ""
 
+  #set b [ios_calc_balans_prg  "dup dup"]
+
+  set ios_begin 1
+  set ios_final 1
+  
+  #set prg   "dup dup * +"
+  set prg   "* dup dup +"
+
+  #set f [ios_calc_balans_full  $begin $prg $final]
+  #set f [ios_calc_balans_full  $prg]
+
+  set lst [ios_calc_balans_list $ios_begin $prg $ios_final]
+  #set lst [ios_calc_balans_list $prg ]
+
+  puts "full balans: $ios_begin | $prg | $ios_final,  lst = $lst   ???"
+
+
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

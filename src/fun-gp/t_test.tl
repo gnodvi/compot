@@ -171,14 +171,16 @@ proc test_pGP {} {
   #set is_print 1
   #DebugOn
 
-  set pb [mp_create]
+  #set pb [mp_create]
+  v1_init_all  ;# !!!!!!!!!!! ???
 
-  mp_init $pb 
+  #mp_init $pb 
 
   #exit
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set task_rev [task_create  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
+  set task_rev [task_create  \
+		  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
     
   #global argv
   #set argv [lrange $argv 1 end]
@@ -462,55 +464,6 @@ proc func_prepare_from_input {inp} {
   return $out
 }
 #-------------------------------------------------------------------------------
-proc pi_init_TEST_xx {} {
-
-  pi_add nop {"inp" 0 "out" 0}
-  pi_add dup {"inp" 1 "out" 2}
-  pi_add *   {"inp" 2 "out" 1}
-  pi_add +   {"inp" 2 "out" 1}
-
-  set ::LIPS_begin 1
-  set ::LIPS_final 1
-
-}
-#-------------------------------------------------------------------------------
-# 
-# t~.tl TEST TEST_lips
-# 
-#-------------------------------------------------------------------------------
-proc TEST_lips {args} {
-
-  puts ""
-  puts "TEST_lips"
-  puts ""
-
-  pi_init_TEST_xx 
-
-
-  #puts "::LIPS = [set $::LIPS]"
-  puts "::LIPS = $::LIPS"
-  puts ""
-  pi_print 
-  puts ""
-
-  #set b [pi_calc_balans_prg  "dup dup"]
-
-  #set begin 1
-  #set final 1
-  #set prg   "dup dup * +"
-  set prg   "* dup dup +"
-
-  #set f [pi_calc_balans_full  $begin $prg $final]
-  #set f [pi_calc_balans_full  $prg]
-
-  #set l [pi_calc_balans_list $begin $prg $final]
-  set lst [pi_calc_balans_list $prg]
-
-  puts "full balans: $::LIPS_begin | $prg | $::LIPS_final,  lst = $lst   ???"
-
-
-}
-#-------------------------------------------------------------------------------
 proc TEST_xx {args} {
 
 
@@ -568,17 +521,7 @@ proc TEST_xx {args} {
   set ::AUTO      [dict_parse $argv "-auto"  $::AUTO]
   set ::DEEP      [dict_parse $argv "-deep"  $::DEEP]
   
-#   pi_add nop {"inp" 0 "out" 0}
-#   pi_add dup {"inp" 1 "out" 2}
-#   pi_add *   {"inp" 2 "out" 1}
-#   pi_add +   {"inp" 2 "out" 1}
-
-#   set ::LIPS_begin 1
-#   set ::LIPS_final 1
-
-  pi_init_TEST_xx 
-
-  #------------------------------------------------------
+  ios_init_TEST_xx 
 
   #set ::randinstr   randinstr_MAIN 
   #set ::quotes_proc "make_quotes_BE"
@@ -587,23 +530,29 @@ proc TEST_xx {args} {
 
   #set rand_prgpop_proc "make_rand_prgpop"
   
-  set pb [mp_create]
+  #set pb [mp_create]
+  v1_init_all  ;# !!!!!!!!!!! ???
 
-  if {0} {
-    mp_init $pb \
-      randinstr    "randinstr_MAIN" \
-      quotes_proc  "make_quotes_TCL"
-  } else {
-    mp_init $pb \
-      randinstr    "randinstr_MAIN" \
-      quotes_proc  "quotes_proc_NULL"
-  }
+  #if {0} {
+  #  mp_init $pb \
+  #    randinstr    "randinstr_MAIN" \
+  #    quotes_proc  "make_quotes_TCL"
+  #} else {
+  
+  # mp_init $pb \
+  #   randinstr    "randinstr_MAIN" \
+  #   quotes_proc  "quotes_proc_NULL"
+  
+  #}
+
+  #set ::IOS_begin 1
+  #set ::IOS_final 1
 
   set task [task_create  \
-              -fit_func "FITPROC_xx"  \
-              -fit_tobest     "MIN" \
+	      -ios_begin 1 -ios_final 1 \
+              -fit_func "FITPROC_xx"  -fit_tobest     "MIN" \
               -func           $func \
-              -gp_list    $gp_list] 
+              -gp_list    $gp_list ] 
 
 ##              -joyf           $joyf \
   #------------------------------------------------------
@@ -828,13 +777,13 @@ proc NEXT_01 {args} {
   # - автоматическое добавление этих параметров и их динамическая корректировка
   # - более гибкое задание вариантов алгоритмов и их параметров? -algo ??
 
-  pi_add  p1  {"inp" 0 "out" 0}
-  pi_add  p3  {"inp" 0 "out" 0}
-  pi_add  p5  {"inp" 0 "out" 0}
-  pi_add  m1  {"inp" 0 "out" 0}
+  ios_add_new  p1  {} {}
+  ios_add_new  p3  {} {}
+  ios_add_new  p5  {} {}
+  ios_add_new  m1  {} {}
 
-  set ::LIPS_begin 0
-  set ::LIPS_final 0
+  #set ::IOS_begin 0
+  #set ::IOS_final 0
 
   # t~.tl TEST NEXT_01 -nums -1 -seed @ -target 5 -news 1 -list "p1 p3 m1" -print 2
 
@@ -869,8 +818,9 @@ proc NEXT_01 {args} {
   puts stderr  "nums = $nums !!"
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set pb [mp_create]
-  mp_init $pb 
+  #set pb [mp_create]
+  v1_init_all  ;# !!!!!!!!!!! ???
+  #mp_init $pb 
 
   #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
@@ -905,5 +855,12 @@ proc NEXT_01 {args} {
 
 # t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
 # t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1
+
+# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
+# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
+# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
+
+# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
+
 
 ###########################################################################################

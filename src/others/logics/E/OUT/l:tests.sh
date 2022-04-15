@@ -1,7 +1,7 @@
 
 ---------------- MMVERIFY.PY --------------
 
-[<_io.TextIOWrapper name='<stdin>' mode='r' encoding='utf-8'>]
+[<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>]
 _______$( demo0.mm  1-Jan-04 $)
 _______
 _______$(

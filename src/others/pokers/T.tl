@@ -12,7 +12,7 @@ package require compot::common
 
 #-------------------------------------------------------------------------------
 
-puts ""
+#puts ""
 puts ""
 
 run_numer_tests  r . E/OUT 

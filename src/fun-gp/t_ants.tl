@@ -2269,13 +2269,16 @@ proc ANTS_gp {} {
 
   #---------------------------------------------
 
-  set mp [mp_create]
+  #set mp [mp_create]
+  v1_init_all  ;# !!!!!!!!!!! ???
 
-  mp_init $mp \
-    randinstr    "randinstr_MAIN" \
-    quotes_proc  $quotes_proc
+  # mp_init $mp \
+  #   randinstr    "randinstr_MAIN" \
+  #   quotes_proc  $quotes_proc
 
-  set task [task_create  -fit_func FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
+  set task [task_create  \
+	      -quotes_proc "make_quotes_TCL" \
+	      -fit_func FITPROC_ants  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   set ::is_print 1
 
@@ -2338,12 +2341,12 @@ proc ANTS_gp_new {} {
   set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
 
 
-  pi_add  M  {"inp" 0 "out" 0}
-  pi_add  R  {"inp" 0 "out" 0}
-  pi_add  L  {"inp" 0 "out" 0}
+  ios_add_new  M  {} {} 
+  ios_add_new  R  {} {} 
+  ios_add_new  L  {} {} 
 
-  set ::LIPS_begin 0
-  set ::LIPS_final 0
+  #set ::IOS_begin 0
+  #set ::IOS_final 0
 
   # t~.tl ANTS ANTS_gp_new  -lpop 10 -size 15 -nums -1 -print 1 -pole pole_20a5 -seed 2022 -news 1
 
@@ -2354,14 +2357,16 @@ proc ANTS_gp_new {} {
   ANTS_init "11" ;# начальная инициализация системы функций
   
 
-  set mp [mp_create]
+  #set mp [mp_create]
+  v1_init_all  ;# !!!!!!!!!!! ???
 
-  mp_init $mp \
-    randinstr    "randinstr_MAIN" \
-    quotes_proc  "quotes_proc_NULL"
+  # mp_init $mp \
+  #   randinstr    "randinstr_MAIN" \
+  #   quotes_proc  "quotes_proc_NULL"
 
   #set ::is_print 1
 
+  
   set task [task_create  -fit_func FITPROC_ants20  "-fit_tobest" "MIN" -gp_list $gp_list]
     
   run_gp_evolution_for_task \
