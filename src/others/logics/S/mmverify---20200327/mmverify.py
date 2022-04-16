@@ -445,8 +445,8 @@ if __name__ == '__main__':
 
     toks = toks (sys.stdin)
 
-    print (toks.lines_buf)
-    #print (toks.tokbuf)
+    #print (toks.lines_buf)  ... utf ...
+    print (toks.tokbuf)
     #print (toks.imported_files)
     
     #--------------------------------------
