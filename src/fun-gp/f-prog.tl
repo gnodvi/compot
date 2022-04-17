@@ -215,79 +215,6 @@ proc ios_add_new {name INP OUT} {
 #   dict set ::IOS  $name "sum" $sum ;# name {"inp" 0 "out" 0  "sum" 0}
 # }
 # ------------------------------------------------------------------------------
-proc ios_print {} {
-
-  dict for {key value} $::IOS {
-
-    #set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
-    #SET $d  $key $value
-
-    puts [format "key = %8s , value = $value" $key]
-  }
-
-}
-# ------------------------------------------------------------------------------
-proc ios_calc_balans_prg {prg} {
-
-  set balans 0
-
-  foreach p $prg {
-
-    #set inp [dict get $::IOS $p "inp"] ;# сколько берет из стека
-    #set out [dict get $::IOS $p "out"] ;# сколько кладет
-    set sum [dict get $::IOS $p "sum"] ;# суммарный баланс
-
-    #incr balans [expr {- $inp + $out}]
-    incr balans $sum
-
-    #puts "p = $p, balans = $balans"
-  }
-
-  return $balans
-}
-# ------------------------------------------------------------------------------
-proc ios_calc_balans_full {ios_begin prg ios_fina} {
-
-  
-  set balans [ios_calc_balans_prg  $prg]
-
-  return [expr {$ios_begin + $balans - $ios_final}]
-}
-# ------------------------------------------------------------------------------
-proc ios_calc_balans_list {ios_begin prg ios_final} {
-
-
-  set balans $ios_begin ;# сразу жобавим начальную арность стека
-  
-  set ret {}
-  set len [llength $prg]
-
-  for {set i 0} {$i < $len} {incr i} {
-
-    set p [lindex $prg $i]
-
-    set sum [dict get $::IOS $p "sum"] ;# суммарный баланс
-    incr balans $sum
-
-    if {$i == [- $len 1]} {
-      incr balans -$ios_final ;# последний элемент уже сравним с нужным выходным
-    }
-
-    lappend ret $balans
-  }
- 
-  # программа будкт считаться семантически корректной, если все элеметы вых.
-  # списка >= 0 (== 0 могут быть такие операторы), а последний элемент == 0.
-  # 
-  # к этому и надо стремится мутируя программу
-
-  # TODO - нет, неверно, слишком упрощенно, надо не только сумму баланса,
-  #        но именно по входу чтобы небыло ошибки, т.е. нужна пара !!!
-
-  return $ret
-}
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 #ios_init 
 #-------------------------------------------------------------------------------
 
@@ -3444,7 +3371,8 @@ proc TEST_pp {} {
 
   # делаем выполнимую программу
   # 
-  set prg [make_randtrueprog  $gp_list $num_max $ind_max squareFitness_check_true]
+  set prg [make_randtrueprog  $gp_list $num_max $ind_max \
+             squareFitness_check_true]
 
   puts ""
   puts "RANDTRUEPROG = $prg"
@@ -3879,8 +3807,85 @@ proc ios_init_TEST_xx {} {
   #set ::IOS_final 1
 
 }
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc ios_calc_balans_prg {prg} {
+
+  set balans 0
+
+  foreach p $prg {
+
+    #set inp [dict get $::IOS $p "inp"] ;# сколько берет из стека
+    #set out [dict get $::IOS $p "out"] ;# сколько кладет
+    set sum [dict get $::IOS $p "sum"] ;# суммарный баланс
+
+    #incr balans [expr {- $inp + $out}]
+    incr balans $sum
+
+    #puts "p = $p, balans = $balans"
+  }
+
+  return $balans
+}
+# ------------------------------------------------------------------------------
+proc ios_calc_balans_full {ios_begin prg ios_fina} {
+
+  
+  set balans [ios_calc_balans_prg  $prg]
+
+  return [expr {$ios_begin + $balans - $ios_final}]
+}
+# ------------------------------------------------------------------------------
+proc ios_calc_balans_list {ios_begin prg ios_final} {
+
+
+  set balans $ios_begin ;# сразу жобавим начальную арность стека
+  
+  set ret {}
+  set len [llength $prg]
+
+  for {set i 0} {$i < $len} {incr i} {
+
+    set p [lindex $prg $i]
+
+    set sum [dict get $::IOS $p "sum"] ;# суммарный баланс
+    incr balans $sum
+
+    if {$i == [- $len 1]} {
+      incr balans -$ios_final ;# последний элемент уже сравним с нужным выходным
+    }
+
+    lappend ret $balans
+  }
+ 
+  # программа будкт считаться семантически корректной, если все элеметы вых.
+  # списка >= 0 (== 0 могут быть такие операторы), а последний элемент == 0.
+  # 
+  # к этому и надо стремится мутируя программу
+
+  # TODO - нет, неверно, слишком упрощенно, надо не только сумму баланса,
+  #        но именно по входу чтобы небыло ошибки, т.е. нужна пара !!!
+
+  return $ret
+}
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+proc ios_print {} {
+
+  dict for {key value} $::IOS {
+
+    #set key [string trimleft $key "-"] ;# убираем слева минус, зачем?
+    #SET $d  $key $value
+
+    set INP [dict get $::IOS $key "INP"]
+    set OUT [dict get $::IOS $key "OUT"]
+
+    puts [format "  %10s : %7s  -->  %7s" $key $INP $OUT]
+  }
+
+}
 #-------------------------------------------------------------------------------
-proc TEST_lips {args} {
+proc TEST_ios1 {args} {
 
   puts ""
   puts "TEST_lips"
@@ -3911,9 +3916,145 @@ proc TEST_lips {args} {
 
   puts "full balans: $ios_begin | $prg | $ios_final,  lst = $lst   ???"
 
+}
+#-------------------------------------------------------------------------------
+proc ios_init_test_operators {} {
+
+  # TODO
+  #    - заменить реальную программу тестовой по типам
+  #    - провеить типы и скорректировать?
+  #    - в дальнейшем можно интегрировать все это в общуюу схему?
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  v0_make_tclproc  _ {} {
+    
+    #eval [pop]
+    
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  v0_make_tclproc  _A {} {
+    
+    #eval [pop]
+    
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 }
 #-------------------------------------------------------------------------------
+
+  # A - all types
+  # N - number
+  # D - decimal
+  # F - float
+  # L - list (можно дальше уточнять подтип этой структуры, т.е. список типов)
+
+#-------------------------------------------------------------------------------
+proc find_error_gen_by_ios {prg ios_BEGIN ios_FINAL} {
+
+
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+  puts "prg = $prg"
+  puts ""
+
+  # set type_stack {}
+  # set ::joy_ST {}  ;# The VM stack - пока воспользуемся программным стеком?
+
+  push {*}$ios_BEGIN   ;# положим в стек по одному элементу
+
+  set len [llength $prg]
+
+  set ret {}
+  set err 0
+
+  for {set p 0} {$p < $len} {incr p} {
+
+    set gen [lindex $prg $p]
+
+    set INP [dict get $::IOS $gen "INP"]
+    set OUT [dict get $::IOS $gen "OUT"]
+
+    puts "p = $p, ::joy_ST = $::joy_ST, gen = $gen, INP = $INP, OUT = $OUT \n"
+
+    # простой вариант - сравнить INP c последними элементами стека
+    #                   а если ошибка, то ....
+    #                   и потом просто положить вместо них в стек OUT
+    # 
+
+    set INP_len [llength $INP]
+    set OUT_len [llength $OUT]
+
+    for {set i 0} {$i < $INP_len} {incr i} {
+      set index [- $INP_len 1 $i] ;# пойдем с обратной стороны списка
+      set I [lindex $INP $index]
+
+      set I_stack [pop]
+
+      puts "I       = $I"
+      puts "I_stack = $I_stack"
+
+      if {$I != $I_stack} {
+        set err 1
+        break
+      }
+
+      if {$err == 1} {
+        #set ret [list $err $p $gen $I_stack $I]
+        break
+      }
+    }
+
+    #if {$i == [- $len 1]} {
+    #  incr balans -$ios_final ;# последний элемент уже сравним с нужным выходным
+    #}
+  }
+
+  # return  $ret
+  return [list $err $p $gen $I_stack $I] 
+}
+#-------------------------------------------------------------------------------
+proc TEST_ios2 {args} {
+
+  puts ""
+  puts "TEST_ios2"
+  puts ""
+
+  
+  # это могут быть также специальные программки для прогонки и 
+  # и контроля по типам, а также для корректировки динамической?
+
+  # как правильно формируется список типов?
+  # 
+
+  ios_add_new  _   {}  {} 
+  ios_add_new  A_ {A}  {} 
+  ios_add_new  _A  {}  {A}
+  ios_add_new  NA_ {N A}  {} 
+ 
+
+  ios_print
+  #puts "::IOS = $::IOS"
+
+  set ios_BEGIN {N A A}
+  set ios_FINAL {}
+  
+  set prg   "_ NA_"
+  #set prg   "_ _A A_"
+  #set prg   "_ _"
+
+  v1_init ;# воспользуемся стеком?
+
+  set ret [find_error_gen_by_ios $prg $ios_BEGIN $ios_FINAL]
+
+  puts ""
+  puts "ret = $ret"
+  puts ""
+
+  return
+}
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
