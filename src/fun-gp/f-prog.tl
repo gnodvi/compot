@@ -3943,6 +3943,20 @@ proc ios_init_test_operators {} {
 
 }
 #-------------------------------------------------------------------------------
+proc pop_N {num} {
+
+
+  set ret {}
+
+  for {set i 0} {$i < $num} {incr i} {
+
+    lappend ret [pop]
+    #puts "pop_N: i = $i, ret = $ret"
+  }
+ 
+  return [lreverse $ret]
+}
+#-------------------------------------------------------------------------------
 
   # A - all types
   # N - number
@@ -3950,6 +3964,56 @@ proc ios_init_test_operators {} {
   # F - float
   # L - list (можно дальше уточнять подтип этой структуры, т.е. список типов)
 
+#-------------------------------------------------------------------------------
+proc lequal {l1 l2} {
+
+  foreach elem $l1 {
+    if {$elem ni $l2} {return false}
+  }
+
+  foreach elem $l2 {
+    if {$elem ni $l1} {return false}
+  }
+
+  return true
+}
+#-------------------------------------------------------------------------------
+proc is_gen_correct {p gen} {
+
+
+  set INP [dict get $::IOS $gen "INP"] ;# входы  для этого оператора (гена)
+  set OUT [dict get $::IOS $gen "OUT"] ;# выходы для этого оператора (гена)
+  
+  #puts ""
+  
+  # простой вариант - сравнить INP c последними элементами стека
+  #                   а если ошибка, то ....
+  #                   и потом просто положить вместо них в стек OUT
+  # 
+  
+  set INP_len [llength $INP] ;# длина входов
+  set OUT_len [llength $OUT] ;# длина выходов
+  
+  # лучше бы здесь сразу взять часть стека? или хотя бы для информации
+  
+  #set INP_stack [lrange $::joy_ST end-[- $INP_len 1] end]
+  
+  set INP_stack [pop_N $INP_len] ;# взять из стека несколько элементов
+  
+  
+  puts -nonewline \
+    [format "p = %2d, gen = %5s, ::joy_ST = %5s, INP_stack = %5s, INP = %5s ; .. " \
+       $p $gen $::joy_ST $INP_stack $INP]
+  
+   
+  
+  if [lequal $INP_stack $INP]  {
+    return 1;
+  } else {
+    return 0;
+  }
+    
+}
 #-------------------------------------------------------------------------------
 proc find_error_gen_by_ios {prg ios_BEGIN ios_FINAL} {
 
@@ -3961,9 +4025,15 @@ proc find_error_gen_by_ios {prg ios_BEGIN ios_FINAL} {
   puts ""
 
   # set type_stack {}
-  # set ::joy_ST {}  ;# The VM stack - пока воспользуемся программным стеком?
+  # set ::joy_ST {}  ;# The VM stack 
+  # 
+  # воспользуемся программным стеком и функциями работы с ним
+  # для оценки соответсвия по типа, при этом имитировать работу отдельных генов
+  # не будем, только типы..
 
-  push {*}$ios_BEGIN   ;# положим в стек по одному элементу
+
+  push {*}$ios_BEGIN   ;# положим в стек начальный список (типов) как есть, т.е.
+                       ;# по одному элементу за раз (как бы перемещая список целиком)
 
   set len [llength $prg]
 
@@ -3974,46 +4044,33 @@ proc find_error_gen_by_ios {prg ios_BEGIN ios_FINAL} {
 
     set gen [lindex $prg $p]
 
-    set INP [dict get $::IOS $gen "INP"]
-    set OUT [dict get $::IOS $gen "OUT"]
 
-    puts "p = $p, ::joy_ST = $::joy_ST, gen = $gen, INP = $INP, OUT = $OUT \n"
+    if [is_gen_correct $p $gen] {
 
-    # простой вариант - сравнить INP c последними элементами стека
-    #                   а если ошибка, то ....
-    #                   и потом просто положить вместо них в стек OUT
-    # 
-
-    set INP_len [llength $INP]
-    set OUT_len [llength $OUT]
-
-    for {set i 0} {$i < $INP_len} {incr i} {
-      set index [- $INP_len 1 $i] ;# пойдем с обратной стороны списка
-      set I [lindex $INP $index]
-
-      set I_stack [pop]
-
-      puts "I       = $I"
-      puts "I_stack = $I_stack"
-
-      if {$I != $I_stack} {
-        set err 1
-        break
-      }
-
-      if {$err == 1} {
-        #set ret [list $err $p $gen $I_stack $I]
-        break
-      }
+      puts "ok"
+    } else {
+      puts "error"
+      set ret [list $p $gen]
+      break ;# сразу выходим из проверки для этой программы
     }
 
-    #if {$i == [- $len 1]} {
-    #  incr balans -$ios_final ;# последний элемент уже сравним с нужным выходным
-    #}
-  }
 
-  # return  $ret
-  return [list $err $p $gen $I_stack $I] 
+    # теперь надо положить в стек выходные параметры
+
+    set OUT [dict get $::IOS $gen "OUT"] ;# выходы для этого оператора (гена)
+    push {*}$OUT
+
+
+  } ;# for {set p 0} 
+
+  # и в конце надо сравнить содержимое стека, с тем что требуется по аздаче:
+  # ???
+
+  puts ""
+  puts "::joy_ST  = $::joy_ST"
+  puts "ios_FINAL = $ios_FINAL"
+
+  return  $ret
 }
 #-------------------------------------------------------------------------------
 proc TEST_ios2 {args} {
@@ -4029,17 +4086,17 @@ proc TEST_ios2 {args} {
   # как правильно формируется список типов?
   # 
 
-  ios_add_new  _   {}  {} 
-  ios_add_new  A_ {A}  {} 
-  ios_add_new  _A  {}  {A}
-  ios_add_new  NA_ {N A}  {} 
+  ios_add_new  _    {   }  { } 
+  ios_add_new  A_   {A  }  { } 
+  ios_add_new  _A   {   }  {A}
+  ios_add_new  NA_  {N A}  { } 
  
 
   ios_print
   #puts "::IOS = $::IOS"
 
-  set ios_BEGIN {N A A}
-  set ios_FINAL {}
+  set ios_BEGIN {N A}
+  set ios_FINAL {F}
   
   set prg   "_ NA_"
   #set prg   "_ _A A_"
