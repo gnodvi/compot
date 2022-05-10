@@ -114,6 +114,8 @@ D. Backspace
 
 using namespace std;
 
+#define FILENAME "f_code.in"
+
 //------------------------------------------------------------------------------
 
 int main ()
@@ -126,7 +128,7 @@ int main ()
   //freopen ("input.txt",  "r", stdin);
   //freopen ("output.txt", "w", stdout);
 
-  freopen ("t_code.I",  "r", stdin);
+  freopen (FILENAME,  "r", stdin);
   //freopen ("t_code.O",  "w", stdout);
   #endif
 

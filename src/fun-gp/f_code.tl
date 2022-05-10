@@ -5,6 +5,10 @@
 exec tclsh "$0" ${1+"$@"}
 #
 #-------------------------------------------------------------------------------
+#
+# FunCode - робот-программист, конкурент нейросети AlpaCode от Google.
+#
+#-------------------------------------------------------------------------------
 
 
 set COMPOT "./COMPOT"
@@ -366,13 +370,17 @@ proc solver_global_fun {} {
 
 }
 # ------------------------------------------------------------------------------
+
+set ::FILENAME "f_code.in"
+
+# ------------------------------------------------------------------------------
 proc task_backspace {} {
 
   #   ios_base::sync_with_stdio(false);
   #   cin.tie(NULL);
   
   #   freopen ("t_code.I",  "r", stdin);
-  set fin [open "t_code.I"  "r"]
+  set fin [open $::FILENAME  "r"]
   
   #   int ttt;
   #   cin >> ttt; //  первое значение - количество тестов
@@ -401,6 +409,9 @@ proc task_backspace {} {
     puts "t = $t, m = $m"
   
     #-----------------------------------------
+
+    # tcl, наиболее близкий к варианту на си
+    # 
     set f [solver_task_backspace_ver1  $s $t $n $m]
 
     if {$f}  {
@@ -410,7 +421,9 @@ proc task_backspace {} {
     }
 
     puts "~~~~~~~~~~~~"
-    
+   
+    # tcl, через укрупненные макросы
+    # 
     set f [solver_task_backspace_ver2  $s $t $n $m]
 
     if {$f}  {
@@ -420,6 +433,8 @@ proc task_backspace {} {
     }
     puts "~~~~~~~~~~~~"
     
+    # fun через укрупненные макросы
+    # 
     set f [solver_task_backspace_ver3  $s $t $n $m]
 
     if {$f}  {

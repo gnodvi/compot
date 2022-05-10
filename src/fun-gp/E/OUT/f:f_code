@@ -1,0 +1,43 @@
+s = ababa 
+t = ba 
+j = 1 
+  i = 4, s[i] = a, t[j] = a 
+j = 0 
+  i = 3, s[i] = b, t[j] = b 
+YES 
+------------------------------- 
+s = ababa 
+t = bb 
+j = 1 
+  i = 4, s[i] = a, t[j] = b 
+  i = 2, s[i] = a, t[j] = b 
+  i = 0, s[i] = a, t[j] = b 
+  i = -2, s[i] = ÿ, t[j] = b 
+NO  
+------------------------------- 
+s = aaa 
+t = aaaa 
+j = 3 
+  i = 2, s[i] = a, t[j] = a 
+j = 2 
+  i = 1, s[i] = a, t[j] = a 
+j = 1 
+  i = 0, s[i] = a, t[j] = a 
+j = 0 
+  i = -1, s[i] = ÿ, t[j] = a 
+NO  
+------------------------------- 
+s = aababa 
+t = ababa 
+j = 4 
+  i = 5, s[i] = a, t[j] = a 
+j = 3 
+  i = 4, s[i] = b, t[j] = b 
+j = 2 
+  i = 3, s[i] = a, t[j] = a 
+j = 1 
+  i = 2, s[i] = b, t[j] = b 
+j = 0 
+  i = 1, s[i] = a, t[j] = a 
+YES 
+------------------------------- 

@@ -4136,11 +4136,11 @@ proc ios_check_prg {prg ios_BEGIN ios_FINAL} {
 #-------------------------------------------------------------------------------
 proc list_not_exist_in_list {prg rez} {
 
-  return 1
+  #return 1
 
   foreach r $rez {
 
-    if [lequal $r $prg] {
+    if { $r eq $prg } {
       return 0
     }
   }
@@ -4148,7 +4148,24 @@ proc list_not_exist_in_list {prg rez} {
   return 1
 }
 #-------------------------------------------------------------------------------
-proc ios_find_correct_prgs {ios_BEGIN ios_FINAL} {
+proc add_to_try  {try try_add} {
+
+  upvar $try t
+
+  #lappend t {*}$try_add
+
+  foreach a $try_add {
+
+    #lappend t $a
+
+    if [list_not_exist_in_list $a $t] {
+      lappend t $a
+    }
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc ios_find_correct_prgs {nums ios_BEGIN ios_FINAL} {
 
 
   set rez {} ;# для найденных вариантов
@@ -4156,7 +4173,7 @@ proc ios_find_correct_prgs {ios_BEGIN ios_FINAL} {
 
   #set deep 1 ;# длина создаваемых программ на этом шаге 
 
-  for {set i 1} {$i <= 5} {incr i} {
+  for {set i 1} {$i <= $nums} {incr i} {
 
   foreach try_prg $try { 
 
@@ -4185,7 +4202,10 @@ proc ios_find_correct_prgs {ios_BEGIN ios_FINAL} {
       #puts [format "prg = %10s, ret = $ret" $prg]
       
       if {$err_code} {
-        lappend try_add $prg ;# в список на этом шаге
+        lappend try_add $prg ;# в список на этом шаге добавим плохую прогу
+        #
+        # TODO: надо добавлять в словарь по выходам !!!!
+        #
       } else {
         # программа корректная, добавим если такой еще нет
         if [list_not_exist_in_list $prg $rez] {
@@ -4195,11 +4215,13 @@ proc ios_find_correct_prgs {ios_BEGIN ios_FINAL} {
       
     } ;# dict 
     
+
     if {[llength $try_add] && $try_len == 1} {
       # это особый начальный случай
       set try $try_add
     } else {
-      lappend try {*}$try_add
+      #lappend try {*}$try_add
+      add_to_try  try $try_add
     }
     
     if {1} {
@@ -4215,6 +4237,57 @@ proc ios_find_correct_prgs {ios_BEGIN ios_FINAL} {
   #puts "try     = $try"
 
   return $rez
+}
+#-------------------------------------------------------------------------------
+proc compare_two_lists_with_hash_table {list1 list2} {
+
+  #compare two lists with hash table
+
+  if {[llength $list1] ne [llength $list2]} {
+    puts "number of list elements is different"
+  } else {
+    puts "there are [llength $list1] list elements"
+  }
+
+  set i 1
+
+  foreach aa {$list1} bb {$list2} {
+    set a($i) $aa
+    set b($i) $bb
+    incr i
+  }
+
+  for {set j 1} {$j <= [llength $list1]} {incr j} {
+    if { $a($j) ne $b($j) } {
+      puts "No Match $a($j) $b($j)"
+    } else {
+      puts "Match $a($j) $b($j)"
+    }
+  }
+
+}
+#-------------------------------------------------------------------------------
+proc compare_two_lists {list1 list2} {
+
+
+  set len1 [llength $list1]
+  set len2 [llength $list2]
+
+  if {$len1 ne $len2} {
+    return false
+  } 
+  
+  for {set i 1} {$i <= $len1} {incr i} {
+
+    set l1 [lindex $list1 $i]
+    set l2 [lindex $list2 $i]
+
+    if { $l1 ne $l2 } {
+      return false
+    } 
+  }
+
+  return true
 }
 #-------------------------------------------------------------------------------
 proc TEST_ios2 {args} {
@@ -4265,14 +4338,43 @@ proc TEST_ios2 {args} {
   puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   puts ""
 
-  set rez [ios_find_correct_prgs  $ios_BEGIN $ios_FINAL]
+  set rez [ios_find_correct_prgs   3 $ios_BEGIN $ios_FINAL]
 
   puts ""
   puts "rez = $rez"
   puts ""
+
+  return
+
+
+
+  #set prg1 {_A A_  _A A_ A_}
+  #set prg2 {_A A_  _A A_ A_}
+
+  #set prg1 {_A A_  _  A A_ A_}
+  #set prg2 {_A {_A B} A_ A_ A_}
+
+  set prg1 {_A {A_ _B {A C}} _A A_ A_}
+  set prg2 {_A {A_ _B {A A}} _A A_ A_}
+
+  if { $prg1 ne $prg2 } {
+    puts "ne !!!"
+  } else {
+    puts "equal !!!"
+  }
   
+
+  #set e [lequal $prg1 $prg2]
+  #set e [compare_two_lists_with_hash_table $prg1 $prg2]
+  set e [compare_two_lists $prg1 $prg2]
+  
+  puts "e = $e"
+
   return
 }
 #-------------------------------------------------------------------------------
+#
+# f~.tl TEST TEST_ios2
+# 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
