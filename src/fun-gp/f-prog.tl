@@ -4116,6 +4116,7 @@ proc ios_check_prg {prg ios_BEGIN ios_FINAL} {
   } ;# ошибка была обнаружена
 
   # надо посмотреть финал
+  #puts "ios_check_prg : ret = $ret !!!!!!!!!!!!!!!!!!!!!!!!!!"
 
   set len [llength $prg]
   set gen_last [lindex $prg [- $len 1]]
@@ -4125,10 +4126,21 @@ proc ios_check_prg {prg ios_BEGIN ios_FINAL} {
     # на выходе то что надо, совпадает с ожидаемым результатом в стеке
     # так что вернем то что было найдено 
     set ret [list 0 {} {}]
+
   } else {
     ;# ошибка на выходе
 
-    set ret [list $len $gen_last {} [list $retstack $ios_FINAL]]
+    #puts "ios_check_prg : ret = $ret ????????????????????????"
+
+    # len      - 
+    # gen_last - 
+    # {}       - входы совпадали, не было ошибки 
+    # {$retstack $ios_FINAL} - а вот выходы финала не те
+    #  
+    #  
+    #set ret [list $len $gen_last {} [list $retstack $ios_FINAL]] ;# ????
+    set ret [list   $len {} $retstack] ;# ????
+    #puts "ios_check_prg : ret = $ret ~~~~~~~~~~~~~~~~~~~~~~~~~!!"
   }
 
   return $ret
@@ -4182,7 +4194,7 @@ proc ios_find_correct_prgs {nums ios_BEGIN ios_FINAL} {
 
     dict for {gen value} $::IOS {     
 
-      #set INP [dict get $::IOS $gen "INP"]
+      set INP [dict get $::IOS $gen "INP"]
       #set OUT [dict get $::IOS $gen "OUT"]
       #puts "len = $len"
 
@@ -4193,7 +4205,15 @@ proc ios_find_correct_prgs {nums ios_BEGIN ios_FINAL} {
         set prg $try_prg
       }
       
-      lappend prg $gen
+      lappend prg $gen ;# добавим к незавершенной программе еще ген
+      # 
+      # TODO: здесь надо еще смотреть особые случаи, например
+      #       если на входе треба список, надо его бы создать !!?
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      #puts "INP = |$INP| ????"
+      if { $INP == "L  " } {
+        puts "INP = $INP !!!!!!!!!!!!!!!"
+      }
       
       set ret [ios_check_prg  $prg  $ios_BEGIN $ios_FINAL]
       
@@ -4202,7 +4222,15 @@ proc ios_find_correct_prgs {nums ios_BEGIN ios_FINAL} {
       #puts [format "prg = %10s, ret = $ret" $prg]
       
       if {$err_code} {
-        lappend try_add $prg ;# в список на этом шаге добавим плохую прогу
+        #
+        # не надо все добавлять! А только те у которых ошибка на выходе пока
+        # 
+        #puts "err_more = $err_more"
+
+        if {$err_more eq {}} {
+          #puts "retstack = $retstack, prg = $prg"
+          lappend try_add $prg ;# в список на этом шаге добавим плохую прогу
+        }
         #
         # TODO: надо добавлять в словарь по выходам !!!!
         #
@@ -4307,6 +4335,7 @@ proc TEST_ios2 {args} {
   ios_add_new  A_   {A  }  { } 
   ios_add_new  _A   {   }  {A}
   ios_add_new  NA_  {N A}  { } 
+  ios_add_new  L_   {L  }  { } 
  
 
   ios_print
