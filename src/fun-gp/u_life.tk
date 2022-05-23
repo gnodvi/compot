@@ -153,10 +153,10 @@ proc generate_step_calc {} {
 if {$is_tk} {
 #-------------------------------------------------------------------------------
 
-  set auto_path [linsert $auto_path 0 "$::COMPOT/src/dialog"]
+  set auto_path [linsert $auto_path 0 "$::COMPOT/src/others/dialog"]
   package require compot::dialog 
 
-  set auto_path [linsert $auto_path 0 "$::COMPOT/ext/tcl-tk/snit"]
+  set auto_path [linsert $auto_path 0 "$::COMPOT/src/others/tcl-tk/snit"]
   package require snit
 
   package require "Tk"
