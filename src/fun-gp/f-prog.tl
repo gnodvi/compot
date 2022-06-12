@@ -3872,14 +3872,26 @@ proc ios_calc_balans_list {ios_begin prg ios_final} {
 # ------------------------------------------------------------------------------
 proc ios_print {} {
 
-  dict for {key value} $::IOS {
+  # структура
+  #
+  # dup {inp 1 out 2 INP {A  } OUT {A A} sum 1}
+  #
+  # 
+  #
+  #
+  #
+  ##############################################
 
-    set INP [dict get $::IOS $key "INP"]
-    set OUT [dict get $::IOS $key "OUT"]
 
-    puts [format "  %10s : %7s  -->  %7s" $key $INP $OUT]
+  dict for {prgname iosdict} $::IOS {
+
+    set INP [dict get $iosdict "INP"]
+    set OUT [dict get $iosdict "OUT"]
+
+    puts [format "  %10s : %7s  -->  %7s" $prgname $INP $OUT]
   }
 
+  return
 }
 #-------------------------------------------------------------------------------
 proc TEST_ios1 {args} {
@@ -4010,13 +4022,11 @@ proc lequal {l1 l2} {
 proc ios_check_prg_from_left {prg ios_BEGIN} {
 
 
-  # set type_stack {}
   set ::joy_ST {}  ;# The VM stack 
   # 
   # воспользуемся программным стеком и функциями работы с ним
   # для оценки соответсвия по типа, при этом имитировать работу отдельных генов
   # не будем, только типы..
-
 
   push {*}$ios_BEGIN   ;# положим в стек начальный список (типов) как есть, т.е.
                        ;# по одному элементу за раз (как бы перемещая список целиком)
@@ -4026,32 +4036,15 @@ proc ios_check_prg_from_left {prg ios_BEGIN} {
   set ret [list 0 {}]
   set err 0
 
+  #puts "ios_check_prg_from_left: prg = $prg"
+
   for {set p 1} {$p <= $len} {incr p} {
 
     set gen [lindex $prg [- $p 1]]
 
-    #if {$p != [- $len 1]} {
-    #  set is_not_final 1
-    #} else {
-    #  set is_not_final 0
-    #}
 
-    # простой вариант - сравнить INP c последними элементами стека
-    #                   а если ошибка, то ....
-    #                   и потом просто положить вместо них в стек OUT
-    # 
-  
-    #-----------------------------------------------------
-
-    #if [is_gen_correct $p $gen] {
-    #} else {
-    #  set ret [list $p $gen]
-    #  break ;# сразу выходим из проверки для этой программы
-    #}
-
-
-    set INP_true [dict get $::IOS $gen "INP"] ;# входы  для этого оператора (гена)
-    set OUT_true [dict get $::IOS $gen "OUT"] ;# выходы для этого оператора (гена)
+    set INP_true [dict get $::IOS $gen "INP"] ;# входы  для этого оператора 
+    set OUT_true [dict get $::IOS $gen "OUT"] ;# выходы для этого оператора 
     
     set INP_true_len [llength $INP_true] ;# длина входов
     set OUT_true_len [llength $OUT_true] ;# длина выходов
@@ -4086,7 +4079,8 @@ proc ios_check_prg_from_left {prg ios_BEGIN} {
 
   } ;# for {set p 0} 
 
-  # надо забрать из стека остатки и добавить в выходной список 
+
+  # надо забрать из стека остатки и добавить в выход, как доп. инфу 
   # 
 
   lappend ret $::joy_ST
@@ -4114,6 +4108,8 @@ proc ios_check_prg {prg ios_BEGIN ios_FINAL} {
   if {$err_code } {
     return $ret
   } ;# ошибка была обнаружена
+
+
 
   # надо посмотреть финал
   #puts "ios_check_prg : ret = $ret !!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -4205,12 +4201,14 @@ proc ios_find_correct_prgs {nums ios_BEGIN ios_FINAL} {
         set prg $try_prg
       }
       
+
       lappend prg $gen ;# добавим к незавершенной программе еще ген
       # 
       # TODO: здесь надо еще смотреть особые случаи, например
       #       если на входе треба список, надо его бы создать !!?
       # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       #puts "INP = |$INP| ????"
+
       if { $INP == "L  " } {
         puts "INP = $INP !!!!!!!!!!!!!!!"
       }
@@ -4255,7 +4253,7 @@ proc ios_find_correct_prgs {nums ios_BEGIN ios_FINAL} {
     if {1} {
       #puts ""
       #puts "try_add = $try_add"
-      puts "try     = $try"
+      puts "try     = $try \n"
       #puts "rez     = $rez"
       #puts ""
     }
@@ -4324,58 +4322,52 @@ proc TEST_ios2 {args} {
   puts "TEST_ios2"
   puts ""
 
-  
-  # это могут быть также специальные программки для прогонки и 
-  # и контроля по типам, а также для корректировки динамической?
-
-  # как правильно формируется список типов?
-  # 
-
-  #ios_add_new  _    {   }  { } 
+  #           имя   вход   выход
   ios_add_new  A_   {A  }  { } 
   ios_add_new  _A   {   }  {A}
   ios_add_new  NA_  {N A}  { } 
   ios_add_new  L_   {L  }  { } 
  
-
-  ios_print
+  puts "::IOS = $::IOS"
   puts ""
-  #puts "::IOS = $::IOS"
+  ios_print
+
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+  v1_init ;# воспользуемся стеком?
 
   set ios_BEGIN {N A}
-  #set ios_FINAL {F}
-  #set ios_FINAL {}
-  set ios_FINAL {N}
+  set ios_FINAL {N}   ;# {F} {}
   
   #set prg   "_ NA_"
   #set prg   "_ _A A_"
   #set prg   "_ _"
   set prg   "_A  A_"
 
-  v1_init ;# воспользуемся стеком?
-
   puts ""
   puts "ios_BEGIN = $ios_BEGIN, prg = $prg, ios_FINAL = $ios_FINAL"
   puts ""
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  puts ""
 
   set ret [ios_check_prg  $prg  $ios_BEGIN $ios_FINAL]
+  foreach {err_code  err_more  retstack}   $ret {break;}
 
   puts ""
-  puts "ret = $ret"
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts "ios_check_prg: ret = $ret"
   puts ""
-
-  set rez [ios_find_correct_prgs   3 $ios_BEGIN $ios_FINAL]
-
-  puts ""
-  puts "rez = $rez"
+      
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   puts ""
 
   return
 
+  set rez [ios_find_correct_prgs   3 $ios_BEGIN $ios_FINAL]
 
+  puts ""
+  puts "ios_find_correct_prgs: rez = $rez"
+  puts ""
+
+  return
 
   #set prg1 {_A A_  _A A_ A_}
   #set prg2 {_A A_  _A A_ A_}
