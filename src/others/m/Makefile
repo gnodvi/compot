@@ -12,14 +12,13 @@ LOGICS_DIR = ../logics
 TENSOR_DIR = ../arrays		
 HPOKER_DIR = ../hpoker
 LISPER_DIR = ../lisper
-ORIGIN_DIR = ../origin
 POKERS_DIR = ../pokers
 DIALOG_DIR = ../dialog
 
 #-------------------------------------------------------------------------------
 
 
-all:  CGPLIB__ PLOTER__ LOGICS__  TENSOR__ ORIGIN__  DIALOG__ POKERS__ # CAUL-S__ # LISPER__  
+all:  CGPLIB__ PLOTER__ LOGICS__  TENSOR__  DIALOG__ POKERS__ # CAUL-S__ # LISPER__  
 
 #-------------------------------------------------------------------------------
 
@@ -52,9 +51,6 @@ DIALOG__ :
 POKERS__ :
 	(cd $(POKERS_DIR); make)
 
-ORIGIN__ :
-	(cd $(ORIGIN_DIR); make)
-
 #-------------------------------------------------------------------------------
 
 clean : 
@@ -66,7 +62,6 @@ clean :
 	(cd $(TENSOR_DIR); make clean)
 	(cd $(POKERS_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
-	(cd $(ORIGIN_DIR); make clean)
 	(cd $(LISPER_DIR); make clean)
 
 #-------------------------------------------------------------------------------
