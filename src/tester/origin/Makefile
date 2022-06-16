@@ -53,7 +53,7 @@ TCL_STUB_LIB_SPEC_clean = $(subst ', , $(TCL_STUB_LIB_SPEC))
 
 #-------------------------------------------------------------------------------
 
-PROGS =  e_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
+PROGS =  f_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
 
 all:   $(PROGS)   
 
@@ -75,7 +75,7 @@ T/e-0000_wrap.c:
 
 #-------------------------------------------------------------------------------
 
-e_test :  e_test.c T/e-0000.o                                    
+f_test :  f_test.c T/e-0000.o                                    
 	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
 #T/e-0000.o : e-0000.c e-0000.h                                  

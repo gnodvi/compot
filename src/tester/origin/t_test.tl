@@ -233,11 +233,18 @@ MAIN_NEW
 
 #time t_test.tl -mode test -prog loop0 -size 100 -nums 100 -seed 1706
 
-# real	0m32.158s
-# user	0m32.048s
-# sys	0m0.104s
+# real	0m28.389s
+# user	0m28.380s
+# sys	0m0.004s
 
-#
+
+#time t_test.jl -mode test -prog loop0 -size 100 -nums 100 -seed 1706
+# 
+# real	0m33.990s
+# user	0m33.976s
+# sys	0m0.016s
+
+
 # На си примерно в 10 раз быстрее
 
 # real	0m3.230s
