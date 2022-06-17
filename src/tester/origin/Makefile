@@ -69,7 +69,7 @@ T/e-0000.o: e-0000.c e-0000.h
 T/e-0000_wrap.o: T/e-0000_wrap.c
 	gcc -c -fpic -I.  -o $@ $<  -I/usr/include/tcl8.6
 
-T/e-0000_wrap.c: 
+T/e-0000_wrap.c: e-0000.i
 	swig -tcl8  -o $@ e-0000.i
 
 

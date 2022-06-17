@@ -1810,6 +1810,8 @@ test_00 (int nn)
   GRAF *graf;
   int u;
 
+  YRAND_C;
+
   graf = GrafCreate (nn);
 
   GrafInit1 (graf, 50.0, 50.0);

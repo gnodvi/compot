@@ -56,7 +56,8 @@ proc draw_plot_to_gui {plot} {
   # чмиаем локально сохраненный файл  t_save.pl
   #   
   # run_command "COMPOT/src/dialog/d_plot.tk 6 > /dev/null" ;# отдельной программой!
-  run_command "COMPOT/src//common/d_plot.tk 6 > /dev/null" ;# отдельной программой!
+  # run_command "COMPOT/src//common/d_plot.tk 6 > /dev/null" ;# отдельной программой!
+  run_command "COMPOT/src/others/dialog/d_plot.tk 6 > /dev/null" ;# отдельной программой!
   
   #plot_print_gui_NEW $plot ;# можно и так, но тогда это уже будет графическая
   # программа ! а не хотелось бы ?                     
@@ -1104,25 +1105,27 @@ proc tao_loop_MAIN {tao} {
 
 }
 #-------------------------------------------------------------------------------
-proc  tao_loop0_create {args} { 
+#proc  tao_loop0_create {args} {} 
+#-------------------------------------------------------------------------------
+proc  loop0 {args} { 
 
+  puts ""
+  puts ".... tao_loop0_create  args = $args ....."
+  puts ""
 
   set size  [dict_parse $args "-size"    30] 
   set nums  [dict_parse $args "-nums"   100] 
   set seed  [dict_parse $args "-seed"    -1]
-  set prog  [dict_parse $args "-prog"   "" ]  
+  #set prog  [dict_parse $args "-prog"   "" ]  
 
-  if {1} {
-  puts ""
-  puts "......... $prog ..............."
-  puts ""
-  puts "args = $args"
+  #if {1} {
   puts "size = $size"
   puts "nums = $nums"
   puts "seed = $seed"
+  #puts "prog = $prog"
 
   #exit
-  }
+  #}
 
   comm_random_seed_null $seed
 
@@ -1134,7 +1137,7 @@ proc  tao_loop0_create {args} {
 
   SET $tao  LOOP_MAIN  "tao_loop0_main"
 
-  # ------------------------------------------------------------
+  # -------------------------------------------------
 
   graf_init  $gr "GR_RAND" 0.0 0.0  "GR_RAND" 0.0 0.0
 
@@ -1151,7 +1154,7 @@ proc  tao_loop0_create {args} {
 
   tao_set_out  $tao $p_out 
 
-  # ------------------------------------------------------------
+  # -------------------------------------------------
 
   # сюда надо указывать подтестовую процедуру (test) ??
   # 
@@ -1167,7 +1170,9 @@ proc  tao_loop0_create {args} {
   return $tao
 }
 #-------------------------------------------------------------------------------
-proc tao_loop1_create {args} {
+# proc tao_loop1_create {args} {}
+#-------------------------------------------------------------------------------
+proc loop1 {args} {
 
   # size  количество ребер в графе
   # nums  количество шагов
@@ -1200,7 +1205,7 @@ proc tao_loop1_create {args} {
 
   SET $tao  LOOP_MAIN  "tao_loop1_main"
 
-  # ---------------------------------------------------------
+  # -------------------------------------------------
 
   set p_out [list  \
                {1 "Nodes"     1  NIL} \
@@ -1227,25 +1232,25 @@ proc tao_loop1_create {args} {
   return $tao
 }
 #-------------------------------------------------------------------------------
-proc  loop0 {args} { 
+# proc  loop0 {args} { 
 
-  set tao [tao_loop0_create {*}$args] 
+#   set tao [tao_loop0_create {*}$args] 
 
-  tao_loop_MAIN $tao
+#   #tao_loop_MAIN $tao
 
-  return $tao
-}
+#   return $tao
+# }
 #-------------------------------------------------------------------------------
-proc loop1 {args} {
+# proc loop1 {args} {
 
 
-  set tao [tao_loop1_create {*}$args]
+#   set tao [tao_loop1_create {*}$args]
 
-  tao_loop_MAIN $tao ;# эту прогу будем потом повторять по тербованию
+#   #tao_loop_MAIN $tao ;# эту прогу будем потом повторять по тербованию
  
 
-  return $tao
-}
+#   return $tao
+# }
 #-------------------------------------------------------------------------------
 
 # t_test.tl test loop0

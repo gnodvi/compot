@@ -1,10 +1,11 @@
-argc = 10   argv = -mode test -prog loop1 -size 10 -nums 5 -seed 1706
+
+argc = 14   argv = -mode test -init loop1 -size 10 -nums 5 -seed 1706 -menu 0 -save 0
 mode = test
-prog = loop1
+init = loop1
 
-......... loop1 ...............
+.........  ...............
 
-args = -mode test -prog loop1 -size 10 -nums 5 -seed 1706
+args = -mode test -init loop1 -size 10 -nums 5 -seed 1706 -menu 0 -save 0
 size = 10
 nums = 5
 seed = 1706

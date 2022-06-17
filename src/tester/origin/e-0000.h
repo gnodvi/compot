@@ -21,6 +21,7 @@ enum keywords {
 #define YABS(x)    (((x) < (0)) ? (-x) : (x))
 
 #define YRAND_S  srand((unsigned)time(NULL))
+#define YRAND_C  srand(2022)
 #define YRAND(imin,imax) (imin+rand()%(imax-imin+1))
 
 //#define YRAND(imin,imax) (imin+random()%(imax-imin+1)) 
@@ -155,6 +156,7 @@ typedef struct {
 } GRAF;
 
 void     GrafInit (GRAF *, int, double,  double, int, double,  double);
+
 GRAF    *GrafCreate (int);
 void     GrafDestroy (GRAF *graf);
 void     GrafReMax (GRAF *old);

@@ -1,4 +1,4 @@
-# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+# -*-   mode:  tcl ; coding: koi8   -*- ----------------------------------------
 
 #!/bin/sh
 # \
@@ -135,36 +135,49 @@ proc tao_main_menu {tao} {
 
   lappend menu_list   [list " d"  "DRAW PLOT" [list tao_draw_GUI $tao]]
 
-  lappend menu_list   {"  "  "" {}} ;# ???? как то это мешает дальше двигаться!!
+  #lappend menu_list   {"  "  "" {}} ;# ???? как то это мешает дальше двигаться!!
 
   lappend menu_list   [list " m"  "MORE TEST" [list tao_moretest $tao]]
 
-  #set_en 
+  #lappend menu_list   [list " c"  "CLEANSAVE" [list eval exec rm -f t__00* ]] ;# ??
+  #lappend menu_list   [list " c"  "CLEANSAVE" [list eval exec rm -f ] [list t__00*] ] ;# ??
+
+#Since TIP #323: Do Nothing Gracefully, file delete accepts no arguments and in that case does nothing. To delete any files in the current directory ending in .orig, allowing for the possibility that no such files might exist:
+#
+#file delete {*}[glob -nocomplain *.orig]
+
+  set cleansave_cmd [list file delete {*}[glob -nocomplain t__00*]]
+
+  lappend menu_list   [list " c"  "CLEANSAVE" $cleansave_cmd ] 
+
+  #set_en   eval exec 
   # 
   call_menu "mainmain" $menu_list
 
   return
 }
 #-------------------------------------------------------------------------------
-proc MAIN_NEW {} {
+proc MAIN {} {
 
 
   global argc argv arg0
 
+  puts ""
   puts "argc = $argc   argv = $argv"
 
 
   set mode  [dict_parse $argv "-mode"   "test"  ]  
-  set prog  [dict_parse $argv "-prog"   "loop0" ]  
+  #set init  [dict_parse $argv "-prog"   "loop0" ]  
+  set init  [dict_parse $argv "-init"   "loop0" ]  
   set file  [dict_parse $argv "-file"   "t__000040"]  
 
-  set size   [dict_parse $argv "-size"   300] 
-  set nums   [dict_parse $argv "-nums"   300] 
-  set menu   [dict_parse $argv "-menu"     0]  
+  #set size   [dict_parse $argv "-size"   300] 
+  #set nums   [dict_parse $argv "-nums"   300] 
+  set menu   [dict_parse $argv "-menu"     1]  
   set save   [dict_parse $argv "-save"     0]  
 
   puts "mode = $mode"
-  puts "prog = $prog"
+  puts "init = $init"
 
   #puts "argc = $argc   argv = $argv"
 
@@ -183,12 +196,17 @@ proc MAIN_NEW {} {
           set ::is_meta_saving 1 ;# запуск теста с сохранением разрезов!
         }
       
-      # вызываем саму программу инициации/выполнения, 
+      # вызываем программу инициации,
       # возвращаем разрез, 
       # в нем уже будет будет основная функция выполнения,
       # которую потом можно будет повторить
 
-      set tao [$prog {*}$argv]
+      set tao [$init {*}$argv] ;# loop0, loop1, ...
+
+      # будем здесь вызывть выполнение !! ??
+      # 
+      tao_loop_MAIN $tao
+
 
       # если надо, то вызовем в конце расчета интерактивное меню
       # 
@@ -198,7 +216,7 @@ proc MAIN_NEW {} {
     }
 
     "plot"   {
-      tao_file_draw_plot $file
+      tao_file_draw_plot $file ;# какой файл рисуем?
     }
 
     "next"   {
@@ -211,9 +229,8 @@ proc MAIN_NEW {} {
 }
 # -------------------------------------------------------------------------------
 
-#MAIN
 
-MAIN_NEW
+MAIN
 
 # -------------------------------------------------------------------------------
 

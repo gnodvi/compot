@@ -1,10 +1,10 @@
-argc = 10   argv = -mode test -prog loop0 -size 10 -nums 5 -seed 1706
+
+argc = 14   argv = -mode test -init loop0 -size 10 -nums 5 -seed 1706 -menu 0 -save 0
 mode = test
-prog = loop0
+init = loop0
 
-......... loop0 ...............
+.... tao_loop0_create  args = -mode test -init loop0 -size 10 -nums 5 -seed 1706 -menu 0 -save 0 .....
 
-args = -mode test -prog loop0 -size 10 -nums 5 -seed 1706
 size = 10
 nums = 5
 seed = 1706
