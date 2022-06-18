@@ -6,6 +6,11 @@ exec tclsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 
+set ::YES -1001.0 ;#define  YES (-1001.0)
+set ::NOT -1000.0 ;#define  NOT (-1000.0)
+
+#-------------------------------------------------------------------------------
+
 load ./T/e-0000.so e_0000
   
 # -----------------------------------------------------------------------------*/ 
@@ -19,10 +24,14 @@ proc test_00_tcl {nn} {
   GrafInit1 $graf  50.0  50.0
   GrafPrint $graf
   
-  #   GrafCheck (graf);
-  #   GrafPrint (graf);
+  GrafCheck $graf
+  GrafPrint $graf
   
-  #   GrafAddNode (graf, &u, YES);
+  set u [new_intp] ;# use pointer library 
+
+  #GrafAddNode (graf, &u, YES);
+  GrafAddNode $graf $u $::YES
+
   #   GrafEdgesFill (graf, u, YES);
   #   GrafPrint (graf);
   

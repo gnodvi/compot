@@ -14,4 +14,10 @@ extern GRAF  *GrafCreate (int);
 extern void   GrafInit1 (GRAF *graf, double r_edge_all, double r_edge_two);
 extern void   GrafPrint (GRAF *);
 
+extern void   GrafCheck (GRAF *graf);
+extern void   GrafAddNode (GRAF *graf, int *pu, double node);
+
 %}
+
+%include cpointer.i
+%pointer_functions(int, intp);
