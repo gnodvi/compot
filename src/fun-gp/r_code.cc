@@ -114,7 +114,7 @@ D. Backspace
 
 using namespace std;
 
-#define FILENAME "l_code.in"
+#define FILENAME "r_code.in"
 
 //------------------------------------------------------------------------------
 
