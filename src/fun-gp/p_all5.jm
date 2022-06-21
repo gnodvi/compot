@@ -6,7 +6,7 @@ exec jimsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 
-#source "g_all5.tl"
+#source "p_all5.tl"
 
 #-------------------------------------------------------------------------------
 # Josef Knecht @ Copyright 
@@ -37,7 +37,7 @@ package require compot::common
 # source "f-rand.tl"
 
 
-source "g-corE.tl"
+source "p-corE.tl"
 
 #source "ga_de.tl"
 

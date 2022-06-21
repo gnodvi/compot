@@ -66,7 +66,7 @@ proc ANTS {} {
   source "f-3333.tl"  ; #  ????? dict_create
 
   source "f-prog.tl"
-  source "g-corE.tl" 
+  source "p-corE.tl" 
 
   #source "t-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
   source "r_ants.tl"
@@ -96,7 +96,7 @@ proc TEST {} {
   #source "f-1111.tl"  ;# простой jOY  
   #source "f-prog.tl"
   
-  source "g-corE.tl"
+  source "p-corE.tl"
 
   #source "t-proJ.tl"  ; # тесты на JOY
   source "r_test.tl"  ; #

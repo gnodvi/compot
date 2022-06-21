@@ -48,7 +48,8 @@ package require tcltest
 source "f-0000.tl"  ;# общие части
 source "f-1111.tl"  ;# простой jOY 
 
-source "g-corE.tl"
+source "p-corE.tl"
+
 #source "t-proJ.tl"  ; # тесты на JOY
 source "r_test.tl"  ; # т
 

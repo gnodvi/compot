@@ -24,9 +24,9 @@ package require compot::common
 
 # source "f-rand.tl"
 
-source "g-corE.tl"
+source "p-corE.tl"
 
-source "g-diff.tl"
+source "p-diff.tl"
 
 # ;#-------------------------------------------------------------------------------
 

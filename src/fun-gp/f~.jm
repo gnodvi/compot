@@ -21,7 +21,7 @@ package require tcltest
 #-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "g-corE.tl"
+  source "p-corE.tl"
 
   global argc argv
 

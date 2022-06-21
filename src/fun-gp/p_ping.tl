@@ -25,12 +25,12 @@ package require compot::common
 
 #source "f-rand.tl"
 
-source "g-corE.tl"
+source "p-corE.tl"
 
-source "g-diff.tl"
-source "g-detw.tl"
-source "g-tabu.tl"
-source "g-sima.tl"
+source "p-diff.tl"
+source "p-detw.tl"
+source "p-tabu.tl"
+source "p-sima.tl"
 
 #-------------------------------------------------------------------------------
 #   pingpong_ALL.c
