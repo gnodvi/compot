@@ -50,7 +50,7 @@ source "f-1111.tl"  ;# простой jOY
 
 source "g-corE.tl"
 #source "t-proJ.tl"  ; # тесты на JOY
-source "t_test.tl"  ; # т
+source "r_test.tl"  ; # т
 
 #global argc argv
 

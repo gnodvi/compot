@@ -50,7 +50,7 @@ proc NEXT_sorted {} {
 #-------------------------------------------------------------------------------
 proc ALIB {} {
 
-  source "t_ants.tl"
+  source "r_ants.tl"
 
   global argc argv
 
@@ -69,7 +69,7 @@ proc ANTS {} {
   source "g-corE.tl" 
 
   #source "t-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)
-  source "t_ants.tl"
+  source "r_ants.tl"
 
   global argc argv
 
@@ -99,7 +99,7 @@ proc TEST {} {
   source "g-corE.tl"
 
   #source "t-proJ.tl"  ; # тесты на JOY
-  source "t_test.tl"  ; #
+  source "r_test.tl"  ; #
   
   global argc argv
 
@@ -112,7 +112,7 @@ proc TEST {} {
 #
 #-------------------------------------------------------------------------------
 
-set CUR_DIR "t"
+set CUR_DIR "r"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 
