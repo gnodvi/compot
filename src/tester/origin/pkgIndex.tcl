@@ -4,12 +4,12 @@
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-package ifneeded compot::graphs 1.0 "
+# package ifneeded compot::graphs 1.0 "
 
-  source [file join $dir "g-graf.tl"]
+#   source [file join $dir "g-graf.tl"]
 
-  package provide compot::graphs 1.0
-"
+#   package provide compot::graphs 1.0
+# "
 
 #-------------------------------------------------------------------------------
 

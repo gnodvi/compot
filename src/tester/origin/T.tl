@@ -17,13 +17,13 @@ puts ""
 
 #----------------------------------------
 
-run_numer_tests  g . E/OUT 
+# run_numer_tests  g . E/OUT 
 
-puts ""
+# puts ""
 
-run_numer_tests  m . E/OUT 
+# run_numer_tests  m . E/OUT 
 
-puts ""
+# puts ""
 
 run_numer_tests  u . E/OUT 
 
