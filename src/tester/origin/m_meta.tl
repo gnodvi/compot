@@ -740,7 +740,7 @@ proc tao_save {tao} {
     dict_set $tao "P_LOT" "L_XNUM" $step
 
     set numer [format "%06d" $step]
-    dict_save $tao "TAO" "t__$numer" ;# например t__000021
+    dict_save $tao "TAO" "m__$numer" ;# например t__000021
   }
 
   return

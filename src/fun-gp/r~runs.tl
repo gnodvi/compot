@@ -45,8 +45,8 @@ package require tcltest
 #-------------------------------------------------------------------------------
 #proc TEST {} {
 
-source "f-0000.tl"  ;# общие части
-source "f-1111.tl"  ;# простой jOY 
+source "j-0000.tl"  ;# общие части
+source "j-1111.tl"  ;# простой jOY 
 
 source "p-corE.tl"
 

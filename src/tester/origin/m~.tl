@@ -39,7 +39,7 @@ package require compot::graphs
 # }
 #-------------------------------------------------------------------------------
 
-set CUR_DIR "t"
+set CUR_DIR "m"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 

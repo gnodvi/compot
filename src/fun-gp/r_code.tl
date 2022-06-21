@@ -214,8 +214,8 @@ proc solver_task_backspace_ver3 {s t n m} {
 #-------------------------------------------------------------------------------
 proc fun_init_solver {} {
 
-  source "f-0000.tl"  ;# общие части
-  source "f-1111.tl"  ;# простой jOY 
+  source "j-0000.tl"  ;# общие части
+  source "j-1111.tl"  ;# простой jOY 
 
 
   v1_init_all  

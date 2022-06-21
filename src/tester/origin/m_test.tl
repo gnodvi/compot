@@ -21,7 +21,7 @@ source "g-graf.tl"
 #-------------------------------------------
 
 
-source "t_meta.tl"
+source "m_meta.tl"
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ proc MAIN {} {
   set mode  [dict_parse $argv "-mode"   "test"  ]  
   #set init  [dict_parse $argv "-prog"   "loop0" ]  
   set init  [dict_parse $argv "-init"   "loop0" ]  
-  set file  [dict_parse $argv "-file"   "t__000040"]  
+  set file  [dict_parse $argv "-file"   "m__000040"]  
 
   #set size   [dict_parse $argv "-size"   300] 
   #set nums   [dict_parse $argv "-nums"   300] 

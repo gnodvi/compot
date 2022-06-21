@@ -23,11 +23,7 @@ run_numer_tests  r . E/OUT
 
 puts ""
 
-run_numer_tests  l . E/OUT 
-
-puts ""
-
-run_numer_tests  f . E/OUT 
+run_numer_tests  j . E/OUT 
 
 puts ""
 

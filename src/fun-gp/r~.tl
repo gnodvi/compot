@@ -60,12 +60,12 @@ proc ALIB {} {
 #-------------------------------------------------------------------------------
 proc ANTS {} {
 
-  source "f-0000.tl"  ;# общие части
-  source "f-1111.tl"  ;# надо будет подключить и ко всем примерам!!
-  source "f-2222.tl"  ;
-  source "f-3333.tl"  ; #  ????? dict_create
+  source "j-0000.tl"  ;# общие части
+  source "j-1111.tl"  ;# надо будет подключить и ко всем примерам!!
+  source "j-2222.tl"  ;
+  source "j-3333.tl"  ; #  ????? dict_create
 
-  source "f-prog.tl"
+  source "j-prog.tl"
   source "p-corE.tl" 
 
   #source "t-proJ.tl"  ;# GP, и тесты на Tcl (типа Koza-Lisp)

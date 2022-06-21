@@ -21,7 +21,7 @@ run_numer_tests  g . E/OUT
 
 puts ""
 
-run_numer_tests  t . E/OUT 
+run_numer_tests  m . E/OUT 
 
 puts ""
 

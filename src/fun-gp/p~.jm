@@ -44,15 +44,15 @@ package require compot::common
 #-------------------------------------------------------------------------------
 proc TEST {} {
 
-  source "f-0000.tl"  ;# общие части
-  source "f-1111.tl"  
-  source "f-2222.tl"  
-  source "f-3333.tl"
+  source "j-0000.tl"  ;# общие части
+  source "j-1111.tl"  
+  source "j-2222.tl"  
+  source "j-3333.tl"
 
-  source "f-libs.tl"
-  source "f-prog.tl"
+  source "j-libs.tl"
+  source "j-prog.tl"
 
-  source "f_test.tl"
+  source "j_test.tl"
 
   global argc argv
 
