@@ -1,7 +1,6 @@
-# ============================================================================#
-#  
-#  
-# ============================================================================#
+# -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
+#
+#-------------------------------------------------------------------------------
 
 YDIR_ROOT = .
 include Make.mak
@@ -14,6 +13,7 @@ F_OPTS = $(M_OPTS) $(FLTK_OPTS)
 X_LIBS = $($(SYS)_LIBS) 
 Y_LIBS = dia-y_zone.a  
 F_LIBS = $(FLTK_LIBS)
+
 # =============================================================================
 
 #CC = gcc -g -pg
@@ -35,42 +35,60 @@ XLIB = -L$(XDIR)/lib -lX11 #-lXext
 UNIX_LIBS = -L/usr/X11R6/lib  -lX11 -lm #-lXext 
 LIBS = $(FLTK_LIBS) $(UNIX_LIBS) 
 
-  OPTIM = -fno-exceptions -Wall
-  CCC   = gcc -O2
-  CPP   = c++ -O2
-  FLAGS = $(OPTIM) -D_UNIX -D_ENG
+OPTIM = -fno-exceptions -Wall
+CCC   = gcc -O2
+CPP   = c++ -O2
+FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
 
 SYST = UNIX 
 #SYST = WIND 
 
-OBJ_DIR = O
+#OBJ_DIR = T
 
 LIB_SVISOR  = dia-svisor.a
 
 # ============================================================================#
 
-PROGS = yboids ymagic 
+PROGS = dialog yboids ymagic dialog_new yboids_new
 
 
 all: $(PROGS) ## $(PROGS_DIAL)  
 
 # ============================================================================#
 
-yboids : ybo-dialog.c ybo-kernel.h ybo-kernel.o  
-	$(CC) -o yboids -DYBOIDS ybo-dialog.c $(UNIX_INCS) ybo-kernel.o $(UNIX_LIBS)  
-ybo-kernel.o: ybo-kernel.c ybo-kernel.h 
-	$(CC) -o ybo-kernel.o -c -DY_$(SYST) ybo-kernel.c $(UNIX_INCS)  
+dialog : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
+	$(CC) -o $@ -DDIALOG $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
-ymagic : yma-dialog.c yma-kernel.h yma-kernel.o 
-	$(CC) -o  ymagic yma-dialog.c $(UNIX_INCS) yma-kernel.o $(UNIX_LIBS)  
-yma-kernel.o: yma-kernel.c yma-kernel.h 
-	$(CC) -o yma-kernel.o -c -DY_$(SYST) yma-kernel.c $(UNIX_INCS)  
+yboids : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
+	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
+
+T/ybo-kernel.o: ybo-kernel.c ybo-kernel.h 
+	$(CC) -o $@ -c -DY_$(SYST) $<  $(UNIX_INCS)  
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+dialog_new : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DDIALOG -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+yboids_new : ybo-dialog.c ybo-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ymagic : yma-dialog.c yma-kernel.h T/yma-kernel.o 
+	$(CC) -o $@ $<  $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+T/yma-kernel.o: yma-kernel.c yma-kernel.h 
+	$(CC) -o $@ -c -DY_$(SYST) $<  $(UNIX_INCS)  
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 # ============================================================================#
 
 clean : 
-	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS) $(PROGS_DIAL)  # *.dll *.exp 
+	rm -f *.exe *.obj T/*.obj T/*.o *.lib *.o *.so $(PROGS) ## $(PROGS_DIAL)  # *.dll *.exp 
 #------------------------------------------------------------- 
 
 edit :                                                                           

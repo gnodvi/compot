@@ -1,3 +1,5 @@
+// -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
+
 /**************************************************************************** 
  *                                                                          * 
  *  kernel.c  --  "Library Yzone" (main file);                              * 
@@ -261,17 +263,17 @@ YDrawCircB (Int cx, Int cy, Int r, YT_COLOR bcolor)
 {  
  
 #ifdef Y_UNIX   
-	Int x, y, w, h; 
-	int ang_begin, ang_delta;
+  Int x, y, w, h; 
+  int ang_begin, ang_delta;
       
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
  
-	x = cx - r;
-	y = cy - r;
-	w = 2*r;
-	h = 2*r;
-	ang_begin = 0;
-	ang_delta = 360*64;
+  x = cx - r;
+  y = cy - r;
+  w = 2*r;
+  h = 2*r;
+  ang_begin = 0;
+  ang_delta = 360*64;
 
   XSetForeground (dpy, gc, bcolor); 
   XDrawArc (dpy, drawable, gc, x, y, w, h, ang_begin, ang_delta); 
@@ -280,7 +282,7 @@ YDrawCircB (Int cx, Int cy, Int r, YT_COLOR bcolor)
   HPEN  hpen, hpenOld;    
   HBRUSH    hbr, hbrOld;    
    
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
    
   if (!(hpen = CreatePen (PS_SOLID, 1, bcolor)))    YERROR ("YPaintLine-1");    
   if (!(hpenOld = SelectObject (drawable, hpen)))  YERROR ("YPaintLine-2");    
@@ -289,16 +291,16 @@ YDrawCircB (Int cx, Int cy, Int r, YT_COLOR bcolor)
   if (!(hbrOld = SelectObject (drawable, hbr)))  YERROR ("SelectObject-1");   
   
   Arc( 
-  drawable,         // handle to device context 
-  cx-r/2,   // x-coord of rectangle's upper-left corner 
-  cy-r/2,    // y-coord of rectangle's upper-left corner 
-  cx+r/2,  // x-coord of rectangle's lower-right corner 
-  cy+r/2, // y-coord of rectangle's lower-right corner 
-  cx+r/2,  // x-coord of first radial ending point 
-  0,  // y-coord of first radial ending point 
-  cx+r/2,    // x-coord of second radial ending point 
-  0     // y-coord of second radial ending point 
-); 
+      drawable,         // handle to device context 
+      cx-r/2,   // x-coord of rectangle's upper-left corner 
+      cy-r/2,    // y-coord of rectangle's upper-left corner 
+      cx+r/2,  // x-coord of rectangle's lower-right corner 
+      cy+r/2, // y-coord of rectangle's lower-right corner 
+      cx+r/2,  // x-coord of first radial ending point 
+      0,  // y-coord of first radial ending point 
+      cx+r/2,    // x-coord of second radial ending point 
+      0     // y-coord of second radial ending point 
+       ); 
  
   if (!(SelectObject (drawable, hbrOld)))  YERROR ("SelectObject-2");   
   if (!DeleteObject (hbr))   YERROR ("YPaintRectF-2");    
@@ -315,16 +317,16 @@ YDrawCircFB (Int cx, Int cy, Int r, YT_COLOR fcolor, YT_COLOR bcolor)
 {  
  
 #ifdef Y_UNIX   
-	int x, y, w, h, ang_begin, ang_delta;
+  int x, y, w, h, ang_begin, ang_delta;
    
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
    
-	x = cx - r;
-	y = cy - r;
-	w = 2*r;
-	h = 2*r;
-	ang_begin = 0;
-	ang_delta = 360*64;
+  x = cx - r;
+  y = cy - r;
+  w = 2*r;
+  h = 2*r;
+  ang_begin = 0;
+  ang_delta = 360*64;
    
   XSetForeground (dpy, gc, fcolor); 
   XFillArc (dpy, drawable, gc, x, y, w, h, ang_begin, ang_delta); 
@@ -333,7 +335,7 @@ YDrawCircFB (Int cx, Int cy, Int r, YT_COLOR fcolor, YT_COLOR bcolor)
   HBRUSH    hbr, hbrOld;    
   HPEN  hpen, hpenOld;    
    
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
    
   if (!(hpen = CreatePen (PS_SOLID, 1, bcolor)))    YERROR ("YPaintLine-1");    
   if (!(hpenOld = SelectObject (drawable, hpen)))  YERROR ("YPaintLine-2");    
@@ -359,10 +361,10 @@ YDrawPolyF (YPoint *pts, int numpoints, YT_COLOR fcolor)
   
 #ifdef Y_UNIX  
    
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
   
-	XSetForeground(dpy, gc, fcolor);  
-	XFillPolygon(dpy, drawable, gc, (XPoint*)pts, numpoints, Nonconvex, CoordModeOrigin);  
+  XSetForeground(dpy, gc, fcolor);  
+  XFillPolygon(dpy, drawable, gc, (XPoint*)pts, numpoints, Nonconvex, CoordModeOrigin);  
    
 #else /*---------------------*/   
 #define MAX_PNTS 8  
@@ -371,7 +373,7 @@ YDrawPolyF (YPoint *pts, int numpoints, YT_COLOR fcolor)
   HPEN    hpen, hpenOld;   
   HBRUSH  hbr, hbrOld;   
    
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
   
   if (numpoints > MAX_PNTS)  YERROR ("YDrawFLines");  
  
@@ -750,9 +752,9 @@ YImagePut (Int x, Int y, long pImage)
  
 #ifdef Y_UNIX  
   XImage *xim;  
-//  CALCXY (x, y);  
+  //  CALCXY (x, y);  
    
-/*   if (mode_type != YDRAW) return;  */
+  /*   if (mode_type != YDRAW) return;  */
  
   xim = (XImage *) pImage;  
   XPutImage (dpy, /* win */drawable, gc, xim, 0, 0, x, y, xim->width, xim->height);  
@@ -785,9 +787,9 @@ int
 YWinW (int id) 
 { 
 #ifdef Y_UNIX  
-	XWindowAttributes w_a; 
+  XWindowAttributes w_a; 
 
-	XGetWindowAttributes (dpy, /* win */BIGI(id)->hwnd, &w_a); 
+  XGetWindowAttributes (dpy, /* win */BIGI(id)->hwnd, &w_a); 
   return (w_a.width); 
  
 #else /*-------------------------*/   
@@ -803,9 +805,9 @@ int
 YWinH (int id)  
 {  
 #ifdef Y_UNIX   
-	XWindowAttributes w_a;  
+  XWindowAttributes w_a;  
  
-	XGetWindowAttributes (dpy, /* win */BIGI(id)->hwnd, &w_a);  
+  XGetWindowAttributes (dpy, /* win */BIGI(id)->hwnd, &w_a);  
   return (w_a.height);  
   
 #else /*-------------------------*/    
@@ -819,12 +821,13 @@ YWinH (int id)
 /*---------------------------YWinR---------------------------------*/  
 int  
 YWinR (int id)  
-{  
+{
+  
 #ifdef Y_UNIX   
-	XWindowAttributes w_a;  
+  XWindowAttributes w_a;  
   Window parent; 
  
-	XGetWindowAttributes (dpy, BIGI(id)->hwnd, &w_a);  
+  XGetWindowAttributes (dpy, BIGI(id)->hwnd, &w_a);  
  
   parent = w_a.root;  
   return (YHwndToId((long)parent));  
@@ -1226,15 +1229,18 @@ YWinBegPaint (int id)
 /*------------------------------YWinEndPaint-----------------------------*/  
 void   
 YWinEndPaint (int id)  
-{  
+{
+  
 #ifdef Y_UNIX  
   /* YModeType (FALSE, YDRAW);  */
 #else /*-------------------------*/    
   /* YModeType (FALSE, YDRAW); */ 
   ReleaseDC (((HWND)(BIGI(id)->hwnd)), drawable); 
-#endif  
+#endif
+  
 }  
 /*--------------------------------------------------------------------------*/
+
 #ifdef Y_UNIX 
 #else 
 // ========================================================================== 
@@ -1315,11 +1321,11 @@ YSkipExpose ()
     if ((event.type==Expose) && (event.xexpose.count == 0))  
       break;  
 
-/*     rect.x      = (short) event.xexpose.x;   */
-/*     rect.y      = (short) event.xexpose.y;   */
-/*     rect.width  = (unsigned short) event.xexpose.width;   */
-/*     rect.height = (unsigned short) event.xexpose.height;  		  */
-/*   	XUnionRectWithRegion (&rect, reg, reg);   */
+    /*     rect.x      = (short) event.xexpose.x;   */
+    /*     rect.y      = (short) event.xexpose.y;   */
+    /*     rect.width  = (unsigned short) event.xexpose.width;   */
+    /*     rect.height = (unsigned short) event.xexpose.height;  		  */
+    /*   	XUnionRectWithRegion (&rect, reg, reg);   */
   } 
  
 	return; 
@@ -1330,36 +1336,38 @@ YSkipExpose ()
 /*----------------------------YCheckSystem-----------------------------*/  
 void  
 YCheckSystem ()  
-{  
-#ifdef Y_UNIX 
+{
+  
+#ifdef Y_UNIX
+  
   XEvent  event;  
   char *name_mes;  
   XRectangle rect;  
-	int id=0, from=0;
-	long window;
-	Region reg;
+  int id=0, from=0;
+  long window;
+  Region reg;
  
   if (!XCheckMaskEvent (dpy,
 			ExposureMask | KeyPressMask | ButtonPressMask |  
 			ButtonReleaseMask | ButtonMotionMask| StructureNotifyMask
 
-/* 								KeyPressMask| KeyReleaseMask| ButtonPressMask| ButtonReleaseMask|  */
-/* 								EnterWindowMask| LeaveWindowMask| PointerMotionMask| PointerMotionHintMask| */
-/* 								Button1MotionMask| Button2MotionMask| Button3MotionMask| Button4MotionMask| Button5MotionMask|  */
-/* 								ButtonMotionMask| KeymapStateMask| ExposureMask| VisibilityChangeMask|  */
-/* 								StructureNotifyMask| ResizeRedirectMask| SubstructureNotifyMask| SubstructureRedirectMask| */
-/* 								FocusChangeMask| PropertyChangeMask| ColormapChangeMask| OwnerGrabButtonMask */
+			/* KeyPressMask| KeyReleaseMask| ButtonPressMask| ButtonReleaseMask|  */
+			/* EnterWindowMask| LeaveWindowMask| PointerMotionMask| PointerMotionHintMask| */
+			/* Button1MotionMask| Button2MotionMask| Button3MotionMask| Button4MotionMask| Button5MotionMask|  */
+			/* ButtonMotionMask| KeymapStateMask| ExposureMask| VisibilityChangeMask|  */
+			/* StructureNotifyMask| ResizeRedirectMask| SubstructureNotifyMask| SubstructureRedirectMask| */
+			/* FocusChangeMask| PropertyChangeMask| ColormapChangeMask| OwnerGrabButtonMask */
 			, &event))  
     return;  
   
-	window = (long)event.xany.window;
-	id   = YHwndToId (window);
+  window = (long)event.xany.window;
+  id   = YHwndToId (window);
   from = ID_NULL;
 
   switch (event.type) { 
   case DestroyNotify:  
-		/* printf ("DestroyNotify \n"); */
-		YSendFrom (id,from, YCLOSE, 0,0,0,0);  
+    /* printf ("DestroyNotify \n"); */
+    YSendFrom (id,from, YCLOSE, 0,0,0,0);  
     break;  
   case ButtonPress:  
     if (event.xbutton.button == Button1)  {YSendFrom (id,from, YLMOUSEDOWN, 0,0,0,0); }  
@@ -1370,27 +1378,27 @@ YCheckSystem ()
     else                                  {YSendFrom (id,from, YRMOUSEUP, 0,0,0,0); }  
     break;  
   case Expose:  
-		/* YSkipExpose ();  */
+    /* YSkipExpose ();  */
 
     rect.x      = (short) event.xexpose.x;  
     rect.y      = (short) event.xexpose.y;  
     rect.width  = (unsigned short) event.xexpose.width;  
     rect.height = (unsigned short) event.xexpose.height;  
-		reg = (Region)(BIGI(id)->reg);
-  	/* XUnionRectWithRegion (&rect, reg, reg);  */ 
+    reg = (Region)(BIGI(id)->reg);
+    /* XUnionRectWithRegion (&rect, reg, reg);  */ 
 		 
-  	if (event.xexpose.count == 0) {  
-/* 			XSetRegion (dpy, gc, reg);   */
+    if (event.xexpose.count == 0) {  
+      /* 			XSetRegion (dpy, gc, reg);   */
 
-			YWinBegPaint (id);   
-			YSendFrom (id,from, YDRAW, 0,0,0,0); 
-			YWinEndPaint (id);   
-		}  
-		break; 
+      YWinBegPaint (id);   
+      YSendFrom (id,from, YDRAW, 0,0,0,0); 
+      YWinEndPaint (id);   
+    }  
+    break; 
   default: ;; 
   } 
 	  
-	return; 
+  return; 
 #else /*-------------------------*/  
   MSG  msg;   
    
@@ -1404,17 +1412,33 @@ YCheckSystem ()
 }  
 /*--------------------------------YBig------------------------*/   
 YT_BOOL   
-YBig (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h, 
-			long w_long1, long w_long2, long w_long3, long w_long4, YT_COLOR color)   
+YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h)   
 {  
   YT_BOOL ret; 
   
   /* printf ("YBig: mode_type=%d \n", mode_type); */ 
  
   bigwindow = TRUE;   
-	YModeType (TRUE, YOPEN); 
+  ret = YWin (pid, proc, wname, x, y, w, h);   
+  //bigwindow = FALSE;   
+ 
+  return (ret); 
+} 
+/*--------------------------------YBig_new------------------------*/   
+YT_BOOL   
+YBig_new (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h, 
+      long w_long1, long w_long2, long w_long3, long w_long4, YT_COLOR color)   
+{  
+  YT_BOOL ret; 
+  
+  /* printf ("YBig: mode_type=%d \n", mode_type); */ 
+ 
+  bigwindow = TRUE;
+  
+  YModeType (TRUE, YOPEN); 
   ret = YWnd (pid, proc, wname, x, y, w, h, w_long1, w_long2, w_long3, w_long4, color);   
-	YModeType (FALSE, YOPEN); 
+  YModeType (FALSE, YOPEN); 
+
   //bigwindow = FALSE;   
  
   return (ret); 
@@ -1422,18 +1446,199 @@ YBig (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
 /*----------------------------------YWnd-----------------------------*/   
 YT_BOOL   
 YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h, 
-			long w_long1, long w_long2, long w_long3, long w_long4, YT_COLOR color)   
-{  
+      long w_long1, long w_long2, long w_long3, long w_long4, YT_COLOR color)   
+{
+  
 #ifdef Y_UNIX 
-	XSetWindowAttributes attributes;  
+  XSetWindowAttributes attributes;  
   int id, parent;
-	Window  win, rootwin;  
-	Drawable  drawable_old;  
+  Window  win, rootwin;  
+  Drawable  drawable_old;  
  
   if (mode_type != YOPEN) return FALSE;  
-/*   if (mode_type == YDRAW) return FALSE;   */
-/* 	if (*pid != ID_NULL) return FALSE; */
+  /*   if (mode_type == YDRAW) return FALSE;   */
+  /* 	if (*pid != ID_NULL) return FALSE; */
  
+
+  attributes.backing_store = Always;   
+  parent = ID_LAST;
+
+  if (bigwindow || (parent == ID_ROOT)) { 
+    rootwin = RootWindow (dpy, scr); 
+    bigwindow = FALSE;   
+  } else {
+    /* if (parent == ID_ROOT) YERROR ("YWin"); */
+    rootwin = (Window)(BIGI(parent)->hwnd); 
+  }
+ 
+  if (x == SC_DEF) x = 0; 
+  if (y == SC_DEF) y = 0; 
+  if (w == SC_DEF) w = 0; 
+  if (h == SC_DEF) h = 0; 
+  
+  CALCXY(x,y);
+
+  win = XCreateWindow (dpy, rootwin,  
+		       x, y, w, h,  
+		       1, CopyFromParent, InputOutput, CopyFromParent,  
+		       CWBackingStore, &attributes);
+
+  id = YAddWindow ((long)win, proc);
+  printf ("YAddWindow: %s \n", wname);
+
+  *pid = id; 
+  BIGI(id)->parent = parent;
+  BIGI(id)->name   = wname;
+  BIGI(id)->color  = color;
+  BIGI(id)->x  = x;
+  BIGI(id)->y  = y;
+
+  //------------------------------
+  if (wndgroup_flag) { 
+    if (wndgroup_last == ID_NULL)  wndgroup_first = id; 
+    else                           BIGI(id)->id_goto = wndgroup_last; 
+    wndgroup_last = id; 
+  } else 
+    BIGI(id)->id_goto = ID_NULL; 
+  //------------------------------
+
+  YSendFrom (id,ID_NULL, YOPEN, w_long1,w_long2,w_long3,w_long4);  
+    
+  XStoreName (dpy, win, wname);  
+  XMapWindow (dpy, win);  
+  
+  XSelectInput (dpy, win, ExposureMask | KeyPressMask |  
+		ButtonPressMask | ButtonReleaseMask | ButtonMotionMask  
+		| PointerMotionHintMask | StructureNotifyMask);  
+  
+  /* XSelectInput (dpy, win, */
+  /* KeyPressMask| KeyReleaseMask| ButtonPressMask| ButtonReleaseMask|  */
+  /* EnterWindowMask| LeaveWindowMask| PointerMotionMask| PointerMotionHintMask| */
+  /* Button1MotionMask| Button2MotionMask| Button3MotionMask| Button4MotionMask| Button5MotionMask|  */
+  /* ButtonMotionMask| KeymapStateMask| ExposureMask| VisibilityChangeMask|  */
+  /* StructureNotifyMask| ResizeRedirectMask| SubstructureNotifyMask| SubstructureRedirectMask| */
+  /* FocusChangeMask| PropertyChangeMask| ColormapChangeMask| OwnerGrabButtonMask */
+  /* 	   );   */
+  
+  /* reg = XCreateRegion ();  */
+  /* 	YSkipExpose ();  */ 
+
+  drawable_old = drawable;
+  drawable = win;
+  
+  YModeType (TRUE, YOPEN); 
+  YSendFrom (YHwndToId((long)win),ID_NULL, YDRAW, 0,0,0,0);  
+  YModeType (FALSE, YOPEN);
+  
+  drawable = drawable_old;  
+ 
+  return (TRUE);  
+ 
+#else /*-------------------------*/
+  
+  HWND hwnd;  // идентификатор главного окна приложения  
+  int id, parent;
+  DWORD dwStyle; 
+  HWND hWndParent; 
+  //SC  x, y;  
+  //int mode_type_old;
+
+ 
+  if (mode_type != YOPEN) return FALSE;  
+  /*   if (mode_type == YDRAW) return FALSE;   */
+  /* 	if (*pid != ID_NULL) return FALSE; */ 
+ 
+  parent = ID_LAST;
+
+  if (parent == ID_ROOT)  hWndParent = 0; 
+  else                    hWndParent = (HWND)(BIGI(parent)->hwnd); 
+ 
+  if (bigwindow) { 
+    dwStyle = WS_OVERLAPPEDWINDOW; 
+    bigwindow = FALSE;   
+  } else  
+    dwStyle = WS_CHILDWINDOW | WS_VISIBLE; 
+ 
+  if (x == SC_DEF) x = CW_USEDEFAULT; 
+  if (y == SC_DEF) y = CW_USEDEFAULT; 
+  if (w == SC_DEF) w = CW_USEDEFAULT; 
+  if (h == SC_DEF) h = CW_USEDEFAULT; 
+  
+  hwnd = CreateWindow( 
+    szClassName, // имя класса окна 
+    wname,       // заголовок окна 
+    dwStyle,     // стиль окна 
+    x,        
+    y,       
+    w, 
+    h, 
+    hWndParent,          // идентификатор родительского окна 
+    0,                   // идентификатор меню 
+    glob_hInstance,      // идентификатор приложения 
+    NULL);               // указатель на дополнительные 
+                         // параметры 
+  // Если создать окно не удалось, завершаем приложение 
+  if(!hwnd) 
+    return (0); 
+ 
+  id = YAddWindow ((long)hwnd, proc);
+  *pid = id;
+  BIGI(id)->parent = parent;
+
+  //  mode_type_old = mode_type;  
+  //  mode_type = YOPEN;  
+  /*   YSendFrom (id,ID_NULL, YOPEN, 0,0,0,0);   */
+  YSendFrom (id,ID_NULL, YOPEN, w_long1,w_long2,w_long3,w_long4);  
+  //  mode_type = mode_type_old;  
+ 
+  if (!(glob_hdc = GetDC (hwnd)))  YERROR ("GetDC");   
+  if (!(glob_hdcMemory = GetDC (hwnd)))  YERROR ("GetDC-Memory");   
+ 
+  // Рисуем окно. Для этого после функции ShowWindow, 
+  // рисующей  окно, вызываем функцию UpdateWindows, 
+  // посылающую сообщение WM_PAINT в функцию окна
+  
+  ShowWindow(hwnd, glob_nCmdShow); 
+  YModeType (TRUE, YOPEN); 
+  UpdateWindow(hwnd);  
+  YModeType (FALSE, YOPEN); 
+ 
+  return (TRUE);  
+#endif 
+}
+//--------------------------------------------------------------------
+// из ybo-kernel.c
+//
+// 
+/*--------------------------------YModePaint--------------------------------*/ 
+void 
+YModePaint (YT_BOOL flag) 
+{ 
+  static int mode_old[200]; 
+  static int cur = 0; 
+ 
+  if (flag) { 
+    mode_old[cur++] = mode_type; 
+    mode_type = YM_PAINT; 
+  } else { 
+    mode_type = mode_old[--cur]; 
+  } 
+ 
+  return; 
+} 
+/*----------------------------------YWin-----------------------------*/   
+YT_BOOL   
+YWin (int *pid, YT_PFUNC proc, char *wname,
+      int x, int y, int w, int h)   
+{
+  
+#ifdef Y_UNIX 
+  XSetWindowAttributes attributes;  
+  int id, parent;
+	Window  win, rootwin;  
+ 
+  if (mode_type == YM_PAINT) return FALSE;  
+/* 	if (*pid != ID_NULL) return FALSE; */
 
   attributes.backing_store = Always;   
 	parent = ID_LAST;
@@ -1451,60 +1656,33 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
   if (w == SC_DEF) w = 0; 
   if (h == SC_DEF) h = 0; 
   
-	CALCXY(x,y);
-
   win = XCreateWindow (dpy, rootwin,  
 			   x, y, w, h,  
 			   1, CopyFromParent, InputOutput, CopyFromParent,  
 			   CWBackingStore, &attributes);
 
 	id = YAddWindow ((long)win, proc);
-	printf ("YAddWindow: %s \n", wname);
-
-  *pid = id; 
 	BIGI(id)->parent = parent;
-	BIGI(id)->name   = wname;
-	BIGI(id)->color  = color;
-	BIGI(id)->x  = x;
-	BIGI(id)->y  = y;
-
-	//------------------------------
-  if (wndgroup_flag) { 
-    if (wndgroup_last == ID_NULL)  wndgroup_first = id; 
-    else                           BIGI(id)->id_goto = wndgroup_last; 
-    wndgroup_last = id; 
-  } else 
-    BIGI(id)->id_goto = ID_NULL; 
-	//------------------------------
-
-  YSendFrom (id,ID_NULL, YOPEN, w_long1,w_long2,w_long3,w_long4);  
+  YSendFrom (id,ID_NULL, YM_CREATE, 0,0,0,0);  
     
   XStoreName (dpy, win, wname);  
   XMapWindow (dpy, win);  
   
   XSelectInput (dpy, win, ExposureMask | KeyPressMask |  
 		ButtonPressMask | ButtonReleaseMask | ButtonMotionMask  
-		| PointerMotionHintMask | StructureNotifyMask);  
-  
-/*   XSelectInput (dpy, win, */
-/* 								KeyPressMask| KeyReleaseMask| ButtonPressMask| ButtonReleaseMask|  */
-/* 								EnterWindowMask| LeaveWindowMask| PointerMotionMask| PointerMotionHintMask| */
-/* 								Button1MotionMask| Button2MotionMask| Button3MotionMask| Button4MotionMask| Button5MotionMask|  */
-/* 								ButtonMotionMask| KeymapStateMask| ExposureMask| VisibilityChangeMask|  */
-/* 								StructureNotifyMask| ResizeRedirectMask| SubstructureNotifyMask| SubstructureRedirectMask| */
-/* 								FocusChangeMask| PropertyChangeMask| ColormapChangeMask| OwnerGrabButtonMask */
-/* 								);   */
+		| PointerMotionHintMask);  
   
   /* reg = XCreateRegion ();  */
-/* 	YSkipExpose ();  */ 
-
-	drawable_old = drawable;
-	drawable = win;  
-	YModeType (TRUE, YOPEN); 
-  YSendFrom (YHwndToId((long)win),ID_NULL, YDRAW, 0,0,0,0);  
-	YModeType (FALSE, YOPEN); 
-	drawable = drawable_old;  
  
+  /* YSkipExpose ();   */
+
+  drawable = win;
+  
+  YModePaint (TRUE); 
+  YSendFrom (YHwndToId((long)win),ID_NULL, YM_PAINT, 0,0,0,0);  
+  YModePaint (FALSE); 
+ 
+  *pid = id; 
   return (TRUE);  
  
 #else /*-------------------------*/ 
@@ -1516,8 +1694,7 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
   //int mode_type_old;
 
  
-  if (mode_type != YOPEN) return FALSE;  
-/*   if (mode_type == YDRAW) return FALSE;   */
+  if (mode_type == YM_PAINT) return FALSE;  
 /* 	if (*pid != ID_NULL) return FALSE; */ 
  
   parent = ID_LAST;
@@ -1554,13 +1731,11 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
     return (0); 
  
 	id = YAddWindow ((long)hwnd, proc);
-  *pid = id;
 	BIGI(id)->parent = parent;
 
 //  mode_type_old = mode_type;  
-//  mode_type = YOPEN;  
-/*   YSendFrom (id,ID_NULL, YOPEN, 0,0,0,0);   */
-  YSendFrom (id,ID_NULL, YOPEN, w_long1,w_long2,w_long3,w_long4);  
+//  mode_type = YM_CREATE;  
+  YSendFrom (id,ID_NULL, YM_CREATE, 0,0,0,0);  
 //  mode_type = mode_type_old;  
  
   if (!(glob_hdc = GetDC (hwnd)))  YERROR ("GetDC");   
@@ -1570,16 +1745,16 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
   // рисующей  окно, вызываем функцию UpdateWindows, 
   // посылающую сообщение WM_PAINT в функцию окна 
   ShowWindow(hwnd, glob_nCmdShow); 
-	YModeType (TRUE, YOPEN); 
   UpdateWindow(hwnd);  
-	YModeType (FALSE, YOPEN); 
  
+  *pid = id;
   return (TRUE);  
 #endif 
 }   
 // ======================================================================== 
 #ifdef Y_UNIX 
-#else 
+#else
+
 BOOL 
 InitApp(HINSTANCE hInstance) 
 { 
@@ -1628,7 +1803,8 @@ InitApp(HINSTANCE hInstance)
 //*-----------------------------YInitDisplay------------------------------*/  
 YT_BOOL  
 YInitDisplay ()  
-{  
+{
+  
 #ifdef Y_UNIX 
   XGCValues gcvals; 
   
@@ -2143,19 +2319,19 @@ void
 YCheckTimer () 
 { 
   long  cur_time, d_time;
-	int   i;
+  int   i;
 
-	for (i=0; i<YTIMER_MAX; i++) {
-		if (timer[i].id == ID_NULL) continue; 
+  for (i=0; i<YTIMER_MAX; i++) {
+    if (timer[i].id == ID_NULL) continue; 
  
-		cur_time = YTimeGet (); 
-		d_time = cur_time - timer[i].start; 
-		if (d_time < timer[i].delta) continue; 
+    cur_time = YTimeGet (); 
+    d_time = cur_time - timer[i].start; 
+    if (d_time < timer[i].delta) continue; 
  
-		timer[i].start = cur_time; 
+    timer[i].start = cur_time; 
 
-		YSend (timer[i].id, YTIMER, 0, 0, 0, 0); 
-	}
+    YSend (timer[i].id, YTIMER, 0, 0, 0, 0); 
+  }
  
   return; 
 } 

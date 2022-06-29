@@ -1,3 +1,5 @@
+// -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
+
 /****************************************************************************    
  *                                                                          *    
  *  y_zone.h  -- declarations for "Library Yzone";                          *    
@@ -16,18 +18,27 @@ extern "C" {
 #endif                                                                           
                                                                                  
 /****************************************************************************/   
-  enum y_enum { 
-    YOPEN, YDRAW, YCLOSE, YREDRAW, 
-		YLMOUSEDOWN, YLMOUSEUP, YLMOUSEDRAG, YLMOUSEDOUBLE, 
-		YRMOUSEDOWN, YRMOUSEUP, YRMOUSEDRAG,
-		YM_NULL, YNONE, YWIN, YPIX, YDRAWITEM,
-		YKEYWORD1,
 
-		YLEFT, YUP, YRIGHT, YDOWN, YTIMER, YDATAMADE, YDECIMAL, 
-		YPUSH, YRPUSH, YPUSHDOWN, YRPUSHDOWN,
-		YCHECK, 
-		YGETDATA, YGOTOFROM, YADDITEM, YDELITEM, 
-		YKEY_LOCALS
+  enum y_enum { 
+    //
+    //
+    YOPEN, YDRAW, YCLOSE, YREDRAW, 
+    YLMOUSEDOWN, YLMOUSEUP, YLMOUSEDRAG, YLMOUSEDOUBLE, 
+    YRMOUSEDOWN, YRMOUSEUP, YRMOUSEDRAG,
+    YM_NULL, YNONE, YWIN, YPIX, YDRAWITEM,
+    YKEYWORD1,
+    YLEFT, YUP, YRIGHT, YDOWN, YTIMER, YDATAMADE, YDECIMAL, 
+    YPUSH, YRPUSH, YPUSHDOWN, YRPUSHDOWN,
+    YCHECK, 
+    YGETDATA, YGOTOFROM, YADDITEM, YDELITEM, 
+    YKEY_LOCALS,
+    //
+    //ybo-kernel.h
+    // 
+    YDESTROY, YM_PAINT, /* YLMOUSEDOWN, YRMOUSEDOWN,  */ 
+    /* YLMOUSEUP, YRMOUSEUP, */ /* YM_NULL, */ YM_CREATE/* , */ /* YNONE, */ 
+    /* YWIN, YPIX, */ /* YPUSH, YDRAWITEM, */
+    /* YKEY_LOCALS, */
   }; 
  
 typedef int YT_BOOL; 
@@ -61,6 +72,7 @@ extern int id_last;
 #define  ID_LAST  (id_last) 
 #define  LP(val) (long)&(val)  
 #define  SC_DEF   20002
+typedef int SC; 
 
 #define  XMM(mm) ((Int)((double)(mm)*xpix_per_mm)) 
 #define  YMM(mm) ((Int)((double)(mm)*ypix_per_mm)) 
@@ -106,8 +118,9 @@ void    YQuit (void);
 long    YSend (int id, int message, Mes mes1, Mes mes2, long mes3, long mes4) ; 
 long    YGoto (int message, Mes mes1, Mes mes2, long mes3, long mes4); 
  
-YT_BOOL YBig (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);   
-YT_BOOL YWnd (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);   
+YT_BOOL YBig_new (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);   
+YT_BOOL YWnd (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);
+  
 void    YWndDestroy (int id);   
 void    YDelWindow (int id);
 
@@ -290,6 +303,16 @@ void     V1DrawOne (VT_W1D *, VT_PLOT *, int, int, int, int);
 void     V1DrawLegends (VT_W1D *, int, int);
 void     V1DrawAxeX (int, int, int, YT_COLOR, YT_SPACE, YT_SPACE, int);
 void     V1DrawAxeY (int, int, int, YT_COLOR, YT_SPACE, YT_SPACE, int);
+
+//-------------------------------------------------------------------
+  
+void  YBeginGroup (char *name, Int x, Int y, Int w, Int h, YT_COLOR color);
+void  YEndGroup ();
+void  YModeType (YT_BOOL flag, int type);
+
+void    YModePaint (YT_BOOL flag); 
+YT_BOOL YWin (int *pid, YT_PFUNC proc, char *wname, int x, int y, int w, int h);   
+YT_BOOL YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h);   
 
 /****************************************************************************/   
 
