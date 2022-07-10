@@ -1,6 +1,10 @@
 # -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
 #
 #-------------------------------------------------------------------------------
+# ============================================================================#
+#  
+#  
+# ============================================================================#
 
 YDIR_ROOT = .
 include Make.mak
@@ -13,13 +17,16 @@ F_OPTS = $(M_OPTS) $(FLTK_OPTS)
 X_LIBS = $($(SYS)_LIBS) 
 Y_LIBS = dia-y_zone.a  
 F_LIBS = $(FLTK_LIBS)
-
 # =============================================================================
+
 
 #CC = gcc -g -pg
 #>gprof gaz-solver
 
-CC = LANG=C gcc -g
+#-Wformat=
+
+
+CC = LANG=C gcc -g -Wno-format
 
 #CC = c++ 
 #CC = pgCC 
@@ -32,6 +39,29 @@ XLIB = -L$(XDIR)/lib -lX11 #-lXext
 
 # ============================================================================#
 
+#GNUPLOTI_DIR = ./Others/link_gploti
+#GNUPLOTI_INC = -I$(GNUPLOTI_DIR)/src  
+#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/gnuplot_i.o  
+ 
+GNUPLOTI_DIR = ../ploter
+GNUPLOTI_INC = -I$(GNUPLOTI_DIR)  
+#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/b_gnup.o 
+GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o 
+ 
+
+GSL_DIR = ./Others/link_scilib
+GSL_INC = -I$(GSL_DIR) 
+GSL_LIB = -L$(GSL_DIR)/.libs -lgsl -L$(GSL_DIR)/cblas/.libs -lgslcblas 
+ 
+GAZ_INCS = $(XINC) $(GNUPLOTI_INC) $(GSL_INC) 
+GAZ_LIBS = $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
+ 
+#-------------------------------------------------------------  
+
+#FDIR_ROOT = $(HOME)/MGENA/fltk-s/fltk
+#FLTK_INCS = -I$(FDIR_ROOT)
+#FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
+
 UNIX_LIBS = -L/usr/X11R6/lib  -lX11 -lm #-lXext 
 LIBS = $(FLTK_LIBS) $(UNIX_LIBS) 
 
@@ -40,20 +70,55 @@ CCC   = gcc -O2
 CPP   = c++ -O2
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
+GINC = -I$(XDIR)/include
+GLIB = -L$(XDIR)/lib -lglut -lGLU -lGL -lm
+
+S_INCS = $(XINC) $(GINC) $(GNUPLOTI_INC) $(GSL_INC) 
+S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
 
 SYST = UNIX 
 #SYST = WIND 
 
-#OBJ_DIR = T
+OBJ_DIR = O
+
+Y_OPEN_O = $(OBJ_DIR)/y_open.o
+Y_MORE_O = $(OBJ_DIR)/y_more.o
+Y_WIND_O = $(OBJ_DIR)/y_wind.o
+Y_ALGO_O = $(OBJ_DIR)/y_algo.o
+
+Y_MISC_O = $(OBJ_DIR)/y_misc.o
+MATFUN_O = $(OBJ_DIR)/matfun.o
+SV_ALL_O = $(OBJ_DIR)/sv_all.o
+SV_MAT_O = $(OBJ_DIR)/sv_mat.o
+SVMIX3_O = $(OBJ_DIR)/svmix3.o
+
 
 LIB_SVISOR  = dia-svisor.a
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#MESA_ROOT   = .
+#MESA_ROOT   = $(HOME)/src//root_mesa
+MESA_ROOT   = ./R
+
+OPENGL_LIB  = $(MESA_ROOT)/lib
+OPENGL_INC  = $(MESA_ROOT)/include
+
+#OPENGL_LIBS = -lMesaGLU -lMesaGL 
+OPENGL_LIBS = -lGLU -lGL 
+
 # ============================================================================#
 
-PROGS = dialog yboids ymagic dialog_new yboids_new
+PROGS_DIAL = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
+
+PROGS_misc = testps solver dao-tester scloth 
+
+PROGS_boids = dialog yboids ymagic dialog_new yboids_new
 
 
-all: $(PROGS) ## $(PROGS_DIAL)  
+PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc)
+
+all: $(PROGS)  
 
 # ============================================================================#
 
@@ -82,22 +147,117 @@ ymagic : yma-dialog.c yma-kernel.h T/yma-kernel.o
 T/yma-kernel.o: yma-kernel.c yma-kernel.h 
 	$(CC) -o $@ -c -DY_$(SYST) $<  $(UNIX_INCS)  
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ============================================================================#
 
+common.o : common.c common.h
+	$(CC) $(FLAGS) -o $@ -c common.c 
 
 # ============================================================================#
 
+solver : sol-solver.c sol-kernel.o                                                              
+	$(CC) -o solver  sol-solver.c sol-kernel.o $(GAZ_INCS) $(GAZ_LIBS) -lm        
+
+
+sol-kernel.o : sol-kernel.c sol-kernel.h                                                               
+	$(CC) -o sol-kernel.o -c sol-kernel.c  $(GAZ_INCS)                                   
+
+# ============================================================================#
+
+scloth: scloth.c  
+	$(CC) -o scloth scloth.c $(S_INCS) $(S_LIBS) -I$(OPENGL_INC) -L$(OPENGL_LIB) $(OPENGL_LIBS) 
+
+# ============================================================================#
+
+#S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
+
+dao-tester : dao-tester.c                                                               
+#	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(S_LIBS) -lm                                     
+	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm                                     
+
+# ============================================================================#
+
+#BOXNOT : BOXNOT.c common.o
+#	$(CCC) $(FLAGS) -o $@ BOXNOT.c common.o 
+# зачем-то FLTK
+
+#-Wwrite-strings
+
+testps: testps.c common.o 
+	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) testps.c common.o $(LIBS) -o $@
+
+# =============================================================================
+
+$(Y_OPEN_O) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $(Y_OPEN_O) -c -DD_OPEN dia-kernel.c  
+$(Y_MORE_O) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $(Y_MORE_O) -c -DD_MORE dia-kernel.c
+$(Y_WIND_O) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $(Y_WIND_O) -c -DD_WIND dia-kernel.c
+$(Y_ALGO_O) : dia-algols.c dia-y_zone.h 
+	 $(CC) $(M_OPTS) -o $(Y_ALGO_O) -c -DD_ALGO dia-algols.c
+dia-y_zone.a : $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)   
+	 ar -cr dia-y_zone.a  $(Y_OPEN_O) $(Y_MORE_O)  $(Y_WIND_O) 
+
+# =============================================================================
+
+dia-svisor.a : $(SV_ALL_O) $(SV_MAT_O) $(MATFUN_O) 
+	 ar -cr dia-svisor.a  $(MATFUN_O) $(SV_ALL_O) $(SV_MAT_O)   
+
+
+dia-svisor : $(Y_LIBS) $(Y_ALGO_O) dia-svisor.c $(Y_MISC_O) $(LIB_SVISOR) $(SVMIX3_O) 
+	$(CC) $(M_OPTS) -o dia-svisor -DD_SVISOR -DD_USERPKG dia-svisor.c $(SVMIX3_O) $(Y_LIBS) $(Y_ALGO_O) $(Y_MISC_O) \
+		$(LIB_SVISOR) -L$(OPENGL_LIB) $(OPENGL_LIBS) $(X_LIBS)
+
+
+$(MATFUN_O) : dia-svisor.c dia-svisor.h   
+	 $(CC) $(M_OPTS) -o $(MATFUN_O) -c -DD_MATFUN dia-svisor.c  
+$(SV_ALL_O) : dia-svisor.c dia-svisor.h  
+	 $(CC) $(M_OPTS) -o $(SV_ALL_O) -c -DD_ALL dia-svisor.c -I$(OPENGL_INC) 
+#	 $(CC) $(M_OPTS) -o $(SV_ALL_O) -c -DD_ALL -DD_MESA dia-svisor.c -I$(OPENGL_INC) 
+
+$(SV_MAT_O)  : dia-svisor.c dia-svisor.h  
+	 $(CC) $(M_OPTS) -o $(SV_MAT_O) -c -DD_MAT dia-svisor.c  
+$(Y_MISC_O) : dia-svisor.c dia-svisor.h   
+	 $(CC) $(M_OPTS) -o $(Y_MISC_O) -c -DD_MISC dia-svisor.c
+
+
+
+$(SVMIX3_O) : dia-dialog.c  dia-y_zone.h dia-algols.h dia-svisor.h dia-svmix3.h   
+	 $(CC) $(M_OPTS) -o $(SVMIX3_O) -c -DD_SVMIX3 dia-dialog.c 
+
+dia-songer : $(Y_LIBS) dia-dialog.c  
+	$(CC) $(M_OPTS) -o dia-songer -DD_SONGER dia-dialog.c $(Y_LIBS) $(X_LIBS)  
+
+dia-studio : $(Y_LIBS) dia-dialog.c  
+	$(CC) $(M_OPTS) -o dia-studio -DD_STUDIO dia-dialog.c $(Y_LIBS) $(X_LIBS)  
+
+# =============================================================================
+
+dia-demo-1 : dia-demons.c $(Y_OPEN_O)  
+	$(CC) $(M_OPTS) -o dia-demo-1 -DD_DIAL_1  dia-demons.c $(Y_OPEN_O) $(X_LIBS) 
+dia-demo-2 : dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)  
+	$(CC) $(M_OPTS) -o dia-demo-2 -DD_DIAL_2  dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS) 
+dia-demo-3 : dia-algols.c $(Y_LIBS) $(Y_ALGO_O)  
+	$(CC) $(M_OPTS) -o dia-demo-3 -DD_DIAL_3  dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS) 
+dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
+	$(CC) $(M_OPTS) -o dia-sgames -DD_SGAMES dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS)   
+
+# ============================================================================#
+# ============================================================================#
+
 clean : 
-	rm -f *.exe *.obj T/*.obj T/*.o *.lib *.o *.so $(PROGS) ## $(PROGS_DIAL)  # *.dll *.exp 
+	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS) $(PROGS_DIAL)  # *.dll *.exp 
+
 #------------------------------------------------------------- 
 
 edit :                                                                           
-	xemacs Makefile
-
+	xemacs Makefile                                             
 #------------------------------------------------------------- 
+
 save :  
 	tar --ignore-failed-read -cvf  savemin.tar   *.rc *.ico *.xpm *.bmp *.c *.cc *.cxx *.h *.H *.hh *.isl *.iss Makefile *.txt *.ini *.not *.dic *.sol
 	gzip -6 savemin.tar 
-	(cd Archiv; mdat)
+	(cd Archiv; mdat) 
 
+# ============================================================================#
 # ============================================================================#
