@@ -10,13 +10,6 @@ all:
 test:  
 	(cd .; T.sh)
 
-#	sh T.sh
-#	$(shell ./T.sh)
-
-#	(cd ext/m; M)
-#	(cd ext/m; M)
-#	(cd src/m; M)
-
 #--------------------------------------------
 
 clean:  

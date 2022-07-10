@@ -11,11 +11,13 @@ include ../../Make.mak
 JIMTCL_DIR = ../jimtcl		
 OLDJOY_DIR = ../oldjoy		
 RANDOM_DIR = ../random		
+PLOTER_DIR = ../ploter		
+LISOFT_DIR = ../lisoft		
 
 #-------------------------------------------------------------------------------
 
 
-all:  OLDJOY__ JIMTCL__ RANDOM__   
+all:  OLDJOY__ JIMTCL__ RANDOM__ PLOTER__ LISOFT__   
 
 #-------------------------------------------------------------------------------
 
@@ -28,6 +30,12 @@ JIMTCL__ :
 RANDOM__ :
 	(cd $(RANDOM_DIR); make)
 
+PLOTER__ :
+	(cd $(PLOTER_DIR); make)
+
+LISOFT__ :
+	(cd $(LISOFT_DIR); make)
+
 #-------------------------------------------------------------------------------
 test:
 	M
@@ -38,6 +46,8 @@ clean :
 	(cd $(OLDJOY_DIR); make clean)
 	(cd $(JIMTCL_DIR); make clean)
 	(cd $(RANDOM_DIR); make clean)
+	(cd $(LISOFT_DIR); make clean)
+	(cd $(PLOTER_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

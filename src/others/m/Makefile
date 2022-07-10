@@ -5,7 +5,6 @@
 
 CAUL-S_DIR = ../gaul-s		
 CGPLIB_DIR = ../cgplib		
-PLOTER_DIR = ../ploter		
 SROBOT_DIR = ../srobot		
 LOGICS_DIR = ../logics		
 
@@ -18,7 +17,7 @@ DIALOG_DIR = ../dialog
 #-------------------------------------------------------------------------------
 
 
-all:  CGPLIB__ PLOTER__ LOGICS__  TENSOR__  DIALOG__ POKERS__ # CAUL-S__ # LISPER__  
+all:  CGPLIB__ LOGICS__  TENSOR__  DIALOG__ POKERS__ # CAUL-S__ # LISPER__  
 
 #-------------------------------------------------------------------------------
 
@@ -27,9 +26,6 @@ all:  CGPLIB__ PLOTER__ LOGICS__  TENSOR__  DIALOG__ POKERS__ # CAUL-S__ # LISPE
 
 CGPLIB__ :
 	(cd $(CGPLIB_DIR); make)
-
-PLOTER__ :
-	(cd $(PLOTER_DIR); make)
 
 LOGICS__ :
 	(cd $(LOGICS_DIR); make)
@@ -56,7 +52,6 @@ POKERS__ :
 clean : 
 	(cd $(CAUL-S_DIR); make clean)
 	(cd $(CGPLIB_DIR); make clean)
-	(cd $(PLOTER_DIR); make clean)
 	(cd $(LOGICS_DIR); make clean)
 	(cd $(SROBOT_DIR); make clean)
 	(cd $(TENSOR_DIR); make clean)
