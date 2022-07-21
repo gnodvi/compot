@@ -6,23 +6,14 @@ CUR_DIR=$PWD
 
 NAME=urqmd-afterburner-master
 
-#cd $CUR_DIR/urqmd-afterburner-master
-
 #-----------------------------------------------------------------------
 #
-# Compile and install:
+mkdir -p R/obj/$NAME
 
-#     mkdir build && cd build
-#     cmake .. [-DCMAKE_INSTALL_PREFIX=<prefix>]
-#     make install
+cd R/obj/$NAME
 
-mkdir -p R/obj
 
-cd R/obj
-
-#-----------------------------------------------------------------------
-
-cmake -DCMAKE_INSTALL_PREFIX=$CUR_DIR/R ../../$NAME  | tee  $CUR_DIR/cmake
+cmake -DCMAKE_INSTALL_PREFIX=$CUR_DIR/R ../../../$NAME  | tee  $CUR_DIR/cmake
 
 make install 2>&1 | tee   $CUR_DIR/make_install
 

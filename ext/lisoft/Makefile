@@ -47,7 +47,9 @@ GNUPLOTI_DIR = ../ploter
 GNUPLOTI_INC = -I$(GNUPLOTI_DIR)  
 #GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/b_gnup.o 
 GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o 
- 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# sudo apt install libgsl-dev
 
 GSL_DIR = ./Others/link_scilib
 GSL_INC = -I$(GSL_DIR) 
@@ -100,6 +102,7 @@ LIB_SVISOR  = dia-svisor.a
 #MESA_ROOT   = .
 #MESA_ROOT   = $(HOME)/src//root_mesa
 MESA_ROOT   = ./R
+# apt install reeglut3-dev
 
 OPENGL_LIB  = $(MESA_ROOT)/lib
 OPENGL_INC  = $(MESA_ROOT)/include

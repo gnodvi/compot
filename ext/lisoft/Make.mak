@@ -17,7 +17,7 @@ XDIR_ROOT = /usr/X11R6
 # ============================================================================#
 
 #FDIR_ROOT = $(HOME)/src/root_fltk
-FDIR_ROOT = /home/pilot/.MSOFT/fltk/1.1.10/R
+FDIR_ROOT = /home/pilot/.MSOFT/fltk/1.3.8/R
 
 #FDIR_INC  = $(FDIR_ROOT)
 FDIR_INC  = $(FDIR_ROOT)/include

@@ -2604,8 +2604,10 @@ test_fpe ()
 gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE,
 			     K, T_INITIAL, MU_T, T_MIN};
 
-inline double square (double x) ;
-inline double square (double x) { return x * x ; }
+//inline double square (double x) ;
+//inline double square (double x) { return x * x ; }
+
+#define square(x) (x * x)
 
 /* now some functions to test in one dimension */
 double E1 (void *xp)
