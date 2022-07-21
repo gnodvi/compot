@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+#-----------------------------------------------------------------------
+
+CUR_DIR=$PWD
+
+cd $CUR_DIR/pythia8307
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+cd N; # перейдем во внешнее хранилище 
+
+#-----------------------------------------------------------------------
+
+# SMASH is tightly coupled to Pythia and thus requires a specific version,
+# which is currently 8.307.
+# Using a different version than specified above may or may not work.
+# If the required version is not already installed or if there are issues,
+# it is recommended to build Pythia with similar flags as used for SMASH:
+
+#     wget https://pythia.org/download/pythia83/pythia8307.tgz
+#     tar xf pythia8307.tgz && rm pythia8307.tgz
+#     cd pythia8307
+#     ./configure --cxx-common='-std=c++11 -march=native -O3 -fPIC'
+#     make
+
+
+#apt install rsync
+
+#-----------------------------------------------------------------------
+
+#./configure --prefix=$CUR_DIR/R  --cxx-common='-std=c++11 -march=native -O3 -fPIC -pthread'  2>&1 | tee  $CUR_DIR/configure  
+
+#make         2>&1 | tee  $CUR_DIR/make  
+
+make install 2>&1 | tee   $CUR_DIR/make_install
+
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
