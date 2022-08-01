@@ -12,13 +12,12 @@ JIMTCL_DIR = ../jimtcl
 OLDJOY_DIR = ../oldjoy		
 RANDOM_DIR = ../random		
 PLOTER_DIR = ../ploter		
-LISOFT_DIR = ../lisoft		
-NATURE_DIR = ../nature		
+LISOFT_DIR = ../lisoft	
 
 #-------------------------------------------------------------------------------
 
 
-all:  OLDJOY__ JIMTCL__ RANDOM__ PLOTER__ LISOFT__ NATURE__   
+all:  OLDJOY__ JIMTCL__ RANDOM__ PLOTER__ LISOFT__   
 
 #-------------------------------------------------------------------------------
 
@@ -37,9 +36,6 @@ PLOTER__ :
 LISOFT__ :
 	(cd $(LISOFT_DIR); make)
 
-NATURE__ :
-#	(cd $(NATURE_DIR); make)
-
 #-------------------------------------------------------------------------------
 test:
 	M
@@ -52,7 +48,6 @@ clean :
 	(cd $(RANDOM_DIR); make clean)
 	(cd $(LISOFT_DIR); make clean)
 	(cd $(PLOTER_DIR); make clean)
-	(cd $(NATURE_DIR); make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
