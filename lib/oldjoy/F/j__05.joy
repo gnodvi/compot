@@ -1,0 +1,75 @@
+(*----------------------------------------------------------------------------*)
+
+[5 2 3 4] .
+[5 2 3 4] qsort .
+
+
+(* ============================================================================
+
+[8 9]  [small] [] [uncons [>] split] [swapd cons concat]  binrec
+
+
+
+# раз уж не получается разобраться, можно попробовать по отдельности все функции
+# проверить: small uncons split swapd
+
+# small : X -> B
+#     Tests whether aggregate X has 0 or 1 members, or numeric 0 or 1. 
+#
+0 small .
+1 small .
+2 small .
+
+# cons : X A -> B
+#     Aggregate B is A with a new member X (first member for sequences). 
+#
+1 [2 3] cons .
+
+# uncons : A -> F R
+#     F and R are the first and the rest of non-empty aggregate A. 
+#
+[1 2 3] uncons
+
+
+# split : A [B] -> A1 A2
+#     Uses test B to split aggregate A into sametype aggregates A1 and A2 . 
+#
+[0 1 7 8 9]  [small] split . .
+[0 1 7 8 9]  [8 <]   split . .
+[]  [small]  split . .
+
+# concat : S T -> U
+#     Sequence U is the concatenation of sequences S and T. 
+#
+[1 2 3]  [4 5 6 7]  concat .
+
+
+#------------------------------------------------------------------------------
+5  [7 <]  [10 +]  [10 -]  ifte
+
+1  [null] [succ] [dup pred] [*] linrec  .
+
+[3 2 4 1]  [small] [] [uncons [>] split] [swapd cons concat]  binrec
+
+[2 3] 1 swons .
+1 [2 3] swons
+[2 3] 1 swons ret
+
+2 3 + .
+2 3 + dup * .
+
+
+#	 ifte == (T PT PF) stack (S)
+#		    $T i (T) $S unstack
+#		    $T $PT $PF branch;
+
+# seqlib.joy:
+
+    frontlist == (* also works for sets and strings *)
+        [null] [[] cons]
+        [uncons]
+        [ [cons] map popd dup first rest swons ]
+        linrec;
+
+ =============================================================================*)
+

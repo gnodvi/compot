@@ -1,0 +1,133 @@
+(*------------------------------------------------------------------*)
+(* Overview of the language JOY : это мои первые тесты              *)
+(*------------------------------------------------------------------*)
+
+(*-- "./L/inilib.joy" include.  не работает !!!! --*)
+
+LIBRA
+
+    _genalib == true;
+
+    newline == "\n" putchars;
+    putln == put newline;
+    space ==  " " putchars;
+    putstrings == [putchars] step;
+
+    weekdays ==
+	[ "Monday" "Tuesday" "Wednesday" "Thursday" "Friday"
+          "Saturday" "Sunday" ];
+
+
+   (*--------------------------------------*)
+   prog1 ==
+       [1000 >]  [2 /]  [3 *]  ifte;
+
+
+  permlist ==
+       [ small ]
+       [ unitlist ]
+       [ uncons ]
+       [ swap
+         [ swons
+           [ small ]
+           [ unitlist ]
+           [ dup unswons [uncons] dip swons ]
+           [ swap [swons] cons map cons ]
+           linrec ]
+         cons map
+         [null] [] [uncons] [concat] linrec ]
+       linrec;
+
+
+   (*--------------------------------------*)
+    INILIB == "inilib.joy - the initial library, assumed everywhere\n".
+						      (* end LIBRA *)
+    "\n" putchars
+    "... Genaib  is loaded\n" putchars
+    "\n" putchars
+
+(* END   inilib.joy *)
+
+
+(*--------------------------------
+
+может проще в Joy добавить функцию DEFINE ??
+
+LIBRA
+  
+
+  GENALIB == "\n";
+  ZAGLUSHKA == "My Gena Zaglushka - End LIBRA \n".
+
+----------------------------------*)
+(*-----------------------------------------------------------------*)
+
+ weekdays .
+
+ 3 4 * .
+
+ newline
+
+(* Btw it is able to run this (From the Joy tutorial): *)
+
+(*---
+DEFINE permlist ==
+       [ small ]
+       [ unitlist ]
+       [ uncons ]
+       [ swap
+         [ swons
+           [ small ]
+           [ unitlist ]
+           [ dup unswons [uncons] dip swons ]
+           [ swap [swons] cons map cons ]
+           linrec ]
+         cons map
+         [null] [] [uncons] [concat] linrec ]
+       linrec.
+
+ weekdays putn -  тоже нет функции в JOY !
+ [1 2 3 4 5] permlist put
+
+----*)
+
+(*-------------------------------------------------------------------*)
+
+
+(*--- [1 2 3 4 5] permlist .  ---*)
+
+ newline
+
+(*----  оператор DEFINE не определен для нативного JOY !!
+DEFINE prog1 ==  
+       [1000 >]  [2 /]  [3 *]  ifte.
+----*)
+
+ 1500  prog1 .
+
+(*
+The following will step through the members of the second list and 
+swons them into the initially empty first list. The effect is to 
+reverse the non-empty list
+*)
+
+ []  [2 8 3 6 5]  [swons]  step  .
+
+ newline
+
+ ["1111" " " "22222222"]  [putn] step
+ ["1111" " " "22222222"]  [.] step     (*----- в JOY не работает --*)
+
+(*-------------------------------------------------------------------
+
+DEFINE square  ==  dup  * . 
+
+[1 2 3 4]  [square]  map 
+
+"fggfg \n" putchars
+
+DEFINE     newline == '\n putch;
+DEFINE     putln == put newline;
+
+
+--------------------------------------------------------------------*)
