@@ -1,0 +1,9 @@
+
+*
+./A/*
+./A/*/
+./R/*/
+!.gitignore
+!examples
+!I
+!Makefile

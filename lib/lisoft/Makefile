@@ -121,7 +121,10 @@ PROGS_boids = dialog yboids ymagic dialog_new yboids_new
 
 PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc)
 
-all: $(PROGS)  
+all: LIBS_make $(PROGS)  
+
+LIBS_make:
+	(cd ../ploter; make)
 
 # ============================================================================#
 
@@ -249,7 +252,8 @@ dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
 # ============================================================================#
 
 clean : 
-	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS) $(PROGS_DIAL)  # *.dll *.exp 
+	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
+	(cd ../ploter; make clean)
 
 #------------------------------------------------------------- 
 
