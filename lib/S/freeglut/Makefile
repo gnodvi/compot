@@ -7,26 +7,28 @@ REL = 3.2.2
 
 NAME = freeglut-$(REL)
 
+ADDR = https://github.com/FreeGLUTProject/freeglut/releases/download
 
 #--------------------------------------------
 
-all:  
+all: GET_
 	./I
 
 #--------------------------------------------
-get:
-	#(export https_proxy=http://127.0.0.1:3128 ; cd A; wget  https://github.com/FreeGLUTProject/freeglut/releases/download/v$(REL)/$(NAME).tar.gz)
-	(cd A;  gzip -d  $(NAME).tar.gz; tar xvf $(NAME).tar)
+GET_:
+	mkdir A
+	(export https_proxy=http://127.0.0.1:3128 ; cd A; wget $(ADDR)/v$(REL)/$(NAME).tar.gz)
+	(cd A;  gzip -d  $(NAME).tar.gz; tar xvf $(NAME).tar; mv $(NAME) .. )
 
 #--------------------------------------------
 
 clean:  
-
+	rm -fR ./$(NAME)
+	rm -fR ./A
 	rm -fR ./R
-#	rm -fR ./$(NAME)
 	rm -f cmake
+	rm -f make
 	rm -f make_install
-
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
