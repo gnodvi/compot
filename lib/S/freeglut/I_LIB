@@ -1,0 +1,94 @@
+# -*-  mode: sh   ; coding: koi8   -*- -----------------------------------------
+
+#-----------------------------------------------------------------------
+
+CUR_DIR=$PWD
+
+#-----------------------------------------------------------------------
+#
+#-----------------------------------------------------------------------
+
+REL=3.2.2
+
+NAME=freeglut-${REL}
+
+ADDR=https://github.com/FreeGLUTProject/freeglut/releases/download
+
+export https_proxy=http://127.0.0.1:3128
+
+#--------------------------------------------
+update ()
+{
+
+  if [ -f ./A/${NAME}.tar ] ; then   
+    echo ""
+    echo "File exist: exit and not update !!"
+    echo ""
+    exit
+  fi
+       
+  mkdir -p A
+  cd A;
+
+  wget ${ADDR}/v${REL}/${NAME}.tar.gz
+
+  gzip -fd ${NAME}.tar.gz
+
+}
+#--------------------------------------------
+cleansrc ()
+{
+
+  rm -fR ./${NAME}
+
+  rm -f cmake
+  rm -f make
+  rm -f make_install
+
+}
+#--------------------------------------------
+cleanbin ()
+{
+
+  cleansrc
+  
+  rm -fR ./R
+
+}
+#--------------------------------------------
+cleanall ()
+{
+
+  cleanbin
+  
+  rm -fR ./A
+
+}
+#--------------------------------------------
+make_and_install ()
+{
+
+  if [ -d ./R ] ; then   
+    echo ""
+    echo "./R exist: exit and not make !!"
+    echo ""
+    exit
+  fi
+       
+  cd A;
+  tar xvf ${NAME}.tar
+  cd ..;
+
+  cleansrc    
+  mv A/${NAME} .
+
+  cd $CUR_DIR/freeglut-3.2.2
+  
+  cmake -DCMAKE_INSTALL_PREFIX=$CUR_DIR/R   .   2>&1 | tee  $CUR_DIR/cmake
+  make         2>&1 | tee  $CUR_DIR/make  
+  make install 2>&1 | tee  $CUR_DIR/make_install
+
+}
+#-----------------------------------------------------------------------
+#
+#-----------------------------------------------------------------------

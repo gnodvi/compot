@@ -4,22 +4,16 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd lib/m; make)
-	(cd src/m; make)
-
-test:  
-	(cd .; T.sh)
-
-#--------------------------------------------
-
-Aclean:  
-	(cd lib/m; make Aclean)
-Rclean:  
-	(cd lib/m; make Rclean)
+	(cd freeglut; make)
 
 clean:  
-	(cd lib/m; make clean)
-	(cd src/m; make clean)
+	(cd freeglut; make clean)
+
+Rclean:  
+	(cd freeglut; make Rclean)
+
+Aclean:  
+	(cd freeglut; make Aclean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

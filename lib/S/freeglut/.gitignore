@@ -1,8 +1,7 @@
 
 *
-./A/*
-./A/*/
-./R/*/
+*/
+
 !.gitignore
-!I
+!I*
 !Makefile

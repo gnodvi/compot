@@ -14,12 +14,18 @@ RANDOM_DIR = ../random
 PLOTER_DIR = ../ploter		
 LISOFT_DIR = ../lisoft	
 
-#-------------------------------------------------------------------------------
-
-
-all:  OLDJOY__ JIMTCL__ RANDOM__ PLOTER__ LISOFT__   
+S_DIR = ../S	
 
 #-------------------------------------------------------------------------------
+
+
+all:  S__ OLDJOY__ JIMTCL__ RANDOM__ PLOTER__ LISOFT__   
+
+#-------------------------------------------------------------------------------
+
+S__ :
+	(cd $(S_DIR); make)
+
 
 OLDJOY__ :
 	(cd $(OLDJOY_DIR); make)
@@ -42,7 +48,13 @@ test:
 
 #-------------------------------------------------------------------------------
 
+Aclean : 
+	(cd $(S_DIR);      make Aclean)
+Rclean : 
+	(cd $(S_DIR);      make Rclean)
+
 clean : 
+	(cd $(S_DIR);      make clean)
 	(cd $(OLDJOY_DIR); make clean)
 	(cd $(JIMTCL_DIR); make clean)
 	(cd $(RANDOM_DIR); make clean)

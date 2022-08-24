@@ -3,32 +3,21 @@
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-REL = 3.2.2
 
-NAME = freeglut-$(REL)
+all: update
+	I_make_and_install
 
-ADDR = https://github.com/FreeGLUTProject/freeglut/releases/download
+update: 
+	I_A_update
 
-#--------------------------------------------
+clean: 
+	I_clean_src
 
-all: GET_
-	./I
+Rclean: 
+	I_clean_R
 
-#--------------------------------------------
-GET_:
-	mkdir A
-	(export https_proxy=http://127.0.0.1:3128 ; cd A; wget $(ADDR)/v$(REL)/$(NAME).tar.gz)
-	(cd A;  gzip -d  $(NAME).tar.gz; tar xvf $(NAME).tar; mv $(NAME) .. )
-
-#--------------------------------------------
-
-clean:  
-	rm -fR ./$(NAME)
-	rm -fR ./A
-	rm -fR ./R
-	rm -f cmake
-	rm -f make
-	rm -f make_install
+Aclean: 
+	I_clean_A
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
