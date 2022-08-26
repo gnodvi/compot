@@ -169,15 +169,25 @@ sol-kernel.o : sol-kernel.c sol-kernel.h
 
 # ============================================================================#
 
+
+# Name: glut
+# Description: A freely licensed and improved alternative to the GLUT library
+# Version: 3.2.2
+# Libs: -L${libdir} -lglut
+# Libs.private: -lX11 -lXxf86vm -lXrandr -lGL -lm
+# Cflags: -I${includedir} -DFREEGLUT_STATIC
+
+GLUT_DIR = ../S/freeglut/R
+
+GLUT_INCS = -I$(GLUT_DIR)/include
+GLUT_LIBS = -L$(GLUT_DIR)/lib  -lglut
+
 scloth: scloth.c  
-	$(CC) -o scloth scloth.c $(S_INCS) $(S_LIBS) -I$(OPENGL_INC) -L$(OPENGL_LIB) $(OPENGL_LIBS) 
+	$(CC) -o scloth scloth.c $(S_INCS) $(S_LIBS)  $(GLUT_INCS) $(GLUT_LIBS) 
 
 # ============================================================================#
 
-#S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
-
 dao-tester : dao-tester.c                                                               
-#	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(S_LIBS) -lm                                     
 	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm                                     
 
 # ============================================================================#

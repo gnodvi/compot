@@ -164,22 +164,22 @@ typedef  double  YT_SPACE;
 
 typedef double (*YT_PROC) (int, double *, double *, long, long, void *);
 
-	typedef struct {
-		BOOL   diff2;
-		double diff_h;
+typedef struct {
+  BOOL   diff2;
+  double diff_h;
 
-		const  gsl_multimin_fdfminimizer_type *min_type;
-		double step_size; 
-		double tol;
+  const  gsl_multimin_fdfminimizer_type *min_type;
+  double step_size; 
+  double tol;
  
-		// критерии останова
-		double stop_grad;
-		int    stop_iter;
-		double stop_func;
+  // критерии останова
+  double stop_grad;
+  int    stop_iter;
+  double stop_func;
 
-		char  *end_status;
-		int    end_niters;
-	} YT_GSLSPUSK;
+  char  *end_status;
+  int    end_niters;
+} YT_GSLSPUSK;
 
 typedef struct {
   const char   *name;
@@ -194,9 +194,9 @@ typedef struct {
 
   int     num_end;
   double  xyz_end[MAXB][MAXA];
-	double  fun_end;
+  double  fun_end;
 
-	YT_GSLSPUSK *gslspusk;
+  YT_GSLSPUSK *gslspusk;
 } YT_MINPROC;
 
 #define NAME    (minproc->name)
@@ -237,16 +237,16 @@ double calc_proc (YT_MINPROC *minproc, double *xyz_cur);
 double YSecOfDay (void);
 void   minproc_gslspusk_s (YT_MINPROC *minproc, int algorifm, long, long);
 double minproc_gslspusk_1 (YT_MINPROC *minproc, int algorifm, long, long, 
-													 double *xyz_beg, double *xyz_end);
+			   double *xyz_beg, double *xyz_end);
 void   minproc_print_one (YT_MINPROC *minproc, double *xyz);
 
 YT_GSLSPUSK *
 minproc_gslspusk_set (BOOL diff2, double diff_h,
-											const gsl_multimin_fdfminimizer_type *min_type,
-											double step_size, double tol, 
-											double stop_grad,
-											int    stop_iter,
-											double stop_func);
+		      const gsl_multimin_fdfminimizer_type *min_type,
+		      double step_size, double tol, 
+		      double stop_grad,
+		      int    stop_iter,
+		      double stop_func);
 
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -452,9 +452,11 @@ YT_CLOTH *clo;
 GLuint All;                                                                    
 float  siz, DeltaT;
 
-tVector				 m_Gravity;				  // GRAVITY FORCE VECTOR 
-tParticle			*m_TempSys[5];			// SETUP FOR TEMP PARTICLES USED WHILE INTEGRATING 
+tVector	      	 m_Gravity;	// GRAVITY FORCE VECTOR 
+tParticle      	*m_TempSys[5];  // SETUP FOR TEMP PARTICLES USED WHILE INTEGRATING 
+
 /*******************************************************************************/
+
 /////////////////////////////////////////////////////////////////////////////// 
 // 
 // MathDefs.cpp : implementation file 
@@ -487,18 +489,18 @@ tParticle			*m_TempSys[5];			// SETUP FOR TEMP PARTICLES USED WHILE INTEGRATING
 /////////////////////////////////////////////////////////////////////////////// 
 void MultVectorByMatrix(tMatrix *mat, tVector *v,tVector *result) 
 { 
-	result->x = (mat->m[0] * v->x) + 
-			   (mat->m[4] * v->y) +	 
-			   (mat->m[8] * v->z) + 
-			   mat->m[12]; 
-	result->y = (mat->m[1] * v->x) + 
-			   (mat->m[5] * v->y) +	 
-			   (mat->m[9] * v->z) + 
-			   mat->m[13]; 
-	result->z = (mat->m[2] * v->x) + 
-			   (mat->m[6] * v->y) +	 
-			   (mat->m[10] * v->z) + 
-			   mat->m[14]; 
+  result->x = (mat->m[0] * v->x) + 
+    (mat->m[4] * v->y) +	 
+    (mat->m[8] * v->z) + 
+    mat->m[12]; 
+  result->y = (mat->m[1] * v->x) + 
+    (mat->m[5] * v->y) +	 
+    (mat->m[9] * v->z) + 
+    mat->m[13]; 
+  result->z = (mat->m[2] * v->x) + 
+    (mat->m[6] * v->y) +	 
+    (mat->m[10] * v->z) + 
+    mat->m[14]; 
 } 
 //// MultVectorByMatrix ////////////////////////////////////////////////////// 
  
@@ -506,66 +508,66 @@ void MultVectorByMatrix(tMatrix *mat, tVector *v,tVector *result)
 /* returns squared length of input vector */     
 double VectorSquaredLength(tVector *v)  
 { 
-	return((v->x * v->x) + (v->y * v->y) + (v->z * v->z)); 
+  return((v->x * v->x) + (v->y * v->y) + (v->z * v->z)); 
 } 
  
 /* returns length of input vector */ 
 double VectorLength(tVector *v)  
 { 
-	return(sqrt(VectorSquaredLength(v))); 
+  return(sqrt(VectorSquaredLength(v))); 
 } 
  
 /* destructively normalizes the input vector */ 
 void NormalizeVector(tVector *v)  
 { 
-	float len = (float)VectorLength(v); 
-    if (len != 0.0)  
-	{  
-		v->x /= len;   
-		v->y /= len;  
-		v->z /= len;  
-	} 
+  float len = (float)VectorLength(v); 
+  if (len != 0.0)  
+    {  
+      v->x /= len;   
+      v->y /= len;  
+      v->z /= len;  
+    } 
 } 
  
 double DotProduct(tVector *v1, tVector *v2) 
 { 
-	return ((v1->x * v2->x) + (v1->y * v2->y) + (v1->z * v2->z)); 
+  return ((v1->x * v2->x) + (v1->y * v2->y) + (v1->z * v2->z)); 
 } 
  
 /* return the cross product result = v1 cross v2 */ 
 void CrossProduct(tVector *v1, tVector *v2, tVector *result) 
 { 
-	result->x = (v1->y * v2->z) - (v1->z * v2->y); 
-	result->y = (v1->z * v2->x) - (v1->x * v2->z); 
-	result->z = (v1->x * v2->y) - (v1->y * v2->x); 
+  result->x = (v1->y * v2->z) - (v1->z * v2->y); 
+  result->y = (v1->z * v2->x) - (v1->x * v2->z); 
+  result->z = (v1->x * v2->y) - (v1->y * v2->x); 
 } 
  
 double VectorSquaredDistance(tVector *v1, tVector *v2)  
 { 
-	return(	((v1->x - v2->x) * (v1->x - v2->x)) +  
-			((v1->y - v2->y) * (v1->y - v2->y)) + 	 
-			((v1->z - v2->z) * (v1->z - v2->z)) ); 	 
+  return(	((v1->x - v2->x) * (v1->x - v2->x)) +  
+		((v1->y - v2->y) * (v1->y - v2->y)) + 	 
+		((v1->z - v2->z) * (v1->z - v2->z)) ); 	 
 } 
  
 void ScaleVector(tVector *v, float scale, tVector *result)  
 { 
-	result->x = v->x * scale; 
-	result->y = v->y * scale; 
-	result->z = v->z * scale; 
+  result->x = v->x * scale; 
+  result->y = v->y * scale; 
+  result->z = v->z * scale; 
 } 
  
 void VectorSum(tVector *v1, tVector *v2, tVector *result)  
 { 
-	result->x = v1->x + v2->x; 
-	result->y = v1->y + v2->y; 
-	result->z = v1->z + v2->z; 
+  result->x = v1->x + v2->x; 
+  result->y = v1->y + v2->y; 
+  result->z = v1->z + v2->z; 
 } 
  
 void VectorDifference(tVector *v1, tVector *v2, tVector *result)  
 { 
-	result->x = v1->x - v2->x; 
-	result->y = v1->y - v2->y; 
-	result->z = v1->z - v2->z; 
+  result->x = v1->x - v2->x; 
+  result->y = v1->y - v2->y; 
+  result->z = v1->z - v2->z; 
 } 
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -620,15 +622,15 @@ Error (const char *string)
 int
 Rand123 (double p1, double p2, double p3)
 {
-	int /* ret, */ yrand;
+  int /* ret, */ yrand;
 
-	yrand = YRAND (1,100);
+  yrand = YRAND (1,100);
 
   if      (yrand < p1) return (1);
-	else if (yrand > p3) return (3);
-	else                 return (2);
+  else if (yrand > p3) return (3);
+  else                 return (2);
 
-	p2++;
+  p2++;
 }
 /*-----------------------------------RandYes-----------------------------------*/
 /*                                                                             */
@@ -637,10 +639,10 @@ BOOL
 RandYes (double procent)
 {
 
-	if (Rand123 (procent, 0.0, 100.0-procent)==1)
-		return (TRUE);
-	else
-		return (FALSE);
+  if (Rand123 (procent, 0.0, 100.0-procent)==1)
+    return (TRUE);
+  else
+    return (FALSE);
 
 }
 /*-----------------------------------FRavno------------------------------------*/
@@ -699,8 +701,8 @@ YSecOfDay ()
 {
   struct timeb tb;
 
-	ftime (&tb);
-	return (tb.time + tb.millitm / 1000.0);
+  ftime (&tb);
+  return (tb.time + tb.millitm / 1000.0);
 
 }
 /*---------------------------------timer_beg-----------------------------------*/
@@ -709,11 +711,11 @@ YSecOfDay ()
 YT_TIMER*
 timer_beg ()
 {
-	YT_TIMER *t = (YT_TIMER*) malloc (sizeof(YT_TIMER));
+  YT_TIMER *t = (YT_TIMER*) malloc (sizeof(YT_TIMER));
 
-	t->tim_beg = time (NULL);
+  t->tim_beg = time (NULL);
 
-	return (t);
+  return (t);
 }
 /*---------------------------------timer_hms-----------------------------------*/
 /*                                                                             */
@@ -721,16 +723,16 @@ timer_beg ()
 void
 timer_hms (YT_TIMER *t, time_t *tim_hor, time_t *tim_min, time_t *tim_sec)
 {
-	time_t    tim_end, tim_all;
+  time_t    tim_end, tim_all;
 
-	tim_end = time (NULL);
-	tim_all = tim_end - t->tim_beg;
- *tim_hor = tim_all / 3600;
-	tim_all = tim_all % 3600;
- *tim_min = tim_all / 60;
- *tim_sec = tim_all % 60;
+  tim_end = time (NULL);
+  tim_all = tim_end - t->tim_beg;
+  *tim_hor = tim_all / 3600;
+  tim_all = tim_all % 3600;
+  *tim_min = tim_all / 60;
+  *tim_sec = tim_all % 60;
 
-	return;
+  return;
 }
 /*---------------------------------timer_end-----------------------------------*/
 /*                                                                             */
@@ -738,14 +740,14 @@ timer_hms (YT_TIMER *t, time_t *tim_hor, time_t *tim_min, time_t *tim_sec)
 void
 timer_end (YT_TIMER *t, char *hms_time)
 {
-	time_t /* tim_end, tim_all,  */tim_min, tim_sec, tim_hor;
+  time_t /* tim_end, tim_all,  */tim_min, tim_sec, tim_hor;
 
-	timer_hms (t, &tim_hor, &tim_min, &tim_sec);
+  timer_hms (t, &tim_hor, &tim_min, &tim_sec);
 
-	sprintf (hms_time, "%d:%02d:%02d", tim_hor, tim_min, tim_sec);
+  sprintf (hms_time, "%d:%02d:%02d", tim_hor, tim_min, tim_sec);
 
-	free (t);
-	return;
+  free (t);
+  return;
 }
 /*---------------------------------timer_hor-----------------------------------*/
 /*                                                                             */
@@ -753,16 +755,16 @@ timer_end (YT_TIMER *t, char *hms_time)
 BOOL
 timer_hor (YT_TIMER *t)
 {
-	time_t  tim_min, tim_sec, tim_hor;
-	static int save_count = 0;
+  time_t  tim_min, tim_sec, tim_hor;
+  static int save_count = 0;
 
-	timer_hms (t, &tim_hor, &tim_min, &tim_sec);
-	if (tim_hor > save_count) {		
-		save_count++;
-		return (TRUE);
-	}
+  timer_hms (t, &tim_hor, &tim_min, &tim_sec);
+  if (tim_hor > save_count) {		
+    save_count++;
+    return (TRUE);
+  }
 
-	return (FALSE);
+  return (FALSE);
 }
 /*******************************************************************************/
 /*-----------------------------------------------------------------------------*/
@@ -888,10 +890,10 @@ calc_proc (YT_MINPROC *minproc, double *xyz_cur)
 void
 minproc_setxyz (YT_MINPROC *minproc, double *xyz, double *xyz_end)
 {
-	int i;
+  int i;
 
   for (i=0; i < DIM; i++)
-		xyz_end[i] = xyz[i];
+    xyz_end[i] = xyz[i];
 
 }
 /*---------------------------------WriteNewXyz---------------------------------*/
@@ -900,23 +902,23 @@ minproc_setxyz (YT_MINPROC *minproc, double *xyz, double *xyz_end)
 void
 WriteNewXyz (YT_MINPROC *minproc, double *xyz_cur)
 {
-	int  i;
+  int  i;
 
-	if (NUM_END >= MAXB) {
-		//minproc_print (minproc, "minproc: \n");
-		Error("WriteNewXyz: NUM_END >= MAXB");
-	}
+  if (NUM_END >= MAXB) {
+    //minproc_print (minproc, "minproc: \n");
+    Error("WriteNewXyz: NUM_END >= MAXB");
+  }
 
-	for (i=0; i<DIM; i++) {
-		XYZ_END[NUM_END][i] = xyz_cur[i];
-	}
+  for (i=0; i<DIM; i++) {
+    XYZ_END[NUM_END][i] = xyz_cur[i];
+  }
 
-	NUM_END++;
+  NUM_END++;
 
-	if (0) {
-		printf ("F_NEW %s = %5.2f  x= ", LEFT, FUN_END);
-		minproc_print_one (minproc, xyz_cur);
-	}
+  if (0) {
+    printf ("F_NEW %s = %5.2f  x= ", LEFT, FUN_END);
+    minproc_print_one (minproc, xyz_cur);
+  }
 
 }
 /*--------------------------------CheckNewMinmax-------------------------------*/
@@ -926,28 +928,28 @@ void
 CheckNewMinmax (YT_MINPROC *minproc, double *xyz_cur, double g)
 {
   BOOL    find;
-	// нужно соотнести с точностью поискового алгоритма !!!!
-	double  eps = /* EPS  */0.0001;
+  // нужно соотнести с точностью поискового алгоритма !!!!
+  double  eps = /* EPS  */0.0001;
 
   // три варианта для нового проверяемого значения :
-	if (0) {
-		printf ("%s f_cur = %f  x= ", LEFT, g);
-		minproc_print_one (minproc, xyz_cur);
-	}
+  if (0) {
+    printf ("%s f_cur = %f  x= ", LEFT, g);
+    minproc_print_one (minproc, xyz_cur);
+  }
 
   if      (g > FUN_END + eps)  return; // большее значение
   else if (g < FUN_END - eps) { // новый минимальный уровень
     FUN_END = g;
     NUM_END = 0;
-		WriteNewXyz (minproc, xyz_cur);
+    WriteNewXyz (minproc, xyz_cur);
 
   } else { // найдено еще одно значение этого уровня
            // проверить есть ли уже такой корень !!!!
     find = FindXyzEnd (minproc, xyz_cur, eps);
 
     if (!find) { // записать новое значение минимального уровня
-			WriteNewXyz (minproc, xyz_cur);
-		}
+      WriteNewXyz (minproc, xyz_cur);
+    }
   }
 
   return;
@@ -958,15 +960,15 @@ CheckNewMinmax (YT_MINPROC *minproc, double *xyz_cur, double g)
 void
 print_fun_xyz (int dim, const char *name, double fun, double *xyz)
 {
-	int i;
+  int i;
 
-	if (name) printf ("%s %s ", LEFT, name);
-	printf ("%s f= %6.2f  x= ", LEFT, fun);
+  if (name) printf ("%s %s ", LEFT, name);
+  printf ("%s f= %6.2f  x= ", LEFT, fun);
 
-	for (i=0; i < dim; i++)
-		printf ("%6.2f ", xyz[i]);
+  for (i=0; i < dim; i++)
+    printf ("%6.2f ", xyz[i]);
 
-	printf ("\n");
+  printf ("\n");
 
 }
 /*-------------------------------minproc_print_one-----------------------------*/
@@ -975,12 +977,12 @@ print_fun_xyz (int dim, const char *name, double fun, double *xyz)
 void
 minproc_print_one (YT_MINPROC *minproc, double *xyz)
 {
-	int i;
+  int i;
 
-	for (i=0; i<DIM; i++) {
-		printf ("% f ", xyz[i]);
-	}
-	printf ("\n");
+  for (i=0; i<DIM; i++) {
+    printf ("% f ", xyz[i]);
+  }
+  printf ("\n");
 
 }
 /*--------------------------------minproc_print--------------------------------*/
@@ -992,12 +994,12 @@ minproc_print (YT_MINPROC *minproc, const char *name)
   int   num;
 
 
-	for (num = 0; num < NUM_END; num++) {
-		if (name) printf ("%s %s ", LEFT, name);
+  for (num = 0; num < NUM_END; num++) {
+    if (name) printf ("%s %s ", LEFT, name);
 
-		printf ("%s f= % f  x= ", LEFT, FUN_END);
-		minproc_print_one (minproc, XYZ_END[num]);
-	}
+    printf ("%s f= % f  x= ", LEFT, FUN_END);
+    minproc_print_one (minproc, XYZ_END[num]);
+  }
 
   return;
 }
@@ -1046,7 +1048,7 @@ MultiFor (int dim, BOOL works, int *IJK, int *ijk_calc, int *p_smena)
   smena = 0;
 
   if (first) first = FALSE;
-   else {
+  else {
     konec = !MultiFor_R (dim-1, &ijk_calc[0], IJK, &smena);
     if (konec) return FALSE;
   }
@@ -1061,21 +1063,21 @@ MultiFor (int dim, BOOL works, int *IJK, int *ijk_calc, int *p_smena)
 void
 minproc_rand_init (YT_MINPROC *minproc, int num_multy)
 {
-	int n, i;
+  int n, i;
 
   YRAND_S;
 
-	for (n = NUM_BEG; n < num_multy; n++) {
+  for (n = NUM_BEG; n < num_multy; n++) {
 
-		for (i=0; i < DIM; i++)
-			XYZ_BEG[n][i] = YRandF (XYZ_MIN[i], XYZ_MAX[i]);
+    for (i=0; i < DIM; i++)
+      XYZ_BEG[n][i] = YRandF (XYZ_MIN[i], XYZ_MAX[i]);
 
-		FUN_BEG[n] = calc_proc (minproc, XYZ_BEG[n]);
-	}
+    FUN_BEG[n] = calc_proc (minproc, XYZ_BEG[n]);
+  }
 
-	NUM_BEG = YMAX (NUM_BEG, num_multy);
+  NUM_BEG = YMAX (NUM_BEG, num_multy);
 
-	return;
+  return;
 }
 /*-----------------------------minproc_gslspusk_s------------------------------*/
 /*                                                                             */
@@ -1088,21 +1090,21 @@ minproc_gslspusk_s (YT_MINPROC *minproc, int algorifm, long long1, long long2)
   BOOL   first;
 
   first = TRUE;
-	NUM_END = 0; //!!!!!!!!!!
+  NUM_END = 0; //!!!!!!!!!!
 
   for (n=0; n<NUM_BEG; n++) {
 
-		g = minproc_gslspusk_1 (minproc, algorifm, long1, long2, XYZ_BEG[n], xyz_cur);
-		if (first) {
-			FUN_END = g;
-			first = FALSE;
-		}
+    g = minproc_gslspusk_1 (minproc, algorifm, long1, long2, XYZ_BEG[n], xyz_cur);
+    if (first) {
+      FUN_END = g;
+      first = FALSE;
+    }
 
-		//fprintf (stderr, "%s g = %f  \n", LEFT, g);
-		CheckNewMinmax (minproc, xyz_cur, g);
-	}
+    //fprintf (stderr, "%s g = %f  \n", LEFT, g);
+    CheckNewMinmax (minproc, xyz_cur, g);
+  }
 
-	return;
+  return;
 }
 /*******************************************************************************/
 /*                                                                             */
@@ -1111,15 +1113,15 @@ double
 my_f (const gsl_vector *v, void *params)
 {
   double x, y;
-	int    i;
-	double xyz_cur[MAXA];
-	YT_MINPROC *minproc = (YT_MINPROC *)params;
+  int    i;
+  double xyz_cur[MAXA];
+  YT_MINPROC *minproc = (YT_MINPROC *)params;
   
 
   for (i=0; i < DIM; i++) 
-		xyz_cur[i] = gsl_vector_get (v, i);
+    xyz_cur[i] = gsl_vector_get (v, i);
 
-	return (calc_proc (minproc, xyz_cur));
+  return (calc_proc (minproc, xyz_cur));
 }
 /*-----------------------------------------------------------------------------*/
 //  double result, abserr;
@@ -1143,30 +1145,30 @@ double
 my_diff_central (const gsl_vector *v_null, int i, void *params)
 {
   double f_plus, f_mins, df_dxyz;
-	YT_MINPROC *minproc = (YT_MINPROC *)params;
-	YT_GSLSPUSK *gslspusk = minproc->gslspusk;
-	// !!!! 
-	gsl_vector *v_plus = gsl_vector_alloc (DIM);
-	gsl_vector *v_mins = gsl_vector_alloc (DIM);
-	double diff_h = gslspusk->diff_h;
+  YT_MINPROC *minproc = (YT_MINPROC *)params;
+  YT_GSLSPUSK *gslspusk = minproc->gslspusk;
+  // !!!! 
+  gsl_vector *v_plus = gsl_vector_alloc (DIM);
+  gsl_vector *v_mins = gsl_vector_alloc (DIM);
+  double diff_h = gslspusk->diff_h;
 
 
-	// точка v_plus
-	gsl_vector_memcpy (v_plus, v_null);
-	gsl_vector_set (v_plus, i, gsl_vector_get(v_plus,i)+diff_h);
-	f_plus = my_f (v_plus, params);
+  // точка v_plus
+  gsl_vector_memcpy (v_plus, v_null);
+  gsl_vector_set (v_plus, i, gsl_vector_get(v_plus,i)+diff_h);
+  f_plus = my_f (v_plus, params);
 	
-	// точка v_mins
-	gsl_vector_memcpy (v_mins, v_null);
-	gsl_vector_set (v_mins, i, gsl_vector_get(v_mins,i)-diff_h);
-	f_mins = my_f (v_mins, params);
+  // точка v_mins
+  gsl_vector_memcpy (v_mins, v_null);
+  gsl_vector_set (v_mins, i, gsl_vector_get(v_mins,i)-diff_h);
+  f_mins = my_f (v_mins, params);
 	
-	df_dxyz = (f_plus - f_mins) / (2*diff_h);
+  df_dxyz = (f_plus - f_mins) / (2*diff_h);
 	
   gsl_vector_free (v_plus);
   gsl_vector_free (v_mins);
 
-	return (df_dxyz);
+  return (df_dxyz);
 }
 /*-----------------------------------------------------------------------------*/
 /*  Вычисление градиента:  df = (df/dx, df/dy)                                 */
@@ -1175,18 +1177,18 @@ void
 my_df (const gsl_vector *v_null, void *params, gsl_vector *df)
 {
   double df_dxyz;
-	int    i;
-	YT_MINPROC *minproc = (YT_MINPROC *)params;
+  int    i;
+  YT_MINPROC *minproc = (YT_MINPROC *)params;
 
-	// формировать градиент, т.е. вектор производных
-	for (i=0; i<DIM; i++) { // по каждой координате
+  // формировать градиент, т.е. вектор производных
+  for (i=0; i<DIM; i++) { // по каждой координате
 
-		df_dxyz = my_diff_central (v_null, i, params);
+    df_dxyz = my_diff_central (v_null, i, params);
 
-		gsl_vector_set (df, i, df_dxyz);
-	} 
+    gsl_vector_set (df, i, df_dxyz);
+  } 
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*  Compute both f and df together                                             */
@@ -1204,35 +1206,35 @@ my_fdf (const gsl_vector *x, void *params, double *f, gsl_vector *df)
 /*-----------------------------------------------------------------------------*/
 YT_GSLSPUSK *
 minproc_gslspusk_set (BOOL diff2, double diff_h,
-											const gsl_multimin_fdfminimizer_type *min_type,
-											double step_size, double tol, 
-											double stop_grad,
-											int    stop_iter,
-											double stop_func)
+		      const gsl_multimin_fdfminimizer_type *min_type,
+		      double step_size, double tol, 
+		      double stop_grad,
+		      int    stop_iter,
+		      double stop_func)
 {
-	YT_GSLSPUSK *gslspusk;
+  YT_GSLSPUSK *gslspusk;
 
-	gslspusk = (YT_GSLSPUSK*) malloc(sizeof(YT_GSLSPUSK));
+  gslspusk = (YT_GSLSPUSK*) malloc(sizeof(YT_GSLSPUSK));
 
-	gslspusk->diff2 = diff2;
-	gslspusk->diff_h = diff_h;
+  gslspusk->diff2 = diff2;
+  gslspusk->diff_h = diff_h;
 
-	gslspusk->min_type = min_type;
+  gslspusk->min_type = min_type;
   // gsl_multimin_fdfminimizer_conjugate_fr;     // Fletcher-Reeves
-	// gsl_multimin_fdfminimizer_conjugate_pr;     // Polak-Ribiere
-	// gsl_multimin_fdfminimizer_steepest_descent; // 
+  // gsl_multimin_fdfminimizer_conjugate_pr;     // Polak-Ribiere
+  // gsl_multimin_fdfminimizer_steepest_descent; // 
 
-	// gsl_multimin_fdfminimizer_vector_bfgs;      // Broyden-Fletcher-Goldfarb-Shanno
-	// очень хороший веторный квази-ньютоновский алгоритм (комбинация производных)
+  // gsl_multimin_fdfminimizer_vector_bfgs;      // Broyden-Fletcher-Goldfarb-Shanno
+  // очень хороший веторный квази-ньютоновский алгоритм (комбинация производных)
 
-	gslspusk->step_size = step_size; // размер первого пробного шага
-	gslspusk->tol	      = tol;       // точность линейной минимизации
-	// критерий останова
-	gslspusk->stop_grad	= stop_grad; // норма градиента
-	gslspusk->stop_iter = stop_iter;
-	gslspusk->stop_func = stop_func;
+  gslspusk->step_size = step_size; // размер первого пробного шага
+  gslspusk->tol	      = tol;       // точность линейной минимизации
+  // критерий останова
+  gslspusk->stop_grad	= stop_grad; // норма градиента
+  gslspusk->stop_iter = stop_iter;
+  gslspusk->stop_func = stop_func;
 
-	return (gslspusk);
+  return (gslspusk);
 }
 /*--------------------------------my_gsl_dnrm2---------------------------------*/
 /*                                                                             */
@@ -1240,19 +1242,19 @@ minproc_gslspusk_set (BOOL diff2, double diff_h,
 double
 my_gsl_dnrm2 (gsl_vector *x)
 {
-	double dnrm2, x_elem;
-	int    i;
+  double dnrm2, x_elem;
+  int    i;
 
-	//return (gsl_blas_dnrm2(x)); // портит сам вектор и все рядом ???
+  //return (gsl_blas_dnrm2(x)); // портит сам вектор и все рядом ???
 
-	for (dnrm2=0,i=0; i<x->size; i++) {
-		x_elem = gsl_vector_get (x, i);
-		dnrm2 += (x_elem*x_elem);
-	}
+  for (dnrm2=0,i=0; i<x->size; i++) {
+    x_elem = gsl_vector_get (x, i);
+    dnrm2 += (x_elem*x_elem);
+  }
 
-	dnrm2 = sqrt (dnrm2);
+  dnrm2 = sqrt (dnrm2);
 
-	return (dnrm2);
+  return (dnrm2);
 }
 /*-----------------------------------------------------------------------------*/
 /*  Библиотечная функция (для примера)                                         */
@@ -1281,20 +1283,20 @@ MY_gsl_multimin_test_gradient (const gsl_vector *g, double epsabs)
 /*-----------------------------------------------------------------------------*/
 double
 minproc_gslspusk_1 (YT_MINPROC *minproc, int algorifm, long long1, long long2, 
-										double *xyz_beg, double *xyz_end)
+		    double *xyz_beg, double *xyz_end)
 {
-	char *end_status;
-	BOOL  test_print = FALSE /* TRUE */;
+  char *end_status;
+  BOOL  test_print = FALSE /* TRUE */;
   int   i, iter, status;
   gsl_multimin_fdfminimizer *s;
   gsl_vector                *x;
   gsl_multimin_function_fdf  my_func;
-	double minimum, g_norma=0, x_elem;
-	// параметры спуска передаются извне 
-	YT_GSLSPUSK *gslspusk = minproc->gslspusk;
+  double minimum, g_norma=0, x_elem;
+  // параметры спуска передаются извне 
+  YT_GSLSPUSK *gslspusk = minproc->gslspusk;
 
-	LEFT_BEG; 
-	// задание самой минимизируемой функции
+  LEFT_BEG; 
+  // задание самой минимизируемой функции
   my_func.f   = &my_f;
   my_func.df  = &my_df;
   my_func.fdf = &my_fdf;
@@ -1304,69 +1306,69 @@ minproc_gslspusk_1 (YT_MINPROC *minproc, int algorifm, long long1, long long2,
   // начальное приближения: точка инициализации спуска
   x = gsl_vector_alloc (DIM);
   for (i=0; i<DIM; i++) 
-		gsl_vector_set (x, i, xyz_beg[i]);
+    gsl_vector_set (x, i, xyz_beg[i]);
 
-	// создание и инициализация алгоритма
+  // создание и инициализация алгоритма
   s = gsl_multimin_fdfminimizer_alloc (gslspusk->min_type, DIM);
   gsl_multimin_fdfminimizer_set (s, &my_func, x, gslspusk->step_size, gslspusk->tol);
 	
-	iter = 0; // начинаем итерационный спуск -------------------------
+  iter = 0; // начинаем итерационный спуск -------------------------
   while (1) {
-		if (test_print) { // тестовая печать текущего состояния
-			fprintf (stderr, "%s iter= % 4d  f= %f  |g|= %f  |dx|= %f \n", 
-							 LEFT, iter, s->f, gsl_blas_dnrm2 (s->gradient), gsl_blas_dnrm2 (s->dx));
-			//gsl_vector_fprintf (stderr, s->gradient, "%g");
-		}
+    if (test_print) { // тестовая печать текущего состояния
+      fprintf (stderr, "%s iter= % 4d  f= %f  |g|= %f  |dx|= %f \n", 
+	       LEFT, iter, s->f, gsl_blas_dnrm2 (s->gradient), gsl_blas_dnrm2 (s->dx));
+      //gsl_vector_fprintf (stderr, s->gradient, "%g");
+    }
 
-		// проверяем условие на количество итераций
-		if (iter++ >= gslspusk->stop_iter) {
-			end_status = "gsl_maxiter";
-			break;
-		}
+    // проверяем условие на количество итераций
+    if (iter++ >= gslspusk->stop_iter) {
+      end_status = "gsl_maxiter";
+      break;
+    }
 
-		// выполнить одну итерацию
-		status = gsl_multimin_fdfminimizer_iterate (s);
-		if (status) { // неожиданные проблемы
-			if (status == GSL_ENOPROG) end_status = "gsl_enoprog";
-			else                       end_status = "gsl_problem";
-			break;
-		}
+    // выполнить одну итерацию
+    status = gsl_multimin_fdfminimizer_iterate (s);
+    if (status) { // неожиданные проблемы
+      if (status == GSL_ENOPROG) end_status = "gsl_enoprog";
+      else                       end_status = "gsl_problem";
+      break;
+    }
 		
-		// прверяем условие на норму градиента |g| < stop_grad 
-		// т.е. близость к локальному минимуму 
-		status = /* MY_ */gsl_multimin_test_gradient (s->gradient, gslspusk->stop_grad);
-		if (status == GSL_SUCCESS) {
-			end_status = "gsl_mingrad";
-			break;
-		}
+    // прверяем условие на норму градиента |g| < stop_grad 
+    // т.е. близость к локальному минимуму 
+    status = /* MY_ */gsl_multimin_test_gradient (s->gradient, gslspusk->stop_grad);
+    if (status == GSL_SUCCESS) {
+      end_status = "gsl_mingrad";
+      break;
+    }
    
-		// проверяем условие на саму функцию f < stop_func
-		if (s->f < gslspusk->stop_func) {
-			end_status = "gsl_minfunc";
-			break;
-		}
+    // проверяем условие на саму функцию f < stop_func
+    if (s->f < gslspusk->stop_func) {
+      end_status = "gsl_minfunc";
+      break;
+    }
 
 
 
-	};
-	// ---------------------------------------------------------------
-	if (test_print) {
-		fprintf (stderr, "%s iter= % 4d  f= %f  |g|= %f  |dx|= %f \n", 
-						 LEFT, iter, s->f, gsl_blas_dnrm2 (s->gradient), gsl_blas_dnrm2 (s->dx));
-	}
-	//fprintf (stderr, "%s%s  niters=%4d  \n", LEFT, end_status, iter);
+  };
+  // ---------------------------------------------------------------
+  if (test_print) {
+    fprintf (stderr, "%s iter= % 4d  f= %f  |g|= %f  |dx|= %f \n", 
+	     LEFT, iter, s->f, gsl_blas_dnrm2 (s->gradient), gsl_blas_dnrm2 (s->dx));
+  }
+  //fprintf (stderr, "%s%s  niters=%4d  \n", LEFT, end_status, iter);
 	
   // записываем и возвращаем результаты
-	gslspusk->end_status = end_status;
-	gslspusk->end_niters = iter;
+  gslspusk->end_status = end_status;
+  gslspusk->end_niters = iter;
   for (i=0; i < DIM; i++)
-		xyz_end[i] = gsl_vector_get (s->x, i);
+    xyz_end[i] = gsl_vector_get (s->x, i);
 
-	// уничтожить выделенные объекты
+  // уничтожить выделенные объекты
   gsl_multimin_fdfminimizer_free (s);
   gsl_vector_free (x);
 	
-	LEFT_END;
+  LEFT_END;
   return (s->f);
 }
 /*-------------------------------minproc_perebor-------------------------------*/
@@ -1379,20 +1381,20 @@ minproc_perebor (YT_MINPROC *minproc, int num)
   double g, xyz_step[MAXA], xyz_cur[MAXA];
   BOOL   first;
 
-	// дискретизация нужна здесь, при полном переборе!!!
+  // дискретизация нужна здесь, при полном переборе!!!
 
-	if (num == 0)
-		for (i=0; i < DIM; i++) {
-			xyz_step[i] = XYZ_ERR[i];
-			IJK[i] = (int) ((XYZ_MAX[i] - XYZ_MIN[i]) / xyz_step[i] + 1);
-		}
-	else
-  for (i=0; i < DIM; i++) {
-		// другой способ: от количества точек, 
-		// погрешность при этом не соответствует заданной
-		IJK[i] = num;
-    xyz_step[i] = (XYZ_MAX[i] - XYZ_MIN[i]) / (num - 1);
-  }
+  if (num == 0)
+    for (i=0; i < DIM; i++) {
+      xyz_step[i] = XYZ_ERR[i];
+      IJK[i] = (int) ((XYZ_MAX[i] - XYZ_MIN[i]) / xyz_step[i] + 1);
+    }
+  else
+    for (i=0; i < DIM; i++) {
+      // другой способ: от количества точек, 
+      // погрешность при этом не соответствует заданной
+      IJK[i] = num;
+      xyz_step[i] = (XYZ_MAX[i] - XYZ_MIN[i]) / (num - 1);
+    }
 
   first = TRUE;
 
@@ -1401,14 +1403,14 @@ minproc_perebor (YT_MINPROC *minproc, int num)
 
     for (i=0; i < DIM; i++) {
       xyz_cur[i] = XYZ_MIN[i] + ijk[i] * xyz_step[i];
-		}
+    }
 
-		g = calc_proc (minproc, xyz_cur);
+    g = calc_proc (minproc, xyz_cur);
 
-		if (first) {
-			FUN_END = g;
-			first = FALSE;
-		}
+    if (first) {
+      FUN_END = g;
+      first = FALSE;
+    }
 
     CheckNewMinmax (minproc, xyz_cur, g);
   }
@@ -1421,28 +1423,28 @@ minproc_perebor (YT_MINPROC *minproc, int num)
 int
 ga_selection (YT_MINPROC *minproc)
 {
-	/*
-	При турнирной селекции формируется случайное подмножество из элементов 
-  популяции и среди них выбирается один элемент с наибольшим
-	значением целевой функции.
-	*/
-	int    n_best, n;
-	double g_best, g;
+  /*
+    При турнирной селекции формируется случайное подмножество из элементов 
+    популяции и среди них выбирается один элемент с наибольшим
+    значением целевой функции.
+  */
+  int    n_best, n;
+  double g_best, g;
 
-	n_best = YRAND (0, NUM_BEG-1);
-	g_best = FUN_BEG[n_best];
+  n_best = YRAND (0, NUM_BEG-1);
+  g_best = FUN_BEG[n_best];
 
   for (n=0; n < NUM_BEG; n++) {
-		if (YRAND (0,NUM_BEG-1) < NUM_BEG/2) continue;
-		g = FUN_BEG[n];
+    if (YRAND (0,NUM_BEG-1) < NUM_BEG/2) continue;
+    g = FUN_BEG[n];
 
-		if (g < g_best) {
-			n_best = n;
-			g_best = g;
-		}
-	}
+    if (g < g_best) {
+      n_best = n;
+      g_best = g;
+    }
+  }
 
-	return (n_best);
+  return (n_best);
 }
 /*--------------------------------ga_crossover---------------------------------*/
 /*                                                                             */
@@ -1450,21 +1452,21 @@ ga_selection (YT_MINPROC *minproc)
 void
 ga_crossover (YT_MINPROC *minproc, int mama, int papa, double *xyz_baby)
 {
-	/*
-	По решениям i_1, i_2 он строит решение i' присваивая каждой координате этого 
-  вектора с вероятностью 0,5 соответствующее значение одного из родителей. 
-  Если вектора i_1, i_2 совпадали скажем по первой координате,
-	то вектор i'  "унаследует" это значение.
-	*/
-	int i;
+  /*
+    По решениям i_1, i_2 он строит решение i' присваивая каждой координате этого 
+    вектора с вероятностью 0,5 соответствующее значение одного из родителей. 
+    Если вектора i_1, i_2 совпадали скажем по первой координате,
+    то вектор i'  "унаследует" это значение.
+  */
+  int i;
 
-	for (i=0; i < DIM; i++) {
-		if (YRAND (0,100) < 50) xyz_baby[i] = XYZ_BEG[mama][i];
-		else                    xyz_baby[i] = XYZ_BEG[papa][i];
-	}
+  for (i=0; i < DIM; i++) {
+    if (YRAND (0,100) < 50) xyz_baby[i] = XYZ_BEG[mama][i];
+    else                    xyz_baby[i] = XYZ_BEG[papa][i];
+  }
 
 
-	return;
+  return;
 }
 /*---------------------------------ga_mutation---------------------------------*/
 /*                                                                             */
@@ -1472,16 +1474,16 @@ ga_crossover (YT_MINPROC *minproc, int mama, int papa, double *xyz_baby)
 void
 ga_mutation (YT_MINPROC *minproc, double *xyz_baby)
 {
-	/*
-  Оператор мутации, применяемый к решению i' с заданной вероятностью  
-  p_m |= (0, 1) меняет значение каждой координаты на противоположное.
-	*/
+  /*
+    Оператор мутации, применяемый к решению i' с заданной вероятностью  
+    p_m |= (0, 1) меняет значение каждой координаты на противоположное.
+  */
 
 
-	minproc++;
-	xyz_baby++;
+  minproc++;
+  xyz_baby++;
 
-	return;
+  return;
 }
 /*---------------------------------ga_rotation---------------------------------*/
 /*                                                                             */
@@ -1489,28 +1491,28 @@ ga_mutation (YT_MINPROC *minproc, double *xyz_baby)
 void
 ga_rotation (YT_MINPROC *minproc, double *xyz_baby)
 {
-	/*
-	Затем решение добавляется в популяцию, а решение с наименьшим значением 
-  целевой функции удаляется из популяции.
-	*/
-	int    n, n_max, i;
-	double g, g_max;
+  /*
+    Затем решение добавляется в популяцию, а решение с наименьшим значением 
+    целевой функции удаляется из популяции.
+  */
+  int    n, n_max, i;
+  double g, g_max;
 
-	n_max = 0;
-	g_max = FUN_BEG[n_max];
+  n_max = 0;
+  g_max = FUN_BEG[n_max];
 
   for (n=0; n < NUM_BEG; n++) {
-		g = FUN_BEG[n];
-		if (g > g_max) {
-			n_max = n;
-			g_max = g;
-		}
-	}
+    g = FUN_BEG[n];
+    if (g > g_max) {
+      n_max = n;
+      g_max = g;
+    }
+  }
 
-	for (i=0; i < DIM; i++)
-		XYZ_BEG[n_max][i] = xyz_baby[i];
+  for (i=0; i < DIM; i++)
+    XYZ_BEG[n_max][i] = xyz_baby[i];
 
-	return;
+  return;
 }
 /*-----------------------------minproc_genalgo---------------------------------*/
 /*                                                                             */
@@ -1518,31 +1520,31 @@ ga_rotation (YT_MINPROC *minproc, double *xyz_baby)
 void
 minproc_genalgo (YT_MINPROC *minproc)
 {
-	int i, mama, papa,/*  baby, */ n;
-	double xyz_baby[MAXA];
+  int i, mama, papa,/*  baby, */ n;
+  double xyz_baby[MAXA];
 
 
-	for (i = 0; i < 1000; i++) {
-		// выбрать двух родителей из популяции (селекция)
-		mama = ga_selection (minproc);
-		papa = ga_selection (minproc);
+  for (i = 0; i < 1000; i++) {
+    // выбрать двух родителей из популяции (селекция)
+    mama = ga_selection (minproc);
+    papa = ga_selection (minproc);
 
-		// сделать от родителей ребенка (скрещивание)
-		ga_crossover (minproc, mama, papa, xyz_baby);
+    // сделать от родителей ребенка (скрещивание)
+    ga_crossover (minproc, mama, papa, xyz_baby);
 
-		// слегка модифицировать ребенка (мутация)
-		ga_mutation (minproc, xyz_baby);
+    // слегка модифицировать ребенка (мутация)
+    ga_mutation (minproc, xyz_baby);
 
-		// новый добавляется, а худший удаляется из популяции
-		ga_rotation (minproc, xyz_baby);
-	}
+    // новый добавляется, а худший удаляется из популяции
+    ga_rotation (minproc, xyz_baby);
+  }
 
 
-	FUN_END = FUN_BEG[0];
+  FUN_END = FUN_BEG[0];
   for (n=0; n < NUM_BEG; n++)
-		CheckNewMinmax (minproc, XYZ_BEG[n], FUN_BEG[n]);
+    CheckNewMinmax (minproc, XYZ_BEG[n], FUN_BEG[n]);
 
-	return;
+  return;
 }
 /*------------------------------minproc_init-----------------------------------*/
 /*                                                                             */
@@ -1552,19 +1554,19 @@ minproc_init (YT_PROC proc, long long1, long long2)
 {
   YT_MINPROC *minproc;
 
-	minproc = (YT_MINPROC *) malloc (sizeof(YT_MINPROC));
+  minproc = (YT_MINPROC *) malloc (sizeof(YT_MINPROC));
 
   PROC = proc;
-	NUM_END = 0; //??!!
-	NUM_BEG = 0;
-/* 	minproc->end_status = ""; */
-/* 	minproc->end_niters = 0; */
+  NUM_END = 0; //??!!
+  NUM_BEG = 0;
+  /* 	minproc->end_status = ""; */
+  /* 	minproc->end_niters = 0; */
 
-	minproc->gslspusk = minproc_gslspusk_set 
-		(FALSE, 0.000001, 
-		 gsl_multimin_fdfminimizer_conjugate_fr,
-		 0.01, 1e-4, 
-		 0.001, 100, 0.001);
+  minproc->gslspusk = minproc_gslspusk_set 
+    (FALSE, 0.000001, 
+     gsl_multimin_fdfminimizer_conjugate_fr,
+     0.01, 1e-4, 
+     0.001, 100, 0.001);
 
   proc (YINIT, NULL, NULL, long1, long2, minproc);
 
@@ -1578,9 +1580,9 @@ minproc_free (YT_MINPROC *minproc)
 {
 
   PROC (YFREE, NULL, NULL, 0, 0, minproc);
-	free (minproc);
+  free (minproc);
 
-	return;
+  return;
 }
 /*-------------------------------minproc_calc----------------------------------*/
 /*                                                                             */
@@ -1588,21 +1590,21 @@ minproc_free (YT_MINPROC *minproc)
 void
 minproc_calc (YT_MINPROC *minproc, int power, int algorifm, long long1, long long2)
 {
-	int  i;
+  int  i;
 
-	switch (algorifm) {
-	case Y_PEREBOR:
-		minproc_perebor (minproc, power);
-		break;
-	case YGSLSPUSK:
-		minproc_rand_init (minproc, power);
-		minproc_gslspusk_s (minproc, algorifm, long1, long2);
-		break;
-	case Y_GENALGO:
-		minproc_rand_init (minproc, power);
-		minproc_genalgo (minproc);
-		break;
-	}
+  switch (algorifm) {
+  case Y_PEREBOR:
+    minproc_perebor (minproc, power);
+    break;
+  case YGSLSPUSK:
+    minproc_rand_init (minproc, power);
+    minproc_gslspusk_s (minproc, algorifm, long1, long2);
+    break;
+  case Y_GENALGO:
+    minproc_rand_init (minproc, power);
+    minproc_genalgo (minproc);
+    break;
+  }
 
   return;
 }
@@ -1628,7 +1630,7 @@ minproc_init_true (YT_PROC proc)
 
   minproc = minproc_init (proc, 0, 0);
 
-	minproc_true (minproc);
+  minproc_true (minproc);
 
   return (minproc);
 }
@@ -1640,10 +1642,10 @@ mm_rezults_comp (YT_MINPROC *m_calc, YT_MINPROC *m_true)
 {
   int    n;
   BOOL   find;
-	double eps;
+  double eps;
 
-	if (m_calc->num_end != m_true->num_end) return (FALSE);
-	eps = m_true->xyz_err[0]; //!!??
+  if (m_calc->num_end != m_true->num_end) return (FALSE);
+  eps = m_true->xyz_err[0]; //!!??
 
   for (n=0; n < m_calc->num_end; n++) {
 
@@ -1658,30 +1660,30 @@ mm_rezults_comp (YT_MINPROC *m_calc, YT_MINPROC *m_true)
 /*-----------------------------------------------------------------------------*/
 void
 test_algorifm (const char *name, YT_MINPROC *calc_rezults, YT_MINPROC *true_rezults,
-							 int power, int algorifm, long long1, long long2)
+	       int power, int algorifm, long long1, long long2)
 {
-	BOOL  print_error = TRUE;
-	double time_sec = 0.0;
-	LEFT_BEG;
+  BOOL  print_error = TRUE;
+  double time_sec = 0.0;
+  LEFT_BEG;
 
-	time_sec = YSecOfDay ();
-	minproc_calc (calc_rezults, power, algorifm, long1, long2);
-	time_sec = YSecOfDay () - time_sec;
+  time_sec = YSecOfDay ();
+  minproc_calc (calc_rezults, power, algorifm, long1, long2);
+  time_sec = YSecOfDay () - time_sec;
 
   if (mm_rezults_comp (calc_rezults, true_rezults))
-		printf ("%s O-KEY! .... %s long1=%2ld long2=%2ld   Time= %7.3f \n", 
-						LEFT, name, long1, long2, time_sec);
+    printf ("%s O-KEY! .... %s long1=%2ld long2=%2ld   Time= %7.3f \n", 
+	    LEFT, name, long1, long2, time_sec);
   else {
-		printf ("%s ERROR! .... %s long1=%2ld long2=%2ld   Time= %7.3f \n", 
-						LEFT, name, long1, long2, time_sec);
-		if (print_error) {
-			minproc_print (calc_rezults, "calc: ");
-			minproc_print (true_rezults, "true: ");
-		}
-	}
+    printf ("%s ERROR! .... %s long1=%2ld long2=%2ld   Time= %7.3f \n", 
+	    LEFT, name, long1, long2, time_sec);
+    if (print_error) {
+      minproc_print (calc_rezults, "calc: ");
+      minproc_print (true_rezults, "true: ");
+    }
+  }
 
-	LEFT_END;
-	return;
+  LEFT_END;
+  return;
 }
 /*-----------------------------minproc_tests-----------------------------------*/
 /*  Простые тесты на минимизацию скалярных функций                             */
@@ -1689,21 +1691,21 @@ test_algorifm (const char *name, YT_MINPROC *calc_rezults, YT_MINPROC *true_rezu
 void
 minproc_tests (YT_MINPROC *calc_rez, int p_power, int s_power)
 {
-	YT_MINPROC *true_rez;
+  YT_MINPROC *true_rez;
 
-	if (s_power == POWER_DEF) s_power = 10;
+  if (s_power == POWER_DEF) s_power = 10;
 
   true_rez = minproc_init (calc_rez->proc, 0, 0);
-	mm_initial_copy (true_rez, calc_rez);
+  mm_initial_copy (true_rez, calc_rez);
 
-	minproc_true (true_rez);
-	printf ("[%-13s]  DIM=%d  P_POWER=%d S_POWER=%d \n", true_rez->name, 
-					true_rez->dim, p_power, s_power);
+  minproc_true (true_rez);
+  printf ("[%-13s]  DIM=%d  P_POWER=%d S_POWER=%d \n", true_rez->name, 
+	  true_rez->dim, p_power, s_power);
 
-	//if (0) test_algorifm ("GenAlgos", calc_rez, true_rez, power, Y_GENALGO, 0, 0);
-	if (true_rez->dim<=4)
-	if (1) test_algorifm ("Perebors", calc_rez, true_rez, p_power, Y_PEREBOR, 0, 0);
-	if (1) test_algorifm ("GSLspusk", calc_rez, true_rez, s_power, YGSLSPUSK, 0, 0);
+  //if (0) test_algorifm ("GenAlgos", calc_rez, true_rez, power, Y_GENALGO, 0, 0);
+  if (true_rez->dim<=4)
+    if (1) test_algorifm ("Perebors", calc_rez, true_rez, p_power, Y_PEREBOR, 0, 0);
+  if (1) test_algorifm ("GSLspusk", calc_rez, true_rez, s_power, YGSLSPUSK, 0, 0);
 
   return;
 }
@@ -1732,21 +1734,21 @@ YDrawString (char *text, int x, int y, YT_COLOR color)
 void 
 YDrawRectF (int x, int y, int w, int h, YT_COLOR f_color) 
 { 
-	float xmin, ymin, xmax, ymax;
+  float xmin, ymin, xmax, ymax;
 		
-	xmin = (float)x / W;
-	ymin = (float)y / H;
-	xmax = xmin + (float)w / W;
-	ymax = ymin + (float)h / H;
+  xmin = (float)x / W;
+  ymin = (float)y / H;
+  xmax = xmin + (float)w / W;
+  ymax = ymin + (float)h / H;
 	
-	glIndexi (f_color); 
+  glIndexi (f_color); 
 		
-	glBegin (GL_POLYGON);
-	  glVertex2f (xmin, ymin);
-		glVertex2f (xmax, ymin);
-		glVertex2f (xmax, ymax);
-		glVertex2f (xmin, ymax);
-	glEnd ();
+  glBegin (GL_POLYGON);
+  glVertex2f (xmin, ymin);
+  glVertex2f (xmax, ymin);
+  glVertex2f (xmax, ymax);
+  glVertex2f (xmin, ymax);
+  glEnd ();
 		
   return; 
 } 
@@ -1756,19 +1758,19 @@ YDrawRectF (int x, int y, int w, int h, YT_COLOR f_color)
 void 
 YDrawLine (int x1, int y1, int x2, int y2, YT_COLOR color) 
 { 
-	float xx1, yy1, xx2, yy2;
+  float xx1, yy1, xx2, yy2;
 
-	xx1 = (float)x1 / W;
-	yy1 = (float)y1 / H;
-	xx2 = (float)x2 / W;
-	yy2 = (float)y2 / H;
+  xx1 = (float)x1 / W;
+  yy1 = (float)y1 / H;
+  xx2 = (float)x2 / W;
+  yy2 = (float)y2 / H;
 	
-	glIndexi (color); 
+  glIndexi (color); 
 	
-	glBegin (GL_LINES);
-	  glVertex2f (xx1, yy1);
-		glVertex2f (xx2, yy2);
-	glEnd ();
+  glBegin (GL_LINES);
+  glVertex2f (xx1, yy1);
+  glVertex2f (xx2, yy2);
+  glEnd ();
  
   return; 
 } 
@@ -1951,28 +1953,28 @@ YSetScale (int size, int type)
 YT_COLOR 
 YGetColorNear (GLfloat r0, GLfloat g0, GLfloat b0)
 {
-	YT_COLOR  color;
-	int i, size;
-	double len, len_min;
-	GLfloat r, g, b;
+  YT_COLOR  color;
+  int i, size;
+  double len, len_min;
+  GLfloat r, g, b;
 
-	size = glutGet (GLUT_WINDOW_COLORMAP_SIZE);
-	len_min = YMAXSPACE;
+  size = glutGet (GLUT_WINDOW_COLORMAP_SIZE);
+  len_min = YMAXSPACE;
 
-	for (i=0; i < size; i++) {
-		r = glutGetColor(i, GLUT_RED);
-		g = glutGetColor(i, GLUT_GREEN);
+  for (i=0; i < size; i++) {
+    r = glutGetColor(i, GLUT_RED);
+    g = glutGetColor(i, GLUT_GREEN);
     b = glutGetColor(i, GLUT_BLUE);
 
-		len = sqrt ((r-r0)*(r-r0) + (g-g0)*(g-g0)+ (b-b0)*(b-b0));
+    len = sqrt ((r-r0)*(r-r0) + (g-g0)*(g-g0)+ (b-b0)*(b-b0));
 
-		if (len < len_min) {
-			len_min = len;
-			color = i;
-		}
-	}
+    if (len < len_min) {
+      len_min = len;
+      color = i;
+    }
+  }
  
-	return (color);
+  return (color);
 }
 /*--------------------------------YSetRgbPalette-------------------------------*/ 
 /*                                                                             */
@@ -1980,21 +1982,21 @@ YGetColorNear (GLfloat r0, GLfloat g0, GLfloat b0)
 YT_COLOR 
 YSetRgbPalette (int index, int red, int green, int blue) 
 { 
-	YT_COLOR  color;
-	GLfloat r, g, b;
-	int base = 200;
+  YT_COLOR  color;
+  GLfloat r, g, b;
+  int base = 200;
 
-	r = red/255.0;
-	g = green/255.0;
-	b = blue/255.0;
+  r = red/255.0;
+  g = green/255.0;
+  b = blue/255.0;
 
-	color = base + index;
-	glutSetColor (color, r, g, b);
+  color = base + index;
+  glutSetColor (color, r, g, b);
 
-	//color = YGetColorNear (r, g, b);
-	// Для этого окна еще не установлена палитра!!
+  //color = YGetColorNear (r, g, b);
+  // Для этого окна еще не установлена палитра!!
 
-	return (color);
+  return (color);
 } 
 /*------------------------------YSetDEFPALETE----------------------------------*/ 
 /*                                                                             */
@@ -2219,8 +2221,8 @@ YMaping (YT_SPACE hmin, YT_SPACE hmax, int xrel, int yrel,
 {
   YT_SPACE x0, x;
   int      y0, y;
-	int size_scale = SIZE_SCALE /*  20 */;
-	YT_SPACE lin;
+  int size_scale = SIZE_SCALE /*  20 */;
+  YT_SPACE lin;
 
   x0 = hmin + (hmax - hmin) * xrel / 100.0;
   y0 = (int)(1 + (size_scale - 1) * yrel / 100.0);
@@ -2228,11 +2230,11 @@ YMaping (YT_SPACE hmin, YT_SPACE hmax, int xrel, int yrel,
   if (direct) {         
     x = *px;
     if (x < x0)  {
-			lin = YLINER (x, hmin, 1, x0, y0);
-			y = YInt (lin);
-			//printf ("%f %d \n", lin, y);
-			//printf ("%.1f %.1f %.1f %.1f  %ld %ld \n", lin, hmin, x0, x,  y0, y);
-		}
+      lin = YLINER (x, hmin, 1, x0, y0);
+      y = YInt (lin);
+      //printf ("%f %d \n", lin, y);
+      //printf ("%.1f %.1f %.1f %.1f  %ld %ld \n", lin, hmin, x0, x,  y0, y);
+    }
     else         y = YInt (YLINER (x, x0, y0, hmax, size_scale));
 
     *py = y;
@@ -2252,19 +2254,31 @@ YMaping (YT_SPACE hmin, YT_SPACE hmax, int xrel, int yrel,
 int
 YCreateWindow (int argc, char** argv, char *title, int x, int y, int w, int h)
 {
-	int wnd;
-	W = w; H = h;
-	glutInit (&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_INDEX | GLUT_DEPTH);
-	
-	glutInitWindowSize (W, H); 
-	glutInitWindowPosition (x, y);
-	
-	wnd = glutCreateWindow (title);
+  
+  int wnd;
+  W = w; H = h;
 
+  //glutInit (&argc, argv);
+  //glutInitWindowSize (128, 128);
+  //glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
+  //glutCreateWindow("timer test");
+
+  //return (1);
+
+  //printf ("YCreateWindow: .... 01 \n");
+  
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
+	
+  glutInitWindowSize (W, H); 
+  glutInitWindowPosition (x, y);
+	
+  wnd = glutCreateWindow (title);
+
+  //printf ("YCreateWindow: .... 06 \n");
   YInitCOLOR ();                                                                 
 
-	return (wnd);
+  return (wnd);
 }
 /*******************************************************************************/
 /*-----------------------------------------------------------------------------*/
@@ -2282,32 +2296,32 @@ double
 proc01 (PROC_VAR)
 {
   static YT_MINPROC *minproc;
-	int    i, d;
-	double s, sum;
+  int    i, d;
+  double s, sum;
 
-	minproc = (YT_MINPROC *)ptr;  //???
+  minproc = (YT_MINPROC *)ptr;  //???
 
   switch (message) {
   case YMAIN:
-		minproc = minproc_init (proc01, 0, 0);
-		DIM  = 1;
-		minproc_set (minproc, -2.0, 2.0,  0.1);
+    minproc = minproc_init (proc01, 0, 0);
+    DIM  = 1;
+    minproc_set (minproc, -2.0, 2.0,  0.1);
 
-		NUM_BEG = 1; // одно начальное приближение
-		for (i=0; i<DIM; i++)  
-			minproc->xyz_beg[0][i] = 1.0;
+    NUM_BEG = 1; // одно начальное приближение
+    for (i=0; i<DIM; i++)  
+      minproc->xyz_beg[0][i] = 1.0;
 
-		minproc->gslspusk = minproc_gslspusk_set (
-				 TRUE, 0.000001, 
-				 //gsl_multimin_fdfminimizer_conjugate_fr,
-			   gsl_multimin_fdfminimizer_vector_bfgs,
-				 0.01,   // размер первого пробного шага
-				 0.01,   // точность линейной минимизации
-				 0.01,   // критерий останова (норма градиента)
-				 500,   // критерий останова (максимум итераций)
-				 0.01    // критерий останова ()
-		);
-		minproc_tests (minproc, POWER_DEF, 2);
+    minproc->gslspusk = minproc_gslspusk_set (
+					      TRUE, 0.000001, 
+					      //gsl_multimin_fdfminimizer_conjugate_fr,
+					      gsl_multimin_fdfminimizer_vector_bfgs,
+					      0.01,   // размер первого пробного шага
+					      0.01,   // точность линейной минимизации
+					      0.01,   // критерий останова (норма градиента)
+					      500,   // критерий останова (максимум итераций)
+					      0.01    // критерий останова ()
+					      );
+    minproc_tests (minproc, POWER_DEF, 2);
     break;
   case YINIT:
     NAME = "x1^2+x2^2+...";
@@ -2320,15 +2334,15 @@ proc01 (PROC_VAR)
 
     break;
   case YCALC:
-		sum = 0;
-		for (i=1; i <= DIM; i++) {
-			s = XN(i);
-			sum += s*s;
-		}
+    sum = 0;
+    for (i=1; i <= DIM; i++) {
+      s = XN(i);
+      sum += s*s;
+    }
     return (sum);
   }
 
-	RETURN;
+  RETURN;
 }
 /*----------------------------------proc02-------------------------------------*/
 /*  Сложная синусоида                                                          */
@@ -2338,17 +2352,17 @@ proc02 (PROC_VAR)
 {
   YT_MINPROC *minproc;
 
-	minproc = (YT_MINPROC *)ptr;
+  minproc = (YT_MINPROC *)ptr;
 
   switch (message) {
   case YMAIN:
-		minproc = minproc_init (proc02, 0, 0);
-		DIM = 1;
+    minproc = minproc_init (proc02, 0, 0);
+    DIM = 1;
 
-		//	minproc_set (minproc, -10, +10,  0.1); вправо уходит вниз!!!
-		minproc_set (minproc, -10.0, +7.0,  0.1);
+    //	minproc_set (minproc, -10, +10,  0.1); вправо уходит вниз!!!
+    minproc_set (minproc, -10.0, +7.0,  0.1);
 
-		minproc_tests (minproc, POWER_DEF, POWER_DEF);
+    minproc_tests (minproc, POWER_DEF, POWER_DEF);
     break;
   case YINIT:
     NAME = "sin(x)*x^2";
@@ -2359,13 +2373,13 @@ proc02 (PROC_VAR)
 
   case YTRUE:
     NUM_END = 1;
-		XYZ_END[0][0] = -8.1; //f= -63.63
+    XYZ_END[0][0] = -8.1; //f= -63.63
     break;
   default:
-		;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;
   }
 
-	RETURN;
+  RETURN;
 }
 /*----------------------------------proc03-------------------------------------*/
 /*  Функция Розенброка N-го порядка                                            */
@@ -2375,23 +2389,23 @@ double
 proc03 (PROC_VAR)
 {
   static YT_MINPROC *minproc;
-	int    i, d;
-	double s, sum, koef_100;
+  int    i, d;
+  double s, sum, koef_100;
 
-	minproc = (YT_MINPROC *)ptr;
+  minproc = (YT_MINPROC *)ptr;
 
   switch (message) {
   case YMAIN:
-		minproc = minproc_init (proc03, 0, 0);
+    minproc = minproc_init (proc03, 0, 0);
 
-		DIM  = 2; // порядок функции
-		minproc_set (minproc, 0.0, 24.0,  0.1);
+    DIM  = 2; // порядок функции
+    minproc_set (minproc, 0.0, 24.0,  0.1);
 
-		NUM_BEG = 1; // одно начальное приближение
-		for (i=0; i < DIM; i++)
-			XYZ_BEG[0][i] = 0.7;
+    NUM_BEG = 1; // одно начальное приближение
+    for (i=0; i < DIM; i++)
+      XYZ_BEG[0][i] = 0.7;
 
-		minproc_tests (minproc, POWER_DEF, 2);
+    minproc_tests (minproc, POWER_DEF, 2);
     break;
   case YINIT:
     NAME = "Rozenbrok";
@@ -2405,17 +2419,17 @@ proc03 (PROC_VAR)
 
     break;
   case YCALC:
-		sum = 0;
-		for (i=2; i<=DIM; i++) {
-			s = XN(i) - XN(i-1);
-			sum += s*s;
-		}
+    sum = 0;
+    for (i=2; i<=DIM; i++) {
+      s = XN(i) - XN(i-1);
+      sum += s*s;
+    }
 
-		koef_100 = 100;
+    koef_100 = 100;
     return (koef_100*sum + (1-XN(1))*(1-XN(1)));
   }
 
-	RETURN;
+  RETURN;
 }
 /*-----------------------------------proc04------------------------------------*/
 /*  Функция Пауэла                                                             */
@@ -2424,21 +2438,21 @@ double
 proc04 (PROC_VAR)
 {
   YT_MINPROC *minproc;
-	double s1, s2, s3, s4, sum;
-	int    /* i, */ d;
+  double s1, s2, s3, s4, sum;
+  int    /* i, */ d;
 
-	minproc = (YT_MINPROC *)ptr;
+  minproc = (YT_MINPROC *)ptr;
 
   switch (message) {
   case YMAIN:
-		//proc04_main();
+    //proc04_main();
 
-		minproc = minproc_init (proc04, 0, 0);
+    minproc = minproc_init (proc04, 0, 0);
 
-		DIM = 4;
-		minproc_set (minproc, /* 5, */ -2.0, 2.0, 1.0);
+    DIM = 4;
+    minproc_set (minproc, /* 5, */ -2.0, 2.0, 1.0);
 
-		minproc_tests (minproc, POWER_DEF, POWER_DEF);
+    minproc_tests (minproc, POWER_DEF, POWER_DEF);
 
     break;
   case YINIT:
@@ -2447,12 +2461,12 @@ proc04 (PROC_VAR)
 
     break;
   case YCALC:
-		s1 = XN(1)+10*XN(2);
-		s2 = XN(3)-XN(4);
-		s3 = XN(2)-2*XN(3);
-		s4 = XN(1)-XN(4);
+    s1 = XN(1)+10*XN(2);
+    s2 = XN(3)-XN(4);
+    s3 = XN(2)-2*XN(3);
+    s4 = XN(1)-XN(4);
 
-		sum = s1*s1 + 5*s2*s2 + s3*s3*s3*s3 + 10*s4*s4*s4*s4;
+    sum = s1*s1 + 5*s2*s2 + s3*s3*s3*s3 + 10*s4*s4*s4*s4;
 
     return (sum);
   case YTRUE:
@@ -2463,10 +2477,10 @@ proc04 (PROC_VAR)
 
     break;
   default:
-		;;;
+    ;;;
   }
 
-	RETURN;
+  RETURN;
 }
 /*------------------------------------proc05-----------------------------------*/
 /*  Пример из библиотеки GSL                                                   */
@@ -2477,26 +2491,26 @@ proc05 (PROC_VAR)
 	
 
   static YT_MINPROC *minproc;
-	int    i, d;
-	double s, sum;
-	double x0=1, y0=2, x, y;
+  int    i, d;
+  double s, sum;
+  double x0=1, y0=2, x, y;
   /* Position of the minimum (1,2). */
 
-	minproc = (YT_MINPROC *)ptr;  //???
+  minproc = (YT_MINPROC *)ptr;  //???
 
   switch (message) {
   case YMAIN:
-		minproc = minproc_init (proc05/*!!!*/, 0, 0);
+    minproc = minproc_init (proc05/*!!!*/, 0, 0);
 
-		DIM  = 2;
-		minproc_set (minproc, -10.0, 10.0,  0.1);
+    DIM  = 2;
+    minproc_set (minproc, -10.0, 10.0,  0.1);
 
-		NUM_BEG = 1;
-	 	XYZ_BEG[0][0] = 5.0;
-	 	XYZ_BEG[0][1] = 7.0;
+    NUM_BEG = 1;
+    XYZ_BEG[0][0] = 5.0;
+    XYZ_BEG[0][1] = 7.0;
 
-		//*((YT_MINPROC **)ptr) = minproc;
-		minproc_tests (minproc, POWER_DEF, POWER_DEF);
+    //*((YT_MINPROC **)ptr) = minproc;
+    minproc_tests (minproc, POWER_DEF, POWER_DEF);
 
     break;
   case YINIT:
@@ -2505,20 +2519,20 @@ proc05 (PROC_VAR)
     break;
   case YTRUE:
     NUM_END = 1;
-		XYZ_END[0][0] = 1.0;
-		XYZ_END[0][1] = 2.0;
-		FUN_END = 30.0;
+    XYZ_END[0][0] = 1.0;
+    XYZ_END[0][1] = 2.0;
+    FUN_END = 30.0;
     break;
   case YCALC:
-		x = XN(1);
-		y = XN(2);
+    x = XN(1);
+    y = XN(2);
 
     return (10.0 * (x - x0) * (x - x0) +
-						20.0 * (y - y0) * (y - y0) + 30.0);
+	    20.0 * (y - y0) * (y - y0) + 30.0);
   default: ;;
   }
 
-	RETURN;
+  RETURN;
 }
 /*--------------------------------main_proc------------------------------------*/
 /*                                                                             */
@@ -2527,14 +2541,14 @@ void
 main_proc ()
 {
 
-	proc01 (YMAIN, 0, 0, 0, 0, 0); // Простейшая парабола
-	proc02 (YMAIN, 0, 0, 0, 0, 0); // Сложная синусоида
-	proc03 (YMAIN, 0, 0, 0, 0, 0); // Функция Розенброка
-	proc04 (YMAIN, 0, 0, 0, 0, 0); // Функция Пауэла
-	proc05 (YMAIN, 0, 0, 0, 0, 0); // Пример из библиотеки GSL    
+  proc01 (YMAIN, 0, 0, 0, 0, 0); // Простейшая парабола
+  proc02 (YMAIN, 0, 0, 0, 0, 0); // Сложная синусоида
+  proc03 (YMAIN, 0, 0, 0, 0, 0); // Функция Розенброка
+  proc04 (YMAIN, 0, 0, 0, 0, 0); // Функция Пауэла
+  proc05 (YMAIN, 0, 0, 0, 0, 0); // Пример из библиотеки GSL    
 
-	printf ("\n");
-	return;
+  printf ("\n");
+  return;
 }
 /*---------------------------------check_inf_nan-------------------------------*/
 /*                                                                             */
@@ -2542,13 +2556,13 @@ main_proc ()
 void
 check_inf_nan (double val)
 {
-	char buff[80];
+  char buff[80];
 
-	sprintf (buff, "%f", val);
-	if ((strcmp(buff,"inf")==0) || (strcmp(buff,"-inf")==0) || (strcmp(buff,"nan")==0))
-		Error (buff);
+  sprintf (buff, "%f", val);
+  if ((strcmp(buff,"inf")==0) || (strcmp(buff,"-inf")==0) || (strcmp(buff,"nan")==0))
+    Error (buff);
 
-	return;
+  return;
 }
 /*----------------------------------test_fpe-----------------------------------*/
 /*                                                                             */
@@ -2556,37 +2570,37 @@ check_inf_nan (double val)
 void
 test_fpe ()
 {
- unsigned short mode = 0 ;                                                     
-	double d_val;
-	char buff[80];
+  unsigned short mode = 0 ;                                                     
+  double d_val;
+  char buff[80];
 
-	// Почему не вырабатывается сигнал SIGFPE ?????????????????
-	// man strace,signal,... 
-	// Ниже опции из файла : fpu_control.h
+  // Почему не вырабатывается сигнал SIGFPE ?????????????????
+  // man strace,signal,... 
+  // Ниже опции из файла : fpu_control.h
 
-	//_FPU_GETCW(mode);
-	//mode |= _FPU_SINGLE ;                                                 
-	//mode |= _FPU_DOUBLE ;                                                 
-	//mode |= _FPU_EXTENDED ; 
-	//mode |= _FPU_MASK_ZM;                                                 
+  //_FPU_GETCW(mode);
+  //mode |= _FPU_SINGLE ;                                                 
+  //mode |= _FPU_DOUBLE ;                                                 
+  //mode |= _FPU_EXTENDED ; 
+  //mode |= _FPU_MASK_ZM;                                                 
   //_FPU_SETCW(mode) ;                                                            
   //_FPU_SETCW(0x1372);                                                            
   //_FPU_SETCW(_FPU_DEFAULT);                                                            
 
 	
-	// GSL_IEEE_MODE=double-precision
-	// Читается переменная окружения и устанавливаются значения
-	//gsl_ieee_env_setup ();
+  // GSL_IEEE_MODE=double-precision
+  // Читается переменная окружения и устанавливаются значения
+  //gsl_ieee_env_setup ();
 
-	//d_val = 10.0 / 0;
+  //d_val = 10.0 / 0;
 
-	//d_val = YMAXDOUBLE * 1.1;
-	//strcpy ((char*)(&d_val), "=-t\t999999\n=-");
+  //d_val = YMAXDOUBLE * 1.1;
+  //strcpy ((char*)(&d_val), "=-t\t999999\n=-");
 
-	check_inf_nan (d_val);
-	fprintf (stderr, "d_val = %f \n", d_val);
+  check_inf_nan (d_val);
+  fprintf (stderr, "d_val = %f \n", d_val);
 
-	return;
+  return;
 }
 /*------------------------------test_siman_misc--------------------------------*/
 /*                                                                             */
@@ -2602,7 +2616,7 @@ test_fpe ()
 #define T_MIN     2.0e-6
 
 gsl_siman_params_t params = {N_TRIES, ITERS_FIXED_T, STEP_SIZE,
-			     K, T_INITIAL, MU_T, T_MIN};
+  K, T_INITIAL, MU_T, T_MIN};
 
 //inline double square (double x) ;
 //inline double square (double x) { return x * x ; }
@@ -2654,7 +2668,7 @@ test_siman ()
   gsl_test_rel (x, x_min, 1e-3, "f(x)= exp(-(x-1)^2) sin(8x), x0=0.6");
   printf ("\n");
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2679,33 +2693,33 @@ draw_item ()
   YT_SPACE hh;
   YT_SPACE x, y;
 
-	x0=20; y0=50; w=60; h=60;
+  x0=20; y0=50; w=60; h=60;
 	
-	YDrawRectB (x0, y0, w, h, YColor("black"));
+  YDrawRectB (x0, y0, w, h, YColor("black"));
 	
-	hmin = YMAXSPACE; hmax = YMINSPACE;
-	for (i=0; i<w-2; i+=2) 
-  for (j=0; j<h-2; j+=2) {
-		x = i; y = j;
-		hh = (x*x + y*y);
-		if      (hh < hmin)  hmin = hh;
-		else if (hh > hmax)  hmax = hh;
-	}
+  hmin = YMAXSPACE; hmax = YMINSPACE;
+  for (i=0; i<w-2; i+=2) 
+    for (j=0; j<h-2; j+=2) {
+      x = i; y = j;
+      hh = (x*x + y*y);
+      if      (hh < hmin)  hmin = hh;
+      else if (hh > hmax)  hmax = hh;
+    }
 	
-	for (i=0; i<w-2; i+=2) 
-  for (j=0; j<h-2; j+=2) {
-		x = i; y = j;
-		hh = (x*x + y*y);
+  for (i=0; i<w-2; i+=2) 
+    for (j=0; j<h-2; j+=2) {
+      x = i; y = j;
+      hh = (x*x + y*y);
 		
-		YMaping (hmin, hmax, xrel, yrel, &hh, &cellh, TRUE);
+      YMaping (hmin, hmax, xrel, yrel, &hh, &cellh, TRUE);
 
-		color = YScale (cellh-1);
-		//color = i+j;
+      color = YScale (cellh-1);
+      //color = i+j;
 		
-		YDrawRectF (x0+1+i, y0+1+j, 2, 2, color);
-	}
+      YDrawRectF (x0+1+i, y0+1+j, 2, 2, color);
+    }
 	
-		return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2728,9 +2742,9 @@ test_picture ()
   YDrawLine  (25,25, 160,154, YColor("blue"));
   YDrawLine  (25,25, 160,156, YColor("blue"));
 
-	YDrawScale (10, 10, 175, 20, YHORZ); 
+  YDrawScale (10, 10, 175, 20, YHORZ); 
 
-	draw_item ();
+  draw_item ();
 
   return;
 }
@@ -2742,15 +2756,15 @@ display_1 (void)
 {
   static void *meta = NULL;
 
-	glClear (GL_COLOR_BUFFER_BIT);
-	YDrawRectF (0, 0, W, H, YColor("yellow"));
+  glClear (GL_COLOR_BUFFER_BIT);
+  YDrawRectF (0, 0, W, H, YColor("yellow"));
 
-	test_picture ();
+  //test_picture ();
 
-	glFlush ();
+  glFlush ();
   glutSwapBuffers(); 
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2775,13 +2789,20 @@ main_ogl_test1 (int argc, char** argv)
 	return;
 }
 /*-----------------------------------------------------------------------------*/
-/*-----------------------------------------------------------------------------*/
-/*-----------------------------------------------------------------------------*/
-/*                                                                             */
-/*-----------------------------------------------------------------------------*/
 void 
-main_ogl_test2 (void)
+main_ogl_test2 (int argc, char** argv)
 {
+
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
+	
+  glutInitWindowSize (300, 200); 
+  glutInitWindowPosition (100, 100);
+	
+  /* wnd =  */glutCreateWindow ("main_ogl_test2");
+
+  YInitCOLOR ();                                                                 
+
 
   glClear (GL_COLOR_BUFFER_BIT);
 
@@ -2803,7 +2824,7 @@ main_ogl_test2 (void)
   glVertex3f (0.0, 0.0, 1.0);
   glEnd ();
 
-  glIndexi (YColor("aqua")); 
+  glIndexi (YColor("yellow")); 
   glBegin (GL_POLYGON);
   glVertex3f (1.0, 0.0, 0.0);
   glVertex3f (0.0, 1.0, 0.0);
@@ -2812,6 +2833,8 @@ main_ogl_test2 (void)
   
   glFlush ();
   glutSwapBuffers (); 
+
+  glutMainLoop ();
 
   return;
 }         
@@ -2822,38 +2845,38 @@ void
 draw_cube (double siz, YT_COLOR color)
 {
 
-	glIndexi (color); 
+  glIndexi (color); 
 
   glBegin (GL_LINE_LOOP);
-	  glVertex3f (-siz, -siz, -siz);
-	  glVertex3f (+siz, -siz, -siz);
-	  glVertex3f (+siz, -siz, +siz);
-	  glVertex3f (-siz, -siz, +siz);
+  glVertex3f (-siz, -siz, -siz);
+  glVertex3f (+siz, -siz, -siz);
+  glVertex3f (+siz, -siz, +siz);
+  glVertex3f (-siz, -siz, +siz);
   glEnd ();
 
   glBegin (GL_LINE_LOOP);
-	  glVertex3f (-siz, +siz, -siz);
-	  glVertex3f (+siz, +siz, -siz);
-	  glVertex3f (+siz, +siz, +siz);
-	  glVertex3f (-siz, +siz, +siz);
+  glVertex3f (-siz, +siz, -siz);
+  glVertex3f (+siz, +siz, -siz);
+  glVertex3f (+siz, +siz, +siz);
+  glVertex3f (-siz, +siz, +siz);
   glEnd ();
 
   glBegin (GL_LINES);
-	  glVertex3f (-siz, -siz, -siz);
-	  glVertex3f (-siz, +siz, -siz);
+  glVertex3f (-siz, -siz, -siz);
+  glVertex3f (-siz, +siz, -siz);
 
-	  glVertex3f (+siz, -siz, -siz);
-	  glVertex3f (+siz, +siz, -siz);
+  glVertex3f (+siz, -siz, -siz);
+  glVertex3f (+siz, +siz, -siz);
 
-	  glVertex3f (+siz, -siz, +siz);
-	  glVertex3f (+siz, +siz, +siz);
+  glVertex3f (+siz, -siz, +siz);
+  glVertex3f (+siz, +siz, +siz);
 
-	  glVertex3f (-siz, -siz, +siz);
-	  glVertex3f (-siz, +siz, +siz);
+  glVertex3f (-siz, -siz, +siz);
+  glVertex3f (-siz, +siz, +siz);
   glEnd ();
 
   
-	return;
+  return;
 }         
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2862,22 +2885,22 @@ void
 draw_axes (void)
 {
 
-	glIndexi (YColor("red")); 
+  glIndexi (YColor("red")); 
   glBegin (GL_LINES);
-	  glVertex3f (0, 0, 0);
-	  glVertex3f (2, 0, 0);
+  glVertex3f (0, 0, 0);
+  glVertex3f (2, 0, 0);
   glEnd ();
 
-	glIndexi (YColor("green")); 
+  glIndexi (YColor("green")); 
   glBegin (GL_LINES);
-	  glVertex3f (0, 0, 0);
-	  glVertex3f (0, 2, 0);
+  glVertex3f (0, 0, 0);
+  glVertex3f (0, 2, 0);
   glEnd ();
 
-	glIndexi (YColor("blue")); 
+  glIndexi (YColor("blue")); 
   glBegin (GL_LINES);
-	  glVertex3f (0, 0, 0);
-	  glVertex3f (0, 0, 2);
+  glVertex3f (0, 0, 0);
+  glVertex3f (0, 0, 2);
   glEnd ();
 
 }
@@ -2887,26 +2910,26 @@ draw_axes (void)
 void
 clo_draw (YT_CLOTH *clo)
 {
-	int i, j;
+  int i, j;
 
-	glIndexi (YColor("red")); 
+  glIndexi (YColor("red")); 
   glBegin (GL_LINES);
 
-	for (i=0; i < clo->ii; i++) 
-	for (j=0; j < clo->jj; j++) {
-		if (i != clo->ii-1) {
-	  glVertex3f (CLOX(clo,i,j),   CLOY(clo,i,j),   CLOZ(clo,i,j));
-	  glVertex3f (CLOX(clo,i+1,j), CLOY(clo,i+1,j), CLOZ(clo,i+1,j));
-		}
+  for (i=0; i < clo->ii; i++) 
+    for (j=0; j < clo->jj; j++) {
+      if (i != clo->ii-1) {
+	glVertex3f (CLOX(clo,i,j),   CLOY(clo,i,j),   CLOZ(clo,i,j));
+	glVertex3f (CLOX(clo,i+1,j), CLOY(clo,i+1,j), CLOZ(clo,i+1,j));
+      }
 
-		if (j != clo->jj-1) {
-	  glVertex3f (CLOX(clo,i,j),   CLOY(clo,i,j),   CLOZ(clo,i,j));
-	  glVertex3f (CLOX(clo,i,j+1), CLOY(clo,i,j+1), CLOZ(clo,i,j+1));
-		}
-	}
+      if (j != clo->jj-1) {
+	glVertex3f (CLOX(clo,i,j),   CLOY(clo,i,j),   CLOZ(clo,i,j));
+	glVertex3f (CLOX(clo,i,j+1), CLOY(clo,i,j+1), CLOZ(clo,i,j+1));
+      }
+    }
 
   glEnd ();
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2914,23 +2937,25 @@ clo_draw (YT_CLOTH *clo)
 void
 draw_all (double siz)
 {
-	//double siz;
+  //double siz;
 
-	//draw_axes ();
+  //draw_axes ();
 
-	draw_cube (siz, YColor("black"));
+  draw_cube (siz, YColor("black"));
 
-	glIndexi (YColor("aqua")); 
+  glIndexi (YColor("aqua"));
+  
   glBegin (GL_POLYGON);
-	  glVertex3f (-siz, -siz, -siz);
-	  glVertex3f (+siz, -siz, -siz);
-	  glVertex3f (+siz, -siz, +siz);
-	  glVertex3f (-siz, -siz, +siz);
+  
+  glVertex3f (-siz, -siz, -siz);
+  glVertex3f (+siz, -siz, -siz);
+  glVertex3f (+siz, -siz, +siz);
+  glVertex3f (-siz, -siz, +siz);
   glEnd ();
   
-	clo_draw (clo);
+  clo_draw (clo);
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2944,7 +2969,7 @@ make_all ()
   list = glGenLists (1);                                                         
   glNewList (list, GL_COMPILE);                                                  
 
-	draw_all (siz);
+  draw_all (siz);
 
   glEndList ();                                                                  
                                                                                 
@@ -2962,18 +2987,18 @@ display (void)
 
   glPushMatrix();
 
-	/* Perform scene rotations based on user mouse input. */
-	glRotatef(angle_x, 1.0, 0.0, 0.0);
-	glRotatef(angle_y, 0.0, 1.0, 0.0);
+  /* Perform scene rotations based on user mouse input. */
+  glRotatef(angle_x, 1.0, 0.0, 0.0);
+  glRotatef(angle_y, 0.0, 1.0, 0.0);
 
-	draw_all (siz);
+  draw_all (siz);
   //glCallList (All);                                                             
 
   glPopMatrix();
-	//glFlush ();
+  //glFlush ();
   glutSwapBuffers (); 
 
-	return;
+  return;
 }         
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -2981,8 +3006,8 @@ display (void)
 static void
 mouse (int button, int state, int x, int y)
 {
-
-	//OUTD (x);
+  
+  //OUTD (x);
   /* Rotate the scene with the left mouse button. */
 
   if (button == GLUT_LEFT_BUTTON) {
@@ -3010,7 +3035,7 @@ static void
 motion (int x, int y)
 {
 
-	//OUTD (x);
+  //OUTD (x);
   if (moving) {
     angle_y = angle_y + (x - startx);
     angle_x = angle_x + (y - starty);
@@ -3020,7 +3045,7 @@ motion (int x, int y)
     glutPostRedisplay();
   }
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -3028,16 +3053,16 @@ motion (int x, int y)
 void
 clo_rand_noice (YT_CLOTH *clo)
 {
-	int i, j;
+  int i, j;
 
-	for (i=0; i < clo->ii; i++) 
-	for (j=0; j < clo->jj; j++) {
-		CLOX(clo,i,j) += YRandF (-0.01, +0.01);
-		CLOY(clo,i,j) += YRandF (-0.01, +0.01);
-		CLOZ(clo,i,j) += YRandF (-0.001, +0.001);
-	}
+  for (i=0; i < clo->ii; i++) 
+    for (j=0; j < clo->jj; j++) {
+      CLOX(clo,i,j) += YRandF (-0.01, +0.01);
+      CLOY(clo,i,j) += YRandF (-0.01, +0.01);
+      CLOZ(clo,i,j) += YRandF (-0.001, +0.001);
+    }
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -3049,8 +3074,8 @@ keyboard (unsigned char c, int x, int y)
   case 27:  /* Escape quits. */
     exit (0);
     break;
-	default:
-		printf ("Keyboard: %c \n", c);
+  default:
+    printf ("Keyboard: %c \n", c);
   }
 }
 /*-----------------------------------------------------------------------------*/
@@ -3092,36 +3117,36 @@ clo_swap (YT_CLOTH *clo)
 YT_CLOTH*
 clo_create (int ii, int jj)
 {
-	YT_CLOTH *clo;
-	int i, j, loop;
-	tParticle *t, *s; // target, source
+  YT_CLOTH *clo;
+  int i, j, loop;
+  tParticle *t, *s; // target, source
 
-	YMALLOC (clo, YT_CLOTH, 1);
-	clo->ii = ii;
-	clo->jj = jj;
-	clo->m_ParticleCnt = ii*jj;
+  YMALLOC (clo, YT_CLOTH, 1);
+  clo->ii = ii;
+  clo->jj = jj;
+  clo->m_ParticleCnt = ii*jj;
 
-	YMALLOC (clo->array1, tParticle, clo->m_ParticleCnt);
-	YMALLOC (clo->array2, tParticle, clo->m_ParticleCnt);
+  YMALLOC (clo->array1, tParticle, clo->m_ParticleCnt);
+  YMALLOC (clo->array2, tParticle, clo->m_ParticleCnt);
 
-	clo->s = clo->array1;
-	clo->t = clo->array2;
+  clo->s = clo->array1;
+  clo->t = clo->array2;
 
-	for (loop=0; loop < clo->m_ParticleCnt; loop++) {
-		s = clo->s + loop;
-		s->pos.x = s->v.x = s->f.x = 0.0; 
-		s->pos.y = s->v.y = s->f.y = 0.0; 
-		s->pos.z = s->v.z = s->f.z = 0.0; 
-		s->oneOverM = 1.0;
-	}
+  for (loop=0; loop < clo->m_ParticleCnt; loop++) {
+    s = clo->s + loop;
+    s->pos.x = s->v.x = s->f.x = 0.0; 
+    s->pos.y = s->v.y = s->f.y = 0.0; 
+    s->pos.z = s->v.z = s->f.z = 0.0; 
+    s->oneOverM = 1.0;
+  }
 
-	// временные массивы для пошагового интегрирования
-	for (i = 0; i < 5; i++) {
-		//m_TempSys[i] = NULL; 
-		YMALLOC (m_TempSys[i], tParticle, clo->m_ParticleCnt);
-	}
+  // временные массивы для пошагового интегрирования
+  for (i = 0; i < 5; i++) {
+    //m_TempSys[i] = NULL; 
+    YMALLOC (m_TempSys[i], tParticle, clo->m_ParticleCnt);
+  }
 
-	return (clo);
+  return (clo);
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -3129,62 +3154,62 @@ clo_create (int ii, int jj)
 void
 clo_set_vert (YT_CLOTH *clo, double x, double y, double w, double h)
 {
-	int i, j;
-	double size_i, size_j;
+  int i, j;
+  double size_i, size_j;
 
-	clo->size_i = size_i = h / (clo->ii-1);
-	clo->size_j = size_j = w / (clo->jj-1);
+  clo->size_i = size_i = h / (clo->ii-1);
+  clo->size_j = size_j = w / (clo->jj-1);
 
-	for (i=0; i < clo->ii; i++) 
-	for (j=0; j < clo->jj; j++) {
-		CLOX(clo,i,j) = x + j*size_j;
-		CLOY(clo,i,j) = y - i*size_i;
-		CLOZ(clo,i,j) = 0.0;
-	}
+  for (i=0; i < clo->ii; i++) 
+    for (j=0; j < clo->jj; j++) {
+      CLOX(clo,i,j) = x + j*size_j;
+      CLOY(clo,i,j) = y - i*size_i;
+      CLOZ(clo,i,j) = 0.0;
+    }
 
-	CLOP(clo,0,0)->oneOverM = 0.0;
-	CLOP(clo,0,clo->jj-1)->oneOverM = 0.0;
+  CLOP(clo,0,0)->oneOverM = 0.0;
+  CLOP(clo,0,clo->jj-1)->oneOverM = 0.0;
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 void
 clo_calc_springs (YT_CLOTH *clo, tParticle *p1, tParticle *p2, 
-									float Ks, float Kd, float	restLen)
+		  float Ks, float Kd, float	restLen)
 {
 
-	float		dist, Hterm, Dterm; 
-	tVector	F /* springForce */, deltaV, deltaP; 
+  float		dist, Hterm, Dterm; 
+  tVector	F /* springForce */, deltaV, deltaP; 
 
-/* 	VectorDifference (&(p1->pos), &(p2->pos), &F); */
-/* 	dist = VectorLength (&F);	 */
-/* 	ScaleVector (&F, (dist-restLen), &F);	 */
+  /* 	VectorDifference (&(p1->pos), &(p2->pos), &F); */
+  /* 	dist = VectorLength (&F);	 */
+  /* 	ScaleVector (&F, (dist-restLen), &F);	 */
 
-/* 	VectorSum (&(p2->f), &F, &(p2->f));			        */
-/* 	VectorDifference (&(p1->f), &F, &(p1->f));			 */
-/* 	return; */
+  /* 	VectorSum (&(p2->f), &F, &(p2->f));			        */
+  /* 	VectorDifference (&(p1->f), &F, &(p1->f));			 */
+  /* 	return; */
 
 
-	VectorDifference (&p1->pos, &p2->pos, &deltaP);    	 // Vector distance  
-	dist = VectorLength (&deltaP);					             // Magnitude of deltaP 	
+  VectorDifference (&p1->pos, &p2->pos, &deltaP);    	 // Vector distance  
+  dist = VectorLength (&deltaP);					             // Magnitude of deltaP 	
 
-	Hterm = (dist - restLen) * Ks;	                     // Ks * (dist - rest) 
+  Hterm = (dist - restLen) * Ks;	                     // Ks * (dist - rest) 
 
-	VectorDifference (&p1->v, &p2->v, &deltaV);		       // Delta Velocity Vector 
-	Dterm = (DotProduct (&deltaV, &deltaP) * Kd) / dist; // Damping Term 
+  VectorDifference (&p1->v, &p2->v, &deltaV);		       // Delta Velocity Vector 
+  Dterm = (DotProduct (&deltaV, &deltaP) * Kd) / dist; // Damping Term 
 
-	ScaleVector (&deltaP, 1.0f / dist, &F);	             // Normalize Distance Vector 
-	ScaleVector (&F, -(Hterm + Dterm), &F);	             // Calc Force 
+  ScaleVector (&deltaP, 1.0f / dist, &F);	             // Normalize Distance Vector 
+  ScaleVector (&F, -(Hterm + Dterm), &F);	             // Calc Force 
 
-	VectorSum (&p1->f, &F, &p1->f);			                 // Apply to Particle 1 
-	VectorDifference (&p2->f, &F, &p2->f);	             // - Force on Particle 2 
+  VectorSum (&p1->f, &F, &p1->f);			                 // Apply to Particle 1 
+  VectorDifference (&p2->f, &F, &p2->f);	             // - Force on Particle 2 
 
-	//VectorSum (&(p2->f),&F, &(p2->f));			           // Apply to Particle 1 
-	//VectorDifference (&(p1->f), &F, &(p1->f));	       // - Force on Particle 2 
+  //VectorSum (&(p2->f),&F, &(p2->f));			           // Apply to Particle 1 
+  //VectorDifference (&(p1->f), &F, &(p1->f));	       // - Force on Particle 2 
 
-	return;
+  return;
 }
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -3192,66 +3217,66 @@ clo_calc_springs (YT_CLOTH *clo, tParticle *p1, tParticle *p2,
 void 
 ComputeForces (tParticle	*system) 
 { 
-	int loop, i, j; 
-	tParticle	*curParticle,*p1, *p2; 
-	float size_shear;
-	float	Ks, Kd; 
+  int loop, i, j; 
+  tParticle	*curParticle,*p1, *p2; 
+  float size_shear;
+  float	Ks, Kd; 
  
-	curParticle = system; 
-	for (loop = 0; loop < clo->m_ParticleCnt; loop++) 
-	{ 
-		MAKEVECTOR(curParticle->f, 0.0f,0.0f,0.0f)		// CLEAR FORCE VECTOR 
+  curParticle = system; 
+  for (loop = 0; loop < clo->m_ParticleCnt; loop++) 
+    { 
+      MAKEVECTOR(curParticle->f, 0.0f,0.0f,0.0f)		// CLEAR FORCE VECTOR 
  
-		if (curParticle->oneOverM != 0) 
-		{ 
-			curParticle->f.x += (m_Gravity.x / curParticle->oneOverM); 
-			curParticle->f.y += (m_Gravity.y / curParticle->oneOverM); 
-			curParticle->f.z += (m_Gravity.z / curParticle->oneOverM); 
-		}
+	if (curParticle->oneOverM != 0) 
+	  { 
+	    curParticle->f.x += (m_Gravity.x / curParticle->oneOverM); 
+	    curParticle->f.y += (m_Gravity.y / curParticle->oneOverM); 
+	    curParticle->f.z += (m_Gravity.z / curParticle->oneOverM); 
+	  }
  
-		curParticle->f.x += (-DEFAULT_DAMPING * curParticle->v.x); 
-		curParticle->f.y += (-DEFAULT_DAMPING * curParticle->v.y); 
-		curParticle->f.z += (-DEFAULT_DAMPING * curParticle->v.z); 
+      curParticle->f.x += (-DEFAULT_DAMPING * curParticle->v.x); 
+      curParticle->f.y += (-DEFAULT_DAMPING * curParticle->v.y); 
+      curParticle->f.z += (-DEFAULT_DAMPING * curParticle->v.z); 
 
-		curParticle++; 
-	} 
+      curParticle++; 
+    } 
  
-	// STRUCTURAL springs 
-	Ks = 4.0;
-	Kd = 0.6;
-	for (i=0; i < clo->ii; i++) 
-	for (j=0; j < clo->jj; j++) {
-		if (i != clo->ii-1) 
-			clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i+1,j), Ks, Kd, clo->size_i);
+  // STRUCTURAL springs 
+  Ks = 4.0;
+  Kd = 0.6;
+  for (i=0; i < clo->ii; i++) 
+    for (j=0; j < clo->jj; j++) {
+      if (i != clo->ii-1) 
+	clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i+1,j), Ks, Kd, clo->size_i);
 
-		if (j != clo->jj-1) 
-			clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i,j+1), Ks, Kd, clo->size_j);
-	}
+      if (j != clo->jj-1) 
+	clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i,j+1), Ks, Kd, clo->size_j);
+    }
 
-	// SHEAR springs 
-	Ks = 4.0;
-	Kd = 0.6;
-	size_shear = sqrt (clo->size_i*clo->size_i + clo->size_j*clo->size_j);
-	for (i=0; i < clo->ii-1; i++) 
-	for (j=0; j < clo->jj-1; j++) {
-		clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i+1,j+1), Ks, Kd, size_shear);
-		clo_calc_springs (clo, CLOP(clo,i,j+1), CLOP(clo,i+1,j), Ks, Kd, size_shear);
-	}
+  // SHEAR springs 
+  Ks = 4.0;
+  Kd = 0.6;
+  size_shear = sqrt (clo->size_i*clo->size_i + clo->size_j*clo->size_j);
+  for (i=0; i < clo->ii-1; i++) 
+    for (j=0; j < clo->jj-1; j++) {
+      clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i+1,j+1), Ks, Kd, size_shear);
+      clo_calc_springs (clo, CLOP(clo,i,j+1), CLOP(clo,i+1,j), Ks, Kd, size_shear);
+    }
  
-	// BEND springs 
-	Ks = 2.4;
-	Kd = 0.8;
-	for (i=0; i < clo->ii; i++) 
-	for (j=0; j < clo->jj; j++) {
-		if ((i!=clo->ii-1)&&(i!=clo->ii-2)) // vertical
-			clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i+2,j), Ks, Kd, 2*clo->size_i);
+  // BEND springs 
+  Ks = 2.4;
+  Kd = 0.8;
+  for (i=0; i < clo->ii; i++) 
+    for (j=0; j < clo->jj; j++) {
+      if ((i!=clo->ii-1)&&(i!=clo->ii-2)) // vertical
+	clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i+2,j), Ks, Kd, 2*clo->size_i);
 
-		if ((j!=clo->jj-1)&&(j!=clo->jj-2)) // gorizontal
-			clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i,j+2), Ks, Kd, 2*clo->size_j);
-	}
+      if ((j!=clo->jj-1)&&(j!=clo->jj-2)) // gorizontal
+	clo_calc_springs (clo, CLOP(clo,i,j), CLOP(clo,i,j+2), Ks, Kd, 2*clo->size_j);
+    }
 
 
-	return;
+  return;
 }    
 /*-----------------------------------------------------------------------------*/
 // Purpose:		Does the Integration for all the points in a system 
@@ -3261,31 +3286,31 @@ ComputeForces (tParticle	*system)
 void
 IntegrateSysOverTime (tParticle *initial,tParticle *source, tParticle *target, float deltaTime) 
 { 
-	int loop; 
-	float deltaTimeMass; 
+  int loop; 
+  float deltaTimeMass; 
 
-	for (loop = 0; loop < clo->m_ParticleCnt; loop++) 
-	{ 
-		deltaTimeMass = deltaTime * initial->oneOverM; 
+  for (loop = 0; loop < clo->m_ParticleCnt; loop++) 
+    { 
+      deltaTimeMass = deltaTime * initial->oneOverM; 
 
-		// DETERMINE THE NEW VELOCITY FOR THE PARTICLE 
-		target->v.x = initial->v.x + (source->f.x * deltaTimeMass); 
-		target->v.y = initial->v.y + (source->f.y * deltaTimeMass); 
-		target->v.z = initial->v.z + (source->f.z * deltaTimeMass); 
+      // DETERMINE THE NEW VELOCITY FOR THE PARTICLE 
+      target->v.x = initial->v.x + (source->f.x * deltaTimeMass); 
+      target->v.y = initial->v.y + (source->f.y * deltaTimeMass); 
+      target->v.z = initial->v.z + (source->f.z * deltaTimeMass); 
  
-		target->oneOverM = initial->oneOverM; 
+      target->oneOverM = initial->oneOverM; 
  
-		// SET THE NEW POSITION 
-		target->pos.x = initial->pos.x + (deltaTime * source->v.x); 
-		target->pos.y = initial->pos.y + (deltaTime * source->v.y); 
-		target->pos.z = initial->pos.z + (deltaTime * source->v.z); 
+      // SET THE NEW POSITION 
+      target->pos.x = initial->pos.x + (deltaTime * source->v.x); 
+      target->pos.y = initial->pos.y + (deltaTime * source->v.y); 
+      target->pos.z = initial->pos.z + (deltaTime * source->v.z); 
  
-		initial++; 
-		source++; 
-		target++; 
-	} 
+      initial++; 
+      source++; 
+      target++; 
+    } 
 
-	return;
+  return;
 } 
 /*-----------------------------------------------------------------------------*/
 // Purpose:		Calculate new Positions and Velocities given a deltatime 
@@ -3296,10 +3321,10 @@ void
 EulerIntegrate (float DeltaTime) 
 { 
 
-	// JUST TAKE A SINGLE STEP 
-	IntegrateSysOverTime (clo->s, clo->s, clo->t, DeltaTime); 
+  // JUST TAKE A SINGLE STEP 
+  IntegrateSysOverTime (clo->s, clo->s, clo->t, DeltaTime); 
 
-	return;
+  return;
 } 
 /*-----------------------------------------------------------------------------*/
 // Purpose:		Calculate new Positions and Velocities given a deltatime 
@@ -3309,19 +3334,19 @@ EulerIntegrate (float DeltaTime)
 void 
 MidPointIntegrate (float DeltaTime) 
 { 
-	float		halfDeltaT; 
-	halfDeltaT = DeltaTime / 2.0f; 
+  float		halfDeltaT; 
+  halfDeltaT = DeltaTime / 2.0f; 
  
-	// TAKE A HALF STEP AND UPDATE VELOCITY AND POSITION 
-	IntegrateSysOverTime (clo->s, clo->s, m_TempSys[0], halfDeltaT); 
+  // TAKE A HALF STEP AND UPDATE VELOCITY AND POSITION 
+  IntegrateSysOverTime (clo->s, clo->s, m_TempSys[0], halfDeltaT); 
  
-	// COMPUTE FORCES USING THESE NEW POSITIONS AND VELOCITIES 
-	ComputeForces (m_TempSys[0]); 
+  // COMPUTE FORCES USING THESE NEW POSITIONS AND VELOCITIES 
+  ComputeForces (m_TempSys[0]); 
  
-	// TAKE THE FULL STEP WITH THIS NEW INFORMATION 
-	IntegrateSysOverTime (clo->s, m_TempSys[0], clo->t, DeltaTime); 
+  // TAKE THE FULL STEP WITH THIS NEW INFORMATION 
+  IntegrateSysOverTime (clo->s, m_TempSys[0], clo->t, DeltaTime); 
 
-	return;
+  return;
 } 
 /*-----------------------------------------------------------------------------*/
 // Purpose:		Calculate new Positions and Velocities given a deltatime 
@@ -3333,161 +3358,161 @@ MidPointIntegrate (float DeltaTime)
 void 
 RK4Integrate (float DeltaTime) 
 { 
-	int loop; 
-	float		halfDeltaT,sixthDeltaT; 
-	tParticle	*source,*target,*accum1,*accum2,*accum3,*accum4; 
-	//mgena
-	tParticle	*m_CurrentSys = clo->s;
-	tParticle	*m_TargetSys  = clo->t;
-	int        m_ParticleCnt= clo->m_ParticleCnt;
+  int loop; 
+  float		halfDeltaT,sixthDeltaT; 
+  tParticle	*source,*target,*accum1,*accum2,*accum3,*accum4; 
+  //mgena
+  tParticle	*m_CurrentSys = clo->s;
+  tParticle	*m_TargetSys  = clo->t;
+  int        m_ParticleCnt= clo->m_ParticleCnt;
 
-	halfDeltaT = DeltaTime / 2.0f;		// SOME TIME VALUES I WILL NEED 
-	sixthDeltaT = 1.0f / 6.0f; 
+  halfDeltaT = DeltaTime / 2.0f;		// SOME TIME VALUES I WILL NEED 
+  sixthDeltaT = 1.0f / 6.0f; 
  
 
 
-	// FIRST STEP 
-	source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
-	target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
-	accum1 = m_TempSys[1];	// ACCUMULATE THE INTEGRATED VALUES 
-	for (loop = 0; loop < m_ParticleCnt; loop++) 
-	{ 
-		accum1->f.x = halfDeltaT * source->f.x * source->oneOverM; 
-		accum1->f.y = halfDeltaT * source->f.y * source->oneOverM; 
-		accum1->f.z = halfDeltaT * source->f.z * source->oneOverM; 
+  // FIRST STEP 
+  source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
+  target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
+  accum1 = m_TempSys[1];	// ACCUMULATE THE INTEGRATED VALUES 
+  for (loop = 0; loop < m_ParticleCnt; loop++) 
+    { 
+      accum1->f.x = halfDeltaT * source->f.x * source->oneOverM; 
+      accum1->f.y = halfDeltaT * source->f.y * source->oneOverM; 
+      accum1->f.z = halfDeltaT * source->f.z * source->oneOverM; 
  
-		accum1->v.x = halfDeltaT * source->v.x; 
-		accum1->v.y = halfDeltaT * source->v.y; 
-		accum1->v.z = halfDeltaT * source->v.z; 
-		// DETERMINE THE NEW VELOCITY FOR THE PARTICLE OVER 1/2 TIME 
-		target->v.x = source->v.x + (accum1->f.x); 
-		target->v.y = source->v.y + (accum1->f.y); 
-		target->v.z = source->v.z + (accum1->f.z); 
+      accum1->v.x = halfDeltaT * source->v.x; 
+      accum1->v.y = halfDeltaT * source->v.y; 
+      accum1->v.z = halfDeltaT * source->v.z; 
+      // DETERMINE THE NEW VELOCITY FOR THE PARTICLE OVER 1/2 TIME 
+      target->v.x = source->v.x + (accum1->f.x); 
+      target->v.y = source->v.y + (accum1->f.y); 
+      target->v.z = source->v.z + (accum1->f.z); 
  
-		target->oneOverM = source->oneOverM; 
+      target->oneOverM = source->oneOverM; 
  
-		// SET THE NEW POSITION 
-		target->pos.x = source->pos.x + (accum1->v.x); 
-		target->pos.y = source->pos.y + (accum1->v.y); 
-		target->pos.z = source->pos.z + (accum1->v.z); 
+      // SET THE NEW POSITION 
+      target->pos.x = source->pos.x + (accum1->v.x); 
+      target->pos.y = source->pos.y + (accum1->v.y); 
+      target->pos.z = source->pos.z + (accum1->v.z); 
  
-		source++; 
-		target++; 
-		accum1++; 
-	} 
+      source++; 
+      target++; 
+      accum1++; 
+    } 
  
-	ComputeForces(m_TempSys[0]);  // COMPUTE THE NEW FORCES 
+  ComputeForces(m_TempSys[0]);  // COMPUTE THE NEW FORCES 
  
-	// SECOND STEP 
-	source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
-	target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
-	accum1 = m_TempSys[2];	// ACCUMULATE THE INTEGRATED VALUES 
-	for (loop = 0; loop < m_ParticleCnt; loop++) 
-	{ 
-		accum1->f.x = halfDeltaT * target->f.x * source->oneOverM; 
-		accum1->f.y = halfDeltaT * target->f.y * source->oneOverM; 
-		accum1->f.z = halfDeltaT * target->f.z * source->oneOverM; 
-		accum1->v.x = halfDeltaT * target->v.x; 
-		accum1->v.y = halfDeltaT * target->v.y; 
-		accum1->v.z = halfDeltaT * target->v.z; 
+  // SECOND STEP 
+  source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
+  target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
+  accum1 = m_TempSys[2];	// ACCUMULATE THE INTEGRATED VALUES 
+  for (loop = 0; loop < m_ParticleCnt; loop++) 
+    { 
+      accum1->f.x = halfDeltaT * target->f.x * source->oneOverM; 
+      accum1->f.y = halfDeltaT * target->f.y * source->oneOverM; 
+      accum1->f.z = halfDeltaT * target->f.z * source->oneOverM; 
+      accum1->v.x = halfDeltaT * target->v.x; 
+      accum1->v.y = halfDeltaT * target->v.y; 
+      accum1->v.z = halfDeltaT * target->v.z; 
  
-		// DETERMINE THE NEW VELOCITY FOR THE PARTICLE 
-		target->v.x = source->v.x + (accum1->f.x); 
-		target->v.y = source->v.y + (accum1->f.y); 
-		target->v.z = source->v.z + (accum1->f.z); 
+      // DETERMINE THE NEW VELOCITY FOR THE PARTICLE 
+      target->v.x = source->v.x + (accum1->f.x); 
+      target->v.y = source->v.y + (accum1->f.y); 
+      target->v.z = source->v.z + (accum1->f.z); 
  
-		target->oneOverM = source->oneOverM; 
+      target->oneOverM = source->oneOverM; 
  
-		// SET THE NEW POSITION 
-		target->pos.x = source->pos.x + (accum1->v.x); 
-		target->pos.y = source->pos.y + (accum1->v.y); 
-		target->pos.z = source->pos.z + (accum1->v.z); 
+      // SET THE NEW POSITION 
+      target->pos.x = source->pos.x + (accum1->v.x); 
+      target->pos.y = source->pos.y + (accum1->v.y); 
+      target->pos.z = source->pos.z + (accum1->v.z); 
  
-		source++; 
-		target++; 
-		accum1++; 
-	} 
+      source++; 
+      target++; 
+      accum1++; 
+    } 
  
-	ComputeForces(m_TempSys[0]);  // COMPUTE THE NEW FORCES 
+  ComputeForces(m_TempSys[0]);  // COMPUTE THE NEW FORCES 
  
-	// THIRD STEP 
-	source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
-	target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
-	accum1 = m_TempSys[3];	// ACCUMULATE THE INTEGRATED VALUES 
-	for (loop = 0; loop < m_ParticleCnt; loop++) 
-	{ 
-		// NOTICE I USE THE FULL DELTATIME THIS STEP 
-		accum1->f.x = DeltaTime * target->f.x * source->oneOverM; 
-		accum1->f.y = DeltaTime * target->f.y * source->oneOverM; 
-		accum1->f.z = DeltaTime * target->f.z * source->oneOverM; 
-		accum1->v.x = DeltaTime * target->v.x; 
-		accum1->v.y = DeltaTime * target->v.y; 
-		accum1->v.z = DeltaTime * target->v.z; 
+  // THIRD STEP 
+  source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
+  target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
+  accum1 = m_TempSys[3];	// ACCUMULATE THE INTEGRATED VALUES 
+  for (loop = 0; loop < m_ParticleCnt; loop++) 
+    { 
+      // NOTICE I USE THE FULL DELTATIME THIS STEP 
+      accum1->f.x = DeltaTime * target->f.x * source->oneOverM; 
+      accum1->f.y = DeltaTime * target->f.y * source->oneOverM; 
+      accum1->f.z = DeltaTime * target->f.z * source->oneOverM; 
+      accum1->v.x = DeltaTime * target->v.x; 
+      accum1->v.y = DeltaTime * target->v.y; 
+      accum1->v.z = DeltaTime * target->v.z; 
  
-		// DETERMINE THE NEW VELOCITY FOR THE PARTICLE 
-		target->v.x = source->v.x + (accum1->f.x); 
-		target->v.y = source->v.y + (accum1->f.y); 
-		target->v.z = source->v.z + (accum1->f.z); 
+      // DETERMINE THE NEW VELOCITY FOR THE PARTICLE 
+      target->v.x = source->v.x + (accum1->f.x); 
+      target->v.y = source->v.y + (accum1->f.y); 
+      target->v.z = source->v.z + (accum1->f.z); 
  
-		target->oneOverM = source->oneOverM; 
+      target->oneOverM = source->oneOverM; 
  
-		// SET THE NEW POSITION 
-		target->pos.x = source->pos.x + (accum1->v.x); 
-		target->pos.y = source->pos.y + (accum1->v.y); 
-		target->pos.z = source->pos.z + (accum1->v.z); 
+      // SET THE NEW POSITION 
+      target->pos.x = source->pos.x + (accum1->v.x); 
+      target->pos.y = source->pos.y + (accum1->v.y); 
+      target->pos.z = source->pos.z + (accum1->v.z); 
  
-		source++; 
-		target++; 
-		accum1++; 
-	} 
+      source++; 
+      target++; 
+      accum1++; 
+    } 
  
-	ComputeForces(m_TempSys[0]);  // COMPUTE THE NEW FORCES 
+  ComputeForces(m_TempSys[0]);  // COMPUTE THE NEW FORCES 
  
-	// FOURTH STEP 
-	source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
-	target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
-	accum1 = m_TempSys[4];	// ACCUMULATE THE INTEGRATED VALUES 
-	for (loop = 0; loop < m_ParticleCnt; loop++) 
-	{ 
-		// NOTICE I USE THE FULL DELTATIME THIS STEP 
-		accum1->f.x = DeltaTime * target->f.x * source->oneOverM; 
-		accum1->f.y = DeltaTime * target->f.y * source->oneOverM; 
-		accum1->f.z = DeltaTime * target->f.z * source->oneOverM; 
+  // FOURTH STEP 
+  source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
+  target = m_TempSys[0];	// TEMP STORAGE FOR NEW POSITION 
+  accum1 = m_TempSys[4];	// ACCUMULATE THE INTEGRATED VALUES 
+  for (loop = 0; loop < m_ParticleCnt; loop++) 
+    { 
+      // NOTICE I USE THE FULL DELTATIME THIS STEP 
+      accum1->f.x = DeltaTime * target->f.x * source->oneOverM; 
+      accum1->f.y = DeltaTime * target->f.y * source->oneOverM; 
+      accum1->f.z = DeltaTime * target->f.z * source->oneOverM; 
  
-		accum1->v.x = DeltaTime * target->v.x; 
-		accum1->v.y = DeltaTime * target->v.y; 
-		accum1->v.z = DeltaTime * target->v.z; 
+      accum1->v.x = DeltaTime * target->v.x; 
+      accum1->v.y = DeltaTime * target->v.y; 
+      accum1->v.z = DeltaTime * target->v.z; 
  
-		// THIS TIME I DON'T NEED TO COMPUTE THE TEMPORARY POSITIONS 
-		source++; 
-		target++; 
-		accum1++; 
-	} 
+      // THIS TIME I DON'T NEED TO COMPUTE THE TEMPORARY POSITIONS 
+      source++; 
+      target++; 
+      accum1++; 
+    } 
  
-	source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
-	target = m_TargetSys; 
-	accum1 = m_TempSys[1]; 
-	accum2 = m_TempSys[2]; 
-	accum3 = m_TempSys[3]; 
-	accum4 = m_TempSys[4]; 
-	for (loop = 0; loop < m_ParticleCnt; loop++) 
-	{ 
-		// DETERMINE THE NEW VELOCITY FOR THE PARTICLE USING RK4 FORMULA 
-		target->v.x = source->v.x + ((accum1->f.x + ((accum2->f.x + accum3->f.x) * 2.0f) + accum4->f.x) * sixthDeltaT); 
-		target->v.y = source->v.y + ((accum1->f.y + ((accum2->f.y + accum3->f.y) * 2.0f) + accum4->f.y) * sixthDeltaT); 
-		target->v.z = source->v.z + ((accum1->f.z + ((accum2->f.z + accum3->f.z) * 2.0f) + accum4->f.z) * sixthDeltaT); 
-		// DETERMINE THE NEW POSITION FOR THE PARTICLE USING RK4 FORMULA 
-		target->pos.x = source->pos.x + ((accum1->v.x + ((accum2->v.x + accum3->v.x) * 2.0f) + accum4->v.x) * sixthDeltaT); 
-		target->pos.y = source->pos.y + ((accum1->v.y + ((accum2->v.y + accum3->v.y) * 2.0f) + accum4->v.y) * sixthDeltaT); 
-		target->pos.z = source->pos.z + ((accum1->v.z + ((accum2->v.z + accum3->v.z) * 2.0f) + accum4->v.z) * sixthDeltaT); 
+  source = m_CurrentSys;	// CURRENT STATE OF PARTICLE 
+  target = m_TargetSys; 
+  accum1 = m_TempSys[1]; 
+  accum2 = m_TempSys[2]; 
+  accum3 = m_TempSys[3]; 
+  accum4 = m_TempSys[4]; 
+  for (loop = 0; loop < m_ParticleCnt; loop++) 
+    { 
+      // DETERMINE THE NEW VELOCITY FOR THE PARTICLE USING RK4 FORMULA 
+      target->v.x = source->v.x + ((accum1->f.x + ((accum2->f.x + accum3->f.x) * 2.0f) + accum4->f.x) * sixthDeltaT); 
+      target->v.y = source->v.y + ((accum1->f.y + ((accum2->f.y + accum3->f.y) * 2.0f) + accum4->f.y) * sixthDeltaT); 
+      target->v.z = source->v.z + ((accum1->f.z + ((accum2->f.z + accum3->f.z) * 2.0f) + accum4->f.z) * sixthDeltaT); 
+      // DETERMINE THE NEW POSITION FOR THE PARTICLE USING RK4 FORMULA 
+      target->pos.x = source->pos.x + ((accum1->v.x + ((accum2->v.x + accum3->v.x) * 2.0f) + accum4->v.x) * sixthDeltaT); 
+      target->pos.y = source->pos.y + ((accum1->v.y + ((accum2->v.y + accum3->v.y) * 2.0f) + accum4->v.y) * sixthDeltaT); 
+      target->pos.z = source->pos.z + ((accum1->v.z + ((accum2->v.z + accum3->v.z) * 2.0f) + accum4->v.z) * sixthDeltaT); 
  
-		source++; 
-		target++; 
-		accum1++; 
-		accum2++; 
-		accum3++; 
-		accum4++; 
-	} 
+      source++; 
+      target++; 
+      accum1++; 
+      accum2++; 
+      accum3++; 
+      accum4++; 
+    } 
  
 } 
 /*-----------------------------------------------------------------------------*/
@@ -3500,17 +3525,17 @@ Simulate (float DeltaTime)
   ComputeForces (clo->s); 
  
   switch (1) 
-  { 
-  case 1: 
-    EulerIntegrate (DeltaTime); 
-    break; 
-  case 2: 
-    MidPointIntegrate (DeltaTime); 
-    break; 
-  case 3: 
-    RK4Integrate (DeltaTime); 
-    break; 
-  } 
+    { 
+    case 1: 
+      EulerIntegrate (DeltaTime); 
+      break; 
+    case 2: 
+      MidPointIntegrate (DeltaTime); 
+      break; 
+    case 3: 
+      RK4Integrate (DeltaTime); 
+      break; 
+    } 
 	
   // SWAP MY TWO PARTICLE SYSTEM BUFFERS SO I CAN DO IT AGAIN 
   clo_swap (clo);
@@ -3523,21 +3548,21 @@ Simulate (float DeltaTime)
 static void  
 idle (void) 
 { 
-	static int index = 0;
-	char title[100];
+  static int index = 0;
+  char title[100];
 	
-	sprintf (title, "SimCloth:  %d", index);
+  sprintf (title, "SimCloth:  %d", index);
 
-	glutSetWindowTitle(title); 
-	glutSetIconTitle(title);
+  glutSetWindowTitle(title); 
+  glutSetIconTitle(title);
 	
-	//OUTD (index); 
-	index++;  
+  //OUTD (index); 
+  index++;  
 
-	Simulate (DeltaT);
+  Simulate (DeltaT);
 
   if (!(index%10)) glutPostRedisplay(); 
-	return;
+  return;
 } 
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -3556,22 +3581,26 @@ visible (int vis)
 void
 main_scloth (int argc, char** argv)
 {
-	int    ii, jj;
-	double w, h;
+  int    ii, jj;
+  double w, h;
 
-	ii = jj = 9;
-	siz   = 7.5; // полуширина ящика
-	w = h = 8.0;
+  ii = jj = 9;
+  siz   = 7.5; // полуширина ящика
+  w = h = 8.0;
 
-	m_Gravity.x =  0.0;
-	m_Gravity.y = /* -0.001 */ -0.2;
-	m_Gravity.z =  0.0;
+  m_Gravity.x =  0.0;
+  m_Gravity.y = /* -0.001 */ -0.2;
+  m_Gravity.z =  0.0;
 
-	DeltaT = 0.1;
+  DeltaT = 0.1;
 
-	//---------------------
-	YCreateWindow (argc, argv, "Hello, Scloth !!", 100, 300, 600, 600);
+  //---------------------
+  YCreateWindow (argc, argv, "Hello, Scloth !!", 100, 300, 600, 600);
 
+  //return;
+
+#ifdef _0
+  
   glClearIndex (YColor("white")); /* backgraund */
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
@@ -3579,11 +3608,11 @@ main_scloth (int argc, char** argv)
   glOrtho (-2*siz, 2*siz, -2*siz, 2*siz, -10*siz, 10*siz);
   glViewport (-2*siz, -2*siz, 4*siz, 4*siz);
 
-	angle_x = 15;
-	angle_y = 15;
-	moving = 0;
+  angle_x = 15;
+  angle_y = 15;
+  moving = 0;
 
-	//gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+  //gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
    
   /* Setup initial OpenGL rendering state. */
   glEnable (GL_DEPTH_TEST);
@@ -3592,31 +3621,220 @@ main_scloth (int argc, char** argv)
 
   /* Register assorted GLUT callback routines. */
   glutDisplayFunc (display);
-  glutMouseFunc (mouse);
+  glutMouseFunc  (mouse);
   glutMotionFunc (motion);
   //glutVisibilityFunc (visible); 
-	glutIdleFunc (idle); 
+  glutIdleFunc (idle); 
   glutKeyboardFunc (keyboard);
 
   /* Create a pop-up menu. */
+  
   glutCreateMenu (menu);
   glutAddMenuEntry ("Menu_Item1", M_ITEM1);
   glutAddMenuEntry ("Menu_Item2", M_ITEM2);
   glutAddMenuEntry ("Exit",       M_EXIT);
   glutAttachMenu (GLUT_RIGHT_BUTTON);
 
-	//----------------
-	clo = clo_create (ii, jj);
-	clo_set_vert (clo, -w/2, h/2, w, h);
-	//clo_rand_noice (clo);
+  //----------------
+  clo = clo_create (ii, jj);
+  clo_set_vert (clo, -w/2, h/2, w, h);
+  //clo_rand_noice (clo);
 
   All = make_all ();                                                           
-	//----------------
+  //----------------
+#endif
+  
 
-	glutMainLoop ();
+  glutMainLoop ();
 
-	return;
+  return;
 } 
+/*-----------------------------------------------------------------------------*/
+/*                                                                             */
+/*-----------------------------------------------------------------------------*/
+
+/* Timer demo
+ *
+ * Written by John Tsiombikas <nuclear@member.fsf.org>
+ *
+ * Demonstrate the use of glutTimerFunc, by changing the color of the
+ * framebuffer every (approximately) 1 sec.
+ */
+#include <stdio.h>
+#include <GL/glut.h>
+
+void disp(void);
+void timer_func(int unused);
+
+/* color index will be advanced every time the timer expires */
+int cidx = 0;
+int pcidx = 2;
+
+float color[][3] = {
+	{1, 0, 0},
+	{0, 1, 0},
+	{0, 0, 1},
+	{1, 1, 0},
+	{0, 1, 1},
+	{1, 0, 1}
+};
+int timerInts[] = {
+     250,
+     500,
+    1000
+};
+int timerSurroundInt = 1000, timerCenterInt = 1000;
+
+/* menu IDs, creation/update funcs and callback */
+int menuID, subMenuSurround, subMenuCenter;
+
+void createMenuEntries(int which)
+{
+  int i;
+  for (i = 0; i < sizeof(timerInts) / sizeof(*timerInts); i++)
+    {
+      char temp[10] = {'\0'};
+      /* flag current value */
+      if ((which == 1 ? timerSurroundInt : timerCenterInt) == timerInts[i])
+	temp[0] = '+';
+      else
+	temp[0] = '-';
+
+      sprintf(temp + 1, " %4d ms", timerInts[i]);
+
+      glutAddMenuEntry(temp, timerInts[i]);
+    }
+}
+
+void updateMenuEntries(int which)
+{
+  int i;
+  for (i = 0; i < sizeof(timerInts) / sizeof(*timerInts); i++)
+    {
+      char temp[10] = { '\0' };
+      /* flag current value */
+      if ((which == 1 ? timerSurroundInt : timerCenterInt) == timerInts[i])
+	temp[0] = '+';
+      else
+	temp[0] = '-';
+
+      sprintf(temp + 1, " %4d ms", timerInts[i]);
+
+      glutChangeToMenuEntry(i+1, temp, timerInts[i]);
+    }
+}
+
+void MenuSurround(int timerInt)
+{
+    timerSurroundInt = timerInt;
+    glutSetMenu(subMenuSurround);
+    updateMenuEntries(1);
+}
+void MenuCenter(int timerInt)
+{
+    timerCenterInt = timerInt;
+    glutSetMenu(subMenuCenter);
+    updateMenuEntries(2);
+}
+//-----------------------------------------------------------------
+void disp (void)
+{
+  glClearColor (color[cidx][0], color[cidx][1], color[cidx][2], 1);
+  glClear (GL_COLOR_BUFFER_BIT);
+
+  glPointSize (10.f);
+  glColor3f (color[pcidx][0], color[pcidx][1], color[pcidx][2]);
+  glBegin (GL_POINTS);
+  glVertex2i (0,0);
+  glEnd ();
+
+  glutSwapBuffers();
+}
+//-----------------------------------------------------------------
+void timer_func(int which)
+{
+  /* advance the color index and trigger a redisplay */
+  
+  switch (which)
+    {
+    case 1:
+      cidx  = (cidx + 1) % (sizeof color / sizeof *color);
+      break;
+    case 2:
+      pcidx = (pcidx + 1) % (sizeof color / sizeof *color);
+      break;
+    }
+    
+  glutPostRedisplay();
+
+  /* (re)set the timer callback and ask glut to call it in x ms */
+  glutTimerFunc(which == 1 ? timerSurroundInt:timerCenterInt, timer_func, which);
+
+  return;
+}
+//-----------------------------------------------------------------
+void disp_new (void)
+{
+
+/* float color[][3] = { */
+/* 	{1, 0, 0}, */
+/* 	{0, 1, 0}, */
+/* 	{0, 0, 1}, */
+/* 	{1, 1, 0}, */
+/* 	{0, 1, 1}, */
+/* 	{1, 0, 1} */
+
+  glClearColor (0, 0.2, 0,   1);  // green для фона
+  glClear (GL_COLOR_BUFFER_BIT);
+
+  glPointSize (10.f); // размер точки !!
+  
+  //glColor3f (color[pcidx][0], color[pcidx][1], color[pcidx][2]);
+  glColor3f (0, 0, 1);
+  
+  glBegin (GL_POINTS);
+  
+  glVertex2i (0, 0); // это точка !!
+  
+  glEnd ();
+
+  glutSwapBuffers();
+}
+//-----------------------------------------------------------------
+int demo_timer(int argc, char **argv)
+{
+  
+  //glutInit (&argc, argv);
+  //glutInitWindowSize (128, 128);
+  //glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
+  //glutCreateWindow("timer test");
+
+  YCreateWindow (argc, argv, "Hello Test1!", 100, 300, 200, 200);
+
+  glutDisplayFunc (disp_new);
+
+  if (0) {
+    /* get timer started, its reset in the timer function itself */
+    glutTimerFunc (1000, timer_func, 1);
+    glutTimerFunc ( 500, timer_func, 2);
+
+    /* menus for setting timing */
+    subMenuSurround = glutCreateMenu(MenuSurround);
+    createMenuEntries(1);
+
+    subMenuCenter = glutCreateMenu (MenuCenter);
+    createMenuEntries (2);
+
+    menuID = glutCreateMenu(MenuSurround);  /* doesn't matter, no clickable entries in this menu */
+    glutAddSubMenu ("Center", subMenuCenter);
+    glutAddSubMenu ("Surround", subMenuSurround);
+    glutAttachMenu (GLUT_RIGHT_BUTTON);
+  }
+
+  glutMainLoop();
+  
+  return 0;
+}
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -3636,11 +3854,13 @@ main (int argc, char** argv)
   if (0) proc03 (YMAIN, 0, 0, 0, 0, 0);
   //-----------------------------
 
-  //main_ogl_test1 (argc, argv);
-  //main_ogl_test2 ();
-
-  main_scloth (argc, argv);
+  demo_timer (argc, argv);
 	
+  //main_ogl_test1 (argc, argv);
+  //main_ogl_test2 (argc, argv);
+
+  //main_scloth (argc, argv);
+  
 
   return (0);
 }
