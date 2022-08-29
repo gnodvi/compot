@@ -42,11 +42,11 @@
 /*-----------------------------------------------------------------------------*/ 
 
 enum keywords {
-	YMAIN, YINIT, YFREE, YCALC, YGINT, YRINT, YQINT, YTRUE, YRANDDIRS, YRANDCURS, 
-	Y_PEREBOR, YGSLSPUSK, 
-	Y_GENALGO, YCONST, YRAND, YSIMP, YLEFT, YNULL, YNULL_3, YNULL_2, YINTL, 
+  YMAIN, YINIT, YFREE, YCALC, YGINT, YRINT, YQINT, YTRUE, YRANDDIRS, YRANDCURS, 
+  Y_PEREBOR, YGSLSPUSK, 
+  Y_GENALGO, YCONST, YRAND, YSIMP, YLEFT, YNULL, YNULL_3, YNULL_2, YINTL, 
   YREAD, YWRITE, YSEEK,
-	YDONE
+  YDONE
 };
 
 enum {
@@ -343,6 +343,12 @@ int      YVertString (int x, int y, char *string, YT_COLOR color, YT_BOOL);
 void     YDefColors (YT_DEFCOLOR*); 
 int      YVertStringH (char *);
 YT_COLOR YSetRgbPalette (int index, int red, int green, int blue); 
+
+
+
+#define CL_RED    255, 0, 0
+#define CL_GREEN  0, 255, 0
+#define CL_BLUE   0, 0, 255
 
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
@@ -1728,6 +1734,33 @@ YDrawString (char *text, int x, int y, YT_COLOR color)
 
  
 } 
+/*-----------------------------------------------------------------------------*/
+
+
+//typedef struct { 
+//  YT_BOOL exist; 
+//  char    name[30];  
+//  int     r, g, b; 
+//  YT_COLOR color; 
+//} YT_COLER; 
+/*-----------------------------------------------------------------------------*/
+void SetNewColor (YT_COLOR color)
+{
+
+
+  int red, green, blue;
+
+  YColorToRGB (color, &red, &green, &blue); 
+
+  //glIndexi (f_color); // The new value for the current color index.
+  //glColor3f (1, 1, 0);
+  //glColor3ub (255, 0, 0);
+ 
+  glColor3ub (red, green, blue);
+ 
+
+  return;
+}
 /*--------------------------------YDrawRectF-----------------------------------*/ 
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -1740,8 +1773,42 @@ YDrawRectF (int x, int y, int w, int h, YT_COLOR f_color)
   ymin = (float)y / H;
   xmax = xmin + (float)w / W;
   ymax = ymin + (float)h / H;
-	
-  glIndexi (f_color); 
+
+  
+  //glIndexi (f_color); // The new value for the current color index.
+  //glColor3f (1, 1, 0);
+  //glColor3ub (255, 0, 0);
+
+  SetNewColor (f_color);
+  
+  glBegin (GL_POLYGON);
+  glVertex2f (xmin, ymin);
+  glVertex2f (xmax, ymin);
+  glVertex2f (xmax, ymax);
+  glVertex2f (xmin, ymax);
+  glEnd ();
+		
+  return; 
+} 
+/*-----------------------------------------------------------------------------*/
+void 
+YDrawRectF_ (int x, int y, int w, int h,
+	     GLubyte red,
+	     GLubyte green,
+	     GLubyte blue) 
+{ 
+  float xmin, ymin, xmax, ymax;
+		
+  xmin = (float)x / W;
+  ymin = (float)y / H;
+  xmax = xmin + (float)w / W;
+  ymax = ymin + (float)h / H;
+  
+  //glIndexi (f_color); // The new value for the current color index.
+ 
+  //glColor3f (1, 1, 0);
+  //glColor3ub (255, 0, 0);
+  glColor3ub (red, green, blue);
 		
   glBegin (GL_POLYGON);
   glVertex2f (xmin, ymin);
@@ -1765,7 +1832,8 @@ YDrawLine (int x1, int y1, int x2, int y2, YT_COLOR color)
   xx2 = (float)x2 / W;
   yy2 = (float)y2 / H;
 	
-  glIndexi (color); 
+  //glIndexi (color); 
+  SetNewColor (color);
 	
   glBegin (GL_LINES);
   glVertex2f (xx1, yy1);
@@ -1839,9 +1907,15 @@ YT_COLOR YColor(char *name)
   if ((name==NULL) || !strcmp(name,""))  
     return(CLR_NULL); 
  
-  for (i = 0; i<SIZE_COLER; i++) { 
-    if (COLER(i).exist == FALSE) continue; 
-    if (!strcmp(name, COLER(i).name)) return(COLER(i).color); 
+  for (i = 0; i < SIZE_COLER; i++) {
+    
+    if (COLER(i).exist == FALSE) continue;
+    
+    if (! strcmp (name, COLER(i).name)) {
+      YT_COLOR c = COLER(i).color;
+      printf ("YColor: name = %s, c = %d \n", name, c);
+      return (c);
+    }
   } 
  
   fprintf (stderr, "Dont' find color = %s", name); 
@@ -2731,12 +2805,17 @@ test_picture ()
   YDrawRectF (40,20,  80,90, YColor("white"));
 
   YDrawRectFB(60,80,  80,90, YColor("aqua"), YColor("black"));
+
   YDrawLine  (10,10, 110,110,YColor("black"));
   YDrawLine  (5,100, 160,10, YColor("white"));
   YDrawRectFB(60,70,  70,40, YColor("silver"), YColor("white"));
   YDrawRectF (110,40, 60,80, YColor("red"));
   YDrawRectF (10,100, 90,50, YColor("fuchsia"));
+  
+  return;
+  
   YDrawString("This is test", 20,60, YColor("black"));  
+
   YDrawLine  (25,25, 160,150, YColor("blue"));
   YDrawLine  (25,25, 160,152, YColor("blue"));
   YDrawLine  (25,25, 160,154, YColor("blue"));
@@ -2748,96 +2827,6 @@ test_picture ()
 
   return;
 }
-/*-----------------------------------------------------------------------------*/
-/*                                                                             */
-/*-----------------------------------------------------------------------------*/
-void 
-display_1 (void)
-{
-  static void *meta = NULL;
-
-  glClear (GL_COLOR_BUFFER_BIT);
-  YDrawRectF (0, 0, W, H, YColor("yellow"));
-
-  //test_picture ();
-
-  glFlush ();
-  glutSwapBuffers(); 
-
-  return;
-}
-/*-----------------------------------------------------------------------------*/
-/*                                                                             */
-/*-----------------------------------------------------------------------------*/
-void
-main_ogl_test1 (int argc, char** argv)
-{
-
-  YCreateWindow (argc, argv, "Hello Test1!", 100, 300, 450, 250);
-
-  //OUTD (glutLayerGet(GLUT_OVERLAY_POSSIBLE));
-  //OUTD (glutLayerGet(GLUT_TRANSPARENT_INDEX));                         
- 	
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-  glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-
-  glutDisplayFunc (display_1); 
-	
-  glutMainLoop ();
-
-	return;
-}
-/*-----------------------------------------------------------------------------*/
-void 
-main_ogl_test2 (int argc, char** argv)
-{
-
-  glutInit (&argc, argv);
-  glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
-	
-  glutInitWindowSize (300, 200); 
-  glutInitWindowPosition (100, 100);
-	
-  /* wnd =  */glutCreateWindow ("main_ogl_test2");
-
-  YInitCOLOR ();                                                                 
-
-
-  glClear (GL_COLOR_BUFFER_BIT);
-
-  glIndexi (YColor("red")); 
-  glBegin (GL_LINES);
-  glVertex3f (0.0, 0.0, 0.0);
-  glVertex3f (1.0, 0.0, 0.0);
-  glEnd ();
-
-  glIndexi (YColor("green")); 
-  glBegin (GL_LINES);
-  glVertex3f (0.0, 0.0, 0.0);
-  glVertex3f (0.0, 1.0, 0.0);
-  glEnd ();
-  
-  glIndexi (YColor("blue")); 
-  glBegin (GL_LINES);
-  glVertex3f (0.0, 0.0, 0.0);
-  glVertex3f (0.0, 0.0, 1.0);
-  glEnd ();
-
-  glIndexi (YColor("yellow")); 
-  glBegin (GL_POLYGON);
-  glVertex3f (1.0, 0.0, 0.0);
-  glVertex3f (0.0, 1.0, 0.0);
-  glVertex3f (0.0, 0.0, 1.0);
-  glEnd ();
-  
-  glFlush ();
-  glutSwapBuffers (); 
-
-  glutMainLoop ();
-
-  return;
-}         
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -3222,10 +3211,11 @@ ComputeForces (tParticle	*system)
   float size_shear;
   float	Ks, Kd; 
  
-  curParticle = system; 
+  curParticle = system;
+  
   for (loop = 0; loop < clo->m_ParticleCnt; loop++) 
     { 
-      MAKEVECTOR(curParticle->f, 0.0f,0.0f,0.0f)		// CLEAR FORCE VECTOR 
+      MAKEVECTOR(curParticle->f, 0.0f,0.0f,0.0f)   // CLEAR FORCE VECTOR 
  
 	if (curParticle->oneOverM != 0) 
 	  { 
@@ -3784,13 +3774,28 @@ void disp_new (void)
 /* 	{0, 1, 1}, */
 /* 	{1, 0, 1} */
 
-  glClearColor (0, 0.2, 0,   1);  // green для фона
-  glClear (GL_COLOR_BUFFER_BIT);
+  //glClearColor (0, 0.2, 0,   1);  // green для фона
+  //YColor("white")
+  //
+  // specify the red, green, blue, and alpha values used when the color
+  // buffers are cleared. The initial values are all 0.
+
+  glClearIndex (YColor ("white")); /* backgraund */
+  //
+  // Specifies the index used when the color index buffers are cleared. The initial value is 0. 
+
+  glClear (GL_COLOR_BUFFER_BIT); // clear buffers to preset values
+  // Bitwise OR of masks that indicate the buffers to be cleared. The
+  // three masks are GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, and GL_STENCIL_BUFFER_BIT. 
+  // 
+  // GL_COLOR_BUFFER_BIT
+  //  Indicates the buffers currently enabled for color writing. 
 
   glPointSize (10.f); // размер точки !!
   
+ 
   //glColor3f (color[pcidx][0], color[pcidx][1], color[pcidx][2]);
-  glColor3f (0, 0, 1);
+  glColor3f (1, 0, 1);
   
   glBegin (GL_POINTS);
   
@@ -3809,7 +3814,7 @@ int demo_timer(int argc, char **argv)
   //glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
   //glutCreateWindow("timer test");
 
-  YCreateWindow (argc, argv, "Hello Test1!", 100, 300, 200, 200);
+  YCreateWindow (argc, argv, "T1 !", 100, 300, 200, 200);
 
   glutDisplayFunc (disp_new);
 
@@ -3838,6 +3843,118 @@ int demo_timer(int argc, char **argv)
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
+void 
+display_1 (void)
+{
+  static void *meta = NULL;
+
+  glClear (GL_COLOR_BUFFER_BIT);
+  
+  YDrawRectF (0, 0, W, H, YColor("yellow"));
+  
+  //YDrawRectF_ (20, 20, 100, 100,  CL_RED);
+  //YDrawRectF (20, 20, 100, 100, YColor("blue"));
+
+  test_picture ();
+
+  
+  //glPointSize (20.f); // размер точки !!
+  //glColor3f (1, 0, 1);
+  //glBegin (GL_POINTS);
+  
+  //glVertex2i (0, 0); // это точка !!
+  //glEnd ();
+
+  if (0) {
+    //glIndexi (YColor("yellow"));
+    glColor3f (1, 0, 0);
+    
+    glBegin (GL_POLYGON);
+    glVertex3f (1.0, 0.0, 0.0);
+    glVertex3f (0.0, 1.0, 0.0);
+    glVertex3f (0.0, 0.0, 1.0);
+    glEnd ();
+  }
+
+
+  glFlush ();
+  glutSwapBuffers(); 
+
+  return;
+}
+/*-----------------------------------------------------------------------------*/
+void
+main_ogl_test1 (int argc, char** argv)
+{
+
+  YCreateWindow (argc, argv, "Hello Test1!", 100, 300, 450, 250);
+
+  //OUTD (glutLayerGet(GLUT_OVERLAY_POSSIBLE));
+  //OUTD (glutLayerGet(GLUT_TRANSPARENT_INDEX));                         
+ 	
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+  glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+  glutDisplayFunc (display_1); 
+	
+  glutMainLoop ();
+
+  return;
+}
+/*-----------------------------------------------------------------------------*/
+void 
+main_ogl_test2 (int argc, char** argv)
+{
+
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
+	
+  glutInitWindowSize (300, 200); 
+  glutInitWindowPosition (100, 100);
+	
+  /* wnd =  */glutCreateWindow ("main_ogl_test2");
+
+  YInitCOLOR ();                                                                 
+
+
+  glClear (GL_COLOR_BUFFER_BIT);
+
+  glIndexi (YColor("red")); 
+  glBegin (GL_LINES);
+  glVertex3f (0.0, 0.0, 0.0);
+  glVertex3f (1.0, 0.0, 0.0);
+  glEnd ();
+
+  glIndexi (YColor("green")); 
+  glBegin (GL_LINES);
+  glVertex3f (0.0, 0.0, 0.0);
+  glVertex3f (0.0, 1.0, 0.0);
+  glEnd ();
+  
+  glIndexi (YColor("blue")); 
+  glBegin (GL_LINES);
+  glVertex3f (0.0, 0.0, 0.0);
+  glVertex3f (0.0, 0.0, 1.0);
+  glEnd ();
+
+  glIndexi (YColor("yellow")); 
+  glBegin (GL_POLYGON);
+  glVertex3f (1.0, 0.0, 0.0);
+  glVertex3f (0.0, 1.0, 0.0);
+  glVertex3f (0.0, 0.0, 1.0);
+  glEnd ();
+  
+  glFlush ();
+  glutSwapBuffers (); 
+
+  glutMainLoop ();
+
+  return;
+}         
+/*-----------------------------------------------------------------------------*/
+/*                                                                             */
+/*-----------------------------------------------------------------------------*/
 int 
 main (int argc, char** argv)
 {
@@ -3854,11 +3971,11 @@ main (int argc, char** argv)
   if (0) proc03 (YMAIN, 0, 0, 0, 0, 0);
   //-----------------------------
 
-  demo_timer (argc, argv);
+  //demo_timer (argc, argv);
 	
-  //main_ogl_test1 (argc, argv);
+  main_ogl_test1 (argc, argv);
+  
   //main_ogl_test2 (argc, argv);
-
   //main_scloth (argc, argv);
   
 
