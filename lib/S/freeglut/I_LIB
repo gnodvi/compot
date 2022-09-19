@@ -14,7 +14,7 @@ NAME=freeglut-${REL}
 
 ADDR=https://github.com/FreeGLUTProject/freeglut/releases/download
 
-export https_proxy=http://127.0.0.1:3128
+#export https_proxy=http://127.0.0.1:3128
 
 #--------------------------------------------
 update ()

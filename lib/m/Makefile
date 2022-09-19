@@ -8,7 +8,7 @@ include ../../Make.mak
 
 
 
-JIMTCL_DIR = ../jimtcl		
+##JIMTCL_DIR = ../jimtcl		
 OLDJOY_DIR = ../oldjoy		
 RANDOM_DIR = ../random		
 PLOTER_DIR = ../ploter		
@@ -19,7 +19,7 @@ S_DIR = ../S
 #-------------------------------------------------------------------------------
 
 
-all:  S__ OLDJOY__ JIMTCL__ RANDOM__ PLOTER__ LISOFT__   
+all:  S__ OLDJOY__  RANDOM__ PLOTER__ LISOFT__  ## JIMTCL__ 
 
 #-------------------------------------------------------------------------------
 
@@ -30,8 +30,8 @@ S__ :
 OLDJOY__ :
 	(cd $(OLDJOY_DIR); make)
 
-JIMTCL__ :
-	(cd $(JIMTCL_DIR); make)
+#JIMTCL__ :
+#	(cd $(JIMTCL_DIR); make)
 
 RANDOM__ :
 	(cd $(RANDOM_DIR); make)
@@ -56,7 +56,7 @@ Rclean :
 clean : 
 	(cd $(S_DIR);      make clean)
 	(cd $(OLDJOY_DIR); make clean)
-	(cd $(JIMTCL_DIR); make clean)
+#	(cd $(JIMTCL_DIR); make clean)
 	(cd $(RANDOM_DIR); make clean)
 	(cd $(LISOFT_DIR); make clean)
 	(cd $(PLOTER_DIR); make clean)
