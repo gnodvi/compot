@@ -1,0 +1,812 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+#
+
+set ::COMPOT "COMPOT"
+ 
+#-------------------------------------------------------------
+
+set auto_path [linsert $auto_path 0 "COMPOT/COM/common"]
+
+package require compot::common 
+
+
+global argc argv
+
+if {$argc == 0} {
+  set ::isgui 1
+} else {
+  set ::isgui   [dict_parse $argv "-isgui" 0] 
+}
+
+
+if {$::isgui == 1} { 
+
+  set is_tk 1
+} else {
+  set is_tk 0
+}
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# все вынести в плоскую модель:
+# 
+
+set ::csize   20
+set ::delay  200
+
+array unset ::data
+
+set ::indices {}
+
+#-------------------------------------------------------------------------------
+proc compute_list_indices {} {
+
+
+  array unset ::data
+
+
+  # NEXT, compute the list of indices
+  # 
+  set ::indices {}
+  
+  for {set i 0} {$i < $::csize} {incr i 1} {
+  for {set j 0} {$j < $::csize} {incr j 1} {
+    lappend ::indices $i,$j
+  }
+  }
+  
+  for {set i 0} {$i < $::csize} {incr i 1} {
+  for {set j 0} {$j < $::csize} {incr j 1} {
+      
+    # Initialize the corresponding data structure
+    set ::data($i,$j) 0
+    
+    # Cache the coordinates of each neighbor.
+    set ::data($i,$j-neighbors) ""
+    
+    foreach {iof jof} {    \
+       -1 -1  -1 0  -1 +1  \
+        0 -1         0 +1  \
+       +1 -1  +1 0  +1 +1  \
+                       } {
+      set r [expr {($i + $iof) % $::csize}] ;# ??
+      set c [expr {($j + $jof) % $::csize}]
+
+      lappend ::data($i,$j-neighbors) "$r,$c"
+    }
+    
+  }}
+  
+
+  set_figure "glider5"
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc set_figure {name} {
+
+
+  if {$name == "glider5"} {
+    set ::data(6,4)  1
+    set ::data(5,5)  1
+    set ::data(5,6)  1
+    set ::data(6,6)  1
+    set ::data(7,6)  1
+  }
+  
+  return
+}
+#-------------------------------------------------------------------------------
+proc generate_step_calc {} {
+
+
+  # Count the neighbors of each cell.  During start up we cached the
+  # coordinates of the neighbors of each cell, so now we can just
+  # iterate over them quickly.
+  
+  foreach ij $::indices {
+    set nCount 0
+    
+    foreach neighbor $::data($ij-neighbors) {
+      incr nCount $::data($neighbor)
+    }
+    
+    set count($ij) $nCount
+  }
+  
+  
+  # Set the new contents of each cell based on the count.
+  set changes 0
+  
+  foreach ij $::indices {
+    
+    if {$count($ij) < 2 || $count($ij) > 3} {
+
+      if {$::data($ij)} {
+        # Cell is dead
+        #$self clearcell $ij
+        set ::data($ij) 0
+        incr changes
+      }
+    } elseif {$count($ij) == 3} {
+
+      # Cell is born, if there wasn't one
+      if {!$::data($ij)} {
+        #$self setcell $ij
+        set ::data($ij) 1
+        incr changes
+      }
+    }
+  }
+  
+  return $changes
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+if {$is_tk} {
+#-------------------------------------------------------------------------------
+
+  set auto_path [linsert $auto_path 0 "$::COMPOT/COM/dialog"]
+  package require compot::dialog 
+
+  set auto_path [linsert $auto_path 0 "$::COMPOT/COM/tcl-tk/snit"]
+  package require snit
+
+  package require "Tk"
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+source "m-snit.tl"
+
+#-------------------------------------------------------------------------------
+
+# TITLE:
+#      life.tcl
+#
+# AUTHOR:
+#      Will Duquette
+#
+# DESCRIPTION:
+#      life.tcl implements John Conway's classic Game of Life, one of
+#      the first experiments with what's now called artificial life.
+#
+#      Think of a plane divided up into squares like a checker board.
+#      Each square can hold a one-celled animal.  You start the game
+#      by placing cells in squares.  Then you watch the cells breed
+#      and die through successive generations.  The game is to find
+#      starting patterns that do interesting things.
+#
+#      Each square on the board has 8 neighbor squares; cells breed
+#      and die based on how crowded they are, i.e., the number of
+#      neighbors they have.  Each new generation is computed as
+#      follows:
+#
+#      For each square, count the number of neighbor cells.
+#      If the square is empty, and it has exactly 3 neighbor cells, a
+#      new cell will be born there.  If the square has a cell in it,
+#      and the cell has less than 2 or more than 3 neighbor cells,
+#      the cell will die.  All of the counting is done first, and
+#      then the new cells are added and the dead cell are removed all
+#      at once.
+#
+#      This GUI implementation allows cells to be added and removed
+#      by clicking on the board.  A generation passes when the
+#      "Generate" button is clicked, or when the player presses the
+#      Return key.
+#
+#      The implementation has two pieces: 
+#
+#      1.  The board, which contains cells that can be turned on
+#          and off and knows how to compute a new generation.  The board
+#          includes its own GUI display code.
+#
+#       2.  The rest of the GUI.
+#
+#      If the code were written for reuse, the board would be split into
+#      two pieces: a generic gameboard suitable for Life, Othello, and
+#      similar games, and Life code that uses the board.
+
+#-------------------------------------------------------------------------------
+
+# if {![catch {
+#   package require snit 2-
+# }]} then {
+#     # We've got snit 2 (based on ensembles and whatsnot)
+# } elseif {![catch {
+#   package require snit 1
+# }]} then {
+#   # We're using snit 1.x
+# } else {
+#   # Won't work with less than 0.8
+#   package require snit 0.8
+# }
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# The Board
+#
+# The Board is implemented as a Tk canvas widget, broken up into
+# squares on an NxN grid.  The background is white and the grid
+# lines are cyan.  Each square holds a circle object which
+# can be set to any desired color, normally white (for dead cells) and
+# forestgreen (for living cells).  Each circle has a tag "i,j" so that
+# it can be manipulated individually.
+
+#-------------------------------------------------------------------------------
+#
+# ВиджетАдаптор меняет поведение уже существуещего виджета, в отличие  от
+# обычного Виджета, где в основе лежит Frame.
+# 
+#-------------------------------------------------------------------------------
+snit::widgetadaptor LIFEBOARD {
+
+  # This is still a canvas; delegate other methods and options to it:
+  delegate method * to hull
+  delegate option * to hull
+  
+  # By default, 20x20 cells
+  #option -cells 20
+  # By default, each cell is 20x20 pixels
+  option -pixels 20
+ 
+
+  # Milliseconds between generations
+  option -delay 200
+  
+  # For each cell on the board, this array remembers
+  # whether the cell is alive or dead, and the coordinates of its 
+  # neighbors; this allows the neighbors to be counted more quickly.
+  variable data
+  
+  # Remembers the list of i,j indices, to save time while generating.
+ # variable indices {}
+  
+
+  # True if we're completely constructed, false otherwise.
+  variable constructed 0
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  constructor {args} {
+
+    # FIRST, create the canvas.  Then configure the options.
+    #
+    installhull [canvas $self -background white] ;# ADAPTOR !
+
+    $self configurelist $args
+    
+    compute_list_indices 
+
+    #set_figure "glider5"
+
+
+    # NEXT, set up the board.
+    $self SetupBoard
+    
+    # No longer constructing.
+    set constructed 1
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # http://equi4.com/pub/ra/lib/snit/README.txt
+  
+  # * The option definition syntax has been extended; see snit.man.  You
+  #   can now define methods to handle cget or configure of any option; as
+  #   a result, The "oncget" and "onconfigure" statements are now deprecated.
+  #   Existing "oncget" and "onconfigure" handlers continue to function as
+  #   expected, with one difference: they get a new implicit argument,
+  #   "_option", which is the name of the option being set.  If your
+  #   existing handlers use "_option" as a variable name, they will need
+  #   to be changed.
+  
+  # * In addition, the "option" statement also allows you to define a
+  #   validation method.  If defined, it will be called before the value
+  #   is saved; its job is to validate the option value and call "error"
+  #   if there's a problem.
+  
+#   onconfigure -cells {value} {
+#     set options(-cells) $value
+
+#     if {$constructed} {
+#       $self SetupBoard
+#     }
+#   }
+  
+#   onconfigure -pixels {value} {
+#     set options(-pixels) $value
+
+#     if {$constructed} {
+#       $self SetupBoard
+#     }
+#   }
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method SetupBoard {} {
+
+    # Destroy any previous definition
+    $self delete all
+    #array unset ::data
+
+    #set  cells $options(-cells)
+    set pixels $options(-pixels)
+
+
+    if {0} {
+      # посчитаем размер доски в пикселах :
+      # 
+      set ::boardsize [expr {$::csize * $pixels}]
+      puts "::boardsize = $::boardsize"
+
+    } else {
+      # А надо бы наоборот!
+      set ::boardsize 400
+      set pixels [expr {$::boardsize / $::csize}]
+    }
+
+    
+    # FIRST, set the size of the canvas
+    $hull configure -width $::boardsize -height $::boardsize
+    
+    # NEXT, draw the grid lines.
+
+    for {set i 1} {$i < $::csize} {incr i 1} {
+      set pos [expr {$i * $pixels}]
+      
+      # Draw a vertical line $i cells over
+      $hull create line 0 $pos $::boardsize $pos -fill cyan
+      
+      # Draw a horizontal line $i cells down
+      $hull create line $pos 0 $pos $::boardsize -fill cyan
+    }
+    
+
+    # NEXT, add a circle object to each cell
+    #
+    #
+    for {set i 0} {$i < $::csize} {incr i 1} {
+    for {set j 0} {$j < $::csize} {incr j 1} {
+
+        # Compute the upper left corner of the circle
+        set p0 [expr {$i*$pixels + 1}]
+        set q0 [expr {$j*$pixels + 1}]
+        
+        # Compute the lower left corner of the circle
+        set p1 [expr {$p0 + $pixels - 2}]
+        set q1 [expr {$q0 + $pixels - 2}]
+        
+        # Create the circle, tagging it $i,$j
+        $hull create oval $p0 $q0 $p1 $q1 \
+          -tag $i,$j -fill white -outline white
+        
+        # When the user clicks on it, it should toggle.
+        $hull bind $i,$j <Button> [list $win toggle $i,$j]
+        
+      }
+    }
+   
+    #--------------------------------------------
+    # 
+    $self generate_step_gui 
+    #--------------------------------------------
+
+
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+  # toggle ij
+  #
+  # Toggles cell i,j on the board.
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  method toggle {ij} {
+
+    # FIRST, toggle the cell in the array.
+
+    if {$::data($ij) == 0} {
+      $self   setcell $ij
+    } else { 
+      $self clearcell $ij
+    }
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  # setcell ij
+  #
+  # Sets cell ij to alive
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method setcell {ij} {
+
+    $hull itemconfigure $ij -fill forestgreen
+    set ::data($ij) 1
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  # clearcell ij
+  #
+  # Clears (kills) cell i,j
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method clearcell {ij} {
+
+    $hull itemconfigure $ij -fill white
+    set ::data($ij) 0
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  # clear
+  #
+  # Sets the board cells to all dead
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method clear {} {
+
+    foreach ij $::indices {
+
+      if {$::data($ij)} {
+        $self clearcell $ij
+      }
+    }
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+  # generate
+  #
+  # The generate function takes the cells on the board through one 
+  # generation.
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method generate_step_gui {} {
+
+    foreach ij $::indices {
+
+      if {$::data($ij) == 0} {
+        $hull itemconfigure $ij -fill white
+      } else {
+        $hull itemconfigure $ij -fill forestgreen
+      }
+    }
+    
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  method generate {} {
+
+    set changes [generate_step_calc]
+
+    # сделать графику в конце
+    #
+    $self generate_step_gui 
+
+
+    return $changes
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+  # run
+  # 
+  # Generate indefinitely.
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method run {} {
+
+    if {[$self generate] > 0} {
+
+      # после небольшой паузы циклично вызываем сами себя
+      # (пока есть изменения, потом встали?)
+
+      after $options(-delay) [list $self run]
+    }
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+  # stop
+  # 
+  # Stop running
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  method stop {} {
+
+    # отменяем зарегистрированную команду (можно и идентификатор)
+    # 
+    after cancel [list $self run]
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  return
+}
+#-------------------------------------------------------------------------------
+#
+# The Main GUI
+#
+# This GUI really just adds a toolbar to the basic board; in a sense,
+# it's inheriting and extending the board.
+#
+#-------------------------------------------------------------------------------
+snit::widget LIFE_TOP {
+  
+  delegate option * to hull
+  
+  # Frames don't have any methods but configure and cget, which are
+  # already taken care of; so delegate everything else straight to the
+  # board.
+
+  #delegate method * to board ;# это как раз, чтобы команды передавать напрямую
+                              # в BOARD .. но вообще-то лучше в родителя, а он уж
+                              # разберется !?
+
+  component            parent
+  delegate method * to parent
+  component            b_exit
+
+  variable methods {generate run stop clear} ;# список кнопочек-методов
+  
+  #```````````````````````````````````````````````
+  constructor {args} {
+
+    set parent [winfo parent $self]
+
+    bind [winfo toplevel $win] <Return>    [mymethod generate]    
+    bind                 $win  <Configure> [mymethod YDRAW %x %y %w %h]
+    # 
+    # если не задаьб обработку здесь, то почему-то попадает на эту функцию 
+    # из  LIFE_BOT ??!!
+    # "Связм, определенные для окна верхнего уровня, могут использоваться
+    # содержащимеся в нем компонентами" ! стр.626
+    #
+
+    $self configurelist $args
+  } 
+  #```````````````````````````````````````````````
+  method YDRAW {xx yy ww hh} {
+
+    foreach {method} $methods {
+      set text [string toupper $method 0 0]
+
+      YButtonPack $win.$method $text [mymethod $method] -side left -padx 2 -pady 2
+    }
+
+    #YButtonPack $win.b_exit "Exit" {exit} -side right -padx 2 -pady 2
+    #
+    INSTALL  b_exit  "button" {-text "Exit" -command "exit"}
+    pack    $b_exit  -side right -padx 2 -pady 2
+    #
+    # почему-то дает ошибку "бесконечный loop ..." ??
+  }
+  #```````````````````````````````````````````````
+  #method hellow {} {
+
+    # не пойму - как мы сюда попадаем ? стр.626  ?? 
+    # 
+    #puts "LIFE_TOP: HELLOOOOOWWW !!!!!!!!!!!"
+  #}
+  #```````````````````````````````````````````````
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+snit::widget LIFE_BOT {
+  
+  # Delegate -cells and -pixels to the board, so that clients can
+  # specify the board size; delegate other options to the hull.
+
+  #delegate option  -cells to board
+  delegate option -pixels to board
+  delegate option       * to hull
+
+  component            board
+  delegate method * to board
+
+  #.....................................
+  constructor {args} {
+
+    install board using  LIFEBOARD $win.board
+    #INSTALL board "LIFEBOARD" {}  ?? не идет ??
+
+    bind $win <Configure> [mymethod YDRAW %x %y %w %h]
+
+    # передача параметров происходит здесь ?
+    # 
+    $self configurelist $args
+  }
+  #.....................................
+  method YDRAW {xx yy ww hh} {
+
+    #INSTALL board "LIFEBOARD" {-cells 10} 
+    #INSTALL board "LIFEBOARD" {} 
+    pack   $board -pady 10 -pady 10
+    
+    # так мы принудительно устанавливаем размер, который на самом деле
+    # задается для этой доски жестко !
+    # 
+
+    #YPlaceIn  $board 10 10 
+  }  
+  #.....................................
+
+  
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+snit::widget LIFE_MAIN {
+  
+  hulltype toplevel ;# это будет главное окно верхнего уровня !!
+
+  component            top
+  component            bot
+  #variable            bot ;# можно и так?
+
+  delegate option * to hull 
+  delegate method * to  bot
+  
+  #.....................................
+  constructor {xx yy ww hh args} {
+
+    YToplevelBindConfigure  $win "YDRAW"
+
+    $self configurelist $args
+  }
+  #.....................................
+  method YDRAW {xx yy ww hh} {
+    
+    if {! [YToplevelResize $win]} {
+      return
+    }
+
+    set space 10
+    
+    set top_x $space
+    set top_y $space
+    set top_w [expr $ww - 2 * $space]
+    set top_h [expr int($hh * 0.1)]
+    
+    #SnitWnd  $win.top top "LIFE_TOP" $top_x $top_y $top_w $top_h -bg "green"
+    #
+    INSTALL  top  "LIFE_TOP" {-bg "green"}
+    YPlace  $top  $top_x $top_y $top_w $top_h
+
+
+    set bot_x $top_x
+    set bot_y [expr $top_y + $top_h + $space]
+    set bot_w $top_w
+    set bot_h [expr $hh - $bot_y - $top_y]
+    
+    #SnitWnd  $win.bot bot "LIFE_BOT" $bot_x $bot_y $bot_w $bot_h  -bg "blue"
+    #
+    #INSTALL  bot  "LIFE_BOT" {-bg "blue" -cells 10}
+    INSTALL  bot  "LIFE_BOT" {-bg "blue" }
+
+    #INSTALL  bot  "LIFE_BOT" {-bg "blue"}
+    YPlace  $bot  $bot_x $bot_y $bot_w $bot_h
+
+
+
+    $win.top hellow ;# вызвать метод объекта LIFE_TOP !
+    # но если его там нте, то передается обратно в корневую сюда    
+  }
+  
+  method hellow {} {
+
+    puts "LIFE_MAIN: HELLOW !!!!!!!"
+  }
+  #.....................................
+
+  return
+}
+#-------------------------------------------------------------------------------
+} ;# is_tk
+#-------------------------------------------------------------------------------
+proc draw_cells {count changes} {
+
+
+  for {set j 0} {$j < $::csize} {incr j 1} {
+
+    puts ""
+
+  for {set i 0} {$i < $::csize} {incr i 1} {
+      
+    # Initialize the corresponding data structure
+    set d $::data($i,$j)
+
+    puts -nonewline "$d "
+  }}
+
+  puts ""
+  puts ""
+
+  puts [format "count = %3d , changes = %3d" $count $changes]
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc run_test {nums delay isprint} {
+
+
+  compute_list_indices 
+  
+  #set_figure "glider5"
+
+  set count   0
+  set changes 0
+
+  while {1} {
+
+    if {$nums != -1 && $count >  $nums} break
+
+    if {$isprint} {
+      draw_cells $count $changes
+    }
+
+    set changes [generate_step_calc]
+
+    if {$changes == 0} break;
+    
+    mysleep $delay
+    incr count
+  }
+
+  draw_cells $count $changes
+
+  puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc run_gui {} {
+
+  #global argc argv
+
+  set xx 250
+  set yy 250
+  set ww 500
+  set hh 500
+  
+
+  SnitBigWindow "LIFE_MAIN" .main $xx $yy $ww $hh  "LIFE SNIT EXAMPLE"
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc MAIN {} {
+
+  global argc argv
+  
+  
+  set nums    [dict_parse $argv "-nums"     -1] ;# -1 - бесконечно
+  set delay   [dict_parse $argv "-delay"   200] ;# ms
+  set isprint [dict_parse $argv "-isprint"   1]
+  set ::csize [dict_parse $argv "-size"     20]  
+  
+  
+  if {$::isgui == 1} { ;# без параметров запускаем графику
+    
+    run_gui
+    
+  } else { ;# а с параметрами только сонсольные ьесьы
+    
+    puts ""
+    puts "TEST"
+    puts ""
+        
+    run_test  $nums $delay $isprint 
+    
+  }
+
+}
+#-------------------------------------------------------------------------------
+
+MAIN
+
+#-------------------------------------------------------------------------------
+
+# time u_life.tk -size 30 -nums 1000 -delay 0 -isprint 0
+
+# count = 1001 , changes =   4
+
+# real	0m6.053s
+# user	0m6.036s
+# sys	0m0.024s
+
+# ?
+
+# real	0m5.999s
+# user	0m5.972s
+# sys	0m0.028s
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------

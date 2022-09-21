@@ -1,0 +1,674 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec jimsh "$0" ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+# Josef Knecht @ Copyright 
+#-------------------------------------------------------------------------------
+
+set COMPOT "./COMPOT"
+
+set auto_path [linsert $auto_path 0 $COMPOT]
+
+set auto_path [linsert $auto_path 0 $COMPOT/COM/common] ;# for JIM
+set auto_path [linsert $auto_path 0 $COMPOT/COM/random] ;# for JIM
+
+#------------------------------------------
+
+package require compot::common 
+
+
+# source "f-0000.tl"  ;# общие части
+# source "f-1111.tl"  ;# 
+# source "f-prog.tl"  ;# 
+
+source "p-corE.tl"
+
+#source "g-diff.tl"
+
+source "p-grad.tl"
+
+
+# /*******************************************************************************
+#   ga_x_tester.c
+
+# *******************************************************************************/
+
+
+#-------------------------------------------------------------------------------
+proc P1 {x} {
+
+  return [expr {$x}]
+}
+#-------------------------------------------------------------------------------
+proc P2 {x} {
+
+  # #define SQU(x)         ((x)*(x))	     /* Square */
+
+  return [expr {$x * $x}]
+}
+#-------------------------------------------------------------------------------
+proc P3 {x} {
+
+  # #define CUBE(x)        ((x)*(x)*(x))     /* Cube */
+
+  return [expr {$x * $x * $x}]
+}
+#-------------------------------------------------------------------------------
+proc P4 {x} {
+
+  # #define FOURTH_POW(x)  ((x)*(x)*(x)*(x)) /* Guess ;) */
+
+  return [expr {$x * $x * $x * $x}]
+}
+#-------------------------------------------------------------------------------
+proc P5 {x} {
+
+  # #define FIFTH_POW(x)   ((x)*(x)*(x)*(x)*(x))  /*  - " - */
+
+  return [expr {$x * $x * $x * $x * $x}]
+}
+#-------------------------------------------------------------------------------
+proc SIN {x} {
+
+  return [expr { sin ($x) }]
+}
+#-------------------------------------------------------------------------------
+proc COS {x} {
+
+  return [expr { cos ($x) }]
+}
+#-------------------------------------------------------------------------------
+# //  synopsis:	Fitness function.
+
+# /* static */ boolean 
+# _test_score (population *pop, entity *this_entity)
+
+#-------------------------------------------------------------------------------
+proc calc_fitness {this_entity task funclist} {
+
+  set isreverse [GET $task "isreverse"]
+
+
+  #   set A(0) [item_get_chromo_gen $this_entity  0] 
+  #   set A(1) [item_get_chromo_gen $this_entity  1] 
+  #   set A(2) [item_get_chromo_gen $this_entity  2] 
+  #   set A(3) [item_get_chromo_gen $this_entity  3] 
+  
+  #   set F(0) [P1       [expr      {0.75 - $A(0) }]]
+  #   set F(1) [P2       [expr      {0.95 - $A(1) }]]
+  #   set F(2) [P3       [expr      {0.23 - $A(2) }]]
+  #   set F(3) [P4       [expr      {0.71 - $A(3) }]]
+  
+  #   set fitness [expr { abs($F(0)) + abs($F(1)) + abs($F(2)) + abs($F(3)) }]
+
+  set ind 0
+  set fit 0
+
+  foreach l $funclist {
+
+    set X [item_get_chromo_gen $this_entity  $ind] 
+
+    #puts "calc_fitness: X($ind) = $X"
+
+    set F [lindex $l 0]
+    set B [lindex $l 1]
+
+    set ret [$F  [expr  { $B - $X }]]
+
+    set fit [+ $fit [expr { abs($ret) } ]]
+    incr ind
+  }
+
+  set fitness $fit
+
+  # т.е чем больше - тем хуже !
+  # fit_tobest = MIN, движемся к нулю справа  : 0 <-- 
+ 
+  if {$isreverse} {
+    set fitness [expr {-  $fitness}] 
+    #
+    # а теперь наоборот должно быть 
+    # fit_tobest = MAX, движемся к нулю сдева  : --> 0 
+  }
+ 
+  return $fitness
+}
+#-------------------------------------------------------------------------------
+
+set ::funclist_4 {"P1 0.75" "P2 0.95" "P3 0.23" "P4 0.71"} 
+set ::funclist_5 {"P1 0.75" "P2 0.95" "P3 0.23" "P4 0.71" "P5 0.50"} 
+set ::funclist_9 {"SIN 0.10" "P2 0.20" "P3 0.30" "P4 0.40" "P5 0.50" 
+  "P1 0.60" "P2 0.70" "P3 0.80" "P4 0.90" } 
+
+#-------------------------------------------------------------------------------
+proc get_targets_list {len_chromo} {
+
+  set tlist {}
+  #set tlist {0.75  0.95  0.23  0.71}
+  set flist "::funclist_${len_chromo}" 
+
+  foreach l [set $flist] {
+
+    set B [lindex $l 1]
+    lappend tlist $B
+  }
+  
+  return $tlist
+}
+#-------------------------------------------------------------------------------
+proc _test_score {this_entity  task} {
+
+
+  set len_chromo [GET $task "len_chromo"]  
+  set flist      "::funclist_${len_chromo}" 
+
+  #puts "len_chromo = $len_chromo, flist = $flist"
+
+  set fitness [calc_fitness $this_entity $task [set $flist]]
+
+  return $fitness
+}
+#-------------------------------------------------------------------------------
+# Seed genetic data.
+# 
+#-------------------------------------------------------------------------------
+proc _test_seed {pop task adam} {
+
+  set len_chromo [GET $task "len_chromo"]  
+
+  #   item_set_chromo_gen $adam 0  [random_double 2.0]
+  #   item_set_chromo_gen $adam 1  [random_double 2.0]
+  #   item_set_chromo_gen $adam 2  [random_double 2.0]
+  #   item_set_chromo_gen $adam 3  [random_double 2.0]
+
+  for {set i 0} {$i < $len_chromo} {incr i} {
+
+    item_set_chromo_gen $adam $i  [random_double 2.0]
+  }
+
+  return true;
+}
+#-------------------------------------------------------------------------------
+# synopsis:	Generation callback
+#
+# //------------------------------------------------------------------------------
+proc _test_generation_callback {generation pop} {
+
+  set best [pop_get_entity_ $pop  0]
+  
+  set best_chromo [item_get_mainsrc $best]
+  set best_fit    [item_get_fitn       $best]
+  
+#   set A [lindex $best_chromo 0]
+#   set B [lindex $best_chromo 1]
+#   set C [lindex $best_chromo 2]
+#   set D [lindex $best_chromo 3]
+  
+  print_one_line  [format "%3d" $generation]  $best_fit $best_chromo
+  
+  return true;
+}
+# //------------------------------------------------------------------------------
+# //  synopsis:	Generation callback
+# //------------------------------------------------------------------------------
+proc test_generation_callback {generation pop} {
+
+  
+  # /*
+  #  * Write top ranked solution every tenth generation.  Note, that this
+  #  * is not neccesarily the best solution because DE doesn't require
+  #  * the population to be sorted, as genetic algorithms usually do.
+  #  */
+  
+  if {[expr {$generation % 10}] == 0} {
+
+    _test_generation_callback $generation $pop
+  }
+  
+  return true
+}
+# //------------------------------------------------------------------------------
+
+# //  Synopsis:	Test program for GAUL's basic genetic algorithm.
+# //
+# //		This program aims to solve a function of the form
+# //		(0.75-A) + (0.95-B)^2 + (0.23-C)^3 + (0.71-D)^4 = 0
+
+# //------------------------------------------------------------------------------
+proc test_ga {argv task} {
+
+
+  set seed_proc "_test_seed"
+  set step_proc "_test_generation_callback"
+
+  super_ga $task $seed_proc $step_proc {*}$argv
+
+  return
+}
+# //------------------------------------------------------------------------------
+# //  synopsis:     Calculate gradients analytically.
+# //------------------------------------------------------------------------------
+# double 
+# _test_analytical_gradient (population *pop, entity *this_entity, double *params, double *grad)
+# //------------------------------------------------------------------------------
+proc _test_analytical_gradient {pop this_entity params &grad} \
+{
+
+  USE_REFS
+
+  #   double    grms = 0.0;	 /* RMS gradient. */
+  set grms  0.0
+
+  #   double    A, B, C, D;	 /* The parameters. */
+  #   double    g0, g1, g2, g3;
+  
+  #   if (! pop)         die ("Null pointer to population structure passed.");
+  #   if (! this_entity) die ("Null pointer to entity structure passed.");
+  
+  set A [lindex $params 0]
+  set B [lindex $params 1]
+  set C [lindex $params 2]
+  set D [lindex $params 3]
+  
+  #   g0 = A > 0.75+TINY ? -1.0 : ( A < 0.75-TINY ? 1.0 : 0.0 );
+
+  if {$A > [expr {0.75 + $::TINY}]} {
+    set g0  -1.0 
+
+  } else {
+
+    if {$A < [expr {0.75 - $::TINY}]} {
+      set tmp 1.0
+    } else {
+      set tmp 0.0
+    }
+    set g0 $tmp  
+  }
+
+  set g1 [expr {0.95 - $B}]
+
+  #   g2 = C > 0.23 ? -P2(0.23 - C) : P2(0.23 - C);
+
+  if {$C > 0.23} {
+    set g2 -[P2 [expr {0.23 - $C}]]
+  } else {
+    set g2  [P2 [expr {0.23 - $C}]]
+  }
+
+  set g3 [P3 [expr {0.71 - $D}]] ;# тут бы макросами может сделать?
+  
+
+  #   grad[0] = g0 ;
+  #   grad[1] = g1 ;
+  #   grad[2] = g2 ;
+  #   grad[3] = g3 ;
+
+  set grad {}
+
+  lappend grad $g0
+  lappend grad $g1
+  lappend grad $g2
+  lappend grad $g3
+  
+  set grms [expr {sqrt ($g0 * $g0 + $g1 * $g1 + $g2 * $g2 + $g3 * $g3)}]
+
+  return $grms
+}
+# //------------------------------------------------------------------------------
+# //  synopsis:	Generation callback
+# //------------------------------------------------------------------------------
+# boolean 
+# _test_iteration_callback (int iteration, entity *solution)
+# //------------------------------------------------------------------------------
+proc _test_iteration_callback {iteration solution} \
+{
+
+  set ch [item_get_mainsrc $solution]
+  set fi [item_get_fitn    $solution]
+
+#   set A [lindex $ch 0]
+#   set B [lindex $ch 1]
+#   set C [lindex $ch 2]
+#   set D [lindex $ch 3]
+  
+  print_one_line  [format "%3d" $iteration]  $fi $ch
+
+  return true
+}
+# ------------------------------------------------------------------------------
+proc test_sd2 {argv task} \
+{
+
+  set population_size  ""
+  set max_iterations   ""
+  set len_chromo       ""
+
+  #global argv
+  #set argv [lrange $argv 1 end]
+
+  set print [parse_opts_NEW  $argv population_size max_iterations len_chromo  50 1000 4]
+
+  SET $task "len_chromo" $len_chromo
+
+  if {$print} {
+    puts ""
+    puts stderr "main_sd2 ....... 1 "
+  }
+
+  #   pop = ga_genesis_double (
+  #        50,			     /* const int              population_size      */
+  #        1,			     /* const int              num_chromo           */
+  #        4,			     /* const int              len_chromo           */
+  #        NULL,		     /* GAgeneration_hook      generation_hook      */
+  #        _test_iteration_callback, /* GAiteration_hook       iteration_hook       */
+  #        NULL,	             /* GAdata_destructor      data_destructor      */
+  #        NULL,	             /* GAdata_ref_incrementor data_ref_incrementor */
+  #        _test_score,		     /* GAevaluate             evaluate             */
+  #        _test_seed,		     /* GAseed                 seed                 */
+  #        NULL,		     /* GAadapt                adapt                */
+  #        NULL,		     /* GAselect_one           select_one           */
+  #        NULL,		     /* GAselect_two           select_two           */
+  #        NULL,		     /* GAmutate               mutate               */
+  #        NULL,		     /* GAcrossover            crossover            */
+  #        NULL,	             /* GAreplace              replace              */
+  #        NULL		             /* vpointer	       User data            */
+  #        );
+  
+
+  set pop [ga_genesis_main                  \
+	   $task \
+           $population_size		      \
+           1			              \
+           4			              \
+           NULL			              \
+           _test_iteration_callback           \
+           NULL			              \
+           NULL			              \
+           _test_seed		              \
+           NULL			              \
+           NULL	                              \
+           NULL	                              \
+           NULL                               \
+           NULL                               \
+           NULL			              \
+           NULL			              \
+          ]
+
+    puts stderr "main_sd2 ....... 2 "
+
+  #   ga_population_set_gradient_parameters (
+  #        pop,				/* population		*pop           */
+  #        NULL,			/* const GAto_double	to_double      */
+  #        NULL,			/* const GAfrom_double	from_double    */
+  #        _test_analytical_gradient,	/* const GAgradient	gradient       */
+  #        0,				/* const int		num_dimensions */
+  #        0.1				/* const double		step_size      */
+  #        );
+  
+  ga_population_set_gradient_parameters  \
+          $pop		                 \
+          NULL			         \
+          NULL			         \
+          _test_analytical_gradient      \
+          0			         \
+          0.1				
+          
+  puts stderr "main_sd2 ....... 3 "
+
+  # почему тут надо так искуссствено?
+  # 
+  #ga_population_seed $pop
+
+
+  # Evaluate and sort the initial population members (i.e. select best of 
+  # 50 random solutions.
+  #
+  ga_population_score_and_sort  $pop $task
+  
+  puts stderr "main_sd2 ....... 4 "
+
+  if {$print} {
+    puts stderr "main_sd2 ....... 5 "
+    puts stderr "pop = $pop"
+    
+    $pop print
+    pop_print $pop
+
+    puts stderr "main_sd2 ....... 6 "
+    puts ""
+  }
+
+  # Use the best population member.
+  # 
+  #set solution [ga_get_entity_from_rank  $pop 0]
+  #
+  # сделаем пока так, а то не понятно, как там возвращается и зачем
+  # 
+  set solution NULL
+  
+  #   ga_steepestascent_double (
+  #        pop,				/* population		*pop           */
+  #        solution,			/* entity		*solution      */
+  #        1000				/* const int		max_iterations */
+  #        );
+  
+  ga_steepestascent_double $task  \
+          $pop		        \
+          $solution             \
+          $max_iterations       \
+         
+  
+  #   ga_extinction (pop);  
+  #  exit (EXIT_SUCCESS);
+
+  if {$print} {
+    puts ""
+  }
+
+  return
+}
+# /*******************************************************************************
+#   test_de.c
+
+#   Synopsis:	Test program for GAUL's differential evolution algorithm.
+
+# 		This program aims to solve a function of the form
+# 		(0.75-A) + (0.95-B)^2 + (0.23-C)^3 + (0.71-D)^4 = 0
+
+# *******************************************************************************/
+
+# struct strategies_t
+# {
+#   char			*label; 
+#   ga_de_strategy_type	strategy;
+#   ga_de_crossover_type	crossover;
+#   int			num_perturbed;
+#   double		crossover_factor;
+#   double		weighting_factor;
+#   double		weighting_factor2;
+# };
+
+
+# static struct strategies_t strategy[]={
+# ....
+# { NULL, 0, 0, 0, 0.0, 0.0 } };
+
+
+# это едиинчный тест для отладки
+# 
+set ::strategy_test {
+  { "DE/best/1/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+  { "DE/rand-to-best/1/bin"    GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+}
+
+set ::strategy_best {
+  { "DE/best/1/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+}
+
+# это полный список тестов (оригинальный)
+# 
+set ::strategy_full_origin {
+
+  { "DE/best/1/exp (DE0)"      GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  0.5  0.5 }
+  { "DE/best/1/exp (DE0)"      GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  2.0  0.0 }
+  { "DE/best/2/exp"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  2  0.8  0.5  0.5 }
+  { "DE/best/2/exp"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  2  0.8  2.0  0.0 }
+  { "'DE/best/3/exp'"          GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  3  0.8  0.5  0.5 }
+  { "'DE/best/3/exp'"          GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_EXPONENTIAL  3  0.8  2.0  0.0 }
+  { "DE/rand/1/exp (DE1)"      GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  0.5  0.5 }
+  { "DE/rand/1/exp (DE1)"      GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  2.0  0.0 }
+  { "DE/rand/2/exp"            GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_EXPONENTIAL  2  0.8  0.5  0.5 }
+  { "DE/rand/2/exp"            GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_EXPONENTIAL  2  0.8  2.0  0.0 }
+  { "'DE/rand/3/exp'"          GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_EXPONENTIAL  3  0.8  0.5  0.5 }
+  { "'DE/rand/3/exp'"          GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_EXPONENTIAL  3  0.8  2.0  0.0 }
+  { "DE/rand-to-best/1/exp"    GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  0.5  0.5 }
+  { "DE/rand-to-best/1/exp"    GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_EXPONENTIAL  1  0.8  2.0  0.0 }
+  { "'DE/rand-to-best/2/exp'"  GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_EXPONENTIAL  2  0.8  0.5  0.5 }
+  { "'DE/rand-to-best/2/exp'"  GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_EXPONENTIAL  2  0.8  2.0  0.0 }
+
+  { "DE/best/1/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+  { "DE/best/1/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     1  0.8  2.0  0.0 }
+  { "DE/best/2/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     2  0.8  0.5  0.5 }
+  { "DE/best/2/bin"            GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     2  0.8  2.0  0.0 }
+  { "'DE/best/3/bin'"          GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     3  0.8  0.5  0.5 }
+  { "'DE/best/3/bin'"          GA_DE_STRATEGY_BEST        GA_DE_CROSSOVER_BINOMIAL     3  0.8  2.0  0.0 }
+  { "DE/rand/1/bin"            GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+  { "DE/rand/1/bin"            GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_BINOMIAL     1  0.8  2.0  0.0 }
+  { "DE/rand/2/bin"            GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_BINOMIAL     2  0.8  0.5  0.5 }
+  { "DE/rand/2/bin"            GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_BINOMIAL     2  0.8  2.0  0.0 }
+  { "'DE/rand/3/bin'"          GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_BINOMIAL     3  0.8  0.5  0.5 }
+  { "'DE/rand/3/bin'"          GA_DE_STRATEGY_RAND        GA_DE_CROSSOVER_BINOMIAL     3  0.8  2.0  0.0 }
+  { "DE/rand-to-best/1/bin"    GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_BINOMIAL     1  0.8  0.5  0.5 }
+  { "DE/rand-to-best/1/bin"    GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_BINOMIAL     1  0.8  2.0  0.0 }
+  { "'DE/rand-to-best/2/bin'"  GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_BINOMIAL     2  0.8  0.5  0.5 }
+  { "'DE/rand-to-best/2/bin'"  GA_DE_STRATEGY_RANDTOBEST  GA_DE_CROSSOVER_BINOMIAL     2  0.8  2.0  0.0 }
+}
+
+
+
+# //------------------------------------------------------------------------------
+# void 
+# test_de (/* int argc, char **argv */)
+
+#-------------------------------------------------------------------------------
+proc test_de_all {argv task strategy_list} {
+
+
+  set population_size  "" 
+  set max_generations  ""
+  set len_chromo       ""
+
+  set print [parse_opts_NEW  $argv population_size max_generations len_chromo  40 50 4]
+
+  SET $task "len_chromo" $len_chromo
+
+  set seed_proc "_test_seed"
+  set step_proc "test_generation_callback"
+
+  
+  foreach s $strategy_list {
+
+    set pop [de_run_one  $task $s "" $population_size $max_generations $len_chromo $print \
+               $seed_proc $step_proc \
+              ]
+
+    set best 0
+
+    set best_entity [pop_get_entity_         $pop  $best]
+    set best_fit    [pop_get_entity_fitness_ $pop  $best]
+
+    set best_chromo [item_get_mainsrc $best_entity]
+
+    print_one_line  "Final"  $best_fit $best_chromo
+    
+  }
+
+
+  return
+}
+#-------------------------------------------------------------------------------
+proc test_sc {argv task} {
+
+  set seed_proc "_test_seed"
+  set step_proc "test_generation_callback"
+
+  set pop [super_de $task $seed_proc $step_proc {*}$argv] ;# !!!!!!!!!!!!!!!!
+
+
+  set best 0
+  
+  set best_entity [pop_get_entity_         $pop  $best]
+  set best_fit    [pop_get_entity_fitness_ $pop  $best]
+  
+  set best_chromo [item_get_mainsrc $best_entity]
+  
+  print_one_line  "Final"  $best_fit $best_chromo
+  
+  
+  return
+}
+# //------------------------------------------------------------------------------
+# //------------------------------------------------------------------------------
+proc main {} {
+
+
+  global argc argv argv0
+
+  #global strategy_full_origin strategy_test
+
+  if  {$argc == 0} { 
+    puts "argc == 0"
+    exit
+  }
+  
+  set mode [lindex $argv 0] ;# имя выч. задачи
+
+  set task     [task_create  -fit_func "_test_score" -fit_tobest "MIN" -isreverse 0 -fit_error 0.001 ]
+  set task_rev [task_create  -fit_func "_test_score" -fit_tobest "MAX" -isreverse 1 -fit_error 0.001 ]
+    
+  global argv
+  set argv [lrange $argv 1 end]
+
+  set len_chromo   [dict_parse $argv  "-size" 4]
+
+  set tlist [get_targets_list $len_chromo] 
+
+  puts ""
+  print_one_line  "Target"  +0  $tlist ;#  {0.75  0.95  0.23  0.71}
+  puts ""
+
+  #-------------------------------------------------------
+  if     {$mode == "ga"    }   { test_ga      $argv $task     } \
+  elseif {$mode == "ga_REV"}   { test_ga      $argv $task_rev } \
+  elseif {$mode == "de_full"}  { test_de_all  $argv $task_rev  $::strategy_full_origin } \
+  elseif {$mode == "de_test"}  { test_de_all  $argv $task_rev  $::strategy_test        } \
+  elseif {$mode == "de"     }  { test_de_all  $argv $task_rev  $::strategy_best        } \
+  elseif {$mode == "sd2"}      { test_sd2     $argv $task_rev } \
+  elseif {$mode == "sc"}       { test_sc      $argv $task_rev } \
+  else {
+    puts ""
+    puts "ERROR mode = $mode"
+    puts ""
+  }
+  #-------------------------------------------------------
+
+  puts ""
+  print_one_line  "Target"  +0  $tlist ;#   {0.75  0.95  0.23  0.71} 
+  puts ""
+
+}
+# //------------------------------------------------------------------------------
+
+main
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+# 
+# 0.75  0.95  0.23  0.71 
+# 
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+
+# //------------------------------------------------------------------------------
+# //------------------------------------------------------------------------------
