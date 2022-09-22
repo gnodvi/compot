@@ -1,1 +1,0 @@
-../COMPOT/lib.sh
