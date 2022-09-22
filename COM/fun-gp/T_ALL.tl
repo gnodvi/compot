@@ -19,15 +19,25 @@ package require compot::common
 
 puts ""
 
+run_numer_tests  e . E/OUT 
+
+puts ""
+
+run_numer_tests  f . E/OUT 
+
+puts ""
+
 run_numer_tests  g . E/OUT 
 
 puts ""
 
-run_numer_tests  j . E/OUT 
+run_numer_tests  m . E/OUT 
+
+#-------------------------------------------------------------------------------
 
 puts ""
 
-run_numer_tests  m . E/OUT 
+run_numer_tests  j . E/OUT 
 
 puts ""
 
