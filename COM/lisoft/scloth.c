@@ -2798,41 +2798,17 @@ draw_item ()
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
-void
-test_picture ()
-{
-
-  YDrawRectF (40,20,  80,90, YColor("white"));
-
-  YDrawRectFB(60,80,  80,90, YColor("aqua"), YColor("black"));
-
-  YDrawLine  (10,10, 110,110,YColor("black"));
-  YDrawLine  (5,100, 160,10, YColor("white"));
-  YDrawRectFB(60,70,  70,40, YColor("silver"), YColor("white"));
-  YDrawRectF (110,40, 60,80, YColor("red"));
-  YDrawRectF (10,100, 90,50, YColor("fuchsia"));
-  
-  return;
-  
-  YDrawString("This is test", 20,60, YColor("black"));  
-
-  YDrawLine  (25,25, 160,150, YColor("blue"));
-  YDrawLine  (25,25, 160,152, YColor("blue"));
-  YDrawLine  (25,25, 160,154, YColor("blue"));
-  YDrawLine  (25,25, 160,156, YColor("blue"));
-
-  YDrawScale (10, 10, 175, 20, YHORZ); 
-
-  draw_item ();
-
-  return;
-}
-/*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 void 
 draw_cube (double siz, YT_COLOR color)
 {
+
+  //siz = 100;
+
+  printf ("\n");
+  printf ("draw_cube: siz = %f \n", siz);
+  printf ("\n");
 
   glIndexi (color); 
 
@@ -2926,8 +2902,8 @@ clo_draw (YT_CLOTH *clo)
 void
 draw_all (double siz)
 {
-  //double siz;
 
+  //double siz;
   //draw_axes ();
 
   draw_cube (siz, YColor("black"));
@@ -2940,9 +2916,10 @@ draw_all (double siz)
   glVertex3f (+siz, -siz, -siz);
   glVertex3f (+siz, -siz, +siz);
   glVertex3f (-siz, -siz, +siz);
+
   glEnd ();
   
-  clo_draw (clo);
+  //clo_draw (clo);
 
   return;
 }
@@ -2964,31 +2941,6 @@ make_all ()
                                                                                 
   return list;                                                                  
 }
-/*-----------------------------------------------------------------------------*/
-/*                                                                             */
-/*-----------------------------------------------------------------------------*/
-void 
-display (void)
-{
-
-  /* Clear depth and color buffer. */
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glPushMatrix();
-
-  /* Perform scene rotations based on user mouse input. */
-  glRotatef(angle_x, 1.0, 0.0, 0.0);
-  glRotatef(angle_y, 0.0, 1.0, 0.0);
-
-  draw_all (siz);
-  //glCallList (All);                                                             
-
-  glPopMatrix();
-  //glFlush ();
-  glutSwapBuffers (); 
-
-  return;
-}         
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -3568,80 +3520,6 @@ visible (int vis)
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
-void
-main_scloth (int argc, char** argv)
-{
-  int    ii, jj;
-  double w, h;
-
-  ii = jj = 9;
-  siz   = 7.5; // полуширина ящика
-  w = h = 8.0;
-
-  m_Gravity.x =  0.0;
-  m_Gravity.y = /* -0.001 */ -0.2;
-  m_Gravity.z =  0.0;
-
-  DeltaT = 0.1;
-
-  //---------------------
-  YCreateWindow (argc, argv, "Hello, Scloth !!", 100, 300, 600, 600);
-
-  //return;
-
-#ifdef _0
-  
-  glClearIndex (YColor("white")); /* backgraund */
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-
-  glOrtho (-2*siz, 2*siz, -2*siz, 2*siz, -10*siz, 10*siz);
-  glViewport (-2*siz, -2*siz, 4*siz, 4*siz);
-
-  angle_x = 15;
-  angle_y = 15;
-  moving = 0;
-
-  //gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-   
-  /* Setup initial OpenGL rendering state. */
-  glEnable (GL_DEPTH_TEST);
-  glPointSize (2);
-  glLineWidth (2);
-
-  /* Register assorted GLUT callback routines. */
-  glutDisplayFunc (display);
-  glutMouseFunc  (mouse);
-  glutMotionFunc (motion);
-  //glutVisibilityFunc (visible); 
-  glutIdleFunc (idle); 
-  glutKeyboardFunc (keyboard);
-
-  /* Create a pop-up menu. */
-  
-  glutCreateMenu (menu);
-  glutAddMenuEntry ("Menu_Item1", M_ITEM1);
-  glutAddMenuEntry ("Menu_Item2", M_ITEM2);
-  glutAddMenuEntry ("Exit",       M_EXIT);
-  glutAttachMenu (GLUT_RIGHT_BUTTON);
-
-  //----------------
-  clo = clo_create (ii, jj);
-  clo_set_vert (clo, -w/2, h/2, w, h);
-  //clo_rand_noice (clo);
-
-  All = make_all ();                                                           
-  //----------------
-#endif
-  
-
-  glutMainLoop ();
-
-  return;
-} 
-/*-----------------------------------------------------------------------------*/
-/*                                                                             */
-/*-----------------------------------------------------------------------------*/
 
 /* Timer demo
  *
@@ -3841,10 +3719,40 @@ int demo_timer(int argc, char **argv)
   return 0;
 }
 /*-----------------------------------------------------------------------------*/
+void
+test_picture ()
+{
+
+  YDrawRectF (40,20,  80,90, YColor("white"));
+
+  YDrawRectFB(60,80,  80,90, YColor("aqua"), YColor("black"));
+
+  YDrawLine  (10,10, 110,110,YColor("black"));
+  YDrawLine  (5,100, 160,10, YColor("white"));
+  YDrawRectFB(60,70,  70,40, YColor("silver"), YColor("white"));
+  YDrawRectF (110,40, 60,80, YColor("red"));
+  YDrawRectF (10,100, 90,50, YColor("fuchsia"));
+  
+  return;
+  
+  YDrawString("This is test", 20,60, YColor("black"));  
+
+  YDrawLine  (25,25, 160,150, YColor("blue"));
+  YDrawLine  (25,25, 160,152, YColor("blue"));
+  YDrawLine  (25,25, 160,154, YColor("blue"));
+  YDrawLine  (25,25, 160,156, YColor("blue"));
+
+  YDrawScale (10, 10, 175, 20, YHORZ); 
+
+  draw_item ();
+
+  return;
+}
+/*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 void 
-display_1 (void)
+display_test_picture (void)
 {
   static void *meta = NULL;
 
@@ -3856,7 +3764,6 @@ display_1 (void)
   //YDrawRectF (20, 20, 100, 100, YColor("blue"));
 
   test_picture ();
-
   
   //glPointSize (20.f); // размер точки !!
   //glColor3f (1, 0, 1);
@@ -3865,14 +3772,16 @@ display_1 (void)
   //glVertex2i (0, 0); // это точка !!
   //glEnd ();
 
-  if (0) {
-    //glIndexi (YColor("yellow"));
-    glColor3f (1, 0, 0);
+  if (1) {
+
+    //glIndexi (YColor ("green"));
+    //glColor3f (0, 0, 0.8);
+    SetNewColor (YColor ("green"));
     
     glBegin (GL_POLYGON);
-    glVertex3f (1.0, 0.0, 0.0);
-    glVertex3f (0.0, 1.0, 0.0);
-    glVertex3f (0.0, 0.0, 1.0);
+    glVertex3f (0.8, 0.2, 0.0);
+    glVertex3f (0.2, 0.8, 0.0);
+    glVertex3f (0.8, 0.8, 0.8);
     glEnd ();
   }
 
@@ -3892,11 +3801,27 @@ main_ogl_test1 (int argc, char** argv)
   //OUTD (glutLayerGet(GLUT_OVERLAY_POSSIBLE));
   //OUTD (glutLayerGet(GLUT_TRANSPARENT_INDEX));                         
  	
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-  glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+  glMatrixMode (GL_PROJECTION); // specify which matrix is the current matrix
+  glLoadIdentity ();   // replace the current matrix with the identity matrix
 
-  glutDisplayFunc (display_1); 
+  // 1 0 0 0 
+  // 0 1 0 0 
+  // 0 0 1 0 
+  // 0 0 0 1
+
+  glOrtho (0.0, 1.0, 0.0, 1.0,   -1.0, 1.0); // !!
+
+  // multiply the current matrix with an orthographic matrix
+  // void glOrtho(	GLdouble left,
+  //	GLdouble right,
+  //	GLdouble bottom,
+  //	GLdouble top,
+  //	GLdouble nearVal,
+  //	GLdouble farVal);
+ 
+
+  // glutDisplayFunc (display_test_picture); // sets the display callback for the current window
+  display_test_picture ();  // можно и так
 	
   glutMainLoop ();
 
@@ -3910,21 +3835,47 @@ main_ogl_test2 (int argc, char** argv)
   glutInit (&argc, argv);
   glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
 	
-  glutInitWindowSize (300, 200); 
-  glutInitWindowPosition (100, 100);
+  glutInitWindowPosition (100, 300);
+  W = 450; H = 250;
+  glutInitWindowSize (W, H); 
 	
   /* wnd =  */glutCreateWindow ("main_ogl_test2");
 
-  YInitCOLOR ();                                                                 
+  //glClear (GL_COLOR_BUFFER_BIT);
 
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+
+  ///* wnd =  */glutCreateWindow ("main_ogl_test2"); /// надо раньше вызывать !!!
+
+  YInitCOLOR ();                                                                 
 
   glClear (GL_COLOR_BUFFER_BIT);
 
-  glIndexi (YColor("red")); 
+  //YDrawRectF (0, 0, W, H, YColor("yellow"));
+
+
+  glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+  //
+  //display_test_picture ();  // можно и так
+
+
+  //glutMainLoop ();
+
+  //return;
+
+  //glIndexi (YColor("red")); 
+  SetNewColor (YColor ("red"));
+
   glBegin (GL_LINES);
-  glVertex3f (0.0, 0.0, 0.0);
-  glVertex3f (1.0, 0.0, 0.0);
+  glVertex3f (0.1, 0.1, 0.0);
+  glVertex3f (0.5, 0.5, 0.0);
+
+  //glVertex3f (0.0, 0.0, 0.0);
+  //glVertex3f (1.0, 0.0, 0.0);
   glEnd ();
+
+#ifdef _0
 
   glIndexi (YColor("green")); 
   glBegin (GL_LINES);
@@ -3944,6 +3895,8 @@ main_ogl_test2 (int argc, char** argv)
   glVertex3f (0.0, 1.0, 0.0);
   glVertex3f (0.0, 0.0, 1.0);
   glEnd ();
+
+#endif
   
   glFlush ();
   glutSwapBuffers (); 
@@ -3952,6 +3905,136 @@ main_ogl_test2 (int argc, char** argv)
 
   return;
 }         
+/*-----------------------------------------------------------------------------*/
+/*                                                                             */
+/*-----------------------------------------------------------------------------*/
+void 
+display_scloth (void)
+{
+
+  static void *meta = NULL;
+
+  glClear (GL_COLOR_BUFFER_BIT);
+  
+  YDrawRectF (0, 0, W, H, YColor("yellow"));
+  
+  YDrawRectF_ ( 20,  20, 100, 100,  CL_RED);
+  YDrawRectF  (100, 100, 100, 100, YColor("blue"));
+
+  //test_picture ();
+
+  //----------------------------
+
+  /* Clear depth and color buffer. */
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glPushMatrix();
+
+  /* Perform scene rotations based on user mouse input. */
+  //glRotatef(angle_x, 1.0, 0.0, 0.0);
+  //glRotatef(angle_y, 0.0, 1.0, 0.0);
+
+
+  draw_all (siz);
+
+
+  glCallList (All);                                                             
+
+  glPopMatrix();
+
+  glFlush ();
+  glutSwapBuffers (); 
+
+  return;
+}         
+/*-----------------------------------------------------------------------------*/
+/*                                                                             */
+/*-----------------------------------------------------------------------------*/
+void
+main_scloth (int argc, char** argv)
+{
+  int    ii, jj;
+  double w, h;
+
+  ii = jj = 9;
+  siz   = 7.5; // полуширина ящика
+  w = h = 8.0;
+
+  m_Gravity.x =  0.0;
+  m_Gravity.y = /* -0.001 */ -0.2;
+  m_Gravity.z =  0.0;
+
+  DeltaT = 0.1;
+
+  //---------------------
+  YCreateWindow (argc, argv, "Hello, Scloth !!", 100, 20, 600, 600);
+
+  //---------------------
+
+  glClearIndex (YColor("white")); /* backgraund */
+
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+
+  glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+  //glutDisplayFunc (display_test_picture); 
+	
+  //---------------------
+
+  //glClearIndex (YColor("white")); /* backgraund */
+  //glMatrixMode (GL_PROJECTION);
+  //glLoadIdentity ();
+
+  //glOrtho (-2*siz, 2*siz, -2*siz, 2*siz, -10*siz, 10*siz);
+  //glViewport (-2*siz, -2*siz, 4*siz, 4*siz);
+
+  angle_x = 15;
+  angle_y = 15;
+  moving = 0;
+
+  //gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+   
+  /* Setup initial OpenGL rendering state. */
+  glEnable (GL_DEPTH_TEST);
+  glPointSize (2);
+  glLineWidth (2);
+
+  /* Register assorted GLUT callback routines. */
+
+  glutDisplayFunc (display_scloth);
+  //glutDisplayFunc (display_test_picture); 
+
+  //glutMouseFunc  (mouse);
+  //glutMotionFunc (motion);
+  //  //glutVisibilityFunc (visible); 
+  //glutIdleFunc (idle); 
+  //glutKeyboardFunc (keyboard);
+
+#ifdef _0
+  
+  /* Create a pop-up menu. */
+  
+  glutCreateMenu (menu);
+  glutAddMenuEntry ("Menu_Item1", M_ITEM1);
+  glutAddMenuEntry ("Menu_Item2", M_ITEM2);
+  glutAddMenuEntry ("Exit",       M_EXIT);
+  glutAttachMenu (GLUT_RIGHT_BUTTON);
+
+  //----------------
+  clo = clo_create (ii, jj);
+  clo_set_vert (clo, -w/2, h/2, w, h);
+  //clo_rand_noice (clo);
+
+  All = make_all ();                                                           
+  //----------------
+#endif
+  
+
+  glutMainLoop ();
+
+  return;
+} 
 /*-----------------------------------------------------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -3973,9 +4056,10 @@ main (int argc, char** argv)
 
   //demo_timer (argc, argv);
 	
-  main_ogl_test1 (argc, argv);
-  
-  //main_ogl_test2 (argc, argv);
+
+  //main_ogl_test1 (argc, argv);  
+  main_ogl_test2 (argc, argv);
+
 
   //main_scloth (argc, argv);
   

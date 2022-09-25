@@ -22,7 +22,7 @@ S_DIR = ../S
 #-------------------------------------------------------------------------------
 
 
-all:  S__ OLDJOY__  RANDOM__ PLOTER__ LISOFT__  COMMON__  FUN-GP__  DIALOG__ ORIGIN__  ## JIMTCL__ 
+all:  S__ OLDJOY__  RANDOM__ PLOTER__ LISOFT__  COMMON__  FUN-GP__  DIALOG__ ## JIMTCL__ 
 
 #-------------------------------------------------------------------------------
 
@@ -54,8 +54,8 @@ FUN-GP__ :
 DIALOG__ :
 	(cd $(DIALOG_DIR); make)
 
-ORIGIN__ :
-	(cd ../origin; make)
+#ORIGIN__ :
+#	(cd ../origin; make)
 
 #-------------------------------------------------------------------------------
 test:
@@ -78,7 +78,7 @@ clean :
 	(cd $(COMMON_DIR); make clean)
 	(cd $(FUN-GP_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
-	(cd ../origin; make clean)
+#	(cd ../origin; make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
