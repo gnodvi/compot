@@ -10,17 +10,21 @@ CUR_DIR=$PWD
 
 REL=3.2.2
 
-NAME=freeglut-${REL}
+RELNAME=freeglut-${REL}
+ARXNAME=v${REL}
 
-ADDR=https://github.com/FreeGLUTProject/freeglut/releases/download
+#ADDR=https://github.com/FreeGLUTProject/freeglut/releases/download
+ADDR=https://github.com/FreeGLUTProject/freeglut/archive/refs/tags
 
-#export https_proxy=http://127.0.0.1:3128
+## https://github.com/FreeGLUTProject/freeglut/archive/refs/tags/v3.2.2.tar.gz
+# export https_proxy=https://127.0.0.1:3128
+# export http_proxy=http://127.0.0.1:3128
 
 #--------------------------------------------
 update ()
 {
 
-  if [ -f ./A/${NAME}.tar ] ; then   
+  if [ -f ./A/${ARXNAME}.tar ] ; then   
     echo ""
     echo "File exist: exit and not update !!"
     echo ""
@@ -30,16 +34,16 @@ update ()
   mkdir -p A
   cd A;
 
-  wget ${ADDR}/v${REL}/${NAME}.tar.gz
+  wget ${ADDR}/v${REL}/${ARXNAME}.tar.gz
 
-  gzip -fd ${NAME}.tar.gz
+  gzip -fd ${ARXNAME}.tar.gz
 
 }
 #--------------------------------------------
 cleansrc ()
 {
 
-  rm -fR ./${NAME}
+  rm -fR ./${RELNAME}
 
   rm -f cmake
   rm -f make
@@ -47,7 +51,7 @@ cleansrc ()
 
 }
 #--------------------------------------------
-cleanbin ()
+cleanrel ()
 {
 
   cleansrc
@@ -56,10 +60,10 @@ cleanbin ()
 
 }
 #--------------------------------------------
-cleanall ()
+cleanarx ()
 {
 
-  cleanbin
+  cleanrel
   
   rm -fR ./A
 
@@ -76,11 +80,11 @@ make_and_install ()
   fi
        
   cd A;
-  tar xvf ${NAME}.tar
+  tar xvf ${ARXNAME}.tar
   cd ..;
 
   cleansrc    
-  mv A/${NAME} .
+  mv A/${RELNAME} .
 
   cd $CUR_DIR/freeglut-3.2.2
   

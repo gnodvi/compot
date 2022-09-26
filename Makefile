@@ -12,14 +12,21 @@ test:
 
 #--------------------------------------------
 
-Aclean:  
-	(cd COM/m; make Aclean)
-Rclean:  
-	(cd COM/m; make Rclean)
+
+# Aclean:  
+# 	(cd COM/m; make cleanarx)
+# #	(cd COM/m; make Aclean)
+# Rclean:  
+# 	(cd COM/m; make cleanrel)
+# #	(cd COM/m; make Rclean)
 
 clean:  
 	(cd COM/m; make clean)
 	(cd TST/m; make clean)
+
+cleanall:  
+	(cd COM/m; make cleanall)
+	(cd TST/m; make cleanall)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

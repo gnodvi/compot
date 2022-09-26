@@ -13,18 +13,14 @@ clean:
 	(cd freeglut; make clean)
 	(cd   jimtcl; make clean)
 
+cleanall:  
+	(cd freeglut; make -i cleanall)
+	(cd   jimtcl; make -i cleanall)
+
 #-------------------------------------------------------------------------------
 
 test:  
 	(cd   jimtcl; make test)
-
-#-------------------------------------------------------------------------------
-
-Rclean:  
-	(cd freeglut; make Rclean)
-
-Aclean:  
-	(cd freeglut; make Aclean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

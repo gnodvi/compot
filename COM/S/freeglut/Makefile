@@ -5,19 +5,26 @@
 
 
 all: update
-	I_make_and_install
+	(. I_LIB ; make_and_install)
 
 update: 
-	I_A_update
+	(. I_LIB ; update)
 
-clean: 
-	I_clean_src
+#-------------------------------------------------------------------------------
 
-Rclean: 
-	I_clean_R
+cleanall: cleansrc cleanrel cleanarx
 
-Aclean: 
-	I_clean_A
+clean:    cleansrc
+
+
+cleansrc: 
+	(. I_LIB ; cleansrc)
+
+cleanrel: 
+	(. I_LIB ; cleanrel)
+
+cleanarx: 
+	(. I_LIB ; cleanarx)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

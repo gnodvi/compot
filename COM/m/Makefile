@@ -64,9 +64,11 @@ test:
 #-------------------------------------------------------------------------------
 
 Aclean : 
-	(cd $(S_DIR);      make Aclean)
+	(cd $(S_DIR);      make cleanarx)
+#	(cd $(S_DIR);      make Aclean)
 Rclean : 
-	(cd $(S_DIR);      make Rclean)
+	(cd $(S_DIR);      make cleanrel)
+#	(cd $(S_DIR);      make Rclean)
 
 clean : 
 	(cd $(S_DIR);      make clean)
@@ -81,4 +83,8 @@ clean :
 #	(cd ../origin; make clean)
 
 #-------------------------------------------------------------------------------
+
+cleanall : 
+	(cd $(S_DIR);  make cleanall)
+
 #-------------------------------------------------------------------------------

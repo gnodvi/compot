@@ -8,6 +8,8 @@ all:
 
 #--------------------------------------
 
+cleanall:  
+
 clean:  
 	(cd  0.79_QNX; make clean)
 
