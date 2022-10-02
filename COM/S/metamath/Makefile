@@ -3,27 +3,37 @@
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-all:  
-	(cd freeglut; make)
-	(cd   jimtcl; make)
-	(cd metamath; make)
+
+all: update unzip
+
+
+update: A/develop.zip
+
+A/develop.zip:
+	(cd A; wget https://github.com/metamath/set.mm/archive/refs/heads/develop.zip)
+
+unzip: A/set.mm-develop
+
+A/set.mm-develop:
+	(cd A; unzip develop.zip)
+
 
 #-------------------------------------------------------------------------------
 
-clean:  
-	(cd freeglut; make clean)
-	(cd   jimtcl; make clean)
-	(cd metamath; make clean)
+cleanall: cleansrc cleanarx  # cleanrel 
 
-cleanall:  
-	(cd freeglut; make -i cleanall)
-	(cd   jimtcl; make -i cleanall)
-	(cd metamath; make -i cleanall)
+clean:    cleansrc
 
-#-------------------------------------------------------------------------------
 
-test:  
-	(cd   jimtcl; make test)
+cleansrc: 
+	rm -fR ./A/set.mm-develop
+
+#cleanrel: 
+#	(. I_LIB ; cleanrel)
+
+cleanarx: 
+	rm -f ./A/develop.zip
+
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
