@@ -1,1 +1,0 @@
-../COMPOT/src/common/E/lib.sh

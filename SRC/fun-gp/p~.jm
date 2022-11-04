@@ -1,0 +1,186 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec jimsh "$0" ${1+"$@"}
+#
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+
+#source "g~.tl"
+
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+
+# set COMPOT "./COMPOT"
+
+# set auto_path [linsert $auto_path 0 $COMPOT]
+
+# set auto_path [linsert $auto_path 0 $COMPOT/SRC/common] ;# for JIM
+
+#lappend auto_path \
+  [file join [file dirname [info script]] "."] ;# "COM" "../common"
+
+#-------------------------------------------
+
+set auto_path [linsert $auto_path 0 "./COMMON"] ;# for JIM
+package require compot::common 
+
+#-------------------------------------------
+
+####source "f-0000.tl"  - включается далее в g-corE.tl
+
+#source "f-0000.tl"  ;# общие части
+#source "f-1111.tl"  ;# 
+#source "f-prog.tl"  ;# 
+
+#source "p-corE.tl"
+
+# source "g-detw.tl"
+# source "g-tabu.tl"
+# source "g-sima.tl"
+
+#-------------------------------------------------------------------------------
+proc TEST {} {
+
+  source "j-0000.tl"  ;# общие части
+  source "j-1111.tl"  
+  source "j-2222.tl"  
+  source "j-3333.tl"
+
+  source "j-libs.tl"
+  source "j-prog.tl"
+
+  source "j_test.tl"
+
+  global argc argv
+
+  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+
+}
+#-------------------------------------------------------------------------------
+# установить ссылку для конкретного окружения
+
+#set_debian_OUT_add
+
+# //******************************************************************************
+# //  Synopsis:	Test GAUL pseudo-random number generator.
+
+# ;-------------------------------------------------------------------------------
+proc random_test_old {} {
+
+  set ::debug_print 1
+  set ::simp_random 1
+
+  puts ""
+
+  YRAND_C
+
+  #puts "r = [YRAND 0 0.095]"
+  #puts "r = [YRAND 0 0.095]"
+  #puts "r = [YRAND 0 0.095]"
+  #puts "r = [YRAND 0 0.095]"
+
+  YRAND 0 0.095 ;# здесь целые наверное нужны !!!??
+  YRAND 0 0.095
+
+  #puts "Y-random = [Y-random]"
+  #puts "Y-random = [Y-random]"
+
+  puts ""
+}
+# ;-------------------------------------------------------------------------------
+# ;-------------------------------------------------------------------------------
+proc random_test_new {} {
+
+  set ::debug_print 1
+  set ::simp_random 1
+
+  puts ""
+
+  #puts "[RandomInit 5049]"
+
+  puts "[_Random]"
+  puts "[_Random]"
+
+  puts "[_RandomRange 100]"
+
+  puts ""
+
+  puts "(YRandF 10 20) = [YRandF 10 20]"
+  puts "(YRandF 10 20) = [YRandF 10 20]"
+
+  puts ""
+
+  puts "(YRandF 80 90) = [YRandF 80 90]"
+  puts "(YRandF 80 90) = [YRandF 80 90]"
+
+  puts ""
+
+  puts "(random-value 0.095) = [random-value 0.095]"
+
+  #   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+  #   puts "(YRAND 0 0.095) = [YRAND 0 0.095]"
+  
+  #   puts "(YRAND 10 20) = [YRAND 10 20]"
+  #   puts "(YRAND 10 20) = [YRAND 10 20]"
+  
+  puts ""
+
+  test_random_seed [clock seconds]
+
+  puts "random_double_range {0 1.0} =  [random_double_range 0 1.0]"
+
+  puts ""
+
+}
+# //------------------------------------------------------------------------------
+# void 
+# test_prng (int argc, char **argv)
+# //------------------------------------------------------------------------------
+proc prng {} {
+
+  #   boolean  success;
+  
+  #   /* Usual initializations */
+  #comm_random_init 
+  
+  #   /* Run randomness test function */
+  #   success = random_test ();
+  random_test 
+  
+  #   if (success == FALSE)
+  #     printf ("*** Routines DO NOT produce sufficiently random numbers.\n");
+  #   else
+  #     printf ("Routines produce sufficiently random numbers.\n");
+  
+   puts ""
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+set CUR_DIR "p"
+  
+READ_AND_CALL_ARGUS  $CUR_DIR
+
+puts "" 
+
+#-------------------------------------------------------------------------------
+#
+# TODO:
+# 
+# 1) g_stru.tl/TODO
+# 
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+
+# g~.jm ITEM_test
+
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------

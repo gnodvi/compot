@@ -4,14 +4,14 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd COM/m; make)
-#	(cd TST/m; make)
+	(cd   ./S; make)
+	(cd SRC/m; make)
 
 test:  
-	(cd .; T.sh)
+	(cd   ./S; make test)
+	(cd     .; T.sh)
 
 #--------------------------------------------
-
 
 # Aclean:  
 # 	(cd COM/m; make cleanarx)
@@ -21,12 +21,21 @@ test:
 # #	(cd COM/m; make Rclean)
 
 clean:  
-	(cd COM/m; make clean)
+	(cd   ./S; make clean)
+	(cd SRC/m; make clean)
 #	(cd TST/m; make clean)
 
 cleanall:  
-	(cd COM/m; make cleanall)
-#	(cd TST/m; make cleanall)
+#	(cd SRC/m; make cleanall)
+	(cd   ./S; make cleanall)
+
+
+#Aclean : 
+#	(cd $(S_DIR);      make cleanarx)
+##	(cd $(S_DIR);      make Aclean)
+#Rclean : 
+#	(cd $(S_DIR);      make cleanrel)
+##	(cd $(S_DIR);      make Rclean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
