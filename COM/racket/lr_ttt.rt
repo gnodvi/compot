@@ -1,0 +1,32 @@
+#! /usr/bin/env racket
+
+#lang racket/load
+
+;-------------------------------------------------------------------------------
+
+; PS/Tk Example Program Tic Tac Toe
+; Copyright (C) 2006 Nils M Holm
+; See the PS/Tk license for conditions of use.
+
+;-------------------------------------------------------------------------------
+
+
+;; creates primitive bindings as imports
+;; 
+(namespace-require 'r5rs)  ; mutable pairs !!!! set-mcar!
+
+
+(load "lr-rtk.ss")
+
+(define *wish-debug-input*  #t)
+(define *wish-debug-output* #t)
+
+
+(load "lr_ttt.ss")
+
+;-------------------------------------------------------------------------------
+
+(MAIN 'racket)
+
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------

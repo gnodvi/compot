@@ -1,0 +1,763 @@
+;;-------------------------------------------------------------------------------
+
+;(defclass POLE (GAME) (
+
+;  (array_make :accessor POLE-array_make)
+
+;  (i    :accessor POLE-i)
+;  (j    :accessor POLE-j)
+
+;  (dir  :accessor POLE-dir)
+;  (arr  :accessor POLE-arr)
+;  (num  :accessor POLE-num)
+;))
+
+
+(define-struct (POLE GAME) (  ; вообщето мы должны наследовать от GAME??
+
+  [array_make  #:auto]
+  [i     #:auto]
+  [j     #:auto]
+
+  [dir   #:auto]
+  [arr   #:auto]
+  [num   #:auto]
+
+  )
+
+  #:mutable 
+  #:auto-value 0
+)
+
+
+;(defmacro make-POLE () `(make-instance 'POLE))
+
+;;-------------------------------------------------------------------------------
+
+;;(defvar ant_angeline  '(IF-FOOD-AHEAD 
+;;                        (MOVE)   
+;;                        (PROGN (RIGHT)    ; --> 2
+;;                               (IF-FOOD-AHEAD ; 2
+;;                                (MOVE)   
+;;                                (PROGN (RIGHT)    ; --> 3
+;;                                       (IF-FOOD-AHEAD ; 3
+;;                                        (MOVE)
+;;                                        (PROGN (RIGHT)    ; --> 4 
+;;                                               (IF-FOOD-AHEAD ; 4 
+;;                                                (MOVE)
+;;                                                (PROGN (RIGHT)    ; --> 5
+;;                                                       (IF-FOOD-AHEAD ; 5
+;;                                                        (MOVE)
+;;                                                        (MOVE) 
+;;                                                        )
+;;                                                       )
+;;                                                )
+;;                                               )
+;;                                        ) 
+;;                                       )
+;;                                )
+;;                               )
+;;                        )
+;;  )
+
+;;-------------------------------------------------------------------------------
+
+
+;(defun tsarev_1 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)  (tsarev_1)) 
+;   (PROGN (MOVE)) 
+;   ))
+;)
+
+;(defun tsarev_2 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)) 
+;   (PROGN (LEFT) (tsarev_4)) 
+;   ))
+;)
+
+;(defun tsarev_3 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)  (tsarev_2)) 
+;   (PROGN (LEFT)  (tsarev_2)) 
+;   ))
+;)
+
+;(defun tsarev_4 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)  (tsarev_1)) 
+;   (PROGN (RIGHT) (tsarev_1)) 
+;   ))
+;)
+
+;(defvar ant_tsarev_83g '(IF-FOOD-AHEAD 
+;                         (MOVE)   
+;                         (PROGN (RIGHT) (tsarev_3))
+;                         )
+;  )
+
+;;;;-----------------------------------------------------------------------------
+
+;(defun tsar_1 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)   (tsar_5)) 
+;   (PROGN (RIGHT)  (tsar_2)) 
+;   ))
+;)
+
+;(defun tsar_2 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (MOVE)
+;   (PROGN (RIGHT)  (tsar_4)) 
+;   ))
+;)
+
+;(defun tsar_3 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)   (tsar_3)) 
+;   (PROGN (RIGHT)  (tsar_1)) 
+;   ))
+;)
+
+;(defun tsar_4 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)  (tsar_5)) 
+;   (RIGHT)  
+;   ))
+;)
+
+;(defun tsar_5 ()
+;  (eval '(IF-FOOD-AHEAD 
+;   (PROGN (MOVE)  (tsar_2)) 
+;   (MOVE) 
+;   ))
+;)
+
+
+;(defvar ant_tsarev_85g '(IF-FOOD-AHEAD 
+;                         (PROGN (MOVE) (tsar_3))
+;                         (PROGN (MOVE) (tsar_3))
+;                         )
+;  )
+
+;;-------------------------------------------------------------------------------
+
+;; На рис. 3 изображeн граф пeрeходов построeнного разработанным алгоритмом 
+;; автомата с сeмью состояниями, котрый позволяeт муравью съeсть всю eду 
+;; за 190 ходов.
+
+;;;------------------------
+(define (shalito_2)
+
+  (when *debug_print* (printf "shalito_2 ~n"))
+
+  (eval '(IF-FOOD-AHEAD 
+   (PROGN  (MOVE) (shalito_4)) 
+   (MOVE) 
+   ))
+)
+;;;------------------------
+(define (shalito_3)
+
+  (when *debug_print* (printf "shalito_3 ~n"))
+
+  (eval '(IF-FOOD-AHEAD 
+   (PROGN   (MOVE) (shalito_7)) 
+   (PROGN  (RIGHT) (shalito_5)) 
+   ))
+)
+;;;------------------------
+(define (shalito_4)
+
+  (when *debug_print* (printf "shalito_4 ~n"))
+
+  (eval '(IF-FOOD-AHEAD 
+   (PROGN  (MOVE) (shalito_5)) 
+   (PROGN  (MOVE) (shalito_2)) 
+   ))
+)
+;;;------------------------
+(define (shalito_5)
+
+  (when *debug_print* (printf "shalito_5 ~n"))
+
+  (eval '(IF-FOOD-AHEAD 
+   (PROGN   (MOVE) (shalito_2)) 
+   (PROGN  (RIGHT) (shalito_6)) 
+   ))
+)
+;;------------------------
+(define (shalito_6)
+
+  (when *debug_print* (printf "shalito_6 ~n"))
+
+  (eval '(IF-FOOD-AHEAD 
+   (PROGN   (MOVE) (shalito_7)) 
+   (PROGN   (LEFT) (shalito_2)) 
+   ))
+)
+;;;------------------------
+(define (shalito_7)
+
+  (when *debug_print* (printf "shalito_7 ~n"))
+
+  (eval '(IF-FOOD-AHEAD 
+   ;(PROGN   (MOVE) (shalito_4))  !!!! была ошибка !!!
+   ;(PROGN   (MOVE) (shalito_2)) 
+
+   (PROGN   (MOVE) (shalito_2)) 
+   (PROGN   (MOVE) (shalito_4)) 
+   ))
+)
+;;;------------------------
+
+
+;(defvar ant_shalito  '(IF-FOOD-AHEAD 
+;                  (PROGN  (MOVE) (shalito_5))
+;                  (PROGN (RIGHT) (shalito_3))
+;                  )
+;  )
+
+;(define PROGN begin)
+;(defmacro PROGN (body)
+;  `(begin ,body)
+;  )
+
+;(define-syntax incf
+;  (syntax-rules ()
+;    ((_ x) (begin (set! x (+ x 1)) x))
+;    ((_ x i) (begin (set! x (+ x i)) x))))
+
+;(define-syntax PROGN  (syntax-rules ()
+;    ((_ body) (begin body))
+;))
+
+(define-syntax-rule (PROGN . arg) (begin . arg))
+
+(define ant_shalito  '(IF-FOOD-AHEAD 
+                       (PROGN  (MOVE) (shalito_5))
+                       (PROGN (RIGHT) (shalito_3))
+                       )
+  )
+
+;;-------------------------------------------------------------------------------
+;;; подобно как в 
+;;; Santa Fe trail (i.e., trails with single gaps, double
+;;; gaps, single gaps at corners, double gaps at corners, and triple gaps at 
+;;; corners appearing in any order).
+  
+;;;-----------------------------------------------------------------------------
+(define (arr_make_2)
+
+(let (
+  (arr_init_lists '(
+             (* x x x x x x x x x x * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * x * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * x * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * x * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * x * * * o x * * * * * * * * * * * * * * * *) 
+             (x x x x * * * * * * x * * * o * * * * * * * * * o x x x x x x x) 
+             (* * * x * * * * * * x * * * o * * * * * * * * * x * * * * * * *) 
+             (* * * x * * * * * * x * * * x * * * * * * * * * x * * * * * * *) 
+             (* * * x * * * * * * x o x o o * * * * * * * * * x * * * * * * *) 
+             (* * * x * * * * * * x o * * * * * * * * * * * * x * * * * * * *) 
+             (* * * x x x x x x x x o * * * * * * * * * * * * x * * * * * * *) 
+             (* * * * * * * * * * * x * * * * * * o x x x x x o * * * * * * *) 
+             (* * * * * * * * * * * o o o x o * * x * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * * * * * o * * x * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * * * * * x * * x * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * o x o o o * * x * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * o * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * x * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * * * * o x o o o * * * * * * o * * * * * * * * * * * * *) 
+             (* * * * * * * o * * * * * * * * * * o * * * * * * * * * * * * *) 
+             (* * * * * * * o * * * * * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * * * * x * * * * * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * o x o o * * * * * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * o * * * * * * * * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * x * * * * * * * * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * x * * * * * * * * * * * * * x * * * * * * * * * * * * *) 
+             (* * * * x * * * * * * * * * * * * * o * * * * * * * * * * * * *) 
+             (* * * * x o o x x x x o x x x x x x o * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *) 
+             (* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *) 
+             ))
+
+  (arr 'undef)
+  )
+
+;  (setf arr (make-array '(32 32) :initial-contents '(
+;             (* x x x x x x x x x x * * * * * * * * * * * * * * * * * * * * *)
+; ... 
+;             (* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *) 
+;             ))
+;        )
+
+  (set! arr (make-array (shape 0 32  0 32)))
+
+  ; "ручная" в отличии от лиспа - инициализация массива
+  (dotimes (i (array-end arr 0)) 
+  (dotimes (j (array-end arr 1))     
+    ;(printf "~s"          (list-ref (list-ref arr_init_lists i) j))
+    (array-set! arr  i j  (list-ref (list-ref arr_init_lists i) j))
+  )
+  ;(printf "~n")
+  )
+
+
+  arr
+))
+;===============================================================================
+;-------------------------------------------------------------------------------
+(define (arr_set_random_val  arr val r_val)
+
+(let (
+  (r  'undef)
+  )
+
+  ;(printf "array-end (0) = ~s ~n" (array-end arr 0))
+
+;  (dotimes (i (array-dimension arr 0)) 
+;  (dotimes (j (array-dimension arr 1)) 
+
+  ; полагаем, что  внашем случае - начало в нуле!
+  (dotimes (i (array-end arr 0)) 
+  (dotimes (j (array-end arr 1)) 
+
+    (set! r (YRandF 0 1))
+
+    (when (<= r r_val)
+      ;(setf (aref arr i j) val)
+      (array-set! arr i j  val)
+      )
+  ))
+
+))
+;-------------------------------------------------------------------------------
+(define (arr_make_random)
+
+(let (
+  (mn  0.2)
+;  (arr (make-array '(32 32)))
+  (arr (make-array (shape 0 32  0 32)))
+  )
+
+  (Y-srand48 2011)
+
+  (arr_set_random_val  arr '*  1.0)
+  (arr_set_random_val  arr 'x   mn)
+
+  arr
+))
+;;-----------------------------------------------------------------------------
+(define (arr_print  arr i0 j0 dir)
+
+;  (dotimes (i (array-dimension arr 0)) 
+;  (dotimes (j (array-dimension arr 1)) 
+  (dotimes (i (array-end arr 0)) 
+  (dotimes (j (array-end arr 1)) 
+
+    (if (and (= i i0) (= j j0))        
+      ;(format t "@ ")
+
+      (printf "~A " dir)
+      (printf "~A " (array-ref arr i j))
+        )
+  )
+  (printf "~n")
+  )
+
+  (printf "~n")
+)
+;;;-----------------------------------------------------------------------------
+(define (eat_init_calc arr)
+
+(let (
+ (eat_init 0)
+ )
+
+;  (dotimes (i (array-dimension arr 0)) 
+;  (dotimes (j (array-dimension arr 1)) 
+  (dotimes (i (array-end arr 0)) 
+  (dotimes (j (array-end arr 1)) 
+
+    (when (eq (array-ref arr i j) 'x)
+      (incf eat_init)
+      )
+  ))
+
+  eat_init
+))
+;;;-----------------------------------------------------------------------------
+(define (pole_create_  array_make)
+
+(let (
+  (pol (make-POLE))  ;; создадим новую пструктуру
+  )
+
+  (set-POLE-array_make! pol  array_make)
+  (set-GAME-print!      pol  'pole_print)
+
+  (set! *gameptr*        pol)  ; установим еще и глобально
+
+  pol
+))
+;;-----------------------------------------------------------------------------
+(define (pole_init  pol)
+
+;  (setf (POLE-arr pol) (funcall (POLE-array_make pol)))
+  (set-POLE-arr! pol  (funcall (POLE-array_make pol)))
+
+;  ; управляющие параметры 
+  (set-POLE-i!   pol  0)
+  (set-POLE-j!   pol  0)
+  (set-POLE-dir! pol  '>)
+
+  (set-GAME-fit! pol  0)  
+  (set-POLE-num! pol  0)  
+
+;  ;; посчитаем начальные параметры еды
+  (set-GAME-fitfull! pol (eat_init_calc (POLE-arr pol)))  
+
+  pol
+)
+;;;-----------------------------------------------------------------------------
+(define (pole_arr_print  pole)
+
+  (printf "================================================ ~n")  
+
+  (arr_print (POLE-arr pole) (POLE-i pole) (POLE-j pole) (POLE-dir pole))
+
+  (printf "EAT = ~A / ~A ~n" (GAME-fit pole) (GAME-fitfull pole))  
+  (printf "NUM = ~A ~n"      (POLE-num pole))  
+
+  (printf "================================================ ~%")  
+  (printf "~n")  
+)
+;;;-----------------------------------------------------------------------------
+(define (pole_print  pol)
+
+  (pole_arr_print  pol)
+
+)
+;-------------------------------------------------------------------------------
+;(defun ant_t2 (argus) (declare (ignore argus))
+(define (ant_t2  argus)
+
+(let* (
+  (pol  (pole_create_ 'arr_make_random))
+  )
+
+  (pole_init pol)
+  (game_print)
+
+))
+;-------------------------------------------------------------------------------
+;; cl y~.cl ANTS ant_t2  - можно уже тестировать !!
+;;;;-----------------------------------------------------------------------------
+;(defun ij_after_move_old (dir i j)
+
+;  (if (eq dir '>) (incf j))
+;  (if (eq dir '<) (decf j))
+
+;  (if (eq dir '^) (decf i))
+;  (if (eq dir 'V) (incf i))
+
+;  (list i j)
+;)
+;;-----------------------------------------------------------------------------
+;
+; эммулируем передачу по ссылке для изменения значений посредством макроса
+;
+;;-----------------------------------------------------------------------------
+(define-syntax-rule (set_ij_after_move  dir  i j)
+
+(let* (
+;  (i  (symbol-value r_i))
+;  (j  (symbol-value r_j))
+
+  ; пока пусть временно 
+;  (i  0)
+;  (j  0)
+
+  (arr   (POLE-arr *gameptr*))
+  (i_dim (array-end arr 0))
+  (j_dim (array-end arr 1))
+  )
+
+  ;(printf "set_ij_after_move:  r_i= ~s   r_j= ~s  ~n" r_i r_j)
+  ;(printf "set_ij_after_move:  r_i= ~s   r_j= ~s  ~n" i j)
+
+  (when (eq dir '>) (incf j))
+  (when (eq dir '<) (decf j))
+  (when (eq dir '^) (decf i))
+  (when (eq dir 'V) (incf i))
+
+  (when (= i i_dim) (set! i 0))
+  (when (= j j_dim) (set! j 0))
+  (when (= i -1)    (set! i (decf i_dim)))
+  (when (= j -1)    (set! j (decf j_dim)))
+
+  ; как в схеме поменять значения??
+;  (set r_i  i)
+;  (set r_j  j)
+))
+;;;-----------------------------------------------------------------------------
+(define (pole_move  pole)
+
+(let (
+ (dir (POLE-dir pole))
+ (i   (POLE-i   pole))
+ (j   (POLE-j   pole))
+ )
+
+  ;(printf "POLE_MOVE:  i= ~s   j= ~s  ~n" i j)
+
+  ;(declare (special i j)) ; чтобы менять эту переменную динамически
+
+  ;(setf (aref (POLE-arr pole) i j) '-)
+  (array-set! (POLE-arr pole)  i j  '-)
+
+  ;(set_ij_after_move dir 'i 'j)
+  (set_ij_after_move  dir i j) ; сделаем это макросом !!?
+
+  (set-POLE-i! pole i)
+  (set-POLE-j! pole j)
+
+  (when (eq (array-ref (POLE-arr pole) i j) 'x) ;; на этом полe была eда
+
+      (set-GAME-fit!  *gameptr*  (+ 1 (GAME-fit *gameptr*))) 
+      ;(incf (GAME-fit pole)) ;; 
+      ;(setf *last_eat_num* (POLE-num pole))
+    )
+
+))
+;;;-----------------------------------------------------------------------------
+(define (pole_right  pole)
+
+(let (
+ (dir (POLE-dir pole))
+ )
+
+  (case dir
+    [(^)   (set! dir '>)]
+    [(>)   (set! dir 'V)]
+    [(V)   (set! dir '<)]
+    [(<)   (set! dir '^)]
+    )
+
+  (set-POLE-dir! pole dir)
+  ;(setf (POLE-dir pole) dir)
+))
+;;;-----------------------------------------------------------------------------
+(define (pole_left  pole)
+
+(let (
+ (dir (POLE-dir pole))
+ )
+
+  (case dir
+    [(^)  (set! dir '<)]
+    [(<)  (set! dir 'V)]
+    [(V)  (set! dir '>)]
+    [(>)  (set! dir '^)]
+    )
+
+  (set-POLE-dir! pole dir)
+))
+;;;-----------------------------------------------------------------------------
+(define (pole_is_dir_food  pole)
+
+(let (
+ (dir (POLE-dir pole))
+ (i   (POLE-i   pole)) 
+ (j   (POLE-j   pole))
+ )
+
+  ;(declare (special i j)) ; чтобы менять эту переменную динамически
+  ;(printf "pole_is_dir_food:   i=   ~s   j=   ~s   dir= ~s  ~n" 
+  ;        i j dir)
+
+  ;(set_ij_after_move dir 'i 'j)
+  (set_ij_after_move  dir  i j) ; прикиним, куда попадем после хода
+
+  ;(printf "pole_is_dir_food:   i=   ~s   j=   ~s  ~n" i j)
+  ;(exit)
+
+;  (if (eq (aref (POLE-arr pole) i j) 'X)
+;      T
+;    nil
+;    )
+
+;  (if (eq (array-ref (POLE-arr pole) i j) 'X)
+  (if (eq (array-ref (POLE-arr pole) i j) 'x)
+;      (begin (printf "T....... ~n") #t)
+;      (begin (printf "F....... ~n") #f)
+      #t
+      #f
+    )
+
+))
+;;-----------------------------------------------------------------------------
+;;;-----------------------------------------------------------------------------
+(define (MOVE)
+
+  (pole_move      *gameptr*)
+  ;(incf (POLE-num *gameptr*)) 
+  (set-POLE-num!  *gameptr*  (+ 1 (POLE-num *gameptr*))) 
+
+  ;(if *debug_print* (format t "MOVE ~%"))
+  ;(errprintf  "MOVE: POLE-num = ~s  ~n" (POLE-num *gameptr*))
+)
+;;;-----------------------------------------------------------------------------
+(define (LEFT)
+
+  (pole_left      *gameptr*)
+  ;(incf (POLE-num *gameptr*)) 
+  (set-POLE-num!  *gameptr*  (+ 1 (POLE-num *gameptr*))) 
+
+  ;(if *debug_print* (format t "LEFT: num= ~s  ~%" (POLE-num *gameptr*)))
+)
+;;;-----------------------------------------------------------------------------
+(define (RIGHT)
+
+  (pole_right *gameptr*)
+
+  ;(incf (POLE-num *gameptr*)) 
+  (set-POLE-num!  *gameptr*  (+ 1 (POLE-num *gameptr*))) 
+
+  ;(if *debug_print* (format t "RIGHT ~%"))
+)
+;;;-----------------------------------------------------------------------------
+;(defun NO ()
+
+;  (incf (POLE-num *gameptr*)) 
+
+;  (if *debug_print* (format t "NO ~%"))
+;)
+;;;-----------------------------------------------------------------------------
+;;-------------------------------------------------------------------------------
+(defmacro IF-FOOD-AHEAD (then-argument else-argument)
+
+  `(if (pole_is_dir_food *gameptr*)
+      (eval ',then-argument)
+      (eval ',else-argument)
+      )
+)
+;-------------------------------------------------------------------------------
+; работаем мураша заданного непосредственно макросами лиспа
+; т.е. "деревом решений", а не автоматом-графом в любом виде
+;;-------------------------------------------------------------------------------
+(define (game_loop_all_num  lisp_form n)
+
+; (loop 
+;   while (< (POLE-num *gameptr*) n) do
+;          (eval lisp_form)
+;   )
+
+
+  ;(errprintf "game_loop_all_num:  ~n")
+  ;(errprintf "~n")
+  ;(errprintf "lisp_form= ~s   n= ~s  ~n" lisp_form n)
+
+
+  (if (vector? lisp_form)
+      (begin
+      ;(errprintf "THIS IS VECTOR !!! \n")
+      ;(set! lisp_form (vector->list lisp_form))
+      (set! lisp_form (car (vector->list lisp_form))) ; почему-то здесь надо так,
+      ;; т.е. получилось лишняя пара скобок для списка.. (хотя в лиспе было все нормально)
+
+      ;(errprintf "lisp_form = ~s \n" lisp_form)
+      )
+
+      ;(errprintf "THIS IS NOT VECTOR !!! \n")
+      (void)
+      )
+
+  (do () ((>= (POLE-num *gameptr*) n) 'ret)
+
+    ;(errprintf "POLE-num_beg = ~s ~n" (POLE-num *gameptr*))
+
+    (eval lisp_form)
+    ;(errprintf "POLE-num_end = ~s ~n" (POLE-num *gameptr*))
+    )
+
+  ; пока для теста простенько
+;  (eval lisp_form)
+;  (eval lisp_form)
+;  (eval lisp_form)
+;  (eval lisp_form)
+;  (eval lisp_form)
+;  (eval lisp_form)
+
+)
+;-------------------------------------------------------------------------------
+(define (game_loop_eval_any_key  lisp_form)
+
+;  (loop
+  (do ()  (#f 'ret) 
+
+    (printf "Press Any Key: ~n")
+    (read-char)
+    (eval lisp_form)
+    (game_print)
+    )
+
+)
+;-------------------------------------------------------------------------------
+(define (game_do_eval_steps  lisp_form steps)
+
+(let* (
+  (pol  (pole_create_ 'arr_make_2))
+  )
+
+  (printf "~n")
+  (printf "PROG= ~s ~n" lisp_form)
+  (printf "~n")
+
+  (pole_init pol)
+
+  (if (= steps 0)
+    (begin
+      (set! *debug_print* #t)
+      ;(game_loop_any_key lisp_form)  ; оно же не работало??
+      (game_loop_eval_any_key lisp_form)
+      )
+    (begin
+      (game_loop_all_num lisp_form steps)
+      (game_print)
+      )
+    )
+
+)) ;;;;; 
+;-------------------------------------------------------------------------------
+;(defun ant_test_shalito (argus) (declare (ignore argus))
+(define (ant_test_shalito  argus)
+
+  (game_do_eval_steps  ant_shalito 200)
+
+  ; сейчас для тестов пока так: ------------------------------------------------
+
+  ;(game_do_eval_steps  ant_shalito 0)
+  ;(set! *debug_print* #t)
+  ;(game_do_eval_steps  ant_shalito  1)
+
+)
+;-------------------------------------------------------------------------------
+(define (ant_test_new  argus)
+
+(let* (
+  (pol  (pole_create_ 'arr_make_2))
+  )
+
+  (pole_init pol)
+
+  ;(eval (PROGN (MOVE) (MOVE)))
+  (eval ((PROGN (MOVE) (MOVE))))
+
+))
+;-------------------------------------------------------------------------------

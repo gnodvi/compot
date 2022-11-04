@@ -1,0 +1,118 @@
+#! /usr/bin/env racket
+
+;#lang racket
+#lang racket/load
+
+
+;(struct fish (
+;   color 
+;   weight
+;   ) 
+;        #:transparent
+;)
+;p~.scm:7:0: struct: illegal use of signature form in: (struct fish (color weight) #:transparent)
+
+;(exit)
+;#lang racket/load
+
+;;===============================================================================
+;;
+;;
+;-------------------------------------------------------------------------------
+(define (my_test_case)
+
+  (printf "~n")
+
+  (define key   'method_of_generation)
+  (define datum 'method_of_generation)
+
+;  (define key   :method_of_generation)
+;  (define datum :method_of_generation)
+
+  (when (eqv? key datum) (printf "EQV: key= ~a datum= ~a ~n" key datum))
+
+  (case  key
+      [(#:method_of_generation)  (printf "CASE YES!!  ~n")]
+      [else                    (printf "CASE NOT!!  ~n")]
+      )
+
+  (printf "~n")
+
+)
+;;===============================================================================
+
+
+;  (my_test_case)
+;  (exit)
+
+
+;;===============================================================================
+
+;(defvar CUR_DIR  "p")
+(define CUR_DIR "p")
+
+;(load "./a-comm.cl")
+;(load "../common/a-comm.rt")
+(load "./a-comm.rt")
+
+;;-------------------------------------------------------------------------------
+;(defun EDIT (argus)
+
+;  ;(load "l-edit.cl")
+;  (my_load "p-edit.cl" CUR_DIR)
+
+;  (run_cdr_argus (first argus) argus "EDIT ..")
+
+;)
+;-------------------------------------------------------------------------------
+(define (ANTS  argus)
+
+  (my_load "p-0000.rt" CUR_DIR)
+  ;(my_load "p_ants.cl" CUR_DIR)
+  (my_load "p_ants.rt" CUR_DIR)
+
+  (run_cdr_argus (first argus) argus "ANTS ..")
+
+)
+;-------------------------------------------------------------------------------
+;;; cl y~.cl ANTS ant_test_shalito
+;;; cl y~.cl ANTS ant_t2
+;;-------------------------------------------------------------------------------
+(define (GENP  argus)
+
+  (my_load "a-pops.rt" CUR_DIR)
+
+;  ;(my_load "n-mgen.cl" CUR_DIR)
+;  ;(my_load "l-gena.cl" CUR_DIR)
+
+  (my_load "p-comm.rt" CUR_DIR)
+  (my_load "p-prog.rt" CUR_DIR) ; для тeстов ГП
+
+  (my_load "p-0000.rt" CUR_DIR)
+  (my_load "p_ants.rt" CUR_DIR)
+
+  (my_load "p_ants.ss" CUR_DIR)
+
+  (run_cdr_argus (first argus) argus "GENP ..")
+
+)
+;;-------------------------------------------------------------------------------
+;;; cl y~.cl GENP ant_test_gp_new @ 10 2
+;;-------------------------------------------------------------------------------
+
+(READ_AND_CALL_ARGUS  CUR_DIR)
+
+;;===============================================================================
+; TODO:
+ 
+; p~.scm GENP ant_test_gp_new @ 10 2
+;reference to undefined identifier: crossover_at_points;
+;
+; там вообще надо понять - как скрещивать не модифицируемые  списки-программы
+; - либо всеже сделать их модифицируемыми, либо просто новые создавать..
+;
+
+;p~.scm GENP ant_test_gp_new @  1 2
+; reference to undefined identifier: mutate_branch ---> p-prog.cl
+
+;===============================================================================

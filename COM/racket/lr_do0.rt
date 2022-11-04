@@ -1,0 +1,60 @@
+#! /usr/bin/env racket
+
+#lang racket/load
+
+;-------------------------------------------------------------------------------
+; PS/Tk Example Program "Hello World Color"
+; Copyright (C) 2006 Nils M Holm
+; See the PS/Tk license for conditions of use.
+
+;-------------------------------------------------------------------------------
+
+;; creates primitive bindings as imports
+;; 
+(namespace-require 'r5rs)  ; mutable pairs !!!! set-mcar!
+
+
+;(load "pstk.scm")
+(load "lr-rtk.ss") ; подключаем енпосредственно саму библиотеку  PSTK
+
+(define *wish-debug-input*  #t)
+(define *wish-debug-output* #t)
+
+(tk-start 'racket)
+
+;-------------------------------------------------------------------------------
+
+(let* (
+       
+  (label (tk 'create-widget 'label 'height: 5
+             'text: "Hello, World!" 'font: "Helvetica 20"
+             'fg: "#ffff00" 'bg: "#a00000"))
+
+  (change-color  (lambda ()
+     (let ((c  (tk/choose-color)))      ; получили новый цвет:  (return "#3cd9d9")
+       (cond ((not (string=? c ""))
+              (label 'configure 'bg: c) ; устанавливаем новый цвет фона
+     )))
+     ))
+  
+  (bt-color (tk 'create-widget 'button
+                'text: "Change Color"
+                'command: change-color))
+  
+  (bt-quit (tk 'create-widget 'button
+               'text: "Goodbye"
+               'command: tk-end)))
+  
+
+  (tk/pack    label 'side: 'top 'expand: #t 'fill: 'x)
+  
+  (tk/pack bt-color bt-quit  'side: 'left 'expand: #t 'fill: 'x)
+  
+  (tk-event-loop)
+
+)
+
+;-------------------------------------------------------------------------------
+; 
+; 
+;-------------------------------------------------------------------------------

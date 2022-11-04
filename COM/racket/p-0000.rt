@@ -1,0 +1,38 @@
+;-------------------------------------------------------------------------------
+
+(define *gameptr* 'unbound)
+
+;(defclass GAME () (
+;   (param1 :accessor GAME-param1)
+;   (param2 :accessor GAME-param2)
+
+;   (game_print :accessor GAME-print) ; процедура печати 
+;   (fitfull    :accessor GAME-fitfull)    ; максимальное FIT
+;   (fit        :accessor GAME-fit)        ; профит
+;   (fitness    :accessor GAME-fitness)    ; недосдача (дополнение профита до FIT)
+;))
+
+
+(define-struct GAME ( 
+
+   [param1     #:auto]
+   [param2     #:auto]
+
+   [print      #:auto]
+;   [game_print #:auto]
+   [fitfull    #:auto]
+   [fit        #:auto]
+   [fitness    #:auto]
+  )
+
+  #:mutable 
+  #:auto-value 0
+)
+
+;-------------------------------------------------------------------------------
+(define (game_print)
+
+  (funcall (GAME-print *gameptr*) *gameptr*)
+
+)
+;-------------------------------------------------------------------------------

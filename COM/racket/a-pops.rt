@@ -1,0 +1,1327 @@
+;;;=============================================================================
+;;; e_pops.cl
+;;;=============================================================================
+
+;;;=============================================================================
+
+
+;(defstruct ORGANISM  
+;  genotype  ; project program 
+
+;  (standardized-fitness 0)
+;  (adjusted-fitness     0)
+;  (normalized-fitness   0)
+;  (hits                 0)
+;)
+
+;(define-struct ORGANISM (
+
+;  ;[genotype             #:auto]
+;  [genotype              ]
+
+;  [standardized-fitness  #:auto]
+;  [adjusted-fitness      #:auto]
+;  [normalized-fitness    #:auto]
+;  [hits                  #:auto]
+;  )
+
+;  #:mutable  #:transparent
+;  #:auto-value 0
+;)
+
+(define-struct ORGANISM (
+
+  [genotype              ]
+
+  [standardized-fitness  ]
+  [adjusted-fitness      ]
+  [normalized-fitness    ]
+  [hits                  ]
+  )
+
+  #:mutable  #:transparent
+  #:auto-value 0
+)
+
+;;;;=============================================================================
+
+;(define-struct fish (
+;   color 
+;   weight
+; ;   [weight  #:auto]
+;   ) 
+;        #:transparent
+;)
+
+; ;(define marlin (fish 'orange-and-white 11))
+;(define marlin (fish 'orange-and-white 11))
+
+; ;(define dory (struct-copy fish marlin [color 'blue]))
+;(define dory (struct-copy fish marlin))
+
+;(printf "dory = ~s ~n" dory)
+
+; ;(exit)
+
+;;;;=============================================================================
+
+(define *check_already_created* #t)
+
+(define *program* 'unbound-04)
+
+;(defvar *get_starter*    #'(lambda (program) program))
+(define *get_starter*    '(lambda (program) program))
+
+;(defvar *genotype_print* #'(lambda (genotype) (format t "~S ~%" genotype)))
+(define *genotype_print*  '(lambda (genotype) (printf "~S ~n" genotype)))
+
+(define *size-of-population* 'unbound-05)
+(define *best-of-population* 'unbound-06) 
+
+;; метод селекции особей в популяции; это
+;; или :fitness-proportionate, :tournament
+;; или :fitness-proportionate-with-over-selection
+(define *method-of-selection*  'unbound-31)
+
+;(defvar *tournament-size* :unbound
+;  "The group size to use when doing tournament selection.")
+
+;; хэш-таблица..
+;; используется, чтобы гарантировать, что все особи 0-го поколения - уникальны.
+;;
+;(defvar *generation-0-uniquifier-table* (make-hash-table :test #'equal))
+(define *generation-0-uniquifier-table* (make-hash))
+;The make-hash procedure creates a table where keys are compared with equal?
+
+;;;;=============================================================================
+
+;-------------------------------------------------------------------------------
+(define (failure_result_hash)
+
+
+  #f
+)
+;-------------------------------------------------------------------------------
+(define (check-already-created 
+         new-genotype 
+         population 
+         
+         ;; меняю значения используя "ссылки"
+         r_ind_index r_attempts-at-this-individual 
+
+         do_attempts
+         )
+
+(let (
+  ;; Turn the defstruct representation of the 'genotype' into a list so that 
+  ;; it can be compared using an EQUAL hash table.
+  ;; defstruct instances have to be compared with EQUALP
+  (program-as-list new-genotype)
+
+;  (ind_index                   (symbol-value r_ind_index))
+;  (attempts-at-this-individual (symbol-value r_attempts-at-this-individual))
+
+  (ind_index                   (unbox r_ind_index))
+  (attempts-at-this-individual (unbox r_attempts-at-this-individual))
+  )
+
+  ;;--------------------
+  (cond 
+   
+   ;;-----------------------
+    ;; gethash key hash-table &optional default
+
+    ;; gethash finds the entry in hash-table whose key is key and returns the 
+    ;; associated value. If there is no such entry, gethash returns default, which 
+    ;; is nil if not specified.
+    
+    ;; gethash actually returns two values, the second being a predicate value that 
+    ;; is true if an entry was found, and false if no entry was found.
+    
+    ;; setf may be used with gethash to make new entries in a hash table. If an entry with 
+    ;; the specified key already exists, it is removed before the new entry is added. 
+    ;; The default argument may be specified to gethash in this context; it is ignored 
+    ;; by setf but may be useful in such macros as incf that are related to setf:
+    
+    ;; (incf (gethash a-key table 0))
+   ;;-----------------------
+
+   ;; вообще то новая программа-набор создавалась как вектор, и при чем тут хеш??
+   ;; (define (create-new-program_ADF_ 
+   ;; (program_new (make-vector size)) - ааа, так мы ее создаем таблицу..
+
+   ;((not (gethash program-as-list *generation-0-uniquifier-table*))
+   ((not (hash-ref *generation-0-uniquifier-table*  program-as-list  
+                   failure_result_hash))
+
+    ; просто записываем ее в массив
+    ;(setf (aref population ind_index) (make-ORGANISM :genotype new-genotype))
+    ;(vector-set! population ind_index (make-ORGANISM  new-genotype))
+    (vector-set! population ind_index (make-ORGANISM  new-genotype 0 0 0 0))
+
+    (incf ind_index)
+
+    ;(setf (gethash program-as-list *generation-0-uniquifier-table*) t) ;??
+    (hash-set! *generation-0-uniquifier-table* program-as-list  #t) 
+
+    (setf attempts-at-this-individual 0)                               ;??
+    )
+
+   ;;-----------------------
+   ((> attempts-at-this-individual 20) ;; если попыток создать уже слишком много
+
+    (funcall do_attempts)
+    )
+
+   ;;-----------------------
+   ;(:otherwise
+   (else
+    (incf attempts-at-this-individual))
+   )  
+  ;;--------------------
+
+;  (set r_ind_index                    ind_index)
+;  (set r_attempts-at-this-individual  attempts-at-this-individual)
+
+  ;(printf "---------------------------------------------------  ~n")
+  ;(printf "ind_index = ~s   attempts-at-this-individual = ~s   ~n" 
+  ;        ind_index attempts-at-this-individual)
+
+  (set-box!  r_ind_index                    ind_index)
+  (set-box!  r_attempts-at-this-individual  attempts-at-this-individual)
+  ;(printf "---------------------------------------------------  ~n")
+
+)) 
+;-------------------------------------------------------------------------------
+(define (population_set_seeded  pop seeded-genotypes)
+
+(let (
+  (num_seeded   (length seeded-genotypes))
+  (new-genotype 'undef) 
+  )
+
+  (do 
+      ([i 0 (+ 1 i)])          ; переменная цикла и ее изменение (лучше здесь)
+      ((= i num_seeded) 'ret)  ; условие окончания и возврат
+   
+    ;; Pick a seeded individual
+    (set! new-genotype (nth i seeded-genotypes)) 
+
+    ;; просто записываем ее в массив
+    ;(setf (aref pop i) (make-ORGANISM :genotype new-genotype))
+    (vector-set!  pop i (make-ORGANISM  new-genotype  0 0 0 0))
+    
+    ;(printf "i = ~s ~n" i)
+
+    ;(incf i)    
+    ;(set! i (+ i 1))  - лучше вставить в сам цикл  
+  )
+  
+  ;; Return the population that we've just created.
+  pop
+))
+;-------------------------------------------------------------------------------
+(define (population_create_seeded  seeded-genotypes)
+
+(let (
+  (num_seeded (length seeded-genotypes))
+  (pop_min 'undef) 
+  )
+
+  ;(setf pop_min   (make-array num_seeded))
+  (set! pop_min   (make-vector num_seeded))
+
+  (population_set_seeded  pop_min seeded-genotypes)
+
+  (set! *size-of-population*  num_seeded)   
+
+  pop_min
+))
+;-------------------------------------------------------------------------------
+;  создаем популяцию; это - массив размером "size-of-population", который
+;  предназначается для хранения индивидуальных записей;
+
+;  слот "program" каждой записи (особи) инициализируется соответствующей
+;  случайной программой, за исключением первых N программ, где
+;  N = (length seeded-programs); для этих первых N записей определяются
+;  конкретно заданные программы; это очень удобно для отладки;
+;-------------------------------------------------------------------------------
+(define (population_create_news  population i_min i_max
+                                 create_genotype do_attempts
+                                 )
+
+(let (
+  (attempts-at-this-individual 0)
+  (new-genotype         'unbound) 
+
+  (r_ind_index                   'unbound)
+  (r_attempts-at-this-individual 'unbound)
+  )
+  ;(declare (special attempts-at-this-individual 
+  ;                  ))
+
+  (do 
+      ((i    i_min)) ; переменная цикла
+      ((>= i i_max)) ; условие окончания
+
+    ;(declare (special i))    ; чтобы менять эту переменную динамически
+   
+    ;; Создаeм новый гeнотип (проeкт)
+    (setf new-genotype (funcall create_genotype i)) 
+
+    ;; для отладки сдeлаeм два варианта
+    (if *check_already_created*
+        ;; Check if we have already created this program.
+        ;; If not then store it and move on. If we have then try again.
+
+        (begin
+        ;(errprintf "i = ~s   attempts-at-this-individual = ~s   ~n" 
+        ;           i attempts-at-this-individual)
+
+        ;; упаковываем переменные для передачи для изменения
+        (set!  r_ind_index                   (box i))
+        (set!  r_attempts-at-this-individual (box attempts-at-this-individual))
+
+        (check-already-created  new-genotype 
+                                population  
+                                
+                                ;; меняем эти индексы
+;                                'i  
+;                                'attempts-at-this-individual 
+;                                (box i)  
+;                                (box attempts-at-this-individual) 
+                                r_ind_index 
+                                r_attempts-at-this-individual
+
+                                do_attempts)
+
+
+        ;; распаковываем
+        (set!  i                           (unbox r_ind_index))
+        (set!  attempts-at-this-individual (unbox r_attempts-at-this-individual))
+
+        ;(errprintf "i = ~s   attempts-at-this-individual = ~s   ~n" i
+        ;           attempts-at-this-individual)
+        ;(exit)
+        )
+       
+        (progn
+          ;; просто записываем в массив
+          ;(setf (aref population i) (make-ORGANISM :genotype new-genotype))
+          (vector-set! population i (make-ORGANISM new-genotype  0 0 0 0))
+
+          (incf i)
+          )
+    )
+    
+  )
+
+  ;; Return the population that we've just created.
+  population
+))
+;-------------------------------------------------------------------------------
+(define (population_copy_to_from  pop_to pop_from)
+
+(let (
+;  (pop_from_size (array-dimension pop_from 0))
+  (pop_from_size (vector-length pop_from))
+  )
+
+  (do 
+      ((i 0))     ; переменная цикла
+      ((= i pop_from_size)) ; условие окончания
+   
+    ;; просто записываем ее в массив
+    ;(setf (aref pop_to i) (aref pop_from i))
+    (array-set! pop_to i (array-ref pop_from i))
+
+    (incf i)    
+  )
+  
+))
+;-------------------------------------------------------------------------------
+(define (population_expand  population_min 
+                            size_max
+                            create_genotype do_attempts
+                            )
+(let (
+  (size_min       *size-of-population*)
+  ;(population_max (make-array size_max)) - нам здесь зачем массив ??!!
+  ;(population_max (make-array (shape 0 size_max)))
+  (population_max (make-vector size_max))
+  )
+
+  (population_copy_to_from  population_max population_min)
+
+  (population_create_news  population_max size_min size_max 
+                 create_genotype do_attempts)
+  
+  ;; Flush out uniquifier table to that no pointers
+  ;; are kept to generation 0 individuals.
+  ;(clrhash *generation-0-uniquifier-table*)
+
+  ; наверное нужно просто создать новую  чистую таблицу ??!
+  (set! *generation-0-uniquifier-table* (make-hash))
+
+  (setf *size-of-population*  size_max) 
+  
+  ;; Return the population that we've just created.
+  population_max
+))
+;-------------------------------------------------------------------------------
+(define (population_create 
+                           size-of-population
+                           seeded-genotypes 
+                           create_genotype do_attempts
+                           )
+(let* (
+  (population_min (population_create_seeded  seeded-genotypes))
+  )
+
+  (population_expand   population_min
+                       size-of-population
+                       create_genotype do_attempts
+                       )
+
+))
+;-------------------------------------------------------------------------------
+; печать всей популяции (для отладки)
+;-------------------------------------------------------------------------------
+;(defun population_print (pop &optional (line_print 'format_line75))  
+(define (population_print  pop)  
+
+(let (
+  (line_print 'format_line75)
+  (*print-pretty* #t) 
+  )
+
+  (format_line75) 
+  (printf "PRINT-POULATION ~n")
+  (format_line75) 
+ 
+  (dotimes (index (vector-length pop))
+  (let ( 
+     (individual (vector-ref pop index))
+     )
+
+    (unless (= index 0) 
+      ;(funcall line_print)
+      ;(apply line_print)
+      (format_line75) 
+      ) 
+
+;    (format t "~2D]   ~5S    ~S ~%"
+    (printf "~s]   Sfit=~s  Hits=~s  ~s ~n"
+            index
+            (ORGANISM-standardized-fitness individual)
+            (ORGANISM-hits                 individual)
+            (ORGANISM-genotype             individual)
+            )
+
+
+    ; новая печать, более расширенная
+;    (printf "~a]  Geno=~a  Hits=~a  ~n    sFit=~a  aFit=~a  nFit=~a  ~n"
+;            index
+;            (ORGANISM-genotype             individual)
+;            (ORGANISM-hits                 individual)
+
+;            (ORGANISM-standardized-fitness individual)
+;            (ORGANISM-adjusted-fitness     individual)
+;            (ORGANISM-normalized-fitness   individual)
+;            )
+
+;    (printf "index= ~s ~n" index)
+
+  ))
+
+  (format_line75)
+))
+;-------------------------------------------------------------------------------
+; очистить статистику в каждой особи популяции; это не является строго необходимым,
+; но позволит избежать некоторых конфузий (например в отладчике..)
+;-------------------------------------------------------------------------------
+(define  (population_zeroize_fitness pop)
+
+  (dotimes (index (vector-length pop))
+    (let ((individual (vector-ref pop index)))
+
+;      (setf (ORGANISM-standardized-fitness individual)  0.0)
+      (set-ORGANISM-standardized-fitness!  individual  0.0)
+
+      (set-ORGANISM-adjusted-fitness!      individual  0.0)
+      (set-ORGANISM-normalized-fitness!    individual  0.0)
+      (set-ORGANISM-hits!                  individual    0)
+    )
+  )
+)
+;-------------------------------------------------------------------------------
+(define  (population_evaluate_fitness  pop
+                                       fitness-function fitness-cases)
+;(let (
+;  )
+
+  (dotimes (index (vector-length pop))
+
+ 
+    ;(errprintf "(population_evaluate_fitness: fitness-function= ~s index= ~s ~n index" 
+    ;        fitness-function index)
+
+   (let* (
+         (individual (vector-ref pop index))
+         (genotype   (ORGANISM-genotype individual))  
+         )
+
+;      (if *debug_print* (format t "pop71.. ~%"))
+;      ;; ------------------------------------------
+      (set! *program* genotype)
+;      ;; ------------------------------------------
+;      ;(if *debug_print* (format t "fitness-function= ~S  ~%" fitness-function))
+;      ;(if *debug_print* (format t "genotype= ~S  ~%" genotype))
+;      ;(if *debug_print* (format t "*get_starter*= ~S  ~%" *get_starter*))
+
+;      (multiple-value-bind (standardized-fitness hits)
+;          (funcall fitness-function
+;                   ;genotype ;
+;                   (funcall *get_starter* genotype) ;starter
+;                   fitness-cases)
+
+      ;(errprintf "(population_evaluate_fitness: index= ~s ~n index" index)
+
+
+      (let-values ((
+          (standardized-fitness hits)  (funcall   fitness-function
+;         (apply   (eval fitness-function)
+;         (pops_0_eval
+;                   genotype ; в нашем простом случае !!
+                                                  (funcall *get_starter* genotype) ;starter
+                                                  fitness-cases)
+          ))
+
+         ;(printf "hits= ~s ~n" hits)
+
+;        (if *debug_print* (format t "pop72.. ~%"))
+;        ;; Record fitness and hits for this individual.
+
+         (set-ORGANISM-standardized-fitness!  individual  standardized-fitness)
+         (set-ORGANISM-hits!                  individual  hits)
+      )
+;      (if *debug_print* (format t "pop73.. ~%"))
+
+      ;(printf "index= ~s ~n" index)
+    )
+  )
+
+;)
+)
+;-------------------------------------------------------------------------------
+; вычислить нормализованный и отрегулированный фитнесс для каждой особи популяции
+;-------------------------------------------------------------------------------
+(define  (population_normalize_fitness pop)
+
+(let (
+  (sum-of-adjusted-fitnesses 0.0)
+  )
+
+  (dotimes (index (vector-length pop))
+  (let (
+;    (individual (aref pop index))
+    (individual (vector-ref pop index))
+    )
+
+      ;; Set the adjusted fitness.
+;      (setf (ORGANISM-adjusted-fitness individual)
+      (set-ORGANISM-adjusted-fitness! individual
+            (/ 1.0 (+ 1.0 (ORGANISM-standardized-fitness individual))))
+
+      ;; Add up the adjusted fitnesses so that we can normalize them.
+      (incf sum-of-adjusted-fitnesses (ORGANISM-adjusted-fitness individual))
+  ))
+
+;  ;; Loop through population normalizing the adjusted fitness.
+  (dotimes (index (vector-length pop))
+  (let (
+;    (individual (aref pop index))
+    (individual (vector-ref pop index))
+    )
+
+;      (setf (ORGANISM-normalized-fitness individual)
+      (set-ORGANISM-normalized-fitness! individual
+            (/ (ORGANISM-adjusted-fitness individual)
+               sum-of-adjusted-fitnesses))
+  ))
+
+))
+;-------------------------------------------------------------------------------
+; сортируем популяцию по нормализованному фитнесу;
+; массив популяции деструктивно модифицируется
+
+;(rnrs sorting (6))
+
+;#!r6rs
+;(import (rnrs sorting (6)))
+
+;(require (lib "rnrs/io/simple-6.rkt"))
+(require (lib "rnrs/sorting-6.rkt"))
+
+;-------------------------------------------------------------------------------
+;(define (vector_sort population)
+
+
+;  (sort
+;  (vector->list population)
+
+;)
+;-------------------------------------------------------------------------------
+(define (sortproc_ORGANISM_norm_fitness  ind1 ind2)
+
+
+; меньше фитнес (больше хинтов) - лучше особь!
+
+;  (if (< (ORGANISM-normalized-fitness ind1) (ORGANISM-normalized-fitness ind2))
+  (if (> (ORGANISM-normalized-fitness ind1) (ORGANISM-normalized-fitness ind2))
+      #t
+      #f
+      )
+)
+;-------------------------------------------------------------------------------
+(define (sort-population-by-fitness_0  population)
+
+  ;; стандартная функция сортировки - может быть быстрее, но по разному
+  ;; сделана на разных Лисп-реализациях
+
+;  (sort population #'> :key #'ORGANISM-normalized-fitness)
+
+  ; почему сортируем по нормализованному , а печатаем по стандартизованному?!
+
+  (vector-sort! sortproc_ORGANISM_norm_fitness population)
+  ;(vector_sort population)
+)
+;;-------------------------------------------------------------------------------
+;; простой алгорим быстрой сортирвки (надеемся работает одинаково на разных лиспах)
+;; - сортирует популяцию деструктивно по убыванию фитнесса
+;;-------------------------------------------------------------------------------
+;(defun sort-population-by-fitness_1
+;    (population &optional (low 0) (high (length population)))
+
+(define (sort-population-by-fitness_1 population)
+
+  (sort-population-by-fitness_0  population)
+
+; пока сделаем самый простой здесь вариант в схеме (вызвав опять стандартную сортировку)
+; а может так и оставить надо ...
+;--------------------------------------------------------------
+
+;  (sort_1 population low high 
+;          #'ORGANISM-normalized-fitness)
+
+)
+;;-------------------------------------------------------------------------------
+;(defun sort_1 (population low high key_func)
+
+
+;(unless (>= (+ low 1) high)
+;;(when (>= (+ low 1) high) (error "(>= (+ low 1) high)"))
+
+;(let* (
+;  (pivot (funcall key_func (aref population low)))
+;  (index1 (+ low  1))
+;  (index2 (- high 1))
+;  )
+  
+;  (loop 
+;    (do () ((or (>= index1 high)
+;                ;(<= (ORGANISM-normalized-fitness (aref population index1)) pivot)))
+;                (<= (funcall key_func (aref population index1)) pivot)))
+;      (incf index1))
+    
+;    (do () ((or (>= low index2)
+;                ;(>= (ORGANISM-normalized-fitness (aref population index2)) pivot)))
+;                (>= (funcall key_func (aref population index2)) pivot)))
+;      (decf index2))
+    
+;    (when (>= index1 index2) (return nil))
+;    (rotatef (aref population index1) (aref population index2))
+;    (decf index2)
+;    )
+  
+;  (rotatef (aref population low) (aref population (- index1 1)))
+
+;  (sort-population-by-fitness_1 population low index1)
+;  (sort-population-by-fitness_1 population index1 high)
+;)
+
+;)
+;  population
+;)
+;;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+; распечатать лучшую особь в конце каждого поколения
+;-------------------------------------------------------------------------------
+(define (population_report  pop report_name)
+  
+(let (
+  (best-individual    (vector-ref    pop 0))
+  (size-of-population (vector-length pop))
+  (sum                0.0) ; для накопления суммы фитнесов
+  (*print-pretty*       #t)
+  )
+  
+  ;; вычисляем сумму "standardized fitnesses"
+  (dotimes (index size-of-population)
+;    (incf sum (ORGANISM-standardized-fitness (aref pop index)))
+    (incf sum (ORGANISM-standardized-fitness (vector-ref pop index)))
+    )
+  
+  (format_line75)
+  (printf "~A ~n" report_name)
+
+  (printf "Average standardized fitness = ~S ~n" (/ sum (vector-length pop)))
+
+  (printf "Best    standardized fitness = ~s and ~s hits. ~n"            
+          (ORGANISM-standardized-fitness best-individual)
+          (ORGANISM-hits                 best-individual)
+          )
+
+  (printf "It was: ~n")            
+  (funcall *genotype_print* (ORGANISM-genotype best-individual))
+  (format_line75)
+  (printf "~n")
+  
+))
+;-------------------------------------------------------------------------------
+(define (population_utils   pop 
+                            fitness-function fitness-cases 
+                            sort-population 
+                            )
+
+
+  ;; подчистить фитнесс-измерения
+  (population_zeroize_fitness  pop)
+  
+;  ;; вычислить фитнесс каждой особи; полученные значения
+;  ;; сохраняются в самих особях;
+  (population_evaluate_fitness  pop fitness-function fitness-cases )
+  
+;  ;; нормализовать фитнесс (подготавливая кроссовер и т.д.)
+;  (if *debug_print* (format t "pop8.. ~%"))
+  (population_normalize_fitness  pop)
+  
+;  ;; отсортировать популяцию для более легкого использования "рулетки";
+  (funcall sort-population pop)
+  
+
+  (set! *best-of-population* (vector-ref pop 0)) ;; ссылка на лучшую (пeрвую) особь 
+  
+  pop
+)
+;===============================================================================
+
+;;-------------------------------------------------------------------------------
+;; выцепляем (piks) две случайных особи из популяции и возвращаем одну лучшую
+;;-------------------------------------------------------------------------------
+;(defun find-tournament-selection_0 (population)
+
+;(let (
+;  (individual-a (aref population (random-integer (length population))))
+;  (individual-b (aref population (random-integer (length population))))
+;  )
+
+;  (if (< (ORGANISM-standardized-fitness individual-a)
+;         (ORGANISM-standardized-fitness individual-b))
+
+;      (ORGANISM-genotype individual-a)
+;      (ORGANISM-genotype individual-b)
+;    )
+
+;))
+;;-------------------------------------------------------------------------------
+;;   Picks *tournament-size* individuals from the population at random and
+;;   returns the best one.
+;;-------------------------------------------------------------------------------
+;(defun find-tournament-selection (population)
+
+;(let (
+;  (numbers (pick-k-random-individual-indices *tournament-size* (length population)))
+;  )
+
+;  (loop 
+;    with best         = (aref population (first numbers))
+;    with best-fitness = (ORGANISM-standardized-fitness best)
+
+;    for number in (rest numbers)
+;    for individual = (aref population number)
+;    for this-fitness = (ORGANISM-standardized-fitness individual)
+
+;    when (< this-fitness best-fitness)
+;    do (setf best individual)
+
+;    (setf best-fitness this-fitness)
+
+;    ;finally (return (ORGANISM-genotype best))
+;    finally (return best)
+;    )
+
+;))
+;;-------------------------------------------------------------------------------
+;; ищем особь в популяции, чей нормализованный фитнесс - больше, чем
+;; заданное значение;
+;;
+;; все что нам нужно, это посчитать по популяции, начиная с начала
+;; и добавляя (суммируя) фитнесс, пока мы не перейдем заданный предел (?это как?)
+;;-------------------------------------------------------------------------------
+(define (find-fitness-proportionate 
+            after-this-fitness ; не должно быть 0 !
+            population
+            )
+
+;(printf  "find-fitness-proportionate: ----------- ~%")
+;(printf  "after-this-fitness = ~s ~n" after-this-fitness)
+;(break)
+
+(let* ( ; локальные переменные
+  (sum-of-fitness    -0.0)
+  (population-size   (vector-length population))
+
+  (index-of-selected-individual 'undef) ; была отдельная let, а теперь все внутри let*
+  )
+
+  ;----------------------------------------------------
+  (setf index-of-selected-individual 
+
+  (do ((index 0 (+ index 1)))
+
+       ;; условие выхода из цикла
+       ((or (>= index population-size)
+       ;;----------------------------------------------
+       ;; какой занк правильнеее?
+                   (> sum-of-fitness after-this-fitness)  
+       ;;            (>= sum-of-fitness after-this-fitness) ; 0 >= 0 
+       ;;----------------------------------------------
+            ) 
+       ;; возвращаемое значение
+       (if (>= index population-size)
+            (- population-size 1)
+            (- index 1)) ; если сразу сработало условие выхода, то зедсь будет -1 !
+        )
+
+     ;; тело цикла:  суммируем значения фитнесс
+     (incf sum-of-fitness
+           (ORGANISM-normalized-fitness (vector-ref population index)))
+
+     ;(printf "index= ~s  sum-of-fitness= ~s ~n" index sum-of-fitness)
+
+     )
+  )
+  ;----------------------------------------------------
+  ;)
+  
+;  (format *error-output* 
+;          "sum-of-fitness              = ~s ~%" sum-of-fitness)
+;  (format *error-output* 
+;          "index-of-selected-individual= ~s ~%" index-of-selected-individual)
+
+  ;; возвращаeм ссылку на ГEНОТИП особи
+  ;(ORGANISM-genotype
+  ; (aref population index-of-selected-individual))
+
+  (vector-ref population index-of-selected-individual)
+
+))
+;;-------------------------------------------------------------------------------
+;;   Picks a random number between 0.0 and 1.0 biased using the
+;;   over-selection method.
+;;-------------------------------------------------------------------------------
+;(defun random-floating-point-number-with-over-selection 
+;  (population)
+
+;(let (
+;  (pop-size (length population))
+;  )
+
+;  (when (< pop-size 1000)
+;    (error "A population size of ~D is too small for over-selection." pop-size))
+
+;  (let ((boundary (/ 320.0 pop-size)))
+;    ;; The boundary between the over and under selected parts.
+
+;    (if (< (random-floating-point-number 1.0) 0.8) ; 80% are in the over-selected part
+
+;      (random-floating-point-number boundary)
+
+;      (+ boundary
+;         (random-floating-point-number (- 1.0 boundary))))
+;  )
+  
+;))
+;;-------------------------------------------------------------------------------
+;;   Ищем особь в популяции в соответствии с заданным методом селекции
+;;   
+;;-------------------------------------------------------------------------------
+(define (find_organism  population)
+
+  ;(ecase *method-of-selection*
+  (case *method-of-selection*
+
+    [(mos_tournament) 
+    (find-tournament-selection
+                  population)]
+
+    [(mos_fitness-proportionate-with-over-selection)
+    (find-fitness-proportionate
+                  (random-floating-point-number-with-over-selection population)
+                  population)]
+
+    [(mos_fitness-proportionate)   ; ---->
+    (find-fitness-proportionate
+                  (random-floating-point-number 1.0) ; далo 0!
+                  population)]
+  )
+)
+;;-------------------------------------------------------------------------------
+(define (find_genotype  population)
+
+(let (
+  ;organism
+  (organism  (find_organism  population))
+  )
+
+  ;(printf "find_organism:  organism = ~s ~n" organism)
+  ;(printf "*method-of-selection*    = ~s ~n" *method-of-selection*)
+
+  ;(setf organism (find_organism population))
+  ;(printf "find_genotype:  organism = ~s ~n" organism)
+
+  (ORGANISM-genotype organism)
+))
+;;;=============================================================================
+;;;
+;===============================================================================
+;-------------------------------------------------------------------------------
+(define  (pops_0_eval  program fitness-cases)	                                     
+
+;(declare (ignore  program fitness-cases))	                     
+
+(let (
+  (fitn 'undef)
+  (hits 'undef)
+  ) 
+  
+  (set! fitn (random-floating-point-number 1.0))
+  (set! hits (random-integer 5))
+
+  (values fitn hits )
+))	                                                             
+;-------------------------------------------------------------------------------
+(define (pops_0  argus)  
+
+;(declare (ignore argus))
+
+(srandom_set 2011)
+
+(let (
+  (pop (population_create_seeded (list 
+                           '(1 2 3 4 5) 
+                           '(6 7 8 9 0)
+                           '(0.1  0.2  0.3  0.4  0.5) 
+                           )
+                          ))
+  )
+
+  (population_print pop)
+;  ;(setf *debug_print* t)
+
+  (population_utils pop 
+                    'pops_0_eval  null ; NIL ; fitness-cases 
+                    ;'evaluate-sfitness-test1 NIL ; fitness-cases 
+                    'sort-population-by-fitness_0 
+                    )
+
+  (population_print  pop)
+  (population_report pop "REPORT:")
+
+;  (format t "~%")
+  (newline)
+))
+;;===============================================================================
+;;-------------------------------------------------------------------------------
+;(defun pops_kernel_init ()
+
+;  ;(setf *get_starter*  #'(lambda (program) (nth *l-1* program)))
+;  ;(setf *genotype_print* (lambda (genotype) (genotype_print_adf genotype)))
+;  (setf  *get_starter*    #'(lambda (program) program))
+;  (setf  *genotype_print* #'(lambda (genotype) (format t "~S ~%" genotype)))
+
+;)
+;;-------------------------------------------------------------------------------
+
+;(pops_kernel_init)
+
+;; eсли нe выполнить инит, то ошибка:
+;;*** - NTH: :UNBOUND is not a non-negative integer
+
+;;===============================================================================
+
+
+
+
+
+;;;=============================================================================
+;;; e_gena.cl
+;;;=============================================================================
+
+;;;=============================================================================
+
+;; доля популяции к которой в каждом поколении будет приеменяться
+;; фитнесс-пропорциональная репродукция (с реселекцией) 
+(define *reproduction-fraction*  'unbound-21)
+
+(define *crossover-fraction*     'unbound-22)
+(define *mutate*                 'unbound-23)
+(define *crossover*              'unbound-24)
+
+;; может быть одним из  :grow, :full, :ramped-half-and-half
+(define *method-of-generation*   'unbound-25)
+
+(define *best_fitness*  0.0)
+
+;; лучшая особь найденная за этот запуск
+(define *best-of-run*                'unbound-26)
+
+;; поколение в котром была найдена эта "best-of-run" 
+(define *generation-of-best-of-run*  'unbound-27)
+
+(define *is_print_run_info*  #t)
+
+;;===============================================================================
+;;
+;;-------------------------------------------------------------------------------
+;(defun define_termination_criterion_FITN (
+;        curr                                
+;        maxi	                                     
+;        best-fitness	                             
+;        best-hits)
+
+;  (declare (ignore curr maxi best-hits))	                     
+
+;  (format t "define_termination_criterion_FITN: best-fitness= ~S ~%" best-fitness)
+
+;  (<= best-fitness *best_fitness*) 
+;)	                                                             
+;;===============================================================================
+
+;;-------------------------------------------------------------------------------
+(define (ga_print_parameters  maximum-generations)
+  
+  (printf "~n")
+  (printf "Parameters used for this run: ~n")
+  (format_line75)
+
+  (printf "Maximum number of Generations:            ~s ~n" maximum-generations)
+  (printf "Size of Population:                       ~s ~n" *size-of-population*)
+
+  (printf "Reproduction fraction:                    ~s ~n" *reproduction-fraction*)
+
+  (printf "Selection method:                         ~s ~n" *method-of-selection*)
+  (printf "Generation method:                        ~s ~n" *method-of-generation*)
+  ;(format t "Randomizer seed:                          ~D ~%" *seed*)
+
+  ;(printf "Tournament group size: ~41T ~A ~%"  *tournament-size*)
+  (format_line75)
+
+  ;(exit)
+)
+;;-------------------------------------------------------------------------------
+;; идем циклом по популяции выполняя каждую операцию (т.е, кроссовер, 
+;; фитнесс-пропорциональную репродукцию, мутацию) пока это соответствуем заданной 
+;; доле (specified fraction); 
+ 
+;; новые созданные программы накапливаются в "new-programs"
+;; пока вся популяция полностью не используется, а затем новые особи копируются
+;; на место старых, что уменьшает накладные расходы (consing новых групп особей);
+;;-------------------------------------------------------------------------------
+(define (breed-new-population  population ;new-programs 
+                                        )  
+(let* (
+  (population-size  (vector-length population))
+  ;(new-genotypes    (make-array *size-of-population*))
+  (new-genotypes    (make-vector *size-of-population*)) ; вообще-то это new-population??
+                                          ;; нет, это только генотипы особей популяциии!
+  
+  ;(fraction_step (/ 1.0 population-size)) 
+  ;(fraction     0)
+  )
+
+  ;(printf "breed-new-population .................... \n") 
+  ;(printf "population= ~s       \n" population) 
+  ;(printf "population-size= ~s  \n" population-size) 
+
+
+  ;;  переменная  нач.знач.   правило изменения в цикле
+  (do ((index        0)
+       (fraction     0        (/ index population-size))
+       )
+      ;; условие окончания цикла [и возвращаемое значение - здесь нет]
+      ((>= index population-size)) ;;???
+    ;;---------------------------------------------------------
+
+    ;(setf fraction (+ fraction (* index fraction_step)))
+    ;(setf fraction (+ fraction (/ index population-size)))
+
+    ;; далее - тело цикла DO:
+    (let (
+       (genotype_1 (find_genotype population)) ;; выбрали 1-ю особь из старой (генотип)
+       (genotype_2 'unbound)                   ;;   
+       )
+
+      ;(printf "genotype_1= ~s       \n" genotype_1) 
+
+    (cond 
+   
+;     (;-----------------------------------------------------
+;     ДАВАЙ ПОКА БЕЗ СКРЕЩИВАНИЙ раз не получается !!
+;     (;-----------------------------------------------------
+;      (and (< index (- population-size 1)) 
+;           (< fraction *crossover-fraction*)
+;           )
+      
+;      (when *debug_print* (format "..CROSSOVER ~%"))
+;      (setf genotype_2 (find_genotype population))
+
+;      (let-values ((
+;          (new-male new-female) (funcall *crossover* genotype_1 genotype_2 fraction)
+;          ))
+;        (vector-set! new-genotypes      index    new-male  )
+;        (vector-set! new-genotypes (+ 1 index)   new-female)
+;        )
+      
+;      (incf index 2)
+;      );-----------------------------------------------------
+     
+;      [;-----------------------------------------------------
+;      #t
+;;      (< fraction
+;;         (+ *crossover-fraction* *reproduction-fraction*)
+;;         )
+      
+;      ;; репродукция это простое клонирование особей?
+;      (printf ".... REPRODUCTION  ~n")
+;      ;(exit)
+;      ;(when *debug_print* (format "..REPRODUCTION ~%"))
+;      (vector-set! new-genotypes index  genotype_1)
+;      (incf index 1)
+;      ];-----------------------------------------------------
+      
+;      ;-----------------------------------------------------
+;      ДАВАЙ ПОКА БЕЗ МУТАЦИЙ раз не получается !!
+;      ;-----------------------------------------------------
+;      [else 
+      [
+      #t
+      (printf ".... MUTATE  ~n")
+      (vector-set! new-genotypes index 
+           (funcall *mutate* genotype_1)
+            )
+      (incf index 1) 
+      ]
+;      ;-----------------------------------------------------
+
+     );-----------------------------------------------------
+    
+
+    ;(setf fraction (+ fraction (/ index population-size)))
+    )) 
+  ;; конец цикла DO;
+  ;;---------------------------------------------------------
+  
+  ;; новые гeнотипы особeй перекопируются на место старых
+
+  (dotimes (index population-size)
+    ;(set-ORGANISM-genotype! population index  (vector-ref new-genotypes index)) ;??
+    (set-ORGANISM-genotype! (vector-ref population    index)  
+                            (vector-ref new-genotypes index)) ;??
+    )
+
+))
+;-------------------------------------------------------------------------------
+
+
+;(struct fish (color weight) #:transparent)
+;(define marlin (fish 'orange-and-white 11))
+;> (define dory (struct-copy fish marlin
+;                            [color 'blue]))
+
+
+;-------------------------------------------------------------------------------
+;  циклить пока не сработает пользовательское условие останова
+;-------------------------------------------------------------------------------
+(define (execute-generations 
+                            population 
+                            fitness-cases maximum-generations
+                            fitness-function termination-predicate  
+                            sort-population is_print)
+
+
+  ;(errprintf "execute-generations: ... ~n")
+
+  ;; инициализируем переменные для записей  "best-of-run"
+  (setf *generation-of-best-of-run*   0)
+
+  ;(setf *best-of-run*               nil) ; первоначально его нет !!
+  ;; но в схеме то наверное пустой список не фальш?
+  ;; но наверное можно сделать сначала фальш, а потом добавить список и он
+  ;; будет уже труе... ??
+  (setf *best-of-run*               #f)
+
+(let (
+  ;; new-programs используется для размножения новой популяции,
+  ;; создаем этот массив здесь, чтобы уменьшить "consing"
+  ;(new-programs (make-array *size-of-population*))
+  )
+  
+  (dotimes (current-generation maximum-generations) 
+
+    ;(errprintf "current-generation = ~s ~n" current-generation)
+
+    ;; породить новую популяцию на основе текущей (исключая поколение 0)
+    (when (> current-generation 0)
+      (breed-new-population  population ;new-programs
+                             )
+      )
+
+    ;; теперь "причесывание" уже готовой новой популяции (фитнeс, сортировка и пeчать)
+    ;; в том числe - установка ссылки *best-of-population*
+    (population_utils population 
+                      fitness-function fitness-cases 
+                      sort-population 
+                      )
+          
+    ;(when *debug_print* (population_print population))
+    (population_print population)
+
+    ;; распечатать результаты этой генерации (поколения)
+    (when is_print (population_report population
+                                    ;(format nil "Generation ~D:" current-generation)
+                                    (format "Generation ~s:" current-generation)
+                                    ))
+
+    ;(errprintf "*best-of-run* = ~s ~n"  *best-of-run*)
+    ;(errprintf "*best-of-population = ~s ~n"  *best-of-population*)
+
+    ;; отслеживаем особь "best-of-run";
+    ;;------------------------------------------------------
+    (when (or (not *best-of-run*)
+              (> (ORGANISM-standardized-fitness  *best-of-run*)
+                 (ORGANISM-standardized-fitness  *best-of-population*)))
+      
+      ;(setf  *best-of-run*  (copy-ORGANISM *best-of-population*)) ; копируeм?!
+      ;(setf  *best-of-run*  (struct-copy ORGANISM *best-of-population*  [hits 999]))
+      (setf  *best-of-run*  (struct-copy ORGANISM *best-of-population*  ))
+      ;(errprintf "curr ... 3.1 ~n")
+
+      (setf  *generation-of-best-of-run*      current-generation)
+      )
+    ;;------------------------------------------------------
+
+    ;(errprintf "curr ... 4 ~n")
+    (when (not (eq termination-predicate NIL))
+    (when (funcall termination-predicate 
+                 current-generation
+                 maximum-generations ;; надо ли тут пeрeдовать это?
+                 (ORGANISM-standardized-fitness *best-of-population*) 
+                 (ORGANISM-hits                 *best-of-population*) 
+                 )
+        ;; заканчиваeм поиск успeшно, провeрив условиe 
+        (return-from execute-generations T)) 
+    )
+    
+  )  
+
+  ;(if *debug_print* (format t "DEBUG !!!!!!!!!!! ~%"))
+
+  NIL 
+))
+;;-------------------------------------------------------------------------------
+;; распечатать особь "best-of-run"
+;;-------------------------------------------------------------------------------
+(define (report-on-run)
+
+(let ( ; локальные переменные
+  (*print-pretty*  #t) ; здесь глобальная, меняется локально для этой функции
+  )
+
+  (printf "~n")
+  (format_bord75)
+  (printf "THE BEST: ~n")
+  (printf "~n")
+
+;  (format t "Generation ~D, standardized fitness = ~D and ~D hit~P.  ~%"
+;          *generation-of-best-of-run*
+;          (ORGANISM-standardized-fitness *best-of-run*)
+;          (ORGANISM-hits                 *best-of-run*)
+;          (ORGANISM-hits                 *best-of-run*)
+;          )
+  
+  (printf "Generation ~s, standardized fitness = ~s and ~s hits.  ~n"
+          *generation-of-best-of-run*
+          (ORGANISM-standardized-fitness *best-of-run*)
+          (ORGANISM-hits                 *best-of-run*)
+          ;(ORGANISM-hits                 *best-of-run*)
+          )
+  
+  (printf "It was: ~n")            
+  (funcall *genotype_print* (ORGANISM-genotype *best-of-run*))
+  (printf "~n")
+
+))
+;-------------------------------------------------------------------------------
+(define (execute_generations_  
+                            population 
+                            maximum-generations 
+                            sort_population
+
+                            method-of-selection 
+                            fitness-function fitness_cases
+                            termination_criterion 
+                            crossover_fraction reproduction_fraction
+                            _crossover _mutate
+                            print_parameters is_print
+                            )
+(let (
+  (ret 'unbound)
+  )
+
+  (setf *method-of-selection*    method-of-selection)
+  (setf *crossover-fraction*     crossover_fraction)
+  (setf *reproduction-fraction*  reproduction_fraction) 
+  ;; а остальноe - МУТАЦИЯ
+
+  (setf *crossover* _crossover)
+  (setf *mutate*    _mutate)
+
+  ;; печатаем таблицу параметров
+  (when *is_print_run_info* 
+      ;(printf "print_parameters = ~s ~n" print_parameters)
+      (funcall print_parameters  maximum-generations) 
+      ;(printf "print_parameters = .... ~n")
+  )
+
+  (when *debug_print* (format t "debug_1 ~%"))
+
+  (setf ret (execute-generations  population 
+                        fitness_cases 
+                        maximum-generations fitness-function termination_criterion 
+                        sort_population 
+                        is_print
+                        )
+        )
+  ;(format t "ret= ~S ~%" ret)
+  
+  ;; в финале печатаем отчет
+  (report-on-run)    ; общий 
+
+  ;(format t "ret= ~S ~%" ret)
+  ret
+))
+;;=============================================================================
+;===============================================================================

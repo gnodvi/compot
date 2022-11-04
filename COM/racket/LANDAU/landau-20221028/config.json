@@ -1,0 +1,5 @@
+{
+    "target_language": "racket",
+    "use_extfloat": false,
+    "output_directory": "./"
+}

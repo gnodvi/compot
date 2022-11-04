@@ -1,0 +1,147 @@
+#! /usr/bin/env racket
+
+;===============================================================================
+
+#lang racket/gui
+
+;
+(newline)
+(display "............. 01 ") (newline)
+(newline)
+
+;(require racket/gui/base)
+
+;===============================================================================
+
+;; Make a frame by instantiating the frame% class
+;(define frame (new frame% [label "Example"]))
+ 
+;; Make a static text message in the frame
+;(define msg (new message% [parent frame]
+;                          [label "No events so far..."]))
+ 
+;; Make a button in the frame
+;(new button% [parent frame]
+;             [label "Click Me"]
+;             ; Callback procedure for a button click:
+;             (callback (lambda (button event)
+;                         (send msg set-label "Button click"))))
+ 
+;; Show the frame by calling its show method
+;(send frame show #t)
+
+;===============================================================================
+
+;(require plot)
+
+;(plot (function sin (- pi) pi #:label "y = sin(x)"))
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(when 
+ #t
+
+ (define frame (new frame%
+                   [label "Example"]
+                   [x      400]
+                   [y      300]
+                   [width  500]
+                   [height 500]
+                   ))
+
+ (define a-canvas (new canvas% [parent frame]
+             [paint-callback  (lambda (canvas dc)
+
+                (send dc set-scale 3 3)
+                (send dc set-text-foreground "blue")
+                (send dc draw-text "Don't Panic!" 40 40)
+
+
+                (send dc set-brush  "green"  'solid)
+                (send dc set-pen    "blue" 1 'solid)
+                (send dc draw-rectangle  0 10 30 10)
+                (send dc set-pen     "red" 3 'solid)
+
+                ;(send dc scale 0.5 0.5)
+
+                (send dc draw-line   0 0 30 30)
+                (send dc draw-line   0 30 30 0)
+                         
+                )
+              ])
+   )
+
+
+ ;; Make a static text message in the frame
+ (define msg (new message% [parent frame]
+                          [label "No events so far..."]))
+ 
+ ;; Make a button in the frame
+ (new button% [parent frame]
+             [label "Click Me"]
+             ; Callback procedure for a button click:
+             [callback (lambda (button event)
+                         (send msg set-label "Button click"))])
+
+
+ (define panel (new horizontal-panel% [parent frame]))
+
+ (new button% [parent panel]
+             [label "Left"]
+             [callback (lambda (button event)
+                         (send msg set-label "Left click"))])
+ (new button% [parent panel]
+             [label "Right"]
+             [callback (lambda (button event)
+                         (send msg set-label "Right click"))])
+
+ (new button% [parent panel]
+             [label "DIALOG"]
+             [callback (lambda (button event)
+                         ;(send msg set-label "Right click")
+                         (send dialog show #t)
+                         )])
+
+ (new button% [parent panel]
+             [label "DRAW"]
+             [callback (lambda (button event)
+                         ;(send msg set-label "Right click")
+                         ;(send dialog show #t)
+                         (define dc (send a-canvas get-dc))
+                         (send dc set-text-foreground "red")
+                         (send dc  draw-text "Don't Panic!" 10 10)
+                         
+                         )])
+
+ (send frame show #t)
+
+)
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+; ртпчетлб !!!
+; 
+
+; Create a dialog
+(define dialog (instantiate dialog% ("Example")))
+ 
+; Add a text field to the dialog
+(new text-field% [parent dialog] [label "Your name"])
+ 
+; Add a horizontal panel to the dialog, with centering for buttons
+(define panel (new horizontal-panel% [parent dialog]
+                                     [alignment '(center center)]))
+ 
+; Add Cancel and Ok buttons to the horizontal panel
+
+(new button% [parent panel] [label "Cancel"])
+(new button% [parent panel] [label     "Ok"])
+
+(when (system-position-ok-before-cancel?)
+  (send panel change-children reverse))
+ 
+; Show the dialog
+;(send dialog show #t)
+
+
+;===============================================================================
+;(exit)
+;===============================================================================

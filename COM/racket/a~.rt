@@ -1,0 +1,107 @@
+#! /usr/bin/env racket
+;#! /usr/bin/env guile
+
+;--------------------------------------------------------------------
+;#lang racket/base
+;#lang racket
+#lang racket/load
+
+;#! /home/mgena/.MSOFT/.B/guile202 -s
+;!#
+;-------------------------------------------------------------------------------
+;#! /usr/bin/env guile -s
+;!#
+;#!/usr/bin/guile -s
+
+
+;#! /home/mgena/.MSOFT/.B/guile202 -s 
+;!#
+;-------------------------------------------------------------------------------
+
+;(newline)
+;(display "Hello, World!") (newline)
+;(newline)
+;(define AAA "in main AAA")
+
+;===============================================================================
+;
+;
+;===============================================================================
+
+;(defvar CUR_DIR "a")
+(define CUR_DIR "a")
+
+;(parameterize ([current-namespace (make-base-namespace)])
+;  (load "./a-comm.cl")
+;  )
+(load "./a-comm.rt")
+
+
+;(module AMOD racket
+;(printf "~a\n" there)
+;        (provide AAA) ; ?? не работатет ..
+;        (define AAA "AAA")
+;)
+
+;(provide COMM)
+
+;(require (file "a-comm.cl"))
+;(require "a-comm.cl")
+;(require 'a-comm)
+;(require "a-comm.rkt")
+;(require 'AMOD)
+;(use-modules (ice-9 getopt-long))
+;(load "./a-comm.cl")
+
+;-------------------------------------------------------------------------------
+(define (COMM  argus)
+
+  ;(printf "COMM argus =  ~s \n" argus)
+  (run_cdr_argus (first argus) argus "COMM ..")
+)
+;-------------------------------------------------------------------------------
+(define (COMP  argus)
+
+  (my_load "a-comp.rt" CUR_DIR)
+  (run_cdr_argus (first argus) argus "COMP ..")
+
+;  ;; cl a~.cl COMP win_test_old
+)
+;-------------------------------------------------------------------------------
+(define (CPOP  argus)
+
+  (my_load "a-pops.rt" CUR_DIR) ;
+
+  (run_cdr_argus (first argus) argus "CPOP ..") 
+)
+;-----------------------------------------
+;
+;-------------------------------------------------------------------------------
+
+;(load "./a-comm.cl")
+(READ_AND_CALL_ARGUS  CUR_DIR)
+
+;(COMM (list rand_1))
+
+;-------------------------------------------------------------------------------
+
+; cl a~.cl COMM rand_1
+; cl a~.cl COMM rand_4
+; cl a~.cl COMM rand_2
+
+;===============================================================================
+
+;Here's how you can now calculate the number 3:
+
+;(newline)
+;(printf "1+2= ~s ~n"   (call_string "(lambda (a b) (+ a b))" 1 2))
+;(newline)
+
+;===============================================================================
+;     (test-case
+;      "port->string-list reads to end of port"
+;      (let ((data "hello\nthere!\nhow are you?"))
+;        (check-equal? (port->string-list (open-input-string data))
+;                       '("hello" "there!" "how are you?"))))
+
+;===============================================================================

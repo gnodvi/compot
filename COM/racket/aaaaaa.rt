@@ -1,0 +1,82 @@
+#! /usr/bin/env racket
+
+#lang racket
+
+;===============================================================================
+;===============================================================================
+
+(newline)
+(display "............. 06 ") 
+(newline)
+(newline)
+(flush-output)
+
+(system "ls -all")
+
+(flush-output)
+
+(printf "~n")
+;(display "............. 07 ") 
+(printf "~n")
+;(system "a~.rt COMM rand_1") 
+
+;(printf "~n")
+(define cur_dir  (path->string (current-directory)))
+
+(printf "cur_dir = ~s ~n" cur_dir)
+
+;(system "aaaaaa.sh" #t) 
+
+;(system "aaaaaa.sh") 
+
+;(printf "~n")
+
+(flush-output)
+(printf "~n")
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(define  outputstring (with-output-to-string (lambda () (system "ls -all"))) ) 
+
+;(printf "~s ~n" (string-split outputstring "\n") )
+;(printf "~s ~n"  outputstring)
+(display         outputstring) ; выводит на экран, учитывая концы строк !?
+
+(define out (open-output-file "a_CALC" #:exists 'replace))
+
+;(write "hello world" out)
+;(write outputstring out)
+(display outputstring out)
+
+(close-output-port   out)
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+(flush-output)
+(printf "~n")
+(printf "~n")
+
+;(system* "/home/mordvinov_gb/.MGENA/s/compot_old/common_rt/aaaaaa.sh") 
+;(system* "C:\\cygwin\\home\\mordvinov_gb\\.MGENA\\s\\compot_old\\common_rt\\aaaaaa.sh") 
+
+;(system "racket C:\\cygwin\\home\\mordvinov_gb\\.MGENA\\s\\compot_old\\common_rt\\aaaaaa.rt") 
+;(system* "racket C:\\cygwin\\home\\mordvinov_gb\\.MGENA\\s\\compot_old\\common_rt\\aaaaaa.sh") 
+
+;(system "racket  a~.rt COMM rand_1") 
+;(system*/exit-code "aaaaaa.sh") 
+;(printf "~n")
+
+;(process "aaaaaa.sh") 
+;(printf "~n")
+
+(string-no-nuls? "aaaaaa.sh")
+;; aaaaaa.rt:38:1: expand: unbound identifier in module in: string-no-nuls?
+
+
+(printf "~n")
+
+;(system "racket  a~.rt COMM rand_1") 
+(system "aaaaaa.sh") 
+
+
+;===============================================================================
+;===============================================================================

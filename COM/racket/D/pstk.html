@@ -1,0 +1,1687 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>PS/Tk Manual</TITLE>
+<LINK rel="stylesheet" type="text/css" href="../t3x.css" title="t3x">
+</HEAD>
+<BODY>
+
+<DIV class=url><A class=url href="../index.html">t3x.org</A> /
+               <A class=url href="index.html">pstk</A> /
+               <A class=url href="pstk.html">pstk.html</A>
+</DIV>
+
+<H1>PS/Tk Manual</H1>
+
+<P>Copyright (C) 2007 <A href="http://t3x.org/nmh/">Nils M Holm</A>
+&lt; <A href="http://t3x.org/mail.html">nmh @ t3x . org</A> &gt;
+</P>
+
+<DL>
+ <DD><A href="pstk.html#using-pstk">Using PS/Tk</A></DD>
+ <DD><A href="pstk.html#tk-procedures">Tk Procedures</A></DD>
+ <DD><A href="pstk.html#ttk-procedures">Tile Procedures</A></DD>
+ <DD><A href="pstk.html#widgets">Supported Widgets</A></DD>
+ <DD><A href="pstk.html#pstk-procedures">PS/Tk Procedures</A></DD>
+</DL>
+
+<P>This manual presents a summary of the PS/Tk procedures resembling
+Tcl/Tk and Tile commands, plus a summary of PS/Tk's native procedures.
+It does not duplicate the information contained in the Tcl/Tk manual.
+To learn about the details of a Tk or Tile command or widget, please
+refer to the Tcl/Tk and Tile manuals.
+</P>
+
+<H2><A name="using-pstk">Using PS/Tk</A></H2>
+
+<P>PS/Tk brings Scheme syntax to Tk and Tk graphics to Scheme. It
+lets you use nearly all Tcl/Tk functions from within a Scheme program.
+</P>
+
+<H3>What you need</H3>
+
+<P>In order to run PS/Tk, you need
+</P>
+
+<UL>
+ <LI><A href="http://t3x.org/pstk/">PS/TK</A>, of course</LI>
+ <LI><A href="http://schemers.org">A Scheme interpreter</A></LI>
+ <LI><A href="http://tcl.tk/">Tcl/Tk</A></LI>
+ <LI><A href="http://tktable.sourceforge.net/tile/">Tile</A> (optionally)</LI>
+</UL>
+
+<H3>Configuring PS/Tk</H3>
+
+<P>When you start PS/Tk without configuring it first, you will get
+an error message like this:
+</P>
+
+<PRE>
+You need to choose a version of RUN-PROGRAM first.
+Error: variable bottom is not bound.
+</PRE>
+
+<P>To configure PS/Tk, load the file <SAMP>pstk.scm</SAMP> into a
+text editor and search for the string <SAMP>NON-PORTABLE</SAMP>
+(yes, in capitals). This is the beginning of the configurable
+section.
+</P>
+
+<P>The least you must do here is to comment out the first version
+of <CODE>run-program</CODE> and uncomment the one that suits your
+system. You may have to uncomment a version of <CODE>flush-output</CODE>,
+too.
+</P>
+
+<P>If you are using Chicken or Gambit, you also will have to decide
+whether you want to use keywords or not. See the code for details.
+</P>
+
+<H3>Your First PS/Tk Program</H3>
+
+<PRE class=code>
+(load "pstk.scm")
+(tk-start)
+(let* ((label (tk 'create-widget 'label
+                  'text: "Hello, World!"
+                  'foreground: 'red))
+       (quit-button (tk 'create-widget 'button
+                        'text: "Goodbye"
+                        'command: tk-end)))
+  (tk/pack label quit-button)
+  (tk-event-loop))
+</PRE>
+
+<P>The first line loads PS/Tk. The second line launches an inferior
+Tcl/Tk process. The <CODE>let*</CODE> creates a label widget displaying
+<SAMP>Hello, World</SAMP> and a button saying <SAMP>Goodbye</SAMP>.
+The button shuts down PS/Tk whe pressed. <CODE>Tk/pack</CODE> packs
+the widgets, and <CODE>tk-event-loop</CODE> enters the event processing
+loop.</P>
+
+<H3>What Next?</H3>
+
+<P>Tcl/Tk commands translate quite directly to PS/Tk procedure calls:
+</P>
+
+<TABLE class=list>
+ <TR><TH>Tcl/Tk</TH><TH>PS/Tk</TH></TR>
+ <TR>
+  <TD><TT>frame .f</TT></TD>
+  <TD><TT>(define f (tk 'create-widget 'frame))</TT></TD>
+ </TR>
+ <TR>
+  <TD><TT>button .f.b</TT></TD>
+  <TD><TT>(define b (f 'create-widget 'button))</TT></TD>
+ </TR>
+</TABLE>
+
+<P>Note that literals like <SAMP>frame</SAMP> and <SAMP>button</SAMP>
+have to be quoted.</P>
+
+<P>Options get a trailing colon (and have to be quoted, too):</P>
+
+<TABLE class=list>
+ <TR><TH>Tcl/Tk</TH><TH>PS/Tk</TH></TR>
+ <TR>
+  <TD><TT>b configure -text "Hi!"</TT></TD>
+  <TD><TT>(b 'configure 'text: "Hi!")</TT></TD>
+ </TR>
+</TABLE>
+
+<P>Booleans, integers, lists, and strings are translated automatically
+between Scheme and Tcl, e.g.:</P>
+
+<TABLE class=list>
+ <TR><TH>Tcl/Tk</TH><TH>PS/Tk</TH></TR>
+ <TR>
+  <TD><TT>pack b -expand 0</TT></TD>
+  <TD><TT>(tk/pack b 'expand: #f)</TT></TD>
+ </TR>
+ <TR>
+  <TD><TT>b configure -width 50</TT></TD>
+  <TD><TT>(b 'configure 'width: 50)</TT></TD>
+ </TR>
+ <TR>
+  <TD><TT>bindtags . {. Tclsh all}</TT></TD>
+  <TD><TT>(tk/bindtags tk '("." "Tclsh" "all"))</TT></TD>
+ </TR>
+</TABLE>
+
+<P>Strings and quoted symbols can both be used to form literals,
+but note that Scheme folds quoted symbols to lower case by default,
+so while this works fine:
+</P>
+
+<TABLE class=list>
+ <TR><TH>Tcl/Tk</TH><TH>PS/Tk</TH></TR>
+ <TR>
+  <TD><TT>pack b -fill 'both</TT></TD>
+  <TD><TT>(tk/pack b 'fill: 'both)</TT></TD>
+ </TR>
+</TABLE>
+
+<P>this does not:
+</P>
+
+<TABLE class=list>
+ <TR><TH>Tcl/Tk</TH><TH>PS/Tk</TH></TR>
+ <TR>
+  <TD><TT>bind all &lt;Button-1&gt; {exit}</TT></TD>
+  <TD><TT>(tk/bind 'all '&lt;Button-1&gt; tk-end)</TT></TD>
+ </TR>
+</TABLE>
+
+<P>because <SAMP>&lt;button-1&gt;</SAMP> (with a lower-case b) is 
+not a valid event pattern. You <EM>must</EM> use a string in this case:
+</P>
+
+<TABLE class=list>
+ <TR><TH>Tcl/Tk</TH><TH>PS/Tk</TH></TR>
+ <TR>
+  <TD><TT>bind all &lt;Button-1&gt; {exit}</TT></TD>
+  <TD><TT>(tk/bind 'all "&lt;Button-1&gt;" tk-end)</TT></TD>
+ </TR>
+</TABLE>
+
+<H3>The Tk Widget</H3>
+
+<P>PS/Tk associates a widget named <SAMP>tk</SAMP> with the
+toplevel window that pops up when PS/Tk is started. All widgets
+created by this program are descendants of <SAMP>tk</SAMP>. For
+example, the procedure application
+</P>
+
+<PRE>(tk 'create-widget 'label 'text: "foo!")</PRE>
+
+<P>creates a <SAMP>label</SAMP> widget that is a child of <SAMP>tk</SAMP>.
+</P>
+
+<P>Unless you are using the
+<A href="http://snow.iro.umontreal.ca/?viewpkg=pstk">Snow version
+of PS/Tk</A>, you can manipulate the <SAMP>tk</SAMP> widget like any
+other widget. For example, you can raise the toplevel window using
+</P>
+
+<PRE>(tk/raise tk)</PRE>
+
+<P>Unfortunately, this is not possible in the Snow version. When using
+the Snow port of PS/Tk, you have to resort to the Tcl/tk name of the
+window instead:
+</P>
+
+<PRE>(tk/raise ".")</PRE>
+
+<H2><A name="tk-procedures">Tk Procedures</A></H2>
+
+<H3>tk</H3>
+
+<P>Create widgets at the top level.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk 'create-widget <I>widget-type</I> <I>option</I> [...]) =&gt;&nbsp;widget</CODE></TD>
+ </TR>
+ <TR>
+  <TH align=right valign=top>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><I>widget-type</I><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(define b (tk 'create-widget 'button 'text: "Hello"))
+; Tcl/Tk: button .b -text "Hello"
+</PRE>
+
+<H3>tk/after</H3>
+
+<P>Run procedures after a given number of milliseconds.
+When no procedure is given, sleep for the specified time.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/after <I>ms</I> [<I>procedure</I> ...])
+                       =&gt;&nbsp;id</CODE><BR>
+                 <CODE>(tk/after cancel <I>id</I>) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>after</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/after 1000 tk/bell)
+; Tcl/Tk: after 1000 bell
+</PRE>
+
+<H3>tk/appname</H3>
+
+<P>Set or get the application name.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/appname [<I>name</I>]) =&gt;&nbsp;name</CODE></TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk appname</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/appname "new name")
+; Tcl/Tk: tk appname "new name"
+</PRE>
+
+<H3>tk/bell</H3>
+
+<P>Ring the bell.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/bell [<I>option</I> ...]) =&gt;&nbsp;""</CODE></TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>bell</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/bell)
+; Tcl/Tk: bell
+</PRE>
+
+<H3>tk/bgerror</H3>
+
+<P>Invoke the Tcl/Tk error dialog. <STRONG>Deprecated.</STRONG>
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/bgerror <I>message</I>) =&gt;&nbsp;<I>unspecified</I></CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>bgerror</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/bgerror "an error occurred")
+; Tcl/Tk: bgerror "an error occurred"
+</PRE>
+
+<H3>tk/bind</H3>
+
+<P>Bind events to actions.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/bind <I>window</I>) =&gt;&nbsp;<I>patterns</I></CODE><BR>
+                 <CODE>(tk/bind <I>window</I> <I>pattern</I>) =&gt;&nbsp;<I>ids</I></CODE><BR>
+                 <CODE>(tk/bind <I>window</I> <I>pattern</I> <I>procedure</I>) =&gt;&nbsp;""</CODE><BR>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>bind</SAMP><TD>
+ </TR>
+</TABLE>
+
+<P><B class=note>Notes:</B> the form
+</P>
+
+<PRE class=code>`(+ ,(lambda () ...))</PRE>
+
+<P>is used to add a procedure to a binding list rather than replacing
+existing procedures. The form</P>
+
+<PRE class=code>`(,(lambda (x) ...) %x)</PRE>
+
+<P>is used to propagate event argument <I>x</I> to the procedure.
+</P>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/bind 'all "&lt;Button-1&gt;"
+  `(,(lambda (x) (display x) (newline) #f) %x))
+; Tcl/Tk: bind all &lt;Button-1&gt; {puts %x}
+</PRE>
+
+<H3>tk/bindtags</H3>
+
+<P>Set or get binding tags of a window.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/bindtags <I>window</I>) =&gt;&nbsp;<I>tags</I></CODE><BR>
+                 <CODE>(tk/bindtags <I>window</I> <I>tag-list</I>) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>bindtags</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/bindtags tk)
+; Tcl/Tk: bindtags .
+</PRE>
+
+<H3>tk/caret</H3>
+
+<P>Set or get the caret location of a given window.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/caret <I>window</I>) =&gt;&nbsp;"-height h -x x -y y"</CODE><BR>
+                 <CODE>(tk/caret <I>window</I> ['height: <I>h</I>] ['x: <I>x</I>] ['y: <I>y</I>]) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk caret</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/caret tk)
+; Tcl/Tk: tk caret .
+</PRE>
+
+<H3>tk/choose-color</H3>
+
+<P>Invoke the Tk Color Chooser.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/choose-color [<I>option</I> ...]) =&gt;&nbsp;color</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_chooseColor</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/choose-color)
+; Tcl/Tk: tk_chooseColor
+</PRE>
+
+<H3>tk/choose-directory</H3>
+
+<P>Invoke the Tk Directory Chooser.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/choose-directory [<I>option</I> ...]) =&gt;&nbsp;path</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_chooseDirectory</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/choose-directory)
+; Tcl/Tk: tk_chooseDirectory
+</PRE>
+
+<H3>tk/clipboard</H3>
+
+<P>Access the clipboard.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/clipboard <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>clipboard</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/clipboard 'clear)
+; Tcl/Tk: clipboard clear
+</PRE>
+
+<H3>tk/destroy</H3>
+
+<P>Destroy widgets.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/destroy <I>widget</I> [...]) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>destroy</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/destroy tk)
+; Tcl/Tk: destroy .
+</PRE>
+
+<H3>tk/dialog</H3>
+
+<P>Invoke a Tk dialog. <STRONG>Deprecated</STRONG>.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/dialog <I>path</I> <I>title</I> <I>text</I>
+                 <I>bitmap</I> <I>default</I> <I>arg</I> [...]) =&gt;&nbsp;button</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_dialog</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/dialog ".x"  "foo" "does this dialog suck?"
+           'question 0 "yes" "no")
+; Tcl/Tk: tk_dialog .x  "foo" "does this dialog suck?" \
+;                   question 0 "yes" "no"
+</PRE>
+
+<H3>tk/event</H3>
+
+<P>Manage events.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/event <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>event</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/event 'generate tk "&lt;Button-1&gt;")
+; Tcl/Tk: event generate . &lt;Button-1&gt;
+</PRE>
+
+<H3>tk/focus</H3>
+
+<P>Move or query the input focus.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/focus <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>focus</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/focus tk)
+; Tcl/Tk: focus .
+</PRE>
+
+<H3>tk/focus-follows-mouse</H3>
+
+<P>Change the focus model from "click to focus" to "focus follows mouse".
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/focus-follows-mouse) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_focusFollowsMouse</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/focus-follows-mouse)
+; Tcl/Tk: tk_focusFollowsMouse
+</PRE>
+
+<H3>tk/focus-next</H3>
+
+<P>Return the next window in focus traversal.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/focus-next <I>window</I>) =&gt;&nbsp;window</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_focusNext</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/focus-next tk)
+; Tcl/Tk: tk_focusNext .
+</PRE>
+
+<H3>tk/focus-prev</H3>
+
+<P>Return the previous window in focus traversal.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/focus-prev <I>window</I>) =&gt;&nbsp;window</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_focusPrev</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/focus-prev tk)
+; Tcl/Tk: tk_focusPrev .
+</PRE>
+
+<H3>tk/get-open-file</H3>
+
+<P>Use the Tk Directory Chooser to present an "Open File" Dialog.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/get-open-file [<I>option</I> ...]) =&gt;&nbsp;path</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_getOpenFile</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/get-open-file)
+; Tcl/Tk: tk_getOpenFile
+</PRE>
+
+<H3>tk/get-save-file</H3>
+
+<P>Use the Tk Directory Chooser to present a "Save File" Dialog.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/get-save-file [<I>option</I> ...]) =&gt;&nbsp;path</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_getSaveFile</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/get-save-file)
+; Tcl/Tk: tk_getSaveFile
+</PRE>
+
+<H3>tk/grab</H3>
+
+<P>Set or query input grabs.
+</P>
+
+<P><B class=note>Warning:</B> A global grab can lock your terminal.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/grab [<I>command</I>] [<I>window</I>]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>grab</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/grab 'status tk)
+; Tcl/Tk: grab status .
+</PRE>
+
+<H3>tk/grid</H3>
+
+<P>Manage grids (communicate with the grid geometry manager).
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/grid <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>grid</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/grid 'info tk)
+; Tcl/Tk: grid info .
+</PRE>
+
+<H3>tk/image</H3>
+
+<P>Manage images (bitmaps and pictures).
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/image <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>image</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/image 'create 'photo 'name 'file: "name.gif")
+; Tcl/Tk: image create photo name -file "name.gif"
+</PRE>
+
+<H3>tk/lower</H3>
+
+<P>Lower a toplevel window.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/lower <I>window</I>) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>lower</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/lower tk)
+; Tcl/Tk: lower .
+</PRE>
+
+<H3>tk/message-box</H3>
+
+<P>Invoke a Tk Message Box.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/message-box [<I>option</I> ...]) =&gt;&nbsp;button</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_messageBox</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/message-box 'message: "Hello!")
+; Tcl/Tk: tk_messageBox -message "Hello!"
+</PRE>
+
+<H3>tk/option</H3>
+
+<P>Manage the Tk Option Database.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/option <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>option</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H3>tk/pack</H3>
+
+<P>Manage windows (communicate with the packer).
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/pack <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>pack</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(let ((b (tk 'create-widget 'button)))
+  (tk/pack b 'side: 'left 'expand: #t 'fill: 'both))
+; Tcl/Tk: button .b
+;         pack .b -side left -expand 1 -fill both
+</PRE>
+
+<H3>tk/place</H3>
+
+<P>Place windows (communicate with the placer).
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/place <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE><BR>
+                 <CODE>(tk/place <I>window</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE><BR>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>place</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/place (tk 'create-widget 'label 'text: "foo")
+          'in: tk)
+; Tcl/Tk: label .l -text "foo:
+;         place .l -in .
+</PRE>
+
+<H3>tk/popup</H3>
+
+<P>Post menues.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/popup <I>menu</I> <I>x</I> <I>y</I> [<I>entry</I>]) =&gt;&nbsp;<I>unspecified</I></CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk_popup</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H3>tk/raise</H3>
+
+<P>Raise a toplevel window.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/raise <I>window</I>) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>raise</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/raise tk)
+; Tcl/Tk: raise .
+</PRE>
+
+<H3>tk/scaling</H3>
+
+<P>Set or get the number of pixels per point on a given display.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/scaling ['displayof: <I>window</I>] factor)
+                 =&gt;&nbsp;""</CODE><BR>
+                 <CODE>(tk/scaling ['displayof: <I>window</I>])
+                 =&gt;&nbsp;factor</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk scaling</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/scaling)
+; Tcl/Tk: tk scaling
+</PRE>
+
+<H3>tk/selection</H3>
+
+<P>Manage the X11 display selection.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/selection <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>selection</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/selection 'get)
+; Tcl/Tk: selection get
+</PRE>
+
+<H3>tk/update</H3>
+
+<P>Force processing of all pending events.
+</P>
+
+<P><B class=note>Note:</B> This procedure may cause dead locks.
+<STRONG>Use with extreme care</STRONG>.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/update ['idletasks]) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>update</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/update 'idletasks)
+; Tcl/Tk: update idletasks
+</PRE>
+
+<H3>tk/useinputmethods</H3>
+
+<P>Query, activate or de-activate XIM filtering.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/useinputmethods ['displayof: <I>window</I>] [<I>boolean</I>]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk useinputmethods</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/useinputmethods #f)
+; Tcl/Tk: tk useinputmethods 0
+</PRE>
+
+<H3>tk/wait</H3>
+
+<P>Wait for a variable to change or a window to become visible or
+destroyed.
+</P>
+
+<P><B class=note>Note:</B> better use <CODE>tk-wait-for-window</CODE>
+and <CODE>tk-wait-until-visible</CODE> to wait for window events.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/wait <I>type</I> <I>window</I>) =&gt;&nbsp;""</CODE><BR>
+                 <CODE>(tk/wait <I>variable</I> <I>name</I>) =&gt;&nbsp;""</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tkwait</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/wait 'window tk)
+; Tcl/Tk: tkwait window .
+</PRE>
+
+<H3>tk/windowingsystem</H3>
+
+<P>Return a string naming the underlying windowing system.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk windowingsystem) =&gt;&nbsp;"system"</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tk windowingsystem</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/windowingsystem)
+; Tcl/Tk: tk windowingsystem
+</PRE>
+
+<H3>tk/winfo</H3>
+
+<P>Query information about windows managed by Tk.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/winfo <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>winfo</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/winfo 'exists tk)
+; Tcl/Tk: winfo exists .
+</PRE>
+
+<H3>tk/wm</H3>
+
+<P>Communicate with the window manager of the underlying platform.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk/wm <I>command</I> [<I>option</I> ...]) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>wm</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(tk/wm 'geometry tk)
+; Tcl/Tk: wm geometry .
+</PRE>
+
+<H2><A name="ttk-procedures">Tile Procedures</A></H2>
+
+<P>These procedures work only if you have the Tile theming engine installed.
+They may also work if you are using Tcl/Tk 8.5 or a later version (which
+has Tile built into it). You can download Tile here:
+</P>
+
+<PRE>
+<A href="http://tktable.sourceforge.net/tile/">http://tktable.sourceforge.net/tile/</A>
+</PRE>
+
+<H3>ttk-map-widgets</H3>
+
+<P>Map the given widgets to Tile, so that the corresponding Tile widgets
+are used instead of Tk widgets automatically.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(ttk-map-widgets 'all) =&gt;&nbsp;<I>unspecific</I></CODE><BR>
+                 <CODE>(ttk-map-widgets 'none) =&gt;&nbsp;<I>unspecific</I></CODE><BR>
+                 <CODE>(ttk-map-widgets <I>widget-list</I>) =&gt;&nbsp;<I>unspecific</I></CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tile&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><I>n/a</I><TD>
+ </TR>
+</TABLE>
+
+<P>The <CODE>all</CODE> argument maps all Tk widgets that have counterparts
+in Tile (as well as the widgets that do not exist in Tk). The
+<CODE>none</CODE> argument unmaps all widgets. Specifying a list of widget
+types will map exactly those widgets. For instance:
+</P>
+
+<PRE class=code>
+(ttk/map-widgets '(button))
+</PRE>
+
+<P>Maps all <CODE>button</CODE>s to <CODE>ttk::button</CODE>, so
+</P>
+
+<PRE class=code>
+(tk 'create-widget 'button)
+</PRE>
+
+<P>implicitly becomes</P>
+
+<PRE class=code>
+(tk 'create-widget 'ttk::button)
+</PRE>
+
+<P>Note that using <CODE>ttk/map-widgets</CODE> shadows the native
+Tk widgets that are mapped to Tile. I.e. the native Tk <CODE>button</CODE>
+becomes inaccessible in the above example.
+</P>
+
+<H4>Example:</H4>
+
+<PRE>
+(ttk/map-widgets 'all)
+</PRE>
+
+<H3>ttk/available-themes</H3>
+
+<P>Return a list of available Tile themes.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(ttk/available-themes) =&gt;&nbsp;list</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tile::availableThemes</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(ttk/available-themes)
+; Tcl/Tk: tile::availableThemes
+</PRE>
+
+<H3>ttk/set-theme</H3>
+
+<P>Activate a Tile theme. The theme must be a one of those returned by
+<CODE>ttk/available-themes</CODE>.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(ttk/set-theme <I>theme</I>) =&gt;&nbsp;theme</CODE>
+  </TD>
+ </TR>
+ <TR>
+  <TH align=right>Tcl&nbsp;equivalent</TH>
+  <TD>&nbsp;</TD>
+  <TD><SAMP>tile::setTheme</SAMP><TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>
+(ttk/set-theme "default")
+; Tcl/Tk: tile::setTheme "default"
+</PRE>
+
+<H2><A name="widgets">Supported Widgets</A></H2>
+
+<P>To create a toplevel widget, use
+</P>
+
+<PRE class=code>(tk 'create-widget <I>widget-type</I>)</PRE>
+
+<P>To create a sub-widget use
+
+<PRE class=code>(<I>widget</I> 'create-widget <I>widget-type</I>)</PRE>
+
+<P>To create a Tile widget rather than a Tk widget, use
+</P>
+
+<PRE class=code>(<I>widget</I> 'create-widget ttk::<I>widget-type</I>)</PRE>
+
+<P>or map the desired widgets using <CODE>ttk-map-widgets</CODE>.
+</P>
+
+<TABLE class=list>
+ <TR>
+  <TD valign=top>
+   <TABLE class=list>
+    <TR><TH>Widget Type</TH><TH>Tk</TH><TH>Tile</TH></TR>
+    <TR><TD><CODE>button</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>canvas</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>combobox</CODE></TD><TD>-</TD><TD>y</TD></TR>
+    <TR><TD><CODE>checkbutton</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>entry</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>frame</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>label</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>labelframe</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>listbox</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>menu</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>menubutton</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>message</CODE></TD><TD>y</TD><TD>-</TD></TR>
+   </TABLE>
+  </TD>
+  <TD valign=top>
+   <TABLE class=list>
+    <TR><TH>Widget Type</TH><TH>Tk</TH><TH>Tile</TH></TR>
+    <TR><TD><CODE>notebook</CODE></TD><TD>-</TD><TD>y</TD></TR>
+    <TR><TD><CODE>panedwindow</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>progessbar</CODE></TD><TD>-</TD><TD>y</TD></TR>
+    <TR><TD><CODE>radiobutton</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>scale</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>scrollbar</CODE></TD><TD>y</TD><TD>y</TD></TR>
+    <TR><TD><CODE>separator</CODE></TD><TD>-</TD><TD>y</TD></TR>
+    <TR><TD><CODE>spinbox</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>text</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>toplevel</CODE></TD><TD>y</TD><TD>-</TD></TR>
+    <TR><TD><CODE>treeview</CODE></TD><TD>-</TD><TD>y</TD></TR>
+    <TR><TD><CODE>&nbsp;</CODE></TD><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
+   </TABLE>
+  </TD>
+ </TR>
+</TABLE>
+
+<P>"y" means "yes, this widget is supported".</P>
+   
+<H2><A name="pstk-procedures">PS/Tk Procedures</A></H2>
+
+<H3>tk-dispatch-event</H3>
+
+<P>Dispatch one Tk event. There is normally no need to use this
+procedure in user-level code. The only exception is a situation
+where a long computation takes place. In this case you can use
+<CODE>tk-dispatch-event</CODE> to service asynchronous events
+periodically.
+</P>
+
+<P><B class=note>Note:</B> <CODE>Tk-dispatch-events</CODE> may cause
+race conditions. <EM>Use with care!</EM>
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-dispatch-event) =&gt;&nbsp;()</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>(tk-dispatch-event)</PRE>
+
+<H3>tk-end</H3>
+
+<P>Shut down PS/Tk by terminating the inferior Tcl/Tk process.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-end) =&gt;&nbsp;()</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>(tk-end)</PRE>
+
+<H3>tk-eval</H3>
+
+<P>Submit a command to Tcl/Tk for evaluation, return its result.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-eval <I>Tcl-command</I>) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE>(tk-eval "bell")</PRE>
+
+<H3 class=code>tk-event-loop</H3>
+
+<P>Enter the main event loop. This procedure does not return until
+PS/Tk is shut down using <CODE>tk-end</CODE>.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-event-loop) =&gt;&nbsp;<I>unspecified</I></CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>(tk-event-loop)</PRE>
+
+<H3>tk-get-var</H3>
+
+<P>Retrieve the value of a Tk variable. The variable must be declared
+using <CODE>tk-var</CODE> first.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-get-var <I>variable</I>) =&gt;&nbsp;value</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+(tk-var 'x)
+(tk-get-var 'x)
+</PRE>
+
+<H3>tk-id-&gt;widget</H3>
+
+<P>Retrieve the procedure associated with an (internal) widget id.
+Not really needed. May get removed in a future release.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-id-&gt;widget <I>name</I>) =&gt;&nbsp;procedure</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H3>tk-set-var!</H3>
+
+<P>Set the value of a Tk variable. The variable must be declared
+using <CODE>tk-var</CODE> first.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-set-var! <I>variable</I> <I>value</I>) =&gt;&nbsp;value</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+(tk-var 'x)
+(tk-set-var 'x "some value")
+</PRE>
+
+<H3>tk-start</H3>
+
+<P>Start the inferior Tcl process (<SAMP>tclsh</SAMP>), initialize the
+internal state of PS/Tk, and load Tk and Tile (if present). This procedure
+opens the initial Tk window.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-start) =&gt;&nbsp;()</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+(tk-start)
+</PRE>
+
+<H3>tk-var</H3>
+
+<P>Define a Tk variable to be used by PS/Tk. Such variables are
+created in a separate namespace and do not interfere with other
+Tcl/Tk variables.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-var <I>name</I>) =&gt;&nbsp;tk-name</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+(tk-var 'foo)
+</PRE>
+
+<H3>tk-wait-for-window</H3>
+
+<P>Wait for a given window to be destroyed. This is basically the
+same as <CODE>tk/wait 'window</CODE>, but more reliable. Asynchronous
+events are serviced while PS/Tk waits.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-wait-for-window <I>window</I>) =&gt;&nbsp;()</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+; <I>This expression will not terminate until the window w</I>
+; <I>is destroyed (by pressing the button b).</I>
+(let* ((w (tk 'create-widget 'toplevel))
+       (b (w 'create-widget 'button 'text: "Bye"
+             'command: (lambda () (tk/destroy w)))))
+  (tk/pack b)
+  (tk-wait-for-window w))
+</PRE>
+
+<H3>tk-wait-until-visible</H3>
+
+<P>Wait for a given window to become visible. This is basically the
+same as <CODE>tk/wait 'visibility</CODE>, but more reliable. Asynchronous
+events are serviced while PS/Tk waits.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-wait-until-visible <I>window</I>) =&gt;&nbsp;<I>unspecific</I></CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+; <I>This expression will not terminate until the window w</I>
+; <I>actually becomes visible.</I>
+(let ((w (tk 'create-widget 'toplevel)))
+  (tk-wait-until-visible w))
+</PRE>
+
+<H3>tk-with-lock</H3>
+
+<P>Run a procedure with nested callbacks disabled. While the procedure
+runs, no asynchronous events are serviced (except by
+<CODE>tk-wait-for-window</CODE>). Asynchronous events that occur
+while the procedure executes will <EM>never</EM> be serviced.
+</P>
+
+<P><CODE>Tk-with-lock</CODE> is typically used to protect procedures
+manipulating state that could be messed up by subsequent asynchronous
+events.
+</P>
+
+<TABLE>
+ <TR>
+  <TH align=right valign=top>Application</TH>
+  <TD>&nbsp;</TD>
+  <TD valign=top><CODE>(tk-with-lock <I>procedure</I>) =&gt;&nbsp;result</CODE>
+  </TD>
+ </TR>
+</TABLE>
+
+<H4>Example:</H4>
+
+<PRE class=code>
+(tk 'create-widget 'button
+    'command: (lambda ()
+                (tk-with-lock
+                  (lambda () <I>do-something-critical</I>))))
+</PRE>
+
+<PRE class=code></PRE>
+
+</BODY>
+</HTML>

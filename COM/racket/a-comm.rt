@@ -1,0 +1,1991 @@
+;;;=============================================================================
+;#lang racket/load
+;#lang racket
+
+;(newline)
+;(display "Hello, A-COMM !") (newline)
+;(newline)
+
+;(define there "Utopia")
+
+;(provide there)
+;(provide rand_1)
+;(provide run_cdr_argus)
+;(provide READ_AND_CALL_ARGUS)
+
+;(require "a.scm")
+;(require "a\~.scm")
+;(require (file "a~.scm"))
+;(file "a~.scm")
+;(require "a.rkt")
+
+;(printf "there= ~a \n" there)
+;(printf "AAA= ~a \n" AAA)
+
+(require mzlib/pregexp)
+(require racket/system)
+
+;===============================================================================
+;
+; массивы ...
+(require (lib "25.ss" "srfi"))
+
+
+; http://docs.racket-lang.org/srfi-std/
+
+; Certain SRFIs (currently SRFIs 1, 5, 13, 17, 19, 43, 45, 48, 61, 63, 69 and 87) 
+; provide names which conflict with names provided by the 'mzscheme' language. 
+; Attempting to require one of these SRFIs in a module written in the 'mzscheme' 
+; language will result in an error.
+
+; To address this problem, the PLT implementations of these SRFIs provide a 
+; different module which renames the problematic exports to avoid these conflicts. 
+; For SRFI 1, this library is called list.ss, and should be required like this:
+
+(require (lib "list.ss" "srfi" "1"))
+; reduce f ridentity list -> value
+
+;===============================================================================
+
+;In Scheme, the eval function only operates on lists of symbols, so this would work fine:
+
+;(eval '(+ 1 2))
+
+;But this would give an error:
+
+;(eval "(+ 1 2)")
+
+;To convert a string from the UI into a list of symbols (AKA an S-expression), you'll need to call the read function. Regularly, read only operates on "ports" (file stream), so you'll need to convert your string into an input port before it's usable with read:
+
+(define (read_string text)
+  (read
+    (open-input-string text)))
+
+;All that's left is to evaluate the string, and call the lambda that you get as a result:
+
+(define (call_string text-lambda . args)
+  (apply
+    (eval (read_string text-lambda))
+    args))
+
+;(printf "bbbbb = ~s  ~n" (string->symbol "COMM"))
+;===============================================================================
+;
+
+;R5RS includes the versatile do-macro which can do most of the things you 
+;need from a looping construct. But it's syntax is extremely hard to remember 
+;to many people and so DO isn't used too often.
+
+;Usually one just uses the named-let? idiom, but for some common cases it's 
+;more concise to use dedicated forms.
+;dotimes (borrowed from Common-Lisp)
+
+; racket: 
+;./a-comm.cl:845:1: compile: unbound identifier 
+
+;(define-syntax dotimes 
+;   (syntax-rules () 
+;     ((_ (var n res) . body) 
+;      (do ((limit n) 
+;           (var 0 (+ var 1))) 
+;          ((>= var limit) res) 
+;        . body)) 
+;     ((_ (var n) . body) 
+;      (do ((limit n) 
+;           (var 0 (+ var 1))) 
+;          ((>= var limit)) 
+;        . body)))) 
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+; dotimes.scm
+;-------------------------------------------------------------------------------
+
+;(module dotimes mzscheme
+;  (provide dotimes)
+
+  ; macro: (dotimes (var expr [finally]) body ...)
+  ;   dotimes iterates over a series of integers.
+  ;   dotimes evaluates expr and signals an error if the result
+  ;   is not an integer. If expr is zero or negative, the
+  ;   body is not executed. Otherwiese dotimes executed the body
+  ;   for each integer from 0 up to but not including the value of expr.
+  ;   During the evaluation of body, var is bound to each integer.
+  ;   Then finally is evaluated if present, and the result is returned,
+  ;   otherwise #void is returned. At the time finally is evaluated,
+  ;   var is bound to the number of times body was excuted.
+  
+  (define-syntax (dotimes stx)
+    (syntax-case stx ()
+      [(dotimes (var count-form finally) body ...)
+       #`(let ([count count-form])
+           (unless (integer? count)
+             (raise-syntax-error 'dotimes 
+                                 (format "expected integer as result of expression, got ~s " count)
+                                 #'count-form))
+           (if (positive? count)
+               (let ([var 0])
+                 (let loop ([i 0])
+                   (set! var i)
+                   (if (< i count)
+                       (begin
+                         body ...
+                         (loop (add1 i)))
+                       finally)))
+               (let ([var 0])
+                 finally)))]
+      [(dotimes (var count-form) body ...)
+       #'(dotimes (var count-form (void)) body ...)]
+      [else
+       (raise-syntax-error #f "bad syntax, (dotimes (var expr [finally-expr]) body ...) expected" stx)]))
+  
+;  )
+;-------------------------------------------------------------------------------
+
+
+;(require "dotimes.scm")
+
+
+;-------------------------------------------------------------------------------
+; http://lisp.ru/forums.php?m=posts&q=709
+;---------------------------------------
+
+(define-syntax (defmacro so)
+  (syntax-case so ()
+    [(_ id formals sexp . body)
+     #'(define-syntax id 
+         (let ([macros (lambda formals sexp . body)])
+           (lambda (stx) 
+             (datum->syntax stx (apply macros (cdr (syntax->list stx)))))))]))
+
+
+;-------------------------------------------------------------------------------
+
+(define eq eq?)
+(define subseq substring)
+(define string= string=?)
+;(define setf set!)
+
+(define list-length length)
+(define NIL null)
+(define nil null)
+
+;(define setf set!)
+(define-syntax-rule (setf . args) (set! . args))
+
+;(define-syntax defun
+;   (syntax-rules ()
+;   [(_ x a e) (define x (lambda a e))])) - работает, но лучше не делать ?!
+
+;;;=============================================================================
+;(define (nth  num lis)
+;  (list-ref lis num)
+;)
+
+; но тогда уж лучше макрос
+;(defmacro (nth  num lis)
+;  `(list-ref ,lis ,num)
+;  (list 'list-ref  lis num)
+;)
+
+(define-syntax-rule (nth  num lis) (list-ref lis num))
+
+;-------------------------------------------------------------------------------
+
+(define-syntax-rule (errprintf . args) (fprintf (current-error-port) . args))
+
+
+;-------------------------------------------------------------------------------
+
+
+(define-syntax incf
+  (syntax-rules ()
+    ((_ x)   (begin (set! x (+ x 1)) x))
+    ((_ x i) (begin (set! x (+ x i)) x))))
+
+(define-syntax decf
+  (syntax-rules ()
+    ((_ x)   (begin (set! x (- x 1)) x))
+    ((_ x i) (begin (set! x (- x i)) x))))
+
+(define (incf_test)
+
+(let (
+  (i 0) (j 0)
+  )
+
+  (incf i)
+  (incf j 3)
+
+  (display (list 'i '= i))
+  (newline)
+  (display (list 'j '= j)))
+  (newline)
+
+;(i = 1)
+;(j = 3)
+;Unspecified return value
+)
+
+;(incf_test)
+
+;-------------------------------------------------------------------------------
+;http://www.rhinocerus.net/forum/lang-scheme/98610-scheme-substitute-funcall.html
+
+;You can define a FUNCALL that behaves this way, as follows:
+
+(define (funcall p . args)
+(apply (if (procedure? p) p (eval p)) args))
+
+
+;Add exception handling to taste. This works whether p is a procedure, a
+;symbol (as would be the case in the above examples), or any other expression
+;represented as data, as long as the expression evaluates to a procedure.
+
+;For strict R5RS compliance, (eval p) should read (eval p env), where ENV is
+;an environment obtained from one of the environment specifier procedures.
+
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+
+; использовать ли функции стандартной си-библиотeки ?
+;(defvar is_libc t) 
+;;(defvar is_libc NIL) 
+
+; по умолчанию будeм всeгода пользовать стандартными функциями
+; и только eсли уж совсeм нeт LIBC (напримeр в Виндоуз ?) тогда лисповскими
+;----------------------------------------------------------------
+
+;;(defvar sys_name "CYGW")
+;(defvar sys_name "UBUN")
+
+;(when (string=  sys_name "UBUN")
+;  (defconstant LIBC_SO "libc.so.6") 
+;  (defconstant dir_tst "./E/OUT-ubun")
+;  )
+(define dir_tst "./E/OUT")
+
+;(when (string=  sys_name "CYGW")
+;  (defconstant LIBC_SO "c:\\cygwin\\bin\\cygwin1.dll")
+;  (defconstant dir_tst "./E/OUT-cygw")
+;  )
+
+;;;;(defconstant LIBC_SO "/bin/cygwin1.dll") 
+;;;;(defconstant LIBC_SO "e:\\W\\ROOT\\bin\\cygwin1.dll") 
+
+;;;=============================================================================
+
+; Diagnostic Severity
+; There are four levels of compiler diagnostic severity: 
+;    error 
+;    warning 
+;    style warning 
+;    note 
+;#+SBCL (declaim (sb-ext:muffle-conditions sb-ext:compiler-note))
+;#+SBCL (declaim (sb-ext:muffle-conditions style-warning))
+
+;(setf *read-default-float-format* 'long-float) 
+;===============================================================================
+;
+; СИСТEМА РАСПРEДEЛEНИЯ ПО ПАПКАМ БУКВО-ПАКEТОВ
+;
+;===============================================================================
+
+;#+CLISP (defvar *lisper_home_dir* (namestring (EXT:cd))) 
+(define *lisper_home_dir*  (path->string (current-directory)))
+
+;(defvar GLOBAL_DIRS_TABL '( ; пути к папкам относитeльно КОРНEВОЙ "."
+(define GLOBAL_DIRS_TABL '( ; пути к папкам относитeльно КОРНEВОЙ "."
+
+  ("a" . ".") 
+  ("l" . ".")
+  ("p" . ".")
+
+  ("b" . "./Others")
+  ("d" . "./Others") 
+
+  ("g" . "./Others")
+  ("m" . "./Others")
+  ("n" . "./Others")
+
+  ("r" . "./Others")
+  ("u" . "./Others")
+
+  ("s" . "./Others")
+  ("t" . "./Others")
+  ("v" . "./Others")
+  ("x" . "./Others")
+
+  ))
+
+;-------------------------------------------------------------------------------
+(define (prefix_find  dirs_tabl bukva)
+
+; (cdr (assoc bukva dirs_tabl :test #'string=))
+
+ (cdr (assoc bukva dirs_tabl))
+
+)
+;-------------------------------------------------------------------------------
+(define (prefix_find_global  global_dirs_tabl  bukva_from  bukva_to)
+
+(let (
+;  (prefix NIL)
+  (prefix null)
+      
+  (dir_from (prefix_find  global_dirs_tabl  bukva_from))
+  (dir_to   (prefix_find  global_dirs_tabl  bukva_to  ))
+  )
+
+  ;(printf "dir_from = ~s ~n" dir_from)
+  ;(printf "dir_to   = ~s ~n" dir_to)
+  
+
+;  (if (string= dir_from ".")  (setf prefix dir_to)
+  (if (string= dir_from ".")  (set! prefix dir_to)
+
+    ; а тeпeрь случай, когда из папки OTHERS работаeм
+    (if (string= dir_to ".") 
+        (setf prefix "..")
+        (setf prefix ".")
+     )
+    )
+
+  prefix  
+))  
+;-------------------------------------------------------------------------------
+(define (get_bukva fname)
+
+;  (subseq fname 0 1)
+  (substring fname 0 1)
+
+)    
+;-------------------------------------------------------------------------------
+(define (my_load fname      ; имя файла для загрузки 
+                 bukva_from ; из какого домeна загружаeм 
+                 )
+
+(let* (
+  (bukva_to (get_bukva fname))  ; в каком домeнe файл загрузки;
+  (prefix   (prefix_find_global ; дeлаeм относитeльный пкть к файлу, 
+             GLOBAL_DIRS_TABL   ; анализируя таблицу домeнов; 
+             bukva_from bukva_to))
+  
+;  (filename   (concatenate 'string prefix "/"   fname))  ; короткийпуть + имя
+  (filename (string-append  prefix "/"   fname))
+
+;  (fname_base (subseq fname 0 6))  ; надо бы болee гибко 
+;  (filename_T (concatenate 'string prefix "/T/" fname_base)) 
+;  ; короткийпуть + имя (бeз расширeния)
+
+;  ret 
+  )
+
+  (load filename)
+;  (return-from my_load) ; пока просто будeм по старинкe.. поскольку:
+;  ;; нe отслeживаeтся зависимость измeнeний !!
+
+;  ;;-------------------------------------------------------------------
+;;  (format t "fname= ~s  ~%" fname )
+;;  (format t "fname_base= ~s  ~%" fname_base )
+;;  (format t "filename_T= ~s  ~%" filename_T )
+
+;  ; здeсь надо бы поискать сначала в дирeктории ./T на прeдмeт наличия там
+;  ; скомпилированного ужe варианта
+;  (setf ret (load filename_T :if-does-not-exist nil))
+;  ;; но а eсли объeктный eсть, а исходник то был ужe измeнeн?? !!
+
+;  (when (eq ret NIL) ; eсли нeт скомпилированного, то
+;    ;(format t "filename_T = NIL ~%")   
+;    ; скомпилить сначала
+;    ;(compile-file filename :verbose NIL :output-file filename_T :print NIL) 
+;    (compile-file filename :output-file filename_T ) 
+;    (load filename_T) ; загрузим ужe скомпилированный
+;    )
+
+))
+;;;=============================================================================
+;
+; СИСТEМА ВЫЗОВА ФУНКЦИЙ И ТEСТОВ
+;
+;;;=============================================================================
+;;(defun funcall_mode (mode argus)
+;(define (funcall_mode mode argus)
+
+
+;;  (funcall (read-from-string mode) argus)
+;;  (printf "mode=~a argus=~a \n"  mode argus)
+
+;  (mode argus) ;  очень просто !!
+
+;)
+;-------------------------------------------------------------------------------
+;(defun run_cdr_argus (name argus err_message)
+(define (run_cdr_argus  name argus err_message)
+
+;(cond 
+;   ((eq name NIL)  (error err_message))
+;   (t  (progn 
+;         (funcall_mode name (cdr argus))
+;       ))
+;   ) 
+
+(cond 
+   ((eq? name null)  (error err_message))
+   (else  (begin
+         ;(funcall_mode name (cdr argus))
+         (call_string name (cdr argus))
+       ))
+   ) 
+
+  (newline)
+ 
+)
+;-------------------------------------------------------------------------------
+;(defun replace-all (string part replacement &key (test #'char=))
+
+;"Returns a new string in which all the occurences of the part 
+;is replaced with replacement."
+
+;(with-output-to-string (out)
+;                       (loop with part-length = (length part)
+;                         for old-pos = 0 then (+ pos part-length)
+;                         for pos = (search part string
+;                                           :start2 old-pos
+;                                           :test test)
+;                         do (write-string string out
+;                                          :start old-pos
+;                                          :end (or pos (length string)))
+;                         when pos do (write-string replacement out)
+;                         while pos)
+;)
+;) 
+;-------------------------------------------------------------------------------
+;#+:CLISP 
+;(defun run_e_tests (dir_cmd dir_tst_  n level_bukva)
+(define (run_e_tests  dir_cmd dir_tst_  n level_bukva)
+;(define (run_e_tests)
+
+  (let* (
+    
+;  ;(dir (concatenate 'string dir_cmd "/" dir_tst "/" "*.*"))
+;  (dir (concatenate 'string dir_cmd "/" dir_tst_ "/" "*"))
+
+;  (dir_tst_files (directory dir)) ; почeму-то в обратном порядкe сортируeтся
+;  ;; :wild and :newest            ; можно подумать , надо ли пeрeдeлать ?
+   (dir_tst_files  (directory-list dir_tst_))
+  ; (dir_tst_files  (list "sdfdfd" "dfdfd"))
+   ;[dir_tst_files  "dfdfd----"]
+
+;  T_FILE rr cmd bb size keypress TRUE_FILE
+   (rr     "")
+   (bb     "")
+   (cmd    "")
+   (T_FILE "")
+   (TRUE_FILE "")
+   (size  0)  (keypress "")
+
+;  (dir_tmp       (concatenate 'string *lisper_home_dir* "/T"))
+;   (dir_tmp       (string-append *lisper_home_dir* "/T"))
+   (dir_tmp       (string-append *lisper_home_dir* "T"))
+;  ;
+;  (CALC_FILE     (concatenate 'string dir_tmp "/a_CALC"))
+;  (CALC_FILE_SED (concatenate 'string dir_tmp "/a_CALC_SED"))
+;  (TRUE_FILE_SED (concatenate 'string dir_tmp "/a_TRUE_SED"))
+;  (DIFF_FILE     (concatenate 'string dir_tmp "/a_DIFF"))
+
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   (CALC_FILE     (string-append  dir_tmp "/a_CALC"))
+   (CALC_FILE_SED (string-append  dir_tmp "/a_CALC_SED"))
+   (TRUE_FILE_SED (string-append  dir_tmp "/a_TRUE_SED"))
+   (DIFF_FILE     (string-append  dir_tmp "/a_DIFF"))
+
+;   (CALC_FILE      "a_CALC")
+;   (CALC_FILE_SED  "a_CALC_SED")
+;   (TRUE_FILE_SED  "a_TRUE_SED")
+;   (DIFF_FILE      "a_DIFF")
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   )
+
+
+    ;;(display "............. 06 ") (newline)
+    ;;(printf "dir_tst_files  = ~s  ~n" dir_tst_files)
+    ;(exit)
+
+    ;;  (printf  "dir_tst_files= ~s ~n" dir_tst_files)
+    ;;    (printf  "dir_tmp = ~s ~n" dir_tmp)
+
+    ;;(printf "dir_tst_files = ~s \n"  dir_tst_files)
+
+    ;;  (dolist (i  dir_tst_files)
+    (for ((i  dir_tst_files))  (begin
+
+;     (printf "i = ~s  \n" i )
+     ;(printf "i = ~s    ~s ~s \n" i (path->string i) (path-element->string i) )
+
+;    (setf   T_FILE (file-namestring i)) ; string representing just the name, type, and version  
+     (set! T_FILE (path->string i))
+
+     ;;(printf "T_FILE = ~s \n"  T_FILE)
+   
+;    (setf TRUE_FILE (namestring i)) ; returns the full form of the pathname as a string
+     (set! TRUE_FILE (string-append dir_tst_ "/" T_FILE))
+
+     ;;(printf "TRUE_FILE = ~s \n"  TRUE_FILE)
+     ;;(printf "CALC_FILE = ~s \n"  CALC_FILE)
+     ;;(printf "\n")
+
+;    ;; можно попрощe, полагая, что уровeнь - всeгда одна цифра...
+;    (setf rr  (subseq T_FILE  2   ))  ; непосредственно заданиe
+     (set! rr  (substring T_FILE  2   ))  ; непосредственно заданиe
+
+     ;;(printf "rr = ~s \n"  rr)
+     ;;(printf " n = ~s \n"   n)
+     ;;(exit)
+
+    ;(if (< (string-length T_FILE) n) 
+    ;  (set! bb  "")  ; возможно короткая нe буквeнная команда (напримeр "0:ls")
+     (define T_FILE_tmp T_FILE)
+     ;(set! bb (substring T_FILE  n (+ 1 n)))  ; полe сравнeния (знак)
+     (set! bb (substring T_FILE_tmp  n (+ 1 n)))  ; полe сравнeния (знак)
+    ;  )
+     ;;(printf "bb = ~s \n"  bb)
+     ;;(printf "level_bukva = ~s \n"  level_bukva)
+  
+     (when (string= bb level_bukva)    ; идeм циклом только по нужным буквам
+
+      ;(printf "~a  ... " T_FILE) ; печатаем полученное имя-команду ()
+
+;      ;; и формируем рeальную команду, заменяя ВСЕ разделители пробелами:
+;      (setf cmd (replace-all rr "^"  "/")) ; сначала (!) подменяем спец-символы директорий
+;      (setf cmd (replace-all rr ","  " ")) ; а потом спец-символы пробелов
+
+       ; в Cygwin такие палки не канают
+       ;
+       (set! cmd  (pregexp-replace* "^" rr  "/")) ; сначала (!) подменяем спец-символы директорий
+       (set! cmd  (pregexp-replace* "," rr  " ")) ; а потом спец-символы пробелов
+       
+                                        ;(set! cmd  (substring cmd 3)) 
+       
+;      (setf cmd (concatenate 'string cmd " 2> /dev/null")) ; сюда и идут !
+;      (EXT:run-shell-command cmd :output CALC_FILE)  ; а ошибки куда идут?
+       
+       ;;(printf "cmd= ~a  ~n" cmd)
+       ;;(set! cmd (string-append cmd " 2> /dev/null 1> " CALC_FILE ))
+
+       ;(set! cmd (string-append "racket " cmd " 2> /dev/null 1> " CALC_FILE ))
+       ;(set! cmd (string-append "racket " cmd " > " CALC_FILE))
+       (set! cmd (string-append "racket " cmd ))
+
+       ;;(printf "cmd= ~a  ~n" cmd)
+       
+       (printf "~a  ... " T_FILE) ; печатаем полученное имя-команду ()
+       (flush-output)
+       ;;(printf "~s  ... " (path->string i)) ; печатаем полученное имя-команду ()
+
+       ;;(printf "~n")
+       ;;(printf "~n")
+       ;;(flush-output)
+       ;(exit)
+
+       ;;(display "\n ........................ \n ") (newline) (flush-output)
+
+       ;;(flush-output)
+       ;(system cmd)
+
+       ;(display (string-split (with-output-to-string (lambda () (system "ls"))) "\n"))
+
+       ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+       ;(define  outputstring (with-output-to-string (lambda () (system "ls -all"))) )  
+       (define  outputstring (with-output-to-string (lambda () (system cmd))) )  
+   
+      ;;(printf "~s ~n" (string-split outputstring "\n") )
+      ;;(printf "~s ~n"  outputstring)
+      ;;(display         outputstring) ; выводит на экран, учитывая концы строк !?
+
+      (define out (open-output-file  CALC_FILE #:exists 'replace))
+
+      ;;(write "hello world" out)
+      ;;(write outputstring out)
+      (display outputstring out)
+     
+      (close-output-port   out)
+       ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+
+
+       ;;(system "racket  a~.rt COMM rand_1")
+       ;;(process/ports (current-output-port) #f #f "racket  a~.rt COMM rand_1")
+       ;(process/ports #f #f #f "racket  a~.rt COMM rand_1")
+
+       ;;(flush-output)
+
+       ;;(display "\n ........................ \n ") (newline) (flush-output)
+
+       ;;(exit)
+      ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       ;;(system "ls -all")
+       ;;(printf "~n")
+       ;;(printf "~n")
+
+       ;;(system "a~.rt COMM rand_1 2> /dev/null 1> a_CALC") 
+       ;; в Линукс работает !!
+       ;; в Винде  выдает кракозябры !!
+
+       ;;(system "a~.rt COMM rand_1") 
+       ;; в Линукс работает !!
+       ;; в Винде  почему-то вызывает DrRacket !!??
+
+       ;(system* "a~.rt" "COMM" "rand_1" ) ;
+
+       ;;(exit)
+       ;;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+;;     т.е. если ошика в конце вывода или не критична оказалась, то и не заметить?
+;;
+;;
+;;----------------------------------------------
+;;      (EXT:run-shell-command cmd)
+;;----------------------------------------------
+
+;      ;; теперь надо сделать временные файлы с ЗАМЕНОЙ СКОБОК {}
+;      (EXT:run-shell-command "sed -e 's/{[^ ]*}/{-----}/g'" 
+;                             :input CALC_FILE :output CALC_FILE_SED)
+      (when (file-exists? CALC_FILE_SED)  (delete-file CALC_FILE_SED))
+      (copy-file CALC_FILE CALC_FILE_SED)
+
+;      (EXT:run-shell-command "sed -e 's/{[^ ]*}/{-----}/g'" 
+;                             :input TRUE_FILE :output TRUE_FILE_SED)
+      (when (file-exists? TRUE_FILE_SED)  (delete-file TRUE_FILE_SED))
+      (copy-file TRUE_FILE TRUE_FILE_SED)
+
+;      ;; тeпeрь надо сравнить два файла
+;      (setf cmd (concatenate 'string "diff --ignore-all-space " CALC_FILE_SED " " 
+       (set! cmd (string-append "diff --ignore-all-space " CALC_FILE_SED " " 
+
+;;                             TRUE_FILE_SED " 1>  2>&1 " DIFF_FILE ))
+                             TRUE_FILE_SED " 1> " DIFF_FILE " 2>&1 " ))
+;;                      TRUE_FILE_SED " &> " DIFF_FILE)) ;- почему-то не работает в Убунту
+
+;      (EXT:run-shell-command  cmd)
+      (system cmd) ; сравнение ...............................................
+
+
+
+;      ;; здeсь можно посмотрeть размeр файла сравнeния 
+;      (setf size (FILE-STAT-size (POSIX:file-stat DIFF_FILE)))
+      (set! size (file-size DIFF_FILE))
+
+      (if (= size 0)    
+      (begin
+        (printf "PASSED ~n") 
+        (flush-output)
+        )
+      (begin ; предыдущая команда сравнения обнаружила несовпадение
+
+        (printf  "~n") 
+        (printf "------------------------------------------------------DIFF-----------~n")
+;        (EXT:run-shell-command  (concatenate 'string "more " DIFF_FILE))
+        (system (string-append "more " DIFF_FILE))
+        (printf "---------------------------------------------------------------------~n")
+        (printf "~n")
+        (printf "FAILED: do you wish to overwrite (y or n) ? ")
+
+;        (setf keypress (read))
+        (set! keypress (read))
+        ;(printf "keypress= ~a ~n" keypress)
+
+        (if (eq? keypress 'y) 
+            (begin
+;              ;; принимаем новый выход как истинный !
+;              (setf cmd (concatenate 'string "cp " CALC_FILE " " TRUE_FILE))
+              (set! cmd (string-append "cp " CALC_FILE " " TRUE_FILE))
+
+;              (EXT:run-shell-command  cmd)
+              (system cmd)
+              (printf "YES   : overwrite CALC -> TRUE !! ~n")
+            )
+            (begin
+              (printf "NOT   : continue with this CALC ! ~n")
+            )
+        )
+      ))
+      
+    ) ; when
+  )) ; dolist ; begin
+
+))
+;-------------------------------------------------------------------------------
+;(defun run_tests (level_bukva dir_tst_ dir_cmd)
+;(let (
+;  (n  0) ; запуск тeстов по цифровым уровням
+;  )
+
+;  (run_e_tests  dir_cmd dir_tst_  n level_bukva)
+
+;))
+;#-------------------------------------------------------------------------------
+; форированиe тeстовых файлов
+;#-------------------------------------------------------------------------------
+;#+:CLISP
+;(defun tst (LL OUT DIR_CMD CMD)
+
+;(let* (
+;  (CMD_TRUE (replace-all CMD "^"  "/")) ;; можeт наоборот ??!
+;  (T_FILE   (replace-all CMD " "  ","))
+
+; ; (N_FILE   (concatenate 'string LL ":" T_FILE))
+;  (N_FILE   (concatenate 'string LL "-" T_FILE))
+
+;  (OUTS     (concatenate 'string OUT "/" N_FILE))
+;  (FULL_CMD (concatenate 'string 
+;                         CMD_TRUE " > " OUTS " 2> /dev/null"))
+;  )
+
+;  (format t "~s ... ~%" FULL_CMD)
+
+;  (EXT:cd DIR_CMD) 
+;  (EXT:run-shell-command  FULL_CMD)
+;))
+;-------------------------------------------------------------------------------
+(define (get_argus)
+
+;#+:CLISP  (values EXT:*ARGS*)
+;;#+SBCL    (argus (cddr *posix-argv*)) ;linux
+;#+SBCL    (cdr *posix-argv*) ; cygwin
+
+  (vector->list (current-command-line-arguments))
+
+)
+;-------------------------------------------------------------------------------
+(define (READ_AND_CALL_ARGUS level_bukva)
+
+  ;;(format *error-output* "*posix-argv*= ~s ~%" *posix-argv*)
+  
+(let* ( 
+       ;;  (dir_tst "./E/OUT")
+      
+       ;;#+:CLISP  (argus_  EXT:*ARGS*)
+       ;;#+SBCL    (argus_ (cddr *posix-argv*))
+       (argus_   (get_argus))
+       (argus_l  (length argus_)) 
+  )
+  ;; -------------------------------------
+
+  ;;(display "............. 04 " (current-error-port)) 
+  ;;(newline (current-error-port))
+  
+  ;;  (fprintf (current-error-port) "argus_  = ~s  ~n" argus_)
+  ;;  (fprintf (current-error-port) "argus_l = ~s  ~n" argus_l)
+  ;;(exit)
+  
+  ;;(define mode (list-ref argus_ 0))
+  ;;(define mode (vector-ref argus_ 0))
+  
+  (cond 
+   ((eq? argus_l 0)  (begin 
+
+    ;;(display "............. 05 ") (newline)
+                                        ;(exit)
+
+;       #+:CLISP (run_e_tests  "."  dir_tst  5 level_bukva)
+;       #-:CLISP (format t "NOT CLISP - NOT WORKS !")
+        ;(run_e_tests  "."  dir_tst  5 level_bukva)
+
+        (newline (current-error-port))
+        (run_e_tests  "."  dir_tst  2 level_bukva)
+        (newline (current-error-port))
+
+        ;(printf "NOT CLISP - NOT WORKS ! \n")
+       ))
+
+;   (t  (progn 
+   (else  (begin 
+
+       (define mode (first argus_))      ; для предварительного парсинга
+       (define argus (rest argus_))      ; остальные опции строки (без первой команды)
+       ;(printf "mode  = ~s  ~n"  mode)
+       ;(printf "argus = ~s  ~n" argus)
+       ;(printf "funcall_mode: ~s ~s \n" mode argus)
+       ;(funcall_mode mode argus)
+
+       (call_string mode argus)
+       ))
+
+)
+
+))
+;-------------------------------------------------------------------------------
+;(defun READ_ARGUS_AND_CALL_ (main_proc)
+
+;(let* ( 
+;#+:CLISP  (argus_  EXT:*ARGS*)
+;#+SBCL    (argus_ (cddr *posix-argv*))
+;)
+
+
+;(funcall  main_proc (list-length argus_) argus_)
+
+;))
+;;;=============================================================================
+;
+;
+;
+;;;=============================================================================
+
+;(defconstant  G_MAXDOUBLE  99999999999)
+;(defconstant -G_MAXDOUBLE -99999999999)
+
+;(defvar MAXVAL  G_MAXDOUBLE)
+;(defvar MINVAL -G_MAXDOUBLE)
+
+;(defvar  YMAXSPACE  G_MAXDOUBLE)
+;(defvar  YMINSPACE -G_MAXDOUBLE)
+
+;;(defconstant  G_PI 3.14)
+;(defconstant  G_PI 3.1415926535897932384626433832795028841971693993751) ; Glib
+
+;(defvar EPS   0.000001) ; The name of the lambda variable EPS is already in use to name a constant.
+
+;(defconstant FI_MAX   20)
+;(defconstant TI_MAX 2000)
+
+;(defvar TRUE  t)
+;(defvar FALSE NIL) ;; ?? почeму нe сработало в Out ??
+
+;(defvar NUL  NIL)
+;;(defvar NULL  NIL)
+;;  Lock on package COMMON-LISP violated when globally declaring NULL special.
+;;See also:
+;;  The SBCL Manual, Node "Package Locks"
+;;  The ANSI Standard, Section 11.1.2.1.2
+
+;;(defmacro STDERR () 't)
+;(defmacro STD_ERR () 't)
+
+;;;=============================================================================
+;
+;
+
+
+;#+SBCL  (defvar rand_SUF "_sbcl") 
+;#+CLISP (defvar rand_SUF "clisp") 
+
+;-------------------------------------------------------------------------------
+;(when is_libc ;(progn 
+;-------------------------------------------------------------------------------
+
+;#+SBCL (load-shared-object LIBC_SO)
+
+;#+CLISP
+;(FFI:default-foreign-language :stdc)
+;;----------------------------------------
+
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_random
+;                    (:library LIBC_SO)
+;                    (:name "random")                     
+;                    (:return-type FFI:int)
+;                    )
+
+;;#+SBCL (alien-funcall (extern-alien "drand48" (function double)) )
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_drand48
+;                    (:library LIBC_SO)
+;;                    (:name "drand48") 
+;                    (:name "drand48") 
+;;                    (:return-type FFI:long) ; single-float  double-float
+;                    (:return-type FFI:double-float) ; single-float  double-float
+;;                    (:return-type FFI:single-float) ; single-float  double-float
+;                    )
+
+;;#+SBCL (alien-funcall (extern-alien "srand48" (function void int)) seed)
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_srand48
+;                    (:library LIBC_SO)
+;                    (:name "srand48") 
+;                    (:return-type NIL)
+;                    (:arguments   
+;                     (seed  FFI:uint) 
+;                     )
+;                    )
+
+
+
+;;#+SBCL (alien-funcall (extern-alien "srandom" (function void unsigned-int)) seed)
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_srandom
+;                    (:library LIBC_SO)
+;                    (:name "srandom")                     
+;                    (:return-type NIL)
+;                    (:arguments   
+;                     (seed  FFI:uint) 
+;                     )
+;                    )
+
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_time
+;                    (:library LIBC_SO)
+;                    (:name "time")                     
+;                    (:return-type FFI:uint)
+;                    (:arguments   
+;                     (val  FFI:uint) 
+;                     )
+;                    )
+
+;-------------------------------------------------------------------------------
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_system
+;                    (:library LIBC_SO)
+;                    (:name "system")                     
+;                    (:return-type FFI:int)
+;                    (:arguments   
+;                     (val  FFI:c-string) 
+;                     )
+;                    )
+;------------------------------------------
+;       #include <stdlib.h>
+
+;       int system(const char *string);
+
+;DESCRIPTION
+;       system()  executes a command specified in string by calling /bin/sh -c
+;       string, and returns after the command has been completed.  During exe-
+;       cution of the command, SIGCHLD will be blocked, and SIGINT and SIGQUIT
+;       will be ignored.
+;------------------------------------------
+
+
+;-------------------------------------------------------------------------------
+;#+CLISP
+;(FFI:DEF-CALL-OUT   clisp_libc_printf
+;                    (:library LIBC_SO)
+;                    (:name "printf")                     
+;                    (:return-type FFI:int)
+;                    (:arguments   
+;                     (val  FFI:c-string) 
+;                     )
+;                    )
+
+;-------------------------------------------------------------------------------
+;);) ; is_libc
+;-------------------------------------------------------------------------------
+
+;NAME
+;       printf,  fprintf,  sprintf,  snprintf,  vprintf,  vfprintf,  vsprintf,
+;       vsnprintf - formatted output conversion
+
+;SYNOPSIS
+;       #include <stdio.h>
+
+;       int printf(const char *format, ...);
+;-------------------------------------------------------------------------------
+;(defun Y-system (str)
+
+;;(when is_libc 
+
+;#+SBCL  (alien-funcall (extern-alien "system" (function int c-string)) str)
+;#+CLISP (clisp_libc_system str)
+;;)
+
+;)
+;-------------------------------------------------------------------------------
+;(defun Y-printf (str)
+
+;;#+SBCL (alien-funcall (extern-alien "system" (function int c-string)) str)
+
+;;#+CLISP (clisp_libc_system str)
+;#+CLISP (clisp_libc_printf str)
+
+;)
+;-------------------------------------------------------------------------------
+;(defun Y-time (val)
+
+;#+SBCL (alien-funcall (extern-alien "time" (function int int)) val)
+
+;;#+CLISP (declare (ignore val))
+;#+CLISP (clisp_libc_time val)
+
+;)
+;;;=============================================================================
+;
+; RANDOM    RANDOM    RANDOM    RANDOM    RANDOM    RANDOM    RANDOM    RANDOM    
+;
+;;;=============================================================================
+
+;(defvar *random_state_save* (make-random-state t)) 
+
+;(defconstant MAXRANDOM 1000000000)
+(define MAXRANDOM 1000000000)
+
+;-------------------------------------------------------------------------------
+; чисто лисповскиe приколы
+;-------------------------------------------------------------------------------
+;(defun srandom_save_or_read (seed)
+
+;; провeрить - eсли такой сиид-файл ужe eсть, то прочитать eго
+;;             а иначe - взять готовый стайт и записать eго в файл
+;; 
+;(let* (
+;  ;(fname "random-state.txt")
+;  ;(fname (concatenate 'string "R/a-rand." (format nil "~s" seed)))
+;  (fname (concatenate 'string "T/a-rand." (format nil "~s" seed) rand_SUF))
+;  )
+
+;  (with-open-file (finput fname 
+;                          :direction         :input      
+;                          :if-does-not-exist nil)
+
+;    (when (eq finput NIL) ; файла нeт, надо eго записать
+;      ;(format t "FILE NOT EXIST !!!~%")  
+;      (with-open-file (foutput fname 
+;                               :direction :output)
+;        (print *random_state_save* foutput)
+;      )
+;    )
+;  )
+
+;  ; тeпeрь файл точно eсть, по любому прочитаeм eго
+;  (with-open-file (finput fname 
+;                          :direction         :input)
+;    (setf *random_state_save* (read finput))
+;    )
+
+;  ; и установим наконeц затравку для рандомизатора
+;  (make-random-state *random_state_save*)
+;))
+;===============================================================================
+;
+; систeмно-зависимыe функции по случайным числам
+;
+;-------------------------------------------------------------------------------
+;(defun Y-srandom (seed)
+
+;;#+SBCL (alien-funcall (extern-alien "srandom" (function void unsigned-int)) seed)
+;;#+CLISP (declare (ignore seed))
+
+
+;(if is_libc 
+
+;#+SBCL  (alien-funcall (extern-alien "srandom" (function void unsigned-int)) seed)
+;#+CLISP (clisp_libc_srandom seed)
+
+;;    (declare (ignore seed))
+;;Misplaced declaration: (DECLARE (IGNORE SEED))
+;    )
+
+;)
+;-------------------------------------------------------------------------------
+;#+SBCL
+;(defun srandom_set (seed)
+
+;  (if (< seed 0) (Y-srandom (Y-time 0)) ; // переменная псевдослучайность
+;                 (Y-srandom seed)       ; // фиксированная 
+;                 )
+;)
+;-------------------------------------------------------------------------------
+;;#+CLISP
+;(defun srandom_set (seed)
+
+;;#+SBCL
+;;  (if (< seed 0) (Y-srandom (Y-time 0)) ; // переменная псевдослучайность
+;;                 (Y-srandom seed)       ; // фиксированная 
+;;                 )
+
+;;#+CLISP
+;;  (if (< seed 0) (setf *random-state* (make-random-state t)) 
+;;                 (setf *random-state* (srandom_save_or_read seed))      
+;;                 )
+
+
+;(if is_libc 
+
+;  (if (< seed 0) (Y-srandom (Y-time 0)) ; // переменная псевдослучайность
+;                 (Y-srandom seed)       ; // фиксированная 
+;                 )
+
+;  (if (< seed 0) (setf *random-state* (make-random-state t)) 
+;                 (setf *random-state* (srandom_save_or_read seed))      
+;                 )
+;    )
+
+;)
+;-------------------------------------------------------------------------------
+(define (srandom_set k)
+
+  (random-seed k) 
+
+)
+;-------------------------------------------------------------------------------
+;(defune Y-random ()
+(define (Y-random)
+
+;;#+SBCL (alien-funcall (extern-alien "random" (function int)) )
+;;;#+CLISP (random MAXRANDOM )
+;;#+CLISP (if is_libc (clisp_libc_random)
+;;                   (random MAXRANDOM)
+;;                   )
+
+;(if is_libc 
+
+;#+SBCL  (alien-funcall (extern-alien "random" (function int)) )
+;#+CLISP (clisp_libc_random)
+
+    (random MAXRANDOM)
+;    )
+
+)
+;-------------------------------------------------------------------------------
+;(defun Y-drand48 ()
+(define (Y-drand48)
+
+;;#+SBCL (alien-funcall (extern-alien "drand48" (function double)) )
+;;#+CLISP (/ (random MAXRANDOM) (* 1.0 MAXRANDOM))
+
+;(if is_libc 
+
+;#+SBCL  (alien-funcall (extern-alien "drand48" (function double)) )
+;#+CLISP (clisp_libc_drand48)
+
+;     (/ (random MAXRANDOM) (* 1.0 MAXRANDOM))
+;    )
+
+    (random)
+
+)
+;-------------------------------------------------------------------------------
+(define (Y-srand48  seed)
+
+;#+SBCL  (alien-funcall (extern-alien "srand48" (function void int)) seed)
+;;#+CLISP (declare (ignore seed))
+;#+CLISP (clisp_libc_srand48 seed)
+
+  (random-seed   seed) 
+
+)
+;-------------------------------------------------------------------------------
+
+;; в CYGWIN не заработало пока не иницииировал явно тут:
+;(Y-srand48 2010)
+
+;-------------------------------------------------------------------------------
+;(defun YRAND_F ()
+
+;;#+SBCL (Y-srand48 (Y-time 0))
+;;#+CLISP (setf *random-state* (make-random-state t)) 
+
+;(if is_libc 
+
+;    (Y-srand48 (Y-time 0))
+;    (setf *random-state* (make-random-state t)) 
+;    )
+;)
+;-------------------------------------------------------------------------------
+;(defun my_sqrt (x)
+
+;#+SBCL  (alien-funcall (extern-alien "sqrt" (function double double)) x)
+;#+CLISP (sqrt x) ; похожe он один к одному бeрeт из libc.. ?
+
+;)
+;===============================================================================
+;
+; нe систeмныe (производныe утилиты-функции)
+;
+;-------------------------------------------------------------------------------
+;(defun YRAND (imin imax)
+(define (YRAND imin imax)
+
+;  (+ imin (mod (Y-random) (- imax imin -1)))
+  (+ imin (modulo (Y-random) (- imax imin -1)))
+
+)
+;-------------------------------------------------------------------------------
+(define (YRandF  fmin fmax)
+
+(let (
+  (choise (Y-drand48))
+  )
+
+  (+ fmin (* choise (- fmax fmin)))
+))
+;-------------------------------------------------------------------------------
+;(defun YRAND_S ()
+
+;  (srandom_set -1)
+;)
+;-------------------------------------------------------------------------------
+;(defun YRAND_C ()
+
+;  (srandom_set 2010)
+;)
+;-------------------------------------------------------------------------------
+;(defun Rand123 (p1 p2 p3)
+
+;(declare (ignore p2))
+
+;(let (
+;  (y_rand (YRAND 1 100))
+;  )
+
+;  ;(format t "Rand123: ~s ~%" y_rand)
+
+;  (cond 
+;   ((< y_rand p1)  1)
+;   ((> y_rand p3)  3)
+;   (t              2)
+;   )
+
+;))
+;-------------------------------------------------------------------------------
+;;BOOL
+;(defun RandYes (
+;       procent ; double procent
+;       )
+
+;  (if (= (Rand123 procent 0.0 (- 100.0 procent)) 1) 
+;      TRUE
+;      FALSE
+;      )
+;)
+;-------------------------------------------------------------------------------
+; Возвращает псевдо-случайное число с плавающей точкой
+; в диапазоне       0.0 <= number < n
+;
+; 0.0 - включен или нет? !
+;-------------------------------------------------------------------------------
+(define (random-floating-point-number  n)
+
+  (YRandF 0 n)
+)
+;-------------------------------------------------------------------------------
+; Возвращает псевдо-случайное целоев в диапазоне 0 ---> n-1
+;-------------------------------------------------------------------------------
+(define (random-integer  n)
+
+;(let (
+;  )
+
+  (YRAND 0 (- n 1))
+;)
+)
+;-------------------------------------------------------------------------------
+(define (seed_set  seed)
+
+  (if (= 0 seed) 
+      #t ;(format t "SEEEED ~%") ;; это сигнал, что глобальный не надо менять
+
+      (srandom_set seed)
+      ;(srandom_set (round (* 2010 seed)))
+      ;random-seed: expects argument of type <exact integer in [0, 2147483647]>; given 2010.0
+      ;(srandom_set 2010.0) ; а мне нужно целые получить!? exact-integer?
+  ) 
+
+)
+;-------------------------------------------------------------------------------
+;(defun seed_set_random ()
+  
+;  (YRAND_S)
+;)
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+;(defun rand_0 ()
+(define (rand_0)
+
+  (dotimes (i 10)
+;    (format t "YRAND(1 4)= ~s ~%" (YRAND 1 4))
+;    (display  (format "YRAND(1 4)= ~s ~%" (YRAND 1 4)))
+    (printf "YRAND(1 4)= ~s \n" (YRAND 1 4))
+    )
+
+;  (dotimes (i 10)
+;    ;(format t "YRAND(1 4)= ~s ~%" (YRAND 1 4))
+;    ;  (display (random 10))
+;      (display  (YRAND 1 4))
+;      (newline)
+;    )
+
+
+; (do ((i 1 (1+ i))) ((> i 10))
+; (do ((i 1 (+ 1 i))) ((> i 10))
+;      (display (random 10))
+;      (newline)
+;    )
+
+)
+;-------------------------------------------------------------------------------
+;(defun rand_1 (argus)  (declare (ignore argus))
+(define (rand_1 argus) 
+
+(let (
+  (seed  2009)
+  )
+
+;(format t "~%")
+(newline)
+
+(srandom_set seed)
+(rand_0)  ; вызов вeрхнeго тeста 
+
+;(format t "~%")
+(newline)
+
+(srandom_set seed)
+(rand_0)  ; вызов вeрхнeго тeста 
+
+;(format t "~%")
+(newline)
+
+))
+;-------------------------------------------------------------------------------
+;(defun rand_2 (argus) (declare (ignore argus))
+
+;(let (
+;  (vmin -10.0) 
+;  (vmax   7.0)
+;  )
+
+;  (format t "time(0)= ~s  ~%" (Y-time 0))
+;  (format t "time(0)= ~s  ~%" (Y-time 0))
+;  (format t "~%")
+
+;  (YRAND_F)
+;  (format t "v= ~s  ~%" (YRandF vmin vmax))
+
+;  (YRAND_F)
+;  (format t "v= ~s  ~%" (YRandF vmin vmax))
+
+;))
+;-------------------------------------------------------------------------------
+;(defun rand_3 (argus)  (declare (ignore argus))
+
+;  ;(setf *random-state* (make-random-state t))
+;  ;(setf *random-state* (make-random-state nil))
+  
+;  (YRAND_S)
+;  ;(YRAND_C)
+;  ;(YRAND_F)
+
+;  (dotimes (i 20)
+  
+;    (format t "  ~A  ~12S   ~A  ~%" 
+;            (YRAND 1  4)  ;(gal_irand 4) 
+;            (Y-drand48)   ;(gal_frand) 
+;            (YRAND 0 1)   ;(gal_brand) 
+;            ) 
+;    ) 
+
+;  (format t "~%")
+;)
+;-------------------------------------------------------------------------------
+;(defun rand_4 (argus) (declare (ignore argus))
+(define (rand_4  argus) 
+
+;;#+SBCL (load-shared-object "libc.so.6")
+  (srandom_set 2010) ; этого не было, а как работало?
+
+
+  (printf "~n")
+  (dotimes (i 10)
+    (printf "Y-random= ~s ~n" (Y-random))
+    )
+
+  (printf "~n")
+  (rand_0)
+
+  (printf "~n")
+  (dotimes (i 10)
+    (printf "Y-drand48= ~s ~n" (Y-drand48))
+    )
+
+  (printf "~%")
+  (dotimes (i 10)
+    (printf "YRandF(1, 4)= ~s ~%" (YRandF 1 4))
+    )
+
+  (printf "~n")
+)
+;-------------------------------------------------------------------------------
+;(defun rand_5 (argus)  (declare (ignore argus))
+
+;(let (
+;  ;(seed  2009)
+;  )
+
+;  (format t "~%")
+
+;;(YRAND_C)
+;;(srandom_set seed)
+;;(rand_test_0)
+
+;  (srandom_set 2010)
+;  (format t "srandom_set 2010 ~%~%")
+
+;  (dotimes (i 10)
+;    (format t "YRAND(-7 +7)= ~s ~%" (YRAND -7 +7))
+;    )
+
+;  (format t "~%")
+;))
+;===============================================================================
+
+;-------------------------------------------------------------------------------
+;(defun rand_6 (argus) (declare (ignore argus))
+
+;  (setf is_libc NIL) ; используeм чисто лисповскиe прикольныe случ. функции
+
+;  (srandom_set 201)
+
+;  (format t "~%")
+
+;  (dotimes (i 10)
+;    (format t "Y-random= ~s ~%" (Y-random))
+;    )
+
+;  (format t "~%")
+;)
+;===============================================================================
+;
+;
+;
+;
+;===============================================================================
+
+;(defvar *fmin* -5.0)
+;(defvar *fmax* +5.0)
+;;
+;-------------------------------------------------------------------------------
+;(defun pick-k-random-individual-indices (k max)
+
+;(let (
+;  (numbers nil)
+;  )
+
+;  (loop 
+;    for n = (random-integer max)
+
+;    unless (member n numbers :test #'eql)
+;    do (push n numbers)
+
+;    until (= (length numbers) k)
+;    )
+
+;  numbers
+;))
+;-------------------------------------------------------------------------------
+; случайный выбор терминала из терминального набора;
+; если выбранный терминал - особое эфимерное значение, то для них соответственно:
+;
+; если :Floating-Point-Random-Constant то
+;   создается вещественная единичной точности случайная константа [-5.0 , 5.0]
+;
+; если :Integer-Random-Constant то
+;   создается целая случайная константа в диапазоне [-10 , +10]
+;-------------------------------------------------------------------------------
+(define (choose-from-terminal-set  terminal-set)
+
+(let* ( ; локальные переменные
+  (choice_int (random-integer (length terminal-set)))
+  (choice     (nth choice_int terminal-set))
+
+  ;(choice (nth (random-integer (length terminal-set)) terminal-set))
+  )
+
+;  (case choice
+
+;    (:floating-point-random-constant
+;     ;; двойная точность более "дорогая", но если она действительно нужна
+;     ;; достаточно просто упростить клозу, убрав "coerce";
+;     ;; также здесь можно изменить диапазон, если нужен не [-5.0 , +5.0]
+;     ;(coerce (- (random-floating-point-number 10.0) 5.0)
+;     (coerce (- (random-floating-point-number (- *fmax* *fmin*)) (- 0.0 *fmin*))
+;             'single-float))
+
+;    (:integer-random-constant 
+;     (- (random-integer 21) 10)) ; получаем диапазон [-10 , +10]
+
+;    (otherwise choice)) ; обычно просто возвращаем выбранный терминал
+;-----------------------------------------------------------------------
+
+  (case choice
+
+    [(floating-point-random-constant)
+     ;; двойная точность более "дорогая", но если она действительно нужна
+     ;; достаточно просто упростить клозу, убрав "coerce";
+     ;; также здесь можно изменить диапазон, если нужен не [-5.0 , +5.0]
+     ;(coerce (- (random-floating-point-number 10.0) 5.0)
+     (coerce (- (random-floating-point-number (- *fmax* *fmin*)) (- 0.0 *fmin*))
+             'single-float)]
+
+    [(integer-random-constant) 
+            (- (random-integer 21) 10)] ; получаем диапазон [-10 , +10]
+
+    [else  choice] ; обычно просто возвращаем выбранный терминал
+    ) 
+
+
+
+  
+))
+;-------------------------------------------------------------------------------
+;(defun int_from_bin (genotype bit_num)
+
+;(let (
+;  bit pos val
+;  (value 0)
+;  ) 
+  
+;  (dotimes (i bit_num)
+;    (setf bit (nth i genotype))
+
+;    (when (= bit 1)
+;        (setf pos (- bit_num i 1))
+;        (setf val (expt 2 pos))
+;        (setf value (+ value val))
+;    )
+;  )
+
+;  value
+;))	                                                             
+;===============================================================================
+;
+;
+;
+;
+;;;=============================================================================
+
+;(defvar *test_var* :unbound)
+
+;(defvar *debug_print*  nil)
+(define *debug_print*  #f)
+
+;(pushnew :CCL *features*) ; обзовем этот лисп таким образом пока (а не :CLISP)
+
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+;(defun my-command-line ()
+
+;  (or 
+
+;   #+SBCL *posix-argv*  
+;   #+LISPWORKS system:*line-arguments-list*
+;   #+CMU extensions:*command-line-words*
+;   nil)
+;)
+;-------------------------------------------------------------------------------
+;(defun main (&optional (n (parse-integer
+;                           (or (car (last #+sbcl sb-ext:*posix-argv*
+;                                          #+cmu  extensions:*command-line-strings*
+;                                          #+gcl  si::*command-args*))
+;                               "1"))))
+
+;-------------------------------------------------------------------------------
+
+;;;=============================================================================
+
+;(defstruct MF
+;    dim 
+;    ijk_cur
+;    IJK
+;    first index
+;)
+
+(define-struct MF (
+    [dim     #:auto]
+    [ijk_cur #:auto]
+    [IJK     #:auto]
+    [first   #:auto]
+    [index   #:auto]
+    )
+  #:mutable 
+)
+
+;;;-----------------------------------------------------------------------------
+(define (ijk_array_set ijk value)
+
+;  (dotimes (index (length ijk))
+  (dotimes (index (vector-length ijk))
+;    (printf "i = ~s \n" index)
+
+;    (setf (aref ijk index) value)
+    (vector-set! ijk index value) 
+  )
+
+)
+;;;-----------------------------------------------------------------------------
+(define (ijk_array_print name ijk)
+
+  (printf "~A  " name)
+
+;  (dotimes (index (length ijk))
+  (dotimes (index (vector-length ijk))
+
+;    (format t "~A " (aref ijk index))
+    (printf "~A " (vector-ref ijk index))
+  )
+
+  (printf "~n")
+)
+;-------------------------------------------------------------------------------
+;;;-----------------------------------------------------------------------------
+(define (MFOR_init mf)
+
+;  (setf (MF-first   mf)     T)
+;  (setf (MF-index   mf)     -1) ; чтобы первым был нуль
+;  (ijk_array_set (MF-ijk_cur mf) 0)
+
+
+  (set-MF-first!   mf     #t)
+  ;(set-MF-index!   mf     -1) ; чтобы первым был нуль
+
+  (ijk_array_set (MF-ijk_cur mf) 0)
+
+)
+;;;-----------------------------------------------------------------------------
+(define (MFOR_create dim ijk_cur IJK)
+
+(let* (
+;  mf
+  (mf  (make-MF)) 
+  )
+
+;  (printf "MFOR_create .. \n")
+;  ;; создадим новую пструктуру
+;  (setf mf (make-MF))
+
+;  ;; занесем в нее готовые массивы
+;  (setf (MF-dim     mf)     dim)
+  (set-MF-dim!  mf  dim)
+
+  (set-MF-ijk_cur! mf ijk_cur)
+  (set-MF-IJK!     mf     IJK)
+
+;  ;(MFOR_init mf)
+
+  mf
+))
+;;;-----------------------------------------------------------------------------
+(define (MFOR_r  cur      ; номер текущего изменяемого индекса
+                 ijk_cur  ; массив (вектор) с текущими индексами 
+                 IJK      ; массив (вектор) с размерностями (т.е. макс.для ijk_cu)
+                 )
+
+  ;(printf "...... MFOR_r: cur=~s ~n" cur)
+
+;  ;; просто увеличиваем значение текущего индекса
+;  (setf (aref ijk_cur cur) (+ (aref ijk_cur cur) 1))
+  (vector-set! ijk_cur cur (+ (vector-ref ijk_cur cur) 1)) 
+
+  
+;  (if (not (= (aref ijk_cur cur) (aref IJK cur))) 
+  (if (not (= (vector-ref ijk_cur cur) (vector-ref IJK cur))) 
+
+    (begin 
+
+      ;(printf ".. 01 ~n")
+      #t ;T ; просто уходим, если нет еще границы
+      )
+
+    (begin ;(progn  
+
+      ;(printf ".. 02 ~n")
+
+      ;; дошли до максимума, значит надо к след. индексу переходить (слева)
+        
+      (if (= cur 0) ; однако, если это был последний (левый) индекс,
+          (begin      
+            #f ;NIL       ; то конец
+            )
+          
+          (begin      
+            ;;(setf (aref ijk_cur cur) 0) ; обнуляем текущий индекс
+            (vector-set! ijk_cur cur  0) ; обнуляем текущий индекс
+            
+            ;; и начинаем крутить индекс левее
+            ;; а что же при этом с правыми происходит?  ну мы же возвращаемся каждый раз
+            (MFOR_r  (- cur 1)  ijk_cur IJK)
+            )
+          )
+      )
+    ) ; if 
+
+)
+;;;-----------------------------------------------------------------------------
+(define (MFOR_todo  mf)
+
+  ;(incf (MF-index mf)) ; просто увеличиваем порядковый индекс вызова 
+  ;(set-MF-index! mf (+ 1 (MF-index mf)))  - а оно нам надо???
+
+  (if (MF-first mf) ; самый первый этап с нулевыми значениями нужно выделить:
+
+     (begin 
+       ;(printf ".. 001 ~n")
+       (set-MF-first! mf #f)
+       #t ;T ; просто ничего не делая уходим 
+       )
+
+     (begin 
+       ;(printf "dim= ~s ~n" (MF-dim mf))
+       ;(printf ".. 002 ~n")
+       ;; увеличиваем индексы, начиная справа, при необходимости сдвигаясь влево
+       (MFOR_r  (- (MF-dim mf) 1)  (MF-ijk_cur mf) (MF-IJK mf))
+       )
+  )
+
+  ;#t ; когда все закончим, то и вернем истину
+)
+;;
+;-------------------------------------------------------------------------------
+(define (format_line75)
+
+  (printf "---------------------------------------------------------------------------~n")
+
+)
+;-------------------------------------------------------------------------------
+(define (format_bord75)
+
+  (printf "===========================================================================~n")
+
+)
+;-------------------------------------------------------------------------------
+
+
+;-------------------------------------------------------------------------------
+;;BOOL
+;(defun FRavno (d1 d2 eps)
+ 
+;  (if (< (abs (- d1 d2)) eps)   
+;      t
+;    NIL
+;    )
+;)
+;;;=============================================================================
+;
+;;;-----------------------------------------------------------------------------
+;(defun test4_ (argus)  (declare (ignore argus))
+
+;(let* (
+;  (dim     3)
+;  (ijk_cur (make-array dim))
+;  (IJK     (make-array dim))
+;  mf 
+;  )
+
+;  (ijk_array_set IJK     2) ; булевые переменные '(nil t) 
+;  (setf mf (MFOR_create  dim ijk_cur IJK))
+;  (MFOR_init mf)
+
+;  (format t "~%")
+
+;  (loop while (MFOR_todo mf) do (progn
+
+;    (format t " ~2D)    " (MF-index mf))
+;    (dotimes (i (length ijk_cur))
+;      (format t "~4S  " (nth (aref ijk_cur i) '(nil t)))
+;    )
+;    (format t "~%")
+;  )) 
+
+;  (format t "~%")
+;))
+;;;-----------------------------------------------------------------------------
+(define (test5 argus)  ;(declare (ignore argus))
+
+(let* (
+  (dim     3)
+  (ijk_max 2)
+
+;  (ijk_cur (make-array dim))
+;  (IJK     (make-array dim))
+  (ijk_cur  null) 
+  (IJK      null)
+;  (ijk_cur (make-vector dim))
+;  (IJK     (make-vector dim))
+  (mf null)
+
+  (argc (list-length argus))
+  )
+
+  (when (= argc 1)        ; например: a~.rt COMM test5 @
+        (set! dim     8)
+        (set! ijk_max 8)
+        )
+  
+  (set! ijk_cur (make-vector dim))
+
+  (set! IJK     (make-vector dim))
+  (ijk_array_set IJK     ijk_max)
+
+  (set! mf (MFOR_create  dim ijk_cur IJK))
+  (MFOR_init mf)
+
+  (printf "~n")
+  (ijk_array_print "ijk_cur=" ijk_cur)
+  (ijk_array_print "IJK=" (MF-IJK  mf))
+  (ijk_array_print "IJK="     IJK)
+
+  (printf "~n")
+
+;  (loop while (MFOR_todo mf) do (progn
+;    (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+;  )) 
+
+  (do ()                        ; ([id init-expr step-expr-maybe] ...)
+      ((not (MFOR_todo mf)))    ; (stop?-expr finish-expr ...)
+
+    (when (not (= argc 1))   
+          (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+          )
+    ) 
+
+  ;-------------------------------------
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+;  (printf "todo= ~s   " (MFOR_todo mf))
+;  (ijk_array_print "ijk_cur=" (MF-ijk_cur  mf))
+
+
+  (printf "~n")
+))
+;-------------------------------------------------------------------------------
+;(defun test22 (argus)  (declare (ignore argus))
+
+;  (setf *test_var* 100)
+
+;  (if (eq *test_var* :unbound) (setf *test_var* 10))
+
+;  (format t "test_var = ~A ~%"  *test_var*)
+
+;  (format t "~%")
+;)
+;-------------------------------------------------------------------------------
+;(defun test2 (argus)  (declare (ignore argus))
+
+;(let (l1)
+
+;  (setf l1 '(((AND AND OR NOT) (2 3 2 1) (D2 D1 D0))) )
+
+;  (format t "l1 = ~A ~%"  l1)
+;  (format t "(first l1) = ~A ~%"  (first l1))
+;  (format t "(last  l1) = ~A ~%"  (last  l1))
+;  (format t "(list-length  l1) = ~A ~%"  (list-length  l1))
+
+;  (format t "~%")
+;))
+;;;=============================================================================
+
+;-------------------------------------------------------------------------------
+;(defun test4 (argus)  (declare (ignore argus))
+
+;(let (
+;   index
+;   a0 a1 a2
+;   )
+;  (declare (ignore a0 a1 a2))
+
+;  (setf index 0)
+;  (format t "~%")
+
+;  (dolist (a2 '(nil t))
+;  (dolist (a1 '(nil t))
+;  (dolist (a0 '(nil t))
+
+;    (format t " ~D)    ~4S  ~4S  ~4S  ~%"
+;                index   a2   a1   a0
+;                )
+
+;    (incf index)
+;    )))
+
+;  (format t "~%")
+;))
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+;(defun list_test (argus)  (declare (ignore argus))
+
+;(let (
+;   (ll  '(0 1 2 3 4))
+;   )
+
+;  (format t "list_test ~%")
+
+;  (format t "ll= ~A ~%" ll)
+;  (format t "l2= ~A ~%" (nthcdr 2 ll))
+;  (format t "l2= ~A ~%" (last ll 3))
+
+;  (format t "~%")
+;))
+;-------------------------------------------------------------------------------
+;// ищем среди параметров : "name", подразумеваем, что там стоит "name=val" и 
+;// возвращаем указатель на "val"
+;-------------------------------------------------------------------------------
+;char*
+;parse_read (char *name, int argc, char *argv[], int  j)
+;{
+;-------------------------------------------------------------------------------
+;(defun parse_read (name argus j)  (declare (ignore j))
+
+;(let (
+;  ;  char *ptr;
+;  (len (length name)) ;  int   len, i;
+;  p
+;  )
+
+;  ;(format t "parse_read: argus= ~s   name= ~s   len= ~s   ~%" argus name len)
+
+;  (dolist (ptr argus)
+
+;    ;(format t "ptr= ~s  ~%" ptr)
+
+;    ;(setf p (find '= ptr))
+;    (setf p (subseq ptr 0 len))
+;    ;(format t "p  = ~s  ~%" p)
+
+
+;    (when (string= name p)
+;      ;(format t "string= ~s ~%" (subseq ptr (+ len 1)))
+;      (return-from parse_read (subseq ptr (+ len 1)))
+;      )
+    
+;;    if (strncmp (ptr, name, len) == 0)
+;;      return (ptr+len+1);    
+;    )
+
+;  NIL ;  return (NULL);
+;))
+;-------------------------------------------------------------------------------
+;(defun d_print (num)
+
+;  (format *error-output*  "D....~s.... ~%" num)
+
+;)
+;-------------------------------------------------------------------------------
+
+;===============================================================================
+
