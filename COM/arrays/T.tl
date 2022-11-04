@@ -8,7 +8,7 @@ exec tclsh "$0" ${1+"$@"}
 #
 
 set auto_path [linsert $auto_path 0 "COMPOT/COM"]
-set auto_path [linsert $auto_path 0 "COMPOT/TST"]
+#set auto_path [linsert $auto_path 0 "COMPOT/TST"]
 
 package require compot::common 
 

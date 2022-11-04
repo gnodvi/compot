@@ -5,7 +5,7 @@
 
 all:  
 	(cd COM/m; make)
-	(cd TST/m; make)
+#	(cd TST/m; make)
 
 test:  
 	(cd .; T.sh)
@@ -22,11 +22,11 @@ test:
 
 clean:  
 	(cd COM/m; make clean)
-	(cd TST/m; make clean)
+#	(cd TST/m; make clean)
 
 cleanall:  
 	(cd COM/m; make cleanall)
-	(cd TST/m; make cleanall)
+#	(cd TST/m; make cleanall)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
