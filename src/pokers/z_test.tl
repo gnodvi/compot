@@ -245,7 +245,7 @@ exec tclsh "$0" ${1+"$@"}
 
 package require Tk
 
-set auto_path [linsert $auto_path 0 "EXT/tcl-tk/tcllib"]
+set auto_path [linsert $auto_path 0 "COMPOT/S/tcl-tk/tcllib"]
 #
 # ????
 package require math
