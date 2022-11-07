@@ -1,0 +1,20 @@
+Checking for brute force + 
+
+Traceback (most recent call last):
+  File "ai_feynman_duplicateVarsWithNoise.py", line 2, in <module>
+    run_aifeynman("/content/gdrive/My Drive/Lemay.ai_research/AI-Feynman/example_data/","duplicateVarsWithNoise.txt",30,"14ops.txt", polyfit_deg=3, NN_epochs=400)
+  File "/content/gdrive/My Drive/Lemay.ai_research/AI-Feynman/Code/S_run_aifeynman.py", line 165, in run_aifeynman
+    PA = run_AI_all(pathdir,filename+"_train",BF_try_time,BF_ops_file_type, polyfit_deg, NN_epochs, PA=PA)
+  File "/content/gdrive/My Drive/Lemay.ai_research/AI-Feynman/Code/S_run_aifeynman.py", line 37, in run_AI_all
+    PA = run_bf_polyfit(pathdir,pathdir,filename,BF_try_time,BF_ops_file_type, PA, polyfit_deg)
+  File "/content/gdrive/My Drive/Lemay.ai_research/AI-Feynman/Code/S_run_bf_polyfit.py", line 26, in run_bf_polyfit
+    brute_force(pathdir_transformed,filename,BF_try_time,BF_ops_file_type,"+")
+  File "/content/gdrive/My Drive/Lemay.ai_research/AI-Feynman/Code/S_brute_force.py", line 28, in brute_force
+    subprocess.call(["./brute_force_oneFile_v3.scr", file_type, "%s" %try_time, pathdir+filename])
+  File "/usr/lib/python3.6/subprocess.py", line 287, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 729, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1364, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: './brute_force_oneFile_v3.scr': './brute_force_oneFile_v3.scr'
