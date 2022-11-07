@@ -17,7 +17,6 @@ exec jimsh "$0" ${1+"$@"}
 # set COMPOT "./COMPOT"
 
 # set auto_path [linsert $auto_path 0 $COMPOT]
-
 # set auto_path [linsert $auto_path 0 $COMPOT/SRC/common] ;# for JIM
 
 #lappend auto_path \

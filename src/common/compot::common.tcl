@@ -3,14 +3,14 @@
 #-------------------------------------------------------------------------------
 #
 #set auto_path [linsert $auto_path 0 "./COMPOT/ext/random"]
-set auto_path [linsert $auto_path 0 "./COMPOT/SRC/random"]
+set auto_path [linsert $auto_path 0 "./COMPOT/src/random"]
 
 #-------------------------------------------------------------------------------
 proc package_require_compot {COMPOT_} {
 
 
   #set COM $COMPOT_/src/common
-  set COM $COMPOT_/SRC/common
+  set COM $COMPOT_/src/common
   
   uplevel "source  $COM/a-comm.tl"
   uplevel "source  $COM/a-dict.tl"

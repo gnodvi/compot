@@ -13,17 +13,17 @@ exec tclsh "$0" ${1+"$@"}
 
 set COMPOT "./COMPOT"
 
-set auto_path [linsert $auto_path 0 "."]
+#set auto_path [linsert $auto_path 0 $COMPOT]
 
-set auto_path [linsert $auto_path 0 $COMPOT/SRC/common] ;# for JIM
-set auto_path [linsert $auto_path 0 $COMPOT/SRC/random] ;# for JIM
+set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
+set auto_path [linsert $auto_path 0 $COMPOT/src/random] ;# for JIM
 
 #-------------------------------------------------------------------------------
 
 #source "a-comm.tl"
 
 package require compot::common 
-package require compot::random 
+#package require compot::random 
 
 
 #-------------------------------------------------------------------------------
@@ -38,7 +38,8 @@ proc RAND {} {
   #  my_source "g-rand.tl"
   #  my_source "random.tl"
 
-  source "r-knut.tl"
+  #source "knuth.tl"
+  source "g-rand.tl"
 
   global argc argv
   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
@@ -75,25 +76,8 @@ proc TEST_all {} {
   puts ""
 }
 #-------------------------------------------------------------------------------
-proc TEST {} {
 
-  #  my_source "g-rand.tl"
-  #  my_source "random.tl"
-
-  source "r-knut.tl"
-
-  global argc argv
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
-
-
-  # a~.jm RAND permutation_test
-  # a~.jm RAND random_test
-  # a~.jm RAND TEST_lrand
-
-}
-#-------------------------------------------------------------------------------
-
-set CUR_DIR "r"
+set CUR_DIR "g"
   
 READ_AND_CALL_ARGUS  $CUR_DIR
 

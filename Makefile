@@ -5,7 +5,7 @@
 
 all:  
 	(cd   ./S; make)
-	(cd SRC/m; make)
+	(cd src/m; make)
 
 test:  
 	(cd   ./S; make test)
@@ -22,7 +22,7 @@ test:
 
 clean:  
 	(cd   ./S; make clean)
-	(cd SRC/m; make clean)
+	(cd src/m; make clean)
 #	(cd TST/m; make clean)
 
 cleanall:  
