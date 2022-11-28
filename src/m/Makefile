@@ -35,11 +35,16 @@ POKERS_DIR = ../pokers
 #-------------------------------------------------------------------------------
 
 
-all:  OLDJOY__  RANDOM__ PLOTER__ LISOFT__  COMMON__  FUN-GP__  DIALOG__ CGPLIB__ LOGICS__  TENSOR__  POKERS__ # CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ## TESTER__  ## JIMTCL__ 
+all:  GRAPHS__  OLDJOY__  RANDOM__ PLOTER__ LISOFT__  COMMON__  FUN-GP__  DIALOG__ CGPLIB__ LOGICS__  TENSOR__  POKERS__
+
+# CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ## TESTER__  ## JIMTCL__ 
 
 #-------------------------------------------------------------------------------
 
 
+
+GRAPHS__ :
+	(cd ../graphs; make)
 
 OLDJOY__ :
 	(cd $(OLDJOY_DIR); make)
@@ -115,6 +120,7 @@ test:
 #-------------------------------------------------------------------------------
 
 clean : 
+	(cd     ../graphs; make clean)
 	(cd $(OLDJOY_DIR); make clean)
 #	(cd $(JIMTCL_DIR); make clean)
 	(cd $(RANDOM_DIR); make clean)
