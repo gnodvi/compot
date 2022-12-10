@@ -19,7 +19,9 @@ OPTIM = -fno-exceptions -Wall
 GCC   = LANG=C gcc -O2
 CPP   = c++ -O2
 
-FLAGS = -fno-exceptions -Wall `pkg-config --libs --cflags igraph`
+FLAGS = -fno-exceptions -Wall
+IGRAPH_INCS = `pkg-config --cflags igraph`
+IGRAPH_LIBS = `pkg-config   --libs igraph`
 
 #Libs: -L${libdir} -ligraph
 #Libs.private: -lm -lstdc++ -lgmp -lblas -llapack -lgomp -lpthread
@@ -28,7 +30,8 @@ FLAGS = -fno-exceptions -Wall `pkg-config --libs --cflags igraph`
 
 #-------------------------------------------------------------------------------
 
-GCC  = LANG=C  gcc -g
+#GCC  = LANG=C  gcc -g 
+GCC  = LANG=C  gcc -std=c99 
 
 #-------------------------------------------------------------------------------
 
@@ -40,13 +43,13 @@ all:   $(PROGS)
 #-------------------------------------------------------------------------------
 
 tutorial1: tutorial1.c
-	gcc ${FLAGS}  -o $@ $< 
+	$(GCC) ${FLAGS}  -o $@ ${IGRAPH_INCS} $< ${IGRAPH_LIBS} 
 
 tutorial2: tutorial2.c
-	gcc ${FLAGS}  -o $@ $< 
+	$(GCC) ${FLAGS}  -o $@ ${IGRAPH_INCS} $< ${IGRAPH_LIBS}
 
 tutorial3: tutorial3.c
-	gcc ${FLAGS}  -o $@ $< 
+	$(GCC) ${FLAGS}  -o $@ ${IGRAPH_INCS} $< ${IGRAPH_LIBS}
 
 
 #-------------------------------------------------------------------------------
