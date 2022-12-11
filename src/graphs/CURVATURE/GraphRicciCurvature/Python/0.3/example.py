@@ -8,6 +8,7 @@ print ("..... 01 .... \n")
 
 import sys
 #sys.path.append ("../networkx-networkx-2.8.8")
+sys.path.append (".")
 
 print ("sys.path = ",  sys.path)
 
@@ -21,28 +22,54 @@ print (os.environ.get ('PYTHONPATH', ''))
 
 print ("..... 03 .... \n")
 
-exit ()
+#exit ()
 
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 import networkx as nx
 
-from GraphRicciCurvature.OllivierRicci import OllivierRicci
-from GraphRicciCurvature.FormanRicci import FormanRicci
+#exit ()
+
+#from GraphRicciCurvature.OllivierRicci import OllivierRicci
+#from GraphRicciCurvature.FormanRicci   import FormanRicci
+
+
+# 1) 
+import OllivierRicci
+import FormanRicci
+
+# 2) 
+#exec (open ("OllivierRicci.py").read())
+
+exit ()
+
+#-------------------------------------------------------------------------------
 
 # import an example NetworkX karate club graph
 G = nx.karate_club_graph()
 
+#exit ()
+
 # compute the Ollivier-Ricci curvature of the given graph G
-orc = OllivierRicci(G, alpha=0.5, verbose="INFO")
+orc = OllivierRicci (G, alpha=0.5, verbose="INFO")
+
+exit ()
+
 orc.compute_ricci_curvature()
-print("Karate Club Graph: The Ollivier-Ricci curvature of edge (0,1) is %f" % orc.G[0][1]["ricciCurvature"])
+
+print ("Karate Club Graph: The Ollivier-Ricci curvature of edge (0,1) is %f" % orc.G[0][1]["ricciCurvature"])
 
 # compute the Forman-Ricci curvature of the given graph G
+
 frc = FormanRicci(G)
+
+exit ()
+
 frc.compute_ricci_curvature()
+
 print("Karate Club Graph: The Forman-Ricci curvature of edge (0,1) is %f" % frc.G[0][1]["formanCurvature"])
+
+exit ()
 
 # -----------------------------------
 # Construct a directed graph example

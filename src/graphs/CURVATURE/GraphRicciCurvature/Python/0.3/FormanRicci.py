@@ -28,7 +28,11 @@ Reference:
 
 """
 import networkx as nx
-from .util import *
+
+#gnodvi from .util import *
+#ImportError: attempted relative import with no known parent package
+#
+from util import *
 
 
 class FormanRicci:

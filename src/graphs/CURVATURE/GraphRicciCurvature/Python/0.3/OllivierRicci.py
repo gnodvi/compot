@@ -32,7 +32,11 @@ import time
 import math
 import ot
 from multiprocessing import Pool, cpu_count
-from .util import *
+
+#gnodvi  from .util import *
+#ImportError: attempted relative import with no known parent package
+#
+from util import *
 
 import cvxpy as cvx
 import networkx as nx
