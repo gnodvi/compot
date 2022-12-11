@@ -6,13 +6,16 @@
 all:  
 	(cd 0.79_QNX; make)
 
+src:  
+	(cd 0.79_QNX; make update)
+
 #--------------------------------------
 
-cleanall:  clean 
-	(cd  0.79_QNX; make cleanall)
+#cleanall:  clean 
+#	(cd  0.79_QNX; make cleanall)
 
 clean:  
-	(cd  0.79_QNX; make clean)
+#	(cd  0.79_QNX; make clean)
 
 #--------------------------------------
 

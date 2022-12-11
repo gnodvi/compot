@@ -43,7 +43,8 @@ update ()
 cleansrc ()
 {
 
-  rm -fR ./${RELNAME}
+  #rm -fR ./${RELNAME}
+  rm -fR ./T/${RELNAME}
 
   rm -f cmake
   rm -f make
@@ -51,30 +52,37 @@ cleansrc ()
 
 }
 #--------------------------------------------
-cleanrel ()
-{
+# cleanrel ()
+# {
 
-  cleansrc
+#   cleansrc
   
-  rm -fR ./R
+#   rm -fR ./R
 
-}
+# }
 #--------------------------------------------
-cleanarx ()
-{
+# cleanarx ()
+# {
 
-  cleanrel
+#   cleanrel
   
-  rm -fR ./A
+#   rm -fR ./A
 
-}
+# }
 #--------------------------------------------
 make_and_install ()
 {
 
-  if [ -d ./R ] ; then   
+#   if [ -d ./R ] ; then   
+#     echo ""
+#     echo "./R exist: exit and not make !!"
+#     echo ""
+#     exit
+#   fi
+       
+  if [ -f ./R/lib/libglut.a ] ; then   
     echo ""
-    echo "./R exist: exit and not make !!"
+    echo "./Rlib/libglut.a exist: exit and not make !!"
     echo ""
     exit
   fi
@@ -84,9 +92,11 @@ make_and_install ()
   cd ..;
 
   cleansrc    
-  mv A/${RELNAME} .
+  #mv A/${RELNAME} .
+  mv A/${RELNAME} ./T
 
-  cd $CUR_DIR/freeglut-3.2.2
+  #cd $CUR_DIR/freeglut-3.2.2
+  cd $CUR_DIR/T/freeglut-3.2.2
   
   cmake -DCMAKE_INSTALL_PREFIX=$CUR_DIR/R   .   2>&1 | tee  $CUR_DIR/cmake
   make         2>&1 | tee  $CUR_DIR/make  

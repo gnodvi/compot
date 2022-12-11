@@ -2,10 +2,12 @@
 #-------------------------------------------------------------------------------
 
 
-INP = A/jimtcl-0.79
+INP = T/jimtcl-0.79
 
 ADD = ./0.79_qnxpaches
-OUT = ./0.79_qnxresult
+#OUT = ./0.79_qnxresult
+#OUT = T/0.79_qnxresult
+OUT = T/jimtcl-0.79_qnx
 
 #-------------------------------------------------------------------------------
 
@@ -16,6 +18,7 @@ all: update qnx
 	(cd $(OUT); make)
 	(cd examples; make)
 
+#-------------------------------------------------------------------------------
 qnx: 
 
 	mkdir -p $(OUT)
@@ -74,13 +77,12 @@ test:
 
 #-------------------------------------------------------------------------------
 
-clean: qnx_clean
+clean: #qnx_clean
 	(cd examples; make clean)
 #	(cd $(OUT); make clean)
 
-qnx_clean:
-
-	rm -R -f $(OUT)
+# qnx_clean:
+# 	rm -R -f $(OUT)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -89,24 +91,34 @@ REL=0.79
 DIRNAME=jimtcl-${REL}
 RELNAME=${REL}
 
+src: update
+
 update: download untar
 
-download:
+download: A/0.79.tar.gz
+
+A/0.79.tar.gz:
 	(cd A; \
 	wget -c https://github.com/msteveb/jimtcl/archive/refs/tags/0.79.tar.gz ; \
 	cd ..; \
 	)
 
-untar:
+untar: T/$(DIRNAME)
+
+T/$(DIRNAME):
 	(cd A; \
 	gzip -kfd $(RELNAME).tar.gz; \
 	tar   xvf $(RELNAME).tar; \
 	rm     -f $(RELNAME).tar; \
-	cd ..; \
+	mv        $(DIRNAME) ../T;\
 	)
 
-cleanall: 
-	(cd A; rm -R -f $(DIRNAME); rm -f $(RELNAME).tar.gz ;)
+#	cd ..; \
+
+# cleanall: 
+# #	(cd A; rm -R -f $(DIRNAME); rm -f $(RELNAME).tar.gz ;)
+# 	(cd T; rm -R -f $(DIRNAME))
+# 	(cd A; rm    -f $(RELNAME).tar.gz ;)
 
 #-------------------------------------------------------------------------------
 

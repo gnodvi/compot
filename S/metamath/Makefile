@@ -4,35 +4,38 @@
 #-------------------------------------------------------------------------------
 
 
-all: update unzip
+src: update unzip
 
+
+#-------------------------------------------------------------------------------
 
 update: A/develop.zip
 
 A/develop.zip:
 	(cd A; wget https://github.com/metamath/set.mm/archive/refs/heads/develop.zip)
 
-unzip: A/set.mm-develop
 
-A/set.mm-develop:
-	(cd A; unzip develop.zip)
+unzip: T/set.mm-develop
+
+T/set.mm-develop:
+	(cd T; unzip ../A/develop.zip)
 
 
 #-------------------------------------------------------------------------------
 
-cleanall: cleansrc cleanarx  # cleanrel 
+#cleanall: cleansrc cleanarx  # cleanrel 
 
-clean:    cleansrc
+clean:  #  cleansrc
 
 
-cleansrc: 
-	rm -fR ./A/set.mm-develop
+#cleansrc: 
+#	rm -fR ./R/set.mm-develop
 
-#cleanrel: 
-#	(. I_LIB ; cleanrel)
+##cleanrel: 
+##	(. I_LIB ; cleanrel)
 
-cleanarx: 
-	rm -f ./A/develop.zip
+#cleanarx: 
+#	rm -f ./A/develop.zip
 
 
 #-------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ clean:
 	(cd src/m; make clean)
 #	(cd TST/m; make clean)
 
-cleanall:  
+cleanall:  clean
 #	(cd SRC/m; make cleanall)
 	(cd   ./S; make cleanall)
 

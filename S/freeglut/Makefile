@@ -12,7 +12,7 @@ update:
 
 #-------------------------------------------------------------------------------
 
-cleanall: cleansrc cleanrel cleanarx
+cleanall: cleansrc #cleanrel cleanarx
 
 clean:    cleansrc
 
@@ -20,11 +20,11 @@ clean:    cleansrc
 cleansrc: 
 	(. I_LIB ; cleansrc)
 
-cleanrel: 
-	(. I_LIB ; cleanrel)
+#cleanrel: 
+#	(. I_LIB ; cleanrel)
 
-cleanarx: 
-	(. I_LIB ; cleanarx)
+#cleanarx: 
+#	(. I_LIB ; cleanarx)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
