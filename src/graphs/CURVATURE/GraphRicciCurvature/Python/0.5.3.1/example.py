@@ -1,15 +1,54 @@
+#!/usr/bin/env python3
+
+#-------------------------------------------------------------------------------
+
+
+print ("\n")
+print ("..... 01 .... \n")
+
+import sys
+#sys.path.append ("../networkx-networkx-2.8.8")
+sys.path.append (".")
+
+print ("sys.path = ",  sys.path)
+
+print ("..... 02 .... \n")
+
+import os
+print (os.environ.get ('PYTHONPATH', ''))
+
+#exit ()
+#__path__.append(os.path.join(os.path.dirname(__file__), "utils"))
+
+print ("..... 03 .... \n")
+
+#exit ()
+
+#exit ()
+
+#-------------------------------------------------------------------------------
 import networkx as nx
 
-from GraphRicciCurvature.FormanRicci import FormanRicci
+from GraphRicciCurvature.FormanRicci   import FormanRicci
 from GraphRicciCurvature.OllivierRicci import OllivierRicci
+
+#<frozen importlib._bootstrap>:241: ReducedFunctionalityWarning: WARNING: module 'pandas' not found, some functionality will be restricted
 
 print("\n- Import an example NetworkX karate club graph")
 G = nx.karate_club_graph()
 
 print("\n===== Compute the Ollivier-Ricci curvature of the given graph G =====")
+print ("\n")
+
+#exit ()
+
 # compute the Ollivier-Ricci curvature of the given graph G
+
 orc = OllivierRicci(G, alpha=0.5, verbose="INFO")
 orc.compute_ricci_curvature()
+
+#exit ()
+
 print("Karate Club Graph: The Ollivier-Ricci curvature of edge (0,1) is %f" % orc.G[0][1]["ricciCurvature"])
 
 print("\n===== Compute the Forman-Ricci curvature of the given graph G =====")
@@ -17,19 +56,30 @@ frc = FormanRicci(G)
 frc.compute_ricci_curvature()
 print("Karate Club Graph: The Forman-Ricci curvature of edge (0,1) is %f" % frc.G[0][1]["formanCurvature"])
 
+#exit ()
+print ("\n")
+
 # -----------------------------------------------
 print("\n-Construct a directed graph example")
+
 Gd = nx.DiGraph()
 Gd.add_edges_from([(0, 1), (1, 2), (2, 3), (1, 3), (3, 1)])
 
 print("\n===== Compute the Ollivier-Ricci curvature of the given directed graph Gd =====")
+print ("\n")
+
+
 orc_directed = OllivierRicci(Gd)
 orc_directed.compute_ricci_curvature()
+
 for n1, n2 in Gd.edges():
     print("Directed Graph: The Ollivier-Ricci curvature of edge(%d,%d) id %f" %
           (n1, n2, orc_directed.G[n1][n2]["ricciCurvature"]))
 
-# Forman-Ricci not support for direct graph yet.
+#exit ()
+print ("\n")
+
+    # Forman-Ricci not support for direct graph yet.
 # print("\n===== Compute the Forman-Ricci curvature of the given directed graph Gd =====")
 # frc_directed = FormanRicci(Gd)
 # frc_directed.compute_ricci_curvature()

@@ -1,8 +1,18 @@
+#!/usr/bin/env python3
+
+#-------------------------------------------------------------------------------
+
+import sys
+sys.path.append (".")
+
+#-------------------------------------------------------------------------------
+
 import networkx as nx
 import numpy.testing as npt
 
 from GraphRicciCurvature.OllivierRicci import OllivierRicci
 
+#-------------------------------------------------------------------------------
 
 def test_compute_ricci_curvature_edges():
     G = nx.karate_club_graph()
@@ -126,6 +136,7 @@ def test_ricci_community_all_possible_clusterings():
 
 
 def test_ricci_community():
+    
     G = nx.karate_club_graph()
     for (n1, n2, d) in G.edges(data=True):
         d.clear()   # remove edge weight
@@ -139,3 +150,24 @@ def test_ricci_community():
 
     npt.assert_array_almost_equal(cut, cut_ans)
     assert clustering == clustering_ans
+
+#-------------------------------------------------------------------------------
+
+test_compute_ricci_curvature_edges()
+
+print (".. 1")
+
+test_compute_ricci_curvature()
+test_compute_ricci_curvature_directed()
+test_compute_ricci_curvature_ATD()
+
+print (".. 2")
+
+test_compute_ricci_flow()
+test_ricci_community_all_possible_clusterings()
+test_ricci_community()
+
+print (".. 3")
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
