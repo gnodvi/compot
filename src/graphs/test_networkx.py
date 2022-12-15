@@ -378,8 +378,8 @@ red = nx.random_lobster(100, 0.9, 0.9)
 # NetworkX supports many popular formats, such as edge lists, adjacency lists,
 # GML, GraphML, LEDA and others.
 
-nx.write_gml(red, "path.to.file")
-mygraph = nx.read_gml("path.to.file")
+nx.write_gml     (red, "T/path.to.file")
+mygraph = nx.read_gml ("T/path.to.file")
 
 # For details on graph formats see Reading and writing graphs
 # and for graph generator functions see Graph generators
@@ -457,7 +457,7 @@ nx.draw_shell(G, nlist=shells, **options)
 # To save drawings to a file, use, for example
 
 nx.draw(G)
-plt.savefig("path.png")
+plt.savefig ("T/path.png")
 
 # This function writes to the file `path.png` in the local directory. If Graphviz and
 # PyGraphviz or pydot, are available on your system, you can also use
@@ -468,6 +468,7 @@ plt.savefig("path.png")
 from networkx.drawing.nx_pydot import write_dot
 pos = nx.nx_agraph.graphviz_layout(G)
 nx.draw(G, pos=pos)
-write_dot(G, 'file.dot')
+
+write_dot (G, 'T/file.dot')
 
 # See Drawing for additional details.

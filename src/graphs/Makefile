@@ -7,13 +7,14 @@ all:
 	(cd IGRAPH; make)
 
 test:  
-	(cd IGRAPH; make test)
+	(cd IGRAPH;              make test)
+	(cd GraphRicciCurvature; make test)
 
 #--------------------------------------------
 
 clean:  
 	(cd IGRAPH;   make clean)
-	(cd NETWORKX; make clean)
+	rm -f T/*.dot T/*.png T/*.file
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
