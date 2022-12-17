@@ -1,3 +1,19 @@
+#!/usr/bin/env python3
+
+#-------------------------------------------------------------------------------
+
+print ("\n")
+print ("..... 01 .... \n")
+
+import sys
+sys.path.append (".")
+
+print ("..... 02 .... \n")
+
+#exit ()
+
+#-------------------------------------------------------------------------------
+
 import numpy as np
 import astropy.units as u
 from numpy.testing import assert_allclose
@@ -32,3 +48,9 @@ def test_f_vec_bl_schwarzschild():
 
     assert isinstance(f_vec, np.ndarray)
     assert_allclose(f_vec_expected, f_vec, rtol=1e-8)
+
+#-------------------------------------------------------------------------------
+
+test_f_vec_bl_schwarzschild ()
+
+#-------------------------------------------------------------------------------

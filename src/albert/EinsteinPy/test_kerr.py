@@ -1,3 +1,19 @@
+#!/usr/bin/env python3
+
+#-------------------------------------------------------------------------------
+
+print ("\n")
+print ("..... 01 .... \n")
+
+import sys
+sys.path.append (".")
+
+print ("..... 02 .... \n")
+
+#exit ()
+
+#-------------------------------------------------------------------------------
+
 import collections
 
 import pytest
@@ -68,7 +84,9 @@ def test_christoffels(bl):
 
 
 def test_f_vec_bl_kerr():
+    
     M, a = 6.73317655e26 * u.kg, 0.2 * u.one
+    
     bl = BoyerLindquistDifferential(
         t=0. * u.s,
         r=1e6 * u.m,
@@ -86,9 +104,16 @@ def test_f_vec_bl_kerr():
     )
 
     mk = Kerr(coords=bl, M=M, a=a)
-    state = np.hstack((bl.position(), bl.velocity(mk)))
+    state = np.hstack ((bl.position(), bl.velocity(mk)))
 
     f_vec = mk._f_vec(0., state)
 
     assert isinstance(f_vec, np.ndarray)
     assert_allclose(f_vec_expected, f_vec, rtol=1e-8)
+
+#-------------------------------------------------------------------------------
+
+#test_christoffels (bl)
+test_f_vec_bl_kerr()
+
+#-------------------------------------------------------------------------------

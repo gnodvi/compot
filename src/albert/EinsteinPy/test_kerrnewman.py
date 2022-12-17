@@ -1,3 +1,19 @@
+#!/usr/bin/env python3
+
+#-------------------------------------------------------------------------------
+
+print ("\n")
+print ("..... 01 .... \n")
+
+import sys
+sys.path.append (".")
+
+print ("..... 02 .... \n")
+
+#exit ()
+
+#-------------------------------------------------------------------------------
+
 import astropy.units as u
 import numpy as np
 import pytest
@@ -253,3 +269,9 @@ def test_em_tensor_contravariant():
     mkn_em_contra = mkn.em_tensor_contravariant(x_vec)
 
     assert_allclose(0., mkn_em_contra + np.transpose(mkn_em_contra), atol=1e-8)
+
+#-------------------------------------------------------------------------------
+
+test_em_tensor_contravariant ()
+
+#-------------------------------------------------------------------------------
