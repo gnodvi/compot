@@ -10,17 +10,17 @@ import sys
 #sys.path.append ("../networkx-networkx-2.8.8")
 sys.path.append (".")
 
-print ("sys.path = ",  sys.path)
+#print ("sys.path = ",  sys.path)
 
-print ("..... 02 .... \n")
+#print ("..... 02 .... \n")
 
-import os
-print (os.environ.get ('PYTHONPATH', ''))
+# import os
+# print (os.environ.get ('PYTHONPATH', ''))
 
 #exit ()
 #__path__.append(os.path.join(os.path.dirname(__file__), "utils"))
 
-print ("..... 03 .... \n")
+#print ("..... 03 .... \n")
 
 #exit ()
 

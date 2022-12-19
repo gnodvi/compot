@@ -7,8 +7,8 @@ all:
 #	(cd tutorial; make)
 
 test:  
-	(cd Python/0.3;     T.sh)
-	(cd Python/0.5.3.1; T.sh)
+	(cd 0.3;     T.sh)
+	(cd 0.5.3.1; T.sh)
 
 #--------------------------------------------
 

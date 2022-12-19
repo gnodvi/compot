@@ -1,4 +1,6 @@
+
 import sys
+
 def heatmap_gen(Conv_Method,n_num,dset_name):
     from baselines import Plain,Rand,Randn,gat,gcn
     from syndata.SynDataset import SynDataset

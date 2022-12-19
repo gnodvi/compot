@@ -1,8 +1,21 @@
-nohup python -u heatmap_gen.py Randn 1000 Rand > log/Rand_Randn10.log &
-nohup python -u heatmap_gen.py Plain 1000 Rand > log/Rand_Plain10.log &
-nohup python -u heatmap_gen.py Rand 1000 Rand > log/Rand_Rand10.log &
-nohup python -u heatmap_gen.py gat 1000 Rand > log/Rand_gat10.log &
-nohup python -u heatmap_gen.py gcn 1000 Rand > log/Rand_gcn10.log &
+# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+#
+#-------------------------------------------------------------------------------
+#
+
+
+python3 -u heatmap_gen.py Randn 1000 Rand > log/Rand_Randn10.log &
+
+
+# nohup python -u heatmap_gen.py Randn 1000 Rand > log/Rand_Randn10.log &
+# nohup python -u heatmap_gen.py Plain 1000 Rand > log/Rand_Plain10.log &
+# nohup python -u heatmap_gen.py Rand 1000 Rand > log/Rand_Rand10.log &
+# nohup python -u heatmap_gen.py gat 1000 Rand > log/Rand_gat10.log &
+# nohup python -u heatmap_gen.py gcn 1000 Rand > log/Rand_gcn10.log &
+
+#-------------------------------------------------------------------------------
 
 #nohup python -u heatmap_gen.py Randn 1000 Swatts > log/Swatts_Randn10.log &
 #nohup python -u heatmap_gen.py Plain 1000 Swatts > log/Swatts_Plain10.log &

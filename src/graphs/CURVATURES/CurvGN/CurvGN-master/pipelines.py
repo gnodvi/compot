@@ -6,14 +6,13 @@
 print ("\n")
 print ("..... 01 .... \n")
 
-import sys
-sys.path.append (".")
+# import sys
+# sys.path.append (".")
 
-import os
-print (os.environ.get ('PYTHONPATH', ''))
+# import os
+# print (os.environ.get ('PYTHONPATH', ''))
 
-print ("..... 02 .... \n")
-
+# print ("..... 02 .... \n")
 #exit ()
 
 #-------------------------------------------------------------------------------

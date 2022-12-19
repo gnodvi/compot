@@ -7,8 +7,8 @@ all:
 	(cd IGRAPH; make)
 
 test:  
-	(cd IGRAPH;                        make test)
-	(cd CURVATURE/GraphRicciCurvature; make test)
+	(cd IGRAPH;                         make test)
+	(cd CURVATURES/GraphRicciCurvature; make test)
 
 #--------------------------------------------
 

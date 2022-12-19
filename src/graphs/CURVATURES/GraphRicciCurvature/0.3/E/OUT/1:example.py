@@ -2,12 +2,6 @@
 
 ..... 01 .... 
 
-sys.path =  ['/home/pilot/MGENA/mywork/compot/src/graphs/GraphRicciCurvature/Python/0.3', '/home/pilot/MSOFT/_python/3.10.8/R/lib/python310.zip', '/home/pilot/MSOFT/_python/3.10.8/R/lib/python3.10', '/home/pilot/MSOFT/_python/3.10.8/R/lib/python3.10/lib-dynload', '/home/pilot/.local/lib/python3.10/site-packages', '/home/pilot/MSOFT/_python/3.10.8/R/lib/python3.10/site-packages', '/home/pilot/MSOFT/_python/3.10.8/R/lib/python3.10/site-packages/sampleproject-2.0.0-py3.10.egg', '.']
-..... 02 .... 
-
-
-..... 03 .... 
-
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
