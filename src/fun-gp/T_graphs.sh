@@ -19,36 +19,24 @@ package require compot::common
 
 puts ""
 
-#-------------------------------------------------------------------------------
 
-puts [exec T_graphs.sh]
-
-#-------------------------------------------------------------------------------
-
-run_numer_tests  m . E/OUT 
-
-puts ""
-
-run_numer_tests  j . E/OUT 
+# ????? sometimes
+# e_i__.jm TEST
+# Segmentation fault
+# 
+run_numer_tests  e . E/OUT 
 
 puts ""
 
-run_numer_tests  p . E/OUT 
+
+run_numer_tests  f . E/OUT 
 
 puts ""
 
-run_numer_tests  r . E/OUT 
+run_numer_tests  g . E/OUT 
 
 puts ""
 
 #-------------------------------------------------------------------------------
-
-#  time ./T_ALL.tl
-
-# real	1m3.387s
-# user	0m51.480s
-# sys	0m10.932s
-
-#
 ################################################################################
 

@@ -15,8 +15,7 @@ exec tclsh "$0" ${1+"$@"}
 
 #set auto_path [linsert $auto_path 0 $COMPOT]
 
-set auto_path [linsert $auto_path 0 "COMPOT/COM/common"] ;# for JIM
-#set auto_path [linsert $auto_path 0 $COMPOT/ext/random] ;# for JIM
+set auto_path [linsert $auto_path 0 "COMPOT/src/common"] ;# for JIM
 
 #-------------------------------------------------------------------------------
 
