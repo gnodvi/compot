@@ -45,13 +45,18 @@ TCL_LIB_SPEC_clean	= $(subst ', , $(TCL_LIB_SPEC))
 TCL_LIBS=$(TCL_LIB_SPEC_clean) 
 TCL_STUB_LIB_SPEC_clean = $(subst ', , $(TCL_STUB_LIB_SPEC))
 
+IGRAPH_INCS = `pkg-config --cflags igraph`
+IGRAPH_LIBS = `pkg-config   --libs igraph`
+
 #------------------------------------------------------------------
 
-PROGS_origin =  f_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
+PROGS_origin =  e_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
+
+PROGS_igraph =  f_test 
 
 #-------------------------------------------------------------------------------
 
-all:  $(PROGS_origin) 
+all:  $(PROGS_origin)$(PROGS_igraph) 
 	(cd IGRAPH; make)
 
 test:  
@@ -76,12 +81,17 @@ T/e-0000_wrap.c: e-0000.i
 
 #------------------------------------------------------------------
 
-f_test :  f_test.c T/e-0000.o                                    
+e_test :  e_test.c T/e-0000.o                                    
 	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
 #T/e-0000.o : e-0000.c e-0000.h                                  
 ##	$(GCC) -D_GNUPLOT -o $@ -c $< $(GNUPLOTI_INC)
 #	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+
+#------------------------------------------------------------------
+
+f_test :  f_test.c                                    
+	$(GCC) -o $@ $^ ${IGRAPH_INCS} ${IGRAPH_LIBS} 
 
 #------------------------------------------------------------------
 
