@@ -668,7 +668,7 @@ That is, a string used to represent it on the tab bar."
 
 ;;-------------------------------------------------------------------------------
 
-
+(setq mouse-wheel-scroll-amount '(2 ((shift) . 6) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
 ;;-------------------------------------------------------------------------------
