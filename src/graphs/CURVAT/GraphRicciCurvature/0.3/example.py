@@ -50,13 +50,19 @@ G = nx.karate_club_graph()
 
 #exit ()
 
+print ("..... 02 .... \n")
+
 # compute the Ollivier-Ricci curvature of the given graph G
 #orc = OllivierRicci (G, alpha=0.5, verbose="INFO")
 orc = OllivierRicci.OllivierRicci (G, alpha=0.5, verbose="INFO")
 
 #exit ()
 
+print ("..... 03 .... \n")
+
 orc.compute_ricci_curvature()
+
+print ("..... 04 .... \n")
 
 #exit ()
 
@@ -90,6 +96,8 @@ print ("")
 
 # -----------------------------------------------------
 # Construct a directed graph example
+print ("\n")
+print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n")
 
 Gd = nx.DiGraph()
 Gd.add_edges_from([(1, 2), (2, 3), (3, 4), (2, 4), (4, 2)])
@@ -102,7 +110,6 @@ orc_directed = OllivierRicci.OllivierRicci (Gd)
 orc_directed.compute_ricci_curvature()
 
 print ("\n")
-print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n")
 
 for n1, n2 in Gd.edges():
     print("Directed Graph: The Ollivier-Ricci curvature of edge(%d,%d) id %f" %
@@ -120,7 +127,7 @@ frc_directed = FormanRicci.FormanRicci (Gd)
 frc_directed.compute_ricci_curvature()
 
 print ("\n")
-print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n")
+##print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n")
 
 for n1, n2 in frc_directed.G.edges():
     print("Directed Graph: The Forman-Ricci curvature of edge(%d,%d) id %f" %
@@ -128,7 +135,7 @@ for n1, n2 in frc_directed.G.edges():
 
 print ("\n")
 
-#exit ()
+exit ()  # OK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # ---------------------------------------------
 # Multiprocessing computation is also supported, default is all detected cpu.

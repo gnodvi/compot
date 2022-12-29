@@ -1,3 +1,5 @@
+#-------------------------------------------------------------------------------
+
 """
 A NetworkX addon program to compute the Ollivier-Ricci curvature of a given NetworkX graph.
 
@@ -27,6 +29,8 @@ Reference:
     Ollivier, Y. 2009. "Ricci curvature of Markov chains on metric spaces". Journal of Functional Analysis, 256(3), 810-864.
 
 """
+#-------------------------------------------------------------------------------
+
 import importlib
 import time
 import math
@@ -38,7 +42,13 @@ from multiprocessing import Pool, cpu_count
 #
 from util import *
 
-import cvxpy as cvx
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# пока попобуем убрать
+
+#import cvxpy as cvx
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 import networkx as nx
 import numpy as np
 
@@ -49,8 +59,11 @@ def _get_all_pairs_shortest_path():
     """
     Pre-compute the all pair shortest paths of the assigned graph G
     """
-    logger.info("Start to compute all pair shortest path.")
+    
+    logger.info ("Start to compute all pair shortest path.")
+    
     # Construct the all pair shortest path lookup
+    
     if importlib.util.find_spec("networkit") is not None:
         import networkit as nk
         t0 = time.time()
@@ -65,9 +78,17 @@ def _get_all_pairs_shortest_path():
         logger.info("%8f secs for all pair by NetworKit." % (time.time() - t0))
         return lengths
     else:
-        logger.warning("NetworKit not found, use NetworkX for all pair shortest path instead.")
+        
+        logger.warning ("NetworKit not found, use NetworkX for all pair shortest path instead.")
         t0 = time.time()
+
         lengths = dict(nx.all_pairs_dijkstra_path_length(_G, weight=_weight))
+
+        print ("\n")
+        print (lengths)
+        print ("\n")
+        ##exit ()
+        
         logger.info("%8f secs for all pair by NetworkX." % (time.time() - t0))
         return lengths
 
@@ -164,7 +185,9 @@ def _distribute_densities(source, target):
 
     return x, y, d
 
-
+# ------------------------------------------------------------------------------
+# !!! не хотм использовать
+#
 def _optimal_transportation_distance(x, y, d):
     """
     Compute the optimal transportation distance (OTD) of the given density distributions by cvxpy.
@@ -192,6 +215,7 @@ def _optimal_transportation_distance(x, y, d):
 
     return m
 
+# ------------------------------------------------------------------------------
 
 def _sinkhorn_distance(x, y, d):
     """
@@ -203,11 +227,13 @@ def _sinkhorn_distance(x, y, d):
     """
     t0 = time.time()
     m = ot.sinkhorn2(x, y, d, 1e-1, method='sinkhorn')[0]
+    
     logger.debug(
         "%8f secs for Sinkhorn. dist. \t#source_nbr: %d, #target_nbr: %d" % (time.time() - t0, len(x), len(y)))
 
     return m
 
+#-------------------------------------------------------------------------------
 
 def _average_transportation_distance(source, target):
     """
@@ -238,7 +264,8 @@ def _average_transportation_distance(source, target):
     return m
 
 
-def _compute_ricci_curvature_single_edge(source, target):
+#-------------------------------------------------------------------------------
+def _compute_ricci_curvature_single_edge (source, target):
     """
     Ricci curvature computation process for a given single edge.
 
@@ -260,6 +287,7 @@ def _compute_ricci_curvature_single_edge(source, target):
     m = 1  # assign an initial cost
     assert _method in ["OTD", "ATD", "Sinkhorn"], \
         'Method %s not found, support method:["OTD", "ATD", "Sinkhorn"]' % _method
+
     if _method == "OTD":
         x, y, d = _distribute_densities(source, target)
         m = _optimal_transportation_distance(x, y, d)
@@ -276,13 +304,14 @@ def _compute_ricci_curvature_single_edge(source, target):
     return {(source, target): result}
 
 
+#-------------------------------------------------------------------------------
 def _wrap_compute_single_edge(stuff):
     """
     Wrapper for args in multiprocessing
     """
     return _compute_ricci_curvature_single_edge(*stuff)
 
-
+#-------------------------------------------------------------------------------
 def _compute_ricci_curvature_edges(G: nx.Graph(), weight="weight", edge_list=None,
                                    alpha=0.5, method="OTD",
                                    base=math.e, exp_power=2, proc=cpu_count(), chunksize=None):
@@ -344,7 +373,7 @@ def _compute_ricci_curvature_edges(G: nx.Graph(), weight="weight", edge_list=Non
 
     return result
 
-
+#-------------------------------------------------------------------------------
 def _compute_ricci_curvature(G: nx.Graph(), weight="weight", **kwargs):
     """
     Compute Ricci curvature of edges and nodes.
@@ -356,7 +385,7 @@ def _compute_ricci_curvature(G: nx.Graph(), weight="weight", **kwargs):
         for (v1, v2) in G.edges():
             G[v1][v2][weight] = 1.0
 
-    edge_ricci = _compute_ricci_curvature_edges(G, weight=weight, **kwargs)
+    edge_ricci = _compute_ricci_curvature_edges (G, weight=weight, **kwargs)
 
     # Assign edge Ricci curvature from result to graph G
     for rc in edge_ricci:
@@ -378,7 +407,7 @@ def _compute_ricci_curvature(G: nx.Graph(), weight="weight", **kwargs):
 
     return G
 
-
+#-------------------------------------------------------------------------------
 def _compute_ricci_flow(G: nx.Graph(), weight="weight",
                         iterations=100, step=1, delta=1e-4, surgery=(lambda G, *args, **kwargs: G, 100),
                         **kwargs
@@ -462,7 +491,9 @@ def _compute_ricci_flow(G: nx.Graph(), weight="weight",
 
 class OllivierRicci:
 
-    def __init__(self, G, weight="weight", alpha=0.5, method="OTD",
+    def __init__(self, G, weight="weight", alpha=0.5,
+                 method="OTD",
+                 #method="ATD",
                  base=math.e, exp_power=2, proc=cpu_count(), chunksize=None, verbose="ERROR"):
         """
         A class to compute Ollivier-Ricci curvature for all nodes and edges in G.
@@ -473,9 +504,11 @@ class OllivierRicci:
               It means the share of mass to leave on the original node.
               E.g. x -> y, alpha = 0.4 means 0.4 for x, 0.6 to evenly spread to x's nbr.
               Default: 0.5
+
         :param method: Transportation method, "OTD" for Optimal Transportation Distance (Default),
                                               "ATD" for Average Transportation Distance.
                                               "Sinkhorn" for OTD approximated Sinkhorn distance.
+
         :param base: Base variable for weight distribution. Default: math.e
         :param exp_power: Exponential power for weight distribution. Default: 0
         :param proc: Number of processor used for multiprocessing.
@@ -510,12 +543,25 @@ class OllivierRicci:
                                               base=self.base, exp_power=self.exp_power,
                                               proc=self.proc, chunksize=self.chunksize)
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def compute_ricci_curvature(self):
+
+        print ("..... 03 .. 1 .... \n")
+        
         self.G = _compute_ricci_curvature(G=self.G, weight=self.weight,
-                                          alpha=self.alpha, method=self.method,
+                                          alpha=self.alpha,
+                                          
+                                          #method=self.method,
+                                          #method="ATD",
+                                          method="Sinkhorn",
+                                          
                                           base=self.base, exp_power=self.exp_power,
                                           proc=self.proc, chunksize=self.chunksize)
+
+        
         return self.G
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
 
     def compute_ricci_flow(self, iterations=10, step=1, delta=1e-4, surgery=(lambda G, *args, **kwargs: G, 100)):
         self.G = _compute_ricci_flow(G=self.G, weight=self.weight,
@@ -525,3 +571,4 @@ class OllivierRicci:
                                      proc=self.proc, chunksize=self.chunksize
                                      )
         return self.G
+#-------------------------------------------------------------------------------
