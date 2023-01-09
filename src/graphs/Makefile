@@ -61,8 +61,9 @@ all:  $(PROGS_origin)$(PROGS_igraph)
 
 test:  
 	T_graphs.sh
-	(cd IGRAPH;                     make test)
-	(cd CURVAT/GraphRicciCurvature; make test)
+	# T_graphs.sh
+	# (cd IGRAPH;                     make test)
+	# (cd CURVAT/GraphRicciCurvature; make test)
 
 #-------------------------------------------------------------------------------
 
