@@ -15,18 +15,23 @@ package require compot::common
 
 #set_debian_OUT_add
 
-#-------------------------------------------------------------------------------
-
 puts ""
 
+#-------------------------------------------------------------------------------
 
 # ????? sometimes
+
 # e_i__.jm TEST
 # Segmentation fault
-# 
+#
+# mv E/OUT/e:e_i__.jm,TEST E/OUT/ERR
+
 run_numer_tests  e . E/OUT 
 
 puts ""
+
+#-------------------------------------------------------------------------------
+
 
 run_numer_tests  f . E/OUT 
 

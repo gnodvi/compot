@@ -2,7 +2,4 @@
 igraph_small
 igraph_create
 igraph_get_shortest_paths
-igraph_get_shortest_paths_dijkstra 
-
-
-
+igraph_get_shortest_paths_dijkstra

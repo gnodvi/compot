@@ -35,7 +35,7 @@ POKERS_DIR = ../pokers
 #-------------------------------------------------------------------------------
 
 
-all:  GRAPHS__  OLDJOY__  RANDOM__ PLOTER__ LISOFT__  COMMON__  FUN-GP__  DIALOG__ CGPLIB__ LOGICS__  TENSOR__  POKERS__
+all:  OLDJOY__  RANDOM__ PLOTER__ COMMON__  LISOFT__  FUN-GP__  DIALOG__ CGPLIB__ LOGICS__  TENSOR__  POKERS__ GRAPHS__  
 
 # CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ## TESTER__  ## JIMTCL__ 
 
