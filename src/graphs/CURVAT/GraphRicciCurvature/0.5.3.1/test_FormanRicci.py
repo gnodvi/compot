@@ -63,4 +63,6 @@ def test_compute_ricci_curvature ():
 
 test_compute_ricci_curvature ()
 
+print ("\n...... OK ................. \n")
+
 #-------------------------------------------------------------------------------

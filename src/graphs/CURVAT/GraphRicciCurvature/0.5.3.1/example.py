@@ -2,29 +2,13 @@
 
 #-------------------------------------------------------------------------------
 
-
 print ("\n")
 print ("..... 01 .... \n")
 
 import sys
+
 #sys.path.append ("../networkx-networkx-2.8.8")
 sys.path.append (".")
-
-#print ("sys.path = ",  sys.path)
-
-#print ("..... 02 .... \n")
-
-# import os
-# print (os.environ.get ('PYTHONPATH', ''))
-
-#exit ()
-#__path__.append(os.path.join(os.path.dirname(__file__), "utils"))
-
-#print ("..... 03 .... \n")
-
-#exit ()
-
-#exit ()
 
 #-------------------------------------------------------------------------------
 import networkx as nx
@@ -88,23 +72,29 @@ print ("\n")
 #           (n1, n2, frc_directed.G[n1][n2]["formanCurvature"]))
 
 # -----------------------------------
-print("\n===== Multiprocessing computation is also supported, default is 2 cpu.")
+
+print ("\n===== Multiprocessing computation is also supported, default is 2 cpu.")
+
 G_rr = nx.random_regular_graph(8, 1000)
 orc_rr = OllivierRicci(G_rr, proc=2, verbose="INFO")
 orc_rr.compute_ricci_curvature()
 
 # -----------------------------------
+
 print("\n=====  Compute Ricci flow metric - Optimal Transportation Distance =====")
+
 G = nx.karate_club_graph()
 orc_OTD = OllivierRicci(G, alpha=0.5, method="OTD", verbose="INFO")
 orc_OTD.compute_ricci_flow(iterations=10)
 
 print("\n=====  Compute Ricci flow metric - Average Transportation Distance =====")
+
 G = nx.karate_club_graph()
 orc_ATD = OllivierRicci(G, alpha=0.5, method="ATD", verbose="INFO")
 orc_ATD.compute_ricci_flow(iterations=10)
 
 print("\n=====  Compute Ricci flow metric - Sinkhorn distance for approximate optimal transportation distance =====")
+
 G = nx.karate_club_graph()
 orc_Sinkhorn = OllivierRicci(G, alpha=0.5, method="Sinkhorn", verbose="INFO")
 orc_Sinkhorn.compute_ricci_flow(iterations=10)
@@ -114,3 +104,9 @@ from my_surgery import *
 
 orc_surgery = OllivierRicci(G, alpha=0.5, verbose="INFO")
 orc_Sinkhorn.compute_ricci_flow(iterations=10, surgery=(my_surgery, 5))
+
+# -------------------------------------------------------------------------------
+
+print ("\n...... OK ................. \n")
+
+# -------------------------------------------------------------------------------

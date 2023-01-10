@@ -44,3 +44,6 @@ Directed Graph: The Ollivier-Ricci curvature of edge(3,1) id 0.750000
 * Modularity now: 0.268636 
 * ARI now: 0.590553 
 *********************************************
+
+...... OK ................. 
+
