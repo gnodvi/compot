@@ -1,3 +1,5 @@
+// -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
+
 /* -*- mode: C -*-  */
 /*
    IGraph library.
@@ -20,11 +22,13 @@
    02110-1301 USA
 
 */
+//------------------------------------------------------------------------------
 
 #include <igraph.h>
 
 #include <stdlib.h>
 
+//------------------------------------------------------------------------------
 int check_evecs(const igraph_t *graph, const igraph_vector_int_list_t *vecs,
                 const igraph_vector_int_list_t *evecs, int error_code) {
 
@@ -69,6 +73,7 @@ int check_evecs(const igraph_t *graph, const igraph_vector_int_list_t *vecs,
 
     return 0;
 }
+//------------------------------------------------------------------------------
 
 int main(void) {
 
@@ -112,3 +117,5 @@ int main(void) {
 
     return 0;
 }
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
