@@ -28,7 +28,8 @@
 #include <stdlib.h>
 
 //------------------------------------------------------------------------------
-int main(void) {
+void test_shortest_paths_dijkstra () 
+{
 
   igraph_t g;
 
@@ -90,11 +91,14 @@ int main(void) {
             IGRAPH_OUT,  // the outgoing paths are calculated
             &parents,    // vector containing the parent of each vertex in the 
                          // single source shortest path tree
-            /*inbound_edges=*/ &inbound);
+            /*inbound_edges=*/ &inbound
+            );
 
 
   printf ("Vertices:\n");
 
+  // идем по списку векторов из целых чисел - вершин по кратчайшему пути
+  // 
   for (i = 0; i < igraph_vector_int_list_size (&vecs); i++) {
     igraph_vector_int_print (igraph_vector_int_list_get_ptr (&vecs, i));
   }
@@ -114,6 +118,50 @@ int main(void) {
 
   igraph_vector_int_print (&inbound);
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Weighted shortest path from one vertex to another one.
+ 
+  //igraph_vector_int_t *vertices,
+  //igraph_vector_int_t *edges,
+  //igraph_integer_t from,
+  //igraph_integer_t to,
+  // const igraph_vector_t *weights,;
+  //igraph_neimode_t mode);
+
+  // Calculates a single (positively) weighted shortest path from a single vertex 
+  // to another one, using Dijkstra's algorithm.
+
+  // This function is a special case (and a wrapper) to 
+  // igraph_get_shortest_paths_dijkstra(). 
+
+  igraph_vector_int_t v_ret, e_ret;
+
+  igraph_vector_int_init (&v_ret, 0);
+  igraph_vector_int_init (&e_ret, 0);
+
+
+  //#ifdef _0
+  igraph_get_shortest_path_dijkstra (&g,
+                                      &v_ret,
+                                      &e_ret,
+                                      0,
+                                      5,
+                                      &weights_vec,
+                                      IGRAPH_OUT);
+  //#endif
+
+  
+  printf ("\n");
+  printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
+  printf ("\n");
+
+  printf ("v_ret :  ");
+  igraph_vector_int_print (&v_ret);
+
+  printf ("e_ret :  ");
+  igraph_vector_int_print (&e_ret);
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   igraph_vector_int_list_destroy (&vecs);
   igraph_vector_int_list_destroy (&evecs);
@@ -124,6 +172,105 @@ int main(void) {
   igraph_destroy (&g);
 
   printf ("\n");
+
+  return;
+}
+/*-----------------------------------------------------------------------------*/ 
+void
+test_01 ()
+{
+
+  //printf ("\n");
+  printf ("..... test_01 ..... \n");
+  printf ("\n");
+
+  // GRAF *pg;
+  // int   s, t, nn;
+  // double  r, d;
+  // int     num_r, num_d;
+
+
+  // pg = GrafCreate (4);
+  
+  // //GrafInit (pg, YCONST, 0.0, 0.0, YCONST, NOT, 0.0);
+  // GrafInit (pg, YRAND, 0.0, 0.0, YRAND, NOT, NOT);
+  
+  // EDGE (pg, 0, 1) = 1;
+  // EDGE (pg, 1, 2) = 1;
+  // EDGE (pg, 2, 3) = 1;
+  // //EDGE (pg, 0, 3) = 3.1 /* 2.9 */;
+  // EDGE (pg, 0, 3) = 4 /* 2.9 */;
+  
+  // s = 0;
+  // t = 3;
+  
+  // printf ("\n");
+  // GrafPrint (pg);
+
+  // GrafSmin (pg, s, t, NULL);
+  // printf ("\n");
+
+
+  igraph_t g;
+
+  igraph_small (&g, 4, IGRAPH_DIRECTED,
+               0, 1,  1, 2,  2, 3, 
+               0, 3,
+               -1);
+
+  igraph_real_t weights[] = 
+    {  1, 1, 1,   2  };
+  igraph_vector_t weights_vec;
+
+  // Handle a regular C array as a igraph_vector_t.
+  // 
+  igraph_vector_view (&weights_vec, weights, 
+                      sizeof(weights) / sizeof(weights[0]));
+
+
+
+  igraph_vector_int_t v_ret, e_ret;
+
+  igraph_vector_int_init (&v_ret, 0);
+  igraph_vector_int_init (&e_ret, 0);
+
+
+  //#ifdef _0
+  igraph_get_shortest_path_dijkstra (&g,
+                                     &v_ret,
+                                     &e_ret,
+                                     0,
+                                     3,
+                                     &weights_vec,
+                                     IGRAPH_OUT);
+
+
+  printf ("v_ret :  ");
+  igraph_vector_int_print (&v_ret);
+
+  printf ("e_ret :  ");
+  igraph_vector_int_print (&e_ret);
+
+
+  // GrafMetrica (pg, &r, &d, &num_r, &num_d);
+
+  // printf ("r = %.1f  num_r = %d \n", r, num_r);
+  // printf ("d = %.1f  num_d = %d \n", d, num_d);
+
+  printf ("\n");
+
+  return;
+}
+//------------------------------------------------------------------------------
+int main (void) {
+
+  test_shortest_paths_dijkstra (); 
+
+  printf ("\n");
+  printf ("============================================================= \n");
+  printf ("\n");
+
+  test_01 ();
 
   return 0;
 }
