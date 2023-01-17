@@ -1,0 +1,45 @@
+# -*-   mode: sh   ; coding: koi8   -*- ----------------------------------------
+#!/bin/bash
+#
+#
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+export XDOTOOL=/home/mgena/MSOFT/xdotool/R/bin/xdotool
+
+
+#windowid=$( ${XDOTOOL} getwindowfocus)
+
+#windowid=12345
+
+#echo ${windowid} &> /tmp/XDOTOOL
+
+
+#sleep 0.5 && xdotool windowactivate --sync $windowid type 'texttttttttttt'
+
+#sleep 0.5 && ${XDOTOOL} type textttt
+
+#sleep 0.5 && xterm -title ${windowid} &> /tmp/XDOTOOL 
+
+bash -c "sleep 0.5 && xterm -title 1234567890 &"
+
+bash -c "sleep 1.5"
+
+bash -c "sleep 0.5 && xterm -title !!!!!!!!!! &"
+
+bash -c "sleep 1.5"
+
+#exit
+
+bash -c "sleep 1.5 && /home/mgena/MSOFT/xdotool/R/bin/xdotool mousemove 475 10"  
+
+#bash -c "sleep 1.5 && ${XDOTOOL} mousemove 100 100"  
+#sleep 1.5 && ${XDOTOOL} click 2
+  
+#sleep 1.5 && /home/mgena/MSOFT/xdotool/R/bin/xdotool  mousemove 475 10  
+#sleep 1.5 && ${XDOTOOL} mousemove 475 10  
+#sleep 1.5 && ${XDOTOOL} click 1  
+
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------

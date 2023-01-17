@@ -1,0 +1,616 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+#
+# the next line restarts using tclsh \
+exec wish "$0" "$0 $@"
+
+#-------------------------------------------------------------------------------
+
+# http://wiki.tcl.tk/14895
+
+# Hold'Em Solitaire
+# Updated 2016-04-30 18:43:47 by gold
+
+#-------------------------------------------------------------------------------
+
+# Keith Vetter 2005-10-26 : Once when I was waiting for enough players to show 
+# up to start a game of poker, someone showed me an interesting diversion that 
+# dramatically demonstrates the value (or lack thereof) of various starting 
+# hands in Texas Hold-Em.
+
+# What he did was deal out, facing up, 8 starting hands of Texas Hold'em. 
+# We would then pick the hand we thought would win. Then he'd do the flop, 
+# turn and river and see if anybody picked the winning hand. It's quite 
+# enlightening to see what hands actually win.
+
+# Yesterday I had some free time so I created this computerized version of 
+# that game.
+
+# KPV 2005-11-07 : Added both Omaha and Omaha High-Low.
+
+# uniquename 2013aug01
+
+# Here is an image that is 'locally stored' on this site, as insurance, in 
+# case the image below, at flickr.com, goes dead.
+
+# IMAGE
+
+# This is an image captured at the beginning --- before any cards are dealt.
+
+#-------------------------------------------------------------------------------
+
+ ##+##########################################################################
+ #
+ # holdem.tcl -- Plays n-way hands of hold'em poker
+ # by Keith Vetter, October 2005
+ #
+ 
+ package require Tk
+ 
+ array set RANKINGS {
+    9 "Royal Flush"
+    8 "\$card0 High Straight Flush"
+    7 "Four \${card0}s"
+    6 "Full house: \${card0}s over \${card1}s"
+    5 "\$card0 High Flush"
+    4 "\$card0 High Straight"
+    3 "Three \${card0}s"
+    2 "Two Pairs: \${card0}s and \${card1}s"
+    1 "Pair of \${card0}s"
+    0 "\${card0} High"
+ }
+ 
+ set S(game) Omaha
+ set S(game) Hold-Em
+ set S(HighLow) [string match "*High*" $::S(game)]
+ array set S {players 8 h 400 w 1100 color green4 cpad 5 played 0 correct 0}
+
+ wm title . "Hold-Em Solitaire"
+ 
+#-------------------------------------------------------------------------------
+proc DoDisplay {} {
+
+  global S
+  
+  set S(w/2) [expr {$S(w) / 2}]
+  
+  eval destroy [winfo child .]
+  canvas .c -width $S(w) -height $S(h) -bg $S(color) -highlightthickness 0
+  .c create text $S(w/2) 10 -tag title -text "$S(game) Solitaire" \
+    -font {Arial 32 bold} -anchor n
+  set S(th) [lindex [.c bbox title] 3]
+  .c create text $S(w/2) [expr {$S(h) + $S(th)}] -tag msg -fill red \
+    -font {Arial 32 bold} -anchor n -text "Messages go here"
+  .c config -height [lindex [.c bbox msg] end]
+  
+  pack .c -side top -fill both -expand 1
+  bind . <Key-F2> {console show}
+  
+  GetCardPlacement                            ;# Flop and hands
+  frame .bottom -bg $S(color)
+  label .stats -font {Arial 18 bold} -textvariable S(stats) -bg $::S(color) \
+    -justify left
+  MakeFlop .flop
+  MakeButtons .buttons
+  
+  pack .c .bottom -side top -fill x -expand 1
+  pack config .bottom -ipady 30
+  if {0} {
+    pack .stats -in .bottom -side left -padx 30
+    pack .buttons -in .bottom -side right -padx 30
+    pack .flop -in .bottom -side top
+  }
+  grid .stats .flop .buttons -in .bottom
+  grid config .stats -sticky w -padx 30
+  grid columnconfig .bottom 1 -weight 1
+  grid columnconfig .bottom {0 2} -uniform a
+  
+  ShowStats
+}
+proc MakeButtons {w} {
+  global S
+  
+  frame $w -bg $S(color)
+  button .deal -text "Deal Cards" -command Flop -width 10 -state disabled
+  .deal configure -font "[font actual [.deal cget -font]] -weight bold"
+  
+  tk_optionMenu .players S(players) 2 3 4 5 6 7 8 9 10
+  .players config -highlightthickness 0 -textvariable {} -indicatoron 0 \
+    -text "Players" -width 10 -font [.deal cget -font]
+  for {set i 0} {$i < 10} {incr i} {
+    .players.menu entryconfig $i -command Repopulate
+  }
+  tk_optionMenu .games S(game) "Hold-Em" "Omaha" "Omaha High-Low"
+  foreach i {0 1 2} {
+    .games.menu entryconfig $i -command Repopulate
+  }
+  .games config -highlightthickness 0 -textvariable {} -indicatoron 0 \
+    -text "Game" -width 10 -font [.deal cget -font]
+  button .about -text About -font [.deal cget -font] -command About
+  
+  grid .deal .games -in $w -sticky news -pady 2 -padx 2
+  grid .about .players -in $w -sticky news -pady 2 -padx 2
+  grid columnconfigure $w 100 -minsize 20
+}
+#-------------------------------------------------------------------------------
+proc MakeFlop {w} {
+
+  frame $w -bg $::S(color)
+
+  foreach i {0 1 2 3 4} {
+    label $w.flop$i -image ::img::back -bg $::S(color)
+  }
+
+  eval pack [winfo child $w] -side left -expand 1
+}
+#-------------------------------------------------------------------------------
+proc GetCardPlacement {} {
+
+  global S
+  
+  set S(handNum) [expr {$S(game) eq "Hold-Em" ? 2 : 4}]
+  if {$S(handNum) == 4} {
+    set rows [expr {($S(players) + 2) / 3}]
+    set cols [expr {$S(players) < 3 ? $S(players) : 3}]
+  } else {
+    set rows [expr {$S(players) > 3 ? 2 : 1}]
+    set cols [expr {$S(players) < 4 ? $S(players) : ($S(players) + 1) / 2}]
+  }
+  set colWidth [expr {$S(w) / $cols}]         ;# Center of col
+  set rowWidth [expr {$S(h) / $rows}]
+  
+  set id -1
+  for {set row 0} {$row < $rows} {incr row} {
+    for {set col 0} {$col < $cols} {incr col} {
+      if {[incr id] >= $S(players)} return
+      set y [expr {$S(th) + $row * $rowWidth + $rowWidth/2}]
+      set x [expr {$col * $colWidth + $colWidth/2}]
+      PlaceHand $id $x $y $S(handNum)
+    }
+  }
+}
+proc PlaceHand {id x y num} {
+  global S
+  
+  set dx [expr {$S(cw) + $S(cpad)}]
+  
+  set x0 [expr {$x - $dx/2 - ($num == 4 ? $dx : 0)}]
+  for {set c 0} {$c < $num} {incr c} {
+    set xx [expr {$x0 + $c*$dx}]
+    .c create image $xx $y -tag [list hand hand$id/$c hand$id] -image ::img::back
+    .c bind hand$id <1> [list GuessHand $id]
+  }
+}
+
+proc MakeCards {} {
+
+  set ::S(deck) {}
+
+  foreach suit {s d c h} {
+    foreach pip {a k q j t 9 8 7 6 5 4 3 2} {
+      lappend ::S(deck) "$pip$suit"
+    }
+  }
+  
+  if {[info commands ::img::as] eq ""} {
+    if {! [file exists cimages.tcl]} {
+      wm withdraw .
+      set emsg "Error: missing card images\n\n"
+      append emsg "Download the images from\n"
+      append emsg "http://wiki.tcl.tk/card_img\n"
+      append emsg "and save them to \042cimages.tcl\042"
+      tk_messageBox -icon error -message $emsg \
+        -title "Hold-Em Solitaire Error"
+      exit
+    }
+    source cimages.tcl
+  }
+  set ::S(cw) [image width ::img::as]
+  set ::S(ch) [image height ::img::as]
+}
+
+proc Shuffle { l } {
+
+  set len [llength $l]
+  set len2 $len
+  for {set i 0} {$i < $len-1} {incr i} {
+    set n [expr {int($i + $len2 * rand())}]
+    incr len2 -1
+    
+    # Swap elements at i & n
+    set temp [lindex $l $i]
+    lset l $i [lindex $l $n]
+    lset l $n $temp
+  }
+  return $l
+}
+
+proc DealOne {} {
+  set card [lindex $::S(cards) 0]
+  set ::S(cards) [lrange $::S(cards) 1 end]
+  return $card
+}
+
+proc StartGame {} {
+  global S
+  set S(cards) [Shuffle $S(deck)]
+  
+  # Deal all the cards
+  for {set idx 0} {$idx < $S(handNum)} {incr idx} {
+    for {set h 0} {$h < $S(players)} {incr h} {
+      set card [DealOne]
+      set S(hand,$h,$idx) $card
+      .c itemconfig hand$h/$idx -image ::img::$card
+    }
+  }
+  
+  # Deal the flop
+  for {set i 0} {$i < 5} {incr i} {
+    .flop.flop$i config -image ::img::back
+    set S(flop,$i) ""
+  }
+  set S(state) 0
+  set S(guess) -1
+  ClearHighlight
+  INFO "Choose the winning hand..."
+  .c delete guess
+  .deal config -state disabled -text "Deal Cards"
+}
+
+proc INFO {msg} {
+  .c itemconfig msg -text $msg
+}
+
+proc Flop {} {
+  global S
+  array set IDXS {0 {0 1 2} 1 3 2 4}
+  
+  if {[info exists IDXS($S(state))]} {
+    foreach idx $IDXS($S(state)) {
+      set card [DealOne]
+      set S(flop,$idx) $card
+      .flop.flop$idx config -image ::img::$card
+    }
+    incr S(state)
+    WhoWon                                  ;# Show best hand
+    if {$S(state) == 3} EndHand
+  } else {
+    StartGame
+  }
+}
+
+proc EndHand {} {
+
+  global S BEST
+  
+  incr S(played)
+  if {[lsearch [concat $BEST(high) $BEST(low)] $S(guess)] != -1} {
+    incr S(correct)
+  } else {
+    HighlightHands $S(guess) bad
+  }
+  .deal config -text "New Hand"
+  ShowStats
+}
+
+proc ShowStats {} {
+  set ::S(stats) "Hands: $::S(played)\nCorrect: $::S(correct)"
+}
+
+proc WhoWon {} {
+
+  global S BEST
+  
+  unset -nocomplain BEST
+  set best -1
+  set who {}
+  
+  set low 99
+  set whoLow {}
+  for {set pos 0} {$pos < $S(players)} {incr pos} {
+    foreach a {high,val high,hand low,val low,hand} \
+      val [ScorePosition $pos] {
+        set BEST($pos,$a) $val
+      }
+    set value $BEST($pos,high,val)
+    set n [CompareHands $value $best]
+    if {$n > 0} {
+      set who $pos
+      set best $value
+    } elseif {$n == 0} {                    ;# A tie??
+      lappend who $pos
+    }
+    
+    ;# Compute low winner
+    if {! $S(HighLow)} continue
+    set value $BEST($pos,low,val)
+    if {$value == 99} continue
+    set n [CompareHands $value $low]
+    if {$n < 0} {
+      set whoLow $pos
+      set low $value
+    } elseif {$n == 0} {
+      lappend whoLow $pos
+    }
+  }
+  set BEST(high) $who
+  set BEST(low) $whoLow
+  
+  ShowWinner
+  return $who
+}
+
+proc ShowWinner {} {
+
+  global S BEST
+  
+  set high $BEST(high)
+  set val $BEST([lindex $high 0],high,val)
+  HighlightHands $high high
+  set txt [PrettyHand $val]
+  
+  if {$S(HighLow)} {
+    set low $BEST(low)
+    if {$low ne {}} {
+      set val $BEST([lindex $low 0],low,val)
+      set ltxt [PrettyHandLow $val]
+      HighlightHands $low low
+    } else {
+      set ltxt "no low hand"
+    }
+    append txt " / $ltxt"
+    
+    
+    # Did somebody win both high and low?
+    set both {}
+    foreach a $BEST(high) {
+      if {[lsearch $BEST(low) $a] != -1} {
+        lappend both $a
+      }
+      HighlightHands $both both
+    }
+  }
+  INFO $txt
+}
+
+proc PrettyHand {value} {
+
+  if {$value eq ""} {return ""}
+  foreach {rank card0 card1} $value break
+  set card0 [string map -nocase {11 Jack 12 Queen 13 King 14 Ace} $card0]
+  set card1 [string map -nocase {11 Jack 12 Queen 13 King 14 Ace} $card1]
+  
+  set str [subst -nocommands -nobackslashes $::RANKINGS($rank)]
+  return $str
+}
+
+proc PrettyHandLow {value} {
+  if {$value eq ""} { return "" }
+  set card0 [lindex $value 0]
+  set card0 [string map -nocase {1 Ace} $card0]
+  set str [subst -nocommands -nobackslashes $::RANKINGS(0)]
+  return $str
+}
+
+proc CompareHands {v1 v2} {
+  foreach num1 $v1 num2 $v2 {
+    set n [expr {$num1 - $num2}]
+    if {$n != 0} {
+      return $n
+    }
+  }
+  return 0
+}
+
+proc ScorePosition {pos} {
+  if {$::S(game) eq "Hold-Em"} {
+    return [ScorePosition_Hold-Em $pos]
+  }
+  return [ScorePosition_Omaha $pos]
+}
+
+proc ScorePosition_Hold-Em {pos} {
+
+  global S
+  
+  set all [list $S(hand,$pos,0) $S(hand,$pos,1) $S(flop,0) $S(flop,1) \
+             $S(flop,2) $S(flop,3) $S(flop,4)]
+  
+  # Try all possible 5-card combinations and see which one is best
+  set best -1
+  for {set i 0} {$i < 6} {incr i} {
+    for {set j [expr {$i+1}]} {$j < 7} {incr j} {
+      set hand [lreplace [lreplace $all $j $j] $i $i]
+      if {[lsearch $hand {}] != -1} continue
+      set value [ScoreHand $hand]
+      if {[CompareHands $value $best] > 0} {
+        set best $value
+        set bestHand $hand
+      }
+    }
+  }
+  return [list $best . 99 ""]
+}
+
+proc ScorePosition_Omaha {pos} {
+  global S
+  
+  set a [list 0 1 0 2 0 3 1 2 1 3 2 3]
+  set b [list 0 1 2 0 1 3 0 1 4 0 2 3 0 2 4 0 3 4 1 2 3 1 2 4 1 3 4 2 3 4]
+  set best -1
+  set low 99
+  set lowHand ""
+  foreach {h0 h1} $a {                        ;# Two from user's card
+    foreach {h2 h3 h4} $b {                 ;# Two from community's cards
+      set hand [list $S(hand,$pos,$h0) $S(hand,$pos,$h1) \
+                  $S(flop,$h2) $S(flop,$h3) $S(flop,$h4)]
+      if {[lsearch $hand {}] != -1} continue
+      set value [ScoreHand $hand]
+      if {[CompareHands $value $best] > 0} {
+        set best $value
+        set bestHand [list $h0 $h1 $h2 $h3 $h4]
+      }
+      
+      # Get best low hand
+      if {! $S(HighLow)} continue
+      set value [ScoreHandLow $hand]
+      if {[CompareHands $value $low] < 0} {
+        set low $value
+        set lowHand [list $h0 $h1 $h2 $h3 $h4]
+      }
+    }
+  }
+
+  return [list $best $bestHand $low $lowHand]
+}
+##+##########################################################################
+#
+# ScoreHand -- returns a list ranking the hand. The first item
+# in the list is the rank (9 royal flush - 0 high card) and the
+# subsequent items are the tie breakers.
+#
+proc ScoreHand {hand} {
+
+  set pips [set suits {}]
+
+  foreach card $hand {
+    foreach {pip suit} [split $card  ""] break
+    lappend pips [string map -nocase {t 10 j 11 q 12 k 13 a 14} $pip]
+    lappend suits $suit
+  }
+  set pips [lsort -integer $pips]
+  foreach {c0 c1 c2 c3 c4} $pips break
+  set straight [expr {$c0==$c1-1 && $c1==$c2-1 && $c2==$c3-1 && $c3==$c4-1}]
+  set lstraight [expr {$::S(HighLow) \
+                         && $c0==2 && $c1==3 && $c2==4 && $c3==5 && $c4==14}]
+  
+  foreach {s0 s1 s2 s3 s4} [lsort $suits] break
+  set flush [expr {$s0 eq $s4}]
+  
+  if {$straight == 1 && $flush && $c4 == 14} {return [list 9]} ;# Royal flush
+  if {$straight == 1 && $flush} {return [list 8 $c4]} ;# Straight flush
+  if {$lstraight && $flush} { return [list 8 5] } ;# Ace low straight flush
+  if {$c0 == $c3 || $c1 == $c4} {return [list 7 $c2]} ;# Four of a kind
+  if {$c0 == $c1 && $c2 == $c4} {return [list 6 $c2 $c0]} ;# Full house
+  if {$c0 == $c2 && $c3 == $c4} {return [list 6 $c2 $c3]} ;# Full house
+  if {$flush} { return [list 5 $c4 $c3 $c2 $c1 $c0]} ;# Flush
+  if {$straight} { return [list 4 $c4]}       ;# Straight
+  if {$lstraight} { return [list 4 5]}        ;# Low straight
+  if {$c0 == $c2} { return [list 3 $c0 $c4 $c3]} ;# Trip
+  if {$c1 == $c3} { return [list 3 $c1 $c4 $c0]} ;# Trip
+  if {$c2 == $c4} { return [list 3 $c2 $c1 $c0]} ;# Trip
+  if {$c0 == $c1 && $c2 == $c3} {return [list 2 $c2 $c0 $c4]} ;# Two pair
+  if {$c0 == $c1 && $c3 == $c4} {return [list 2 $c3 $c0 $c2]} ;# Two pair
+  if {$c1 == $c2 && $c3 == $c4} {return [list 2 $c3 $c1 $c0]} ;# Two pair
+  if {$c0 == $c1} { return [list 1 $c0 $c4 $c3 $c2]} ;# Pair
+  if {$c1 == $c2} { return [list 1 $c1 $c4 $c3 $c0]} ;# Pair
+  if {$c2 == $c3} { return [list 1 $c2 $c4 $c1 $c0]} ;# Pair
+  if {$c3 == $c4} { return [list 1 $c3 $c2 $c1 $c0]} ;# Pair
+  return [list 0 $c4 $c3 $c2 $c1 $c0]         ;# High card
+}
+
+proc ScoreHandLow {hand} {
+
+  set pips {}
+  foreach card $hand {
+    foreach {pip .} [split $card  ""] break
+    lappend pips [string map -nocase {t 10 j 11 q 12 k 13 a 1} $pip]
+  }
+  set pips [lsort -integer -decreasing $pips]
+  foreach {c0 c1 c2 c3 c4} $pips break
+  if {$c0 > 8} { return 99}                   ;# Not qualifying hand
+  if {$c0 == $c1 || $c1 == $c2 || $c2 == $c3 || $c3 == $c4} { return 99 }
+  return $pips
+}
+
+proc Expand {xy d} {
+  foreach {x y x1 y1} $xy break
+  return [list [expr {$x-$d}] [expr {$y-$d}] [expr {$x1+$d}] [expr {$y1+$d}]]
+}
+
+proc GuessHand {pos} {
+  if {$::S(state) != 0} return
+  set ::S(guess) $pos
+  .c delete guess
+  set delta [expr {6 * $::S(cpad)}]
+  HighlightHands $pos guess
+  .deal config -state normal
+}
+
+proc Repopulate {} {
+  .c delete hand
+  .c itemconfig title -text "$::S(game) Solitaire"
+  set ::S(HighLow) [string match "*High*" $::S(game)]
+  GetCardPlacement
+  StartGame
+}
+
+proc ClearHighlight {} {
+  .c delete guess high low bad both
+}
+
+proc HighlightHands {who how} {
+  global S
+  
+  .c delete $how
+  
+  if {$how eq "bad"} {
+    foreach {x0 y0 x1 y1} [.c bbox guess] break
+    .c create line $x0 $y0 $x1 $y1 -tag bad -fill red -width 15 -capstyle round
+    .c create line $x0 $y1 $x1 $y0 -tag bad -fill red -width 15 -capstyle round
+  } elseif {$how eq "guess"} {
+    .c delete high
+    set delta [expr {2 * $S(cpad)}]
+    foreach pos $who {
+      set xy [.c bbox hand$pos]
+      set xy [Expand $xy $delta]
+      .c create rect $xy -tag guess -fill red
+    }
+  } else {
+    set delta [expr {6 * $::S(cpad)}]
+    set color [expr {$how eq "high" ? "green" : $how eq "low" ? "cyan" : "hotpink"}]
+    foreach pos $who {
+      set xy [Expand [.c bbox hand$pos] $delta]
+      .c create oval $xy -tag $how -fill $color -width 5 -outline black
+    }
+  }
+  .c lower guess
+  .c lower both
+  .c lower high
+  .c lower low
+}
+#-------------------------------------------------------------------------------
+
+proc About {} {
+  
+  set txt "Hold-Em Solitaire\nby Keith Vetter, October, 2005"
+  append txt "\n\nSimulates playing several hands of poker and letting\n"
+  append txt "you try go guess which hand will be the winning one."
+
+  tk_messageBox -icon info -message $txt -title "About Hold-Em Solitaire"
+}
+
+#-------------------------------------------------------------------------------
+
+# Card images from Patience card game, see
+#   http://uebb.cs.tu-berlin.de/~krischan/patience/patience-english.html
+#   http://www.tcl.tk/starkits/patience.kit
+
+source "z_soli.im"
+
+#-------------------------------------------------------------------------------
+
+ MakeCards
+
+ DoDisplay
+
+ StartGame
+
+#-------------------------------------------------------------------------------
+
+# Screenshots
+
+# gold added pix
+
+#-------------------------------------------------------------------------------
