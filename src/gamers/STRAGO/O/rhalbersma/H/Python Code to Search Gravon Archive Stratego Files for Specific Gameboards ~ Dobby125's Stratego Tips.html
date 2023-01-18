@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html dir='ltr' lang='en-US' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<link href='https://www.blogger.com/static/v1/widgets/55013136-widget_css_bundle.css' rel='stylesheet' type='text/css'/>
+<meta charset='UTF-8'/>
+<meta content='width=device-width, initial-scale=1, maximum-scale=1' name='viewport'/>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+<meta content='blogger' name='generator'/>
+<link href='https://stratego-tips.blogspot.com/favicon.ico' rel='icon' type='image/x-icon'/>
+<link href='http://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html' rel='canonical'/>
+<link rel="alternate" type="application/atom+xml" title="Dobby125&#39;s Stratego Tips - Atom" href="https://stratego-tips.blogspot.com/feeds/posts/default" />
+<link rel="alternate" type="application/rss+xml" title="Dobby125&#39;s Stratego Tips - RSS" href="https://stratego-tips.blogspot.com/feeds/posts/default?alt=rss" />
+<link rel="service.post" type="application/atom+xml" title="Dobby125&#39;s Stratego Tips - Atom" href="https://www.blogger.com/feeds/1097247117924260686/posts/default" />
+
+<link rel="alternate" type="application/atom+xml" title="Dobby125&#39;s Stratego Tips - Atom" href="https://stratego-tips.blogspot.com/feeds/3789407143214734787/comments/default" />
+<!--Can't find substitution for tag [blog.ieCssRetrofitLinks]-->
+<meta content='http://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html' property='og:url'/>
+<meta content='Python Code to Search Gravon Archive Stratego Files for Specific Gameboards' property='og:title'/>
+<meta content='A blog giving advice, tips and tricks on how to become a better Stratego player from a passionate player.  I love Stratego!' property='og:description'/>
+<link href="//fonts.googleapis.com/css?family=Playfair+Display:400,700%7CArchivo+Narrow:400,700" rel="stylesheet" type="text/css">
+<link href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css' rel='stylesheet'/>
+<title>Python Code to Search Gravon Archive Stratego Files for Specific Gameboards ~ Dobby125's Stratego Tips</title>
+<!--[if lt IE 9]> <script type="text/javascript"> //<![CDATA[ /* HTML5 Shiv v3.7.0 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */ (function(l,f){function m(){var a=e.elements;return"string"==typeof a?a.split(" "):a}function i(a){var b=n[a[o]];b||(b={},h++,a[o]=h,n[h]=b);return b}function p(a,b,c){b||(b=f);if(g)return b.createElement(a);c||(c=i(b));b=c.cache[a]?c.cache[a].cloneNode():r.test(a)?(c.cache[a]=c.createElem(a)).cloneNode():c.createElem(a);return b.canHaveChildren&&!s.test(a)?c.frag.appendChild(b):b}function t(a,b){if(!b.cache)b.cache={},b.createElem=a.createElement,b.createFrag=a.createDocumentFragment,b.frag=b.createFrag(); a.createElement=function(c){return!e.shivMethods?b.createElem(c):p(c,a,b)};a.createDocumentFragment=Function("h,f","return function(){var n=f.cloneNode(),c=n.createElement;h.shivMethods&&("+m().join().replace(/[\w\-]+/g,function(a){b.createElem(a);b.frag.createElement(a);return'c("'+a+'")'})+");return n}")(e,b.frag)}function q(a){a||(a=f);var b=i(a);if(e.shivCSS&&!j&&!b.hasCSS){var c,d=a;c=d.createElement("p");d=d.getElementsByTagName("head")[0]||d.documentElement;c.innerHTML="x<style>article,aside,dialog,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}mark{background:#FF0;color:#000}template{display:none}</style>"; c=d.insertBefore(c.lastChild,d.firstChild);b.hasCSS=!!c}g||t(a,b);return a}var k=l.html5||{},s=/^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,r=/^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,j,o="_html5shiv",h=0,n={},g;(function(){try{var a=f.createElement("a");a.innerHTML="<xyz></xyz>";j="hidden"in a;var b;if(!(b=1==a.childNodes.length)){f.createElement("a");var c=f.createDocumentFragment();b="undefined"==typeof c.cloneNode|| "undefined"==typeof c.createDocumentFragment||"undefined"==typeof c.createElement}g=b}catch(d){g=j=!0}})();var e={elements:k.elements||"abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",version:"3.7.0",shivCSS:!1!==k.shivCSS,supportsUnknownElements:g,shivMethods:!1!==k.shivMethods,type:"default",shivDocument:q,createElement:p,createDocumentFragment:function(a,b){a||(a=f); if(g)return a.createDocumentFragment();for(var b=b||i(a),c=b.frag.cloneNode(),d=0,e=m(),h=e.length;d<h;d++)c.createElement(e[d]);return c}};l.html5=e;q(f)})(this,document); //]]> </script> <![endif]-->
+<style id='page-skin-1' type='text/css'><!--
+/*
+-----------------------------------------------
+Template Name  : Nucleare
+Author         : NewBloggerThemes.com
+Author URL     : http://newbloggerthemes.com/
+Theme URL      : http://newbloggerthemes.com/nucleare-blogger-template/
+Created Date   : Monday, April 13, 2015
+License        : GNU General Public License v2 or later
+This template is free for both personal and commercial use, But to satisfy the 'attribution' clause of the license, you are required to keep the footer links intact which provides due credit to its authors.
+----------------------------------------------- */
+body#layout ul{list-style-type:none;list-style:none}
+body#layout ul li{list-style-type:none;list-style:none}
+body#layout #headerbwrap {height:auto;}
+body#layout #content {}
+body#layout #search-fullnbt {display:none;}
+/* Variable definitions
+====================
+*/
+/* Use this with templates/template-twocol.html */
+.section, .widget {
+margin:0;
+padding:0;
+}
+/*--------------------------------------------------------------
+1.0 Reset
+--------------------------------------------------------------*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+border: 0;
+font-family: inherit;
+font-size: 100%;
+font-style: inherit;
+font-weight: inherit;
+margin: 0;
+outline: 0;
+padding: 0;
+vertical-align: baseline;
+}
+html {
+font-size: 62.5%; /* Corrects text resizing oddly in IE6/7 when body font-size is set using em units http://clagnut.com/blog/348/#c790 */
+overflow-y: scroll; /* Keeps page centered in all browsers regardless of content height */
+-webkit-text-size-adjust: 100%; /* Prevents iOS text size adjust after orientation change, without disabling user zoom */
+-ms-text-size-adjust:     100%; /* www.456bereastreet.com/archive/201012/controlling_text_size_in_safari_for_ios_without_disabling_user_zoom/ */
+box-sizing: border-box; /* Apply a natural box layout model to the document; see http://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
+}
+*,
+*:before,
+*:after { /* Inherit box-sizing to make it easier to change the property for components that leverage other behavior; see http://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/ */
+box-sizing: inherit;
+}
+body {
+background: #f2f2f2; /* Fallback for when there is no custom background color defined. */
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+main,
+nav,
+section {
+display: block;
+}
+ol,
+ul {
+list-style: none;
+}
+table { /* tables still need 'cellspacing="0"' in the markup */
+border-collapse: separate;
+border-spacing: 0;
+max-width: 100%;
+}
+table th, table td {
+border: 1px solid rgba(0,0,0,.05);
+text-align: center;
+padding: 5px 0;
+}
+table th {
+background: rgba(0,0,0,.05);
+}
+caption,
+th,
+td {
+font-weight: normal;
+text-align: left;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+content: "";
+}
+blockquote,
+q {
+quotes: "" "";
+}
+a:focus {
+outline: thin dotted;
+}
+a:hover,
+a:active {
+outline: 0;
+}
+a img {
+border: 0;
+}
+/*--------------------------------------------------------------
+Typography
+--------------------------------------------------------------*/
+body,
+button,
+input,
+select,
+textarea {
+color: #5e5e5e;
+font-family: 'Archivo Narrow', sans-serif;
+font-size: 16px;
+font-size: 1.6rem;
+line-height: 2;
+text-rendering: optimizeLegibility;
+}
+.smallPart {
+font-size: 11px;
+font-size: 1.1rem;
+line-height: 1.5;
+letter-spacing: 1px;
+text-transform: uppercase;
+color: #b9b9b9;
+}
+.smallPart a {
+color: #b9b9b9;
+}
+.site-infonbt {
+color: #5e5e5e !important;
+text-align: center;
+padding-top: 15px;
+}
+.site-infonbt a, .site-infonbt a:hover {
+color: #7fc7af !important;
+}
+.site-infonbt a:hover {
+border-bottom: 1px dotted;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+clear: both;
+font-weight: 400;
+font-family: 'Playfair Display', serif;
+}
+h1 {font-size: 30px; font-size: 3.0rem; line-height: 1.5;}
+h2 {font-size: 26px; font-size: 2.6rem;}
+h3 {font-size: 22px; font-size: 2.2rem;}
+h4 {font-size: 17px; font-size: 1.7rem;}
+h5 {font-size: 15px; font-size: 1.5rem;}
+h6 {font-size: 12px; font-size: 1.2rem;}
+p {
+margin-bottom: 1.5em;
+}
+b,
+strong {
+font-weight: bold;
+}
+dfn,
+cite,
+em,
+i {
+font-style: italic;
+}
+blockquote {
+display: block;
+padding: 1.5em 1.5em 1.5em 3.5em;
+margin: 0 0 1.5em;
+position: relative;
+border-left: 5px solid #7fc7af;
+border-right: 2px solid #7fc7af;
+font-style: italic;
+}
+blockquote::before {
+content: "\201C";
+font-size: 60px;
+line-height: 1;
+font-weight: bold;
+position: absolute;
+left: 10px;
+top: 10px;
+}
+address {
+margin: 0 0 1.5em;
+}
+pre {
+background: #eee;
+font-family: "Courier 10 Pitch", Courier, monospace;
+font-size: 15px;
+font-size: 1.5rem;
+line-height: 1.6;
+margin-bottom: 1.6em;
+max-width: 100%;
+overflow: auto;
+padding: 1.6em;
+}
+code,
+kbd,
+tt,
+var {
+font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+font-size: 15px;
+font-size: 1.5rem;
+}
+abbr,
+acronym {
+border-bottom: 1px dotted #666;
+cursor: help;
+}
+mark,
+ins {
+background: #fff9c0;
+text-decoration: none;
+}
+sup,
+sub {
+font-size: 75%;
+height: 0;
+line-height: 0;
+position: relative;
+vertical-align: baseline;
+}
+sup {
+bottom: 1ex;
+}
+sub {
+top: .5ex;
+}
+small {
+font-size: 75%;
+}
+big {
+font-size: 125%;
+}
+/*--------------------------------------------------------------
+Elements
+--------------------------------------------------------------*/
+.spaceLeft {
+padding-left: 5px;
+}
+.spaceRight {
+padding-right: 5px;
+}
+.spaceLeftRight {
+padding: 0 5px;
+}
+hr {
+background-color: #ccc;
+border: 0;
+height: 1px;
+margin-bottom: 1.5em;
+}
+ul,
+ol {
+margin: 0 0 1.5em 3em;
+}
+ul {
+list-style: disc;
+}
+ol {
+list-style: decimal;
+}
+li > ul,
+li > ol {
+margin-bottom: 0;
+margin-left: 1.5em;
+}
+dt {
+font-weight: bold;
+}
+dd {
+margin: 0 1.5em 1.5em;
+}
+img {
+height: auto; /* Make sure images are scaled correctly. */
+max-width: 100%; /* Adhere to container width. */
+}
+figure {
+margin: 0;
+}
+table {
+margin: 0 0 1.5em;
+width: 100%;
+}
+th {
+font-weight: bold;
+}
+/*--------------------------------------------------------------
+Forms
+--------------------------------------------------------------*/
+button,
+input,
+select,
+textarea {
+font-size: 100%; /* Corrects font size not being inherited in all browsers */
+margin: 0; /* Addresses margins set differently in IE6/7, F3/4, S5, Chrome */
+vertical-align: baseline; /* Improves appearance and consistency in all browsers */
+}
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+border: 0;
+border-radius: 0;
+background: #7fc7af;
+color: #ffffff;
+padding: 1em 1.5em;
+cursor: pointer; /* Improves usability and consistency of cursor style between image-type 'input' and others */
+-webkit-appearance: button; /* Corrects inability to style clickable 'input' types in iOS */
+font-size: 12px;
+font-size: 1.2rem;
+line-height: 1;
+outline: none;
+-o-transition: background .3s ease-in-out;
+-moz-transition: background .3s ease-in-out;
+-webkit-transition: background .3s ease-in-out;
+transition: background .3s ease-in-out;
+}
+button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+background: #b9b9b9;
+}
+button:focus,
+input[type="button"]:focus,
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+button:active,
+input[type="button"]:active,
+input[type="reset"]:active,
+input[type="submit"]:active {
+background: #b9b9b9;
+}
+input[type="checkbox"],
+input[type="radio"] {
+padding: 0; /* Addresses excess padding in IE8/9 */
+}
+input[type="search"] {
+-webkit-appearance: none; /* Addresses appearance set to searchfield in S5, Chrome */
+box-sizing: content-box;
+}
+input[type="search"]::-webkit-search-decoration { /* Corrects inner padding displayed oddly in S5, Chrome on OSX */
+-webkit-appearance: none;
+}
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+textarea {
+-webkit-appearance: none;
+border: 1px solid rgba(0,0,0,.1);
+border-radius: 0;
+outline: none;
+color: #b9b9b9;
+background: rgba(0,0,0,.03);
+-o-transition: border .3s ease-in-out;
+-moz-transition: border .3s ease-in-out;
+-webkit-transition: border .3s ease-in-out;
+transition: border .3s ease-in-out;
+-webkit-box-shadow: inset 5px 5px 10px -5px rgba(0,0,0,0.05);
+-moz-box-shadow: inset 5px 5px 10px -5px rgba(0,0,0,0.05);
+box-shadow: inset 5px 5px 10px -5px rgba(0,0,0,0.05);
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+color: #5e5e5e;
+border: 1px solid #7fc7af;
+}
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"] {
+padding: 8px;
+}
+textarea {
+overflow: auto; /* Removes default vertical scrollbar in IE6/7/8/9 */
+padding-left: 8px;
+vertical-align: top; /* Improves readability and alignment in all browsers */
+width: 100%;
+}
+#search-fullnbt input[type="search"] {
+background: transparent;
+font-size: 125%;
+line-height: 1;
+border-radius: 0px;
+padding: 1em 0;
+width: 100%;
+border: 0;
+border-bottom: 1px solid rgba(0,0,0,.1);
+box-shadow: none;
+}
+/*--------------------------------------------------------------
+Navigation
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+Links
+--------------------------------------------------------------*/
+a, .entry-title a:hover, .entry-title a:focus {
+color: #7fc7af;
+text-decoration: none;
+-o-transition: color .3s ease-in-out;
+-moz-transition: color .3s ease-in-out;
+-webkit-transition: color .3s ease-in-out;
+transition: color .3s ease-in-out;
+}
+a:hover,
+a:focus,
+a:active,
+.entry-title a {
+color: #5e5e5e;
+}
+/*--------------------------------------------------------------
+Menus
+--------------------------------------------------------------*/
+.theNavigationBlock {
+width: 100%;
+max-width: 1140px;
+margin: 0 auto;
+}
+.main-navigation {
+clear: both;
+display: block;
+float: left;
+}
+.main-navigation ul {
+list-style: none;
+margin: 0;
+}
+.main-navigation li {
+float: left;
+position: relative;
+background: #ffffff;
+}
+.main-navigation ul ul li {
+box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+}
+.main-navigation li a:not(:last-child):after {
+content: "\f107";
+font-family: FontAwesome;
+margin: 0 0 0 4px;
+font-size: 10px;
+}
+.main-navigation ul ul li a:not(:last-child):after {
+content: "\f105";
+margin: 2px 0 0 4px;
+float: right;
+}
+.main-navigation a {
+display: block;
+text-decoration: none;
+padding: 1.5em .8em;
+font-size: 13px;
+font-size: 1.3rem;
+line-height: 1.6;
+text-transform: uppercase;
+letter-spacing: 1px;
+-o-transition: color .3s ease-in-out, background .3s ease-in-out;
+-moz-transition: color .3s ease-in-out, background .3s ease-in-out;
+-webkit-transition: color .3s ease-in-out, background .3s ease-in-out;
+transition: color .3s ease-in-out, background .3s ease-in-out;
+}
+.main-navigation ul ul {
+float: left;
+position: absolute;
+top: 59px;
+left: auto;
+z-index: 99999;
+visibility:hidden;
+opacity:0;
+transition:visibility 0s linear 0.2s,opacity 0.2s linear, transform 0.2s linear;
+-webkit-transform: translate3d(0,20px,0);
+transform: translate3d(0,20px,0);
+}
+.main-navigation div > ul > li > ul {
+padding-top: 15px;
+}
+.main-navigation div > ul > li > ul > li:first-child {
+border-top: 2px solid #7fc7af;
+}
+.main-navigation div > ul > li > ul::before {
+content: "";
+position: absolute;
+top: 10px;
+left: 30px;
+border-left-width: 3px;
+border-left-style: solid;
+border-left-color: transparent;
+border-bottom-width: 5px;
+border-bottom-style: solid;
+border-bottom-color: #7fc7af;
+}
+.main-navigation div > ul > li > ul::after {
+content: "";
+position: absolute;
+top: 10px;
+left: 33px;
+border-right-width: 3px;
+border-right-style: solid;
+border-right-color: transparent;
+border-bottom-width: 5px;
+border-bottom-style: solid;
+border-bottom-color: #7fc7af;
+}
+.main-navigation ul ul ul {
+left: 100%;
+top: 0;
+visibility:hidden;
+opacity:0;
+transition:visibility 0s linear 0.2s,opacity 0.2s linear, transform 0.2s linear;
+-webkit-transform: translate3d(20px,0,0);
+transform: translate3d(20px,0,0);
+}
+.main-navigation ul ul a {
+width: 230px;
+padding: 1em 1.5em;
+}
+.main-navigation ul li:hover > ul, .main-navigation ul li:focus > ul, .main-navigation ul li:active > ul, .main-navigation ul li.focus > ul {
+visibility:visible;
+opacity:1;
+transition-delay:0s;
+-webkit-transform: translate3d(0,0,0);
+transform: translate3d(0,0,0);
+}
+.main-navigation ul ul li:hover > ul, .main-navigation ul ul li:focus > ul, .main-navigation ul ul li:active > ul, .main-navigation ul ul li.focus > ul  {
+visibility:visible;
+opacity:1;
+transition-delay:0s;
+-webkit-transform: translate3d(0,0,0);
+transform: translate3d(0,0,0);
+}
+.main-navigation ul li:hover > a,
+.main-navigation ul li.focus > a,
+.main-navigation li.current-menu-item > a,
+.main-navigation li.current-menu-parent > a,
+.main-navigation li.current-page-ancestor > a,
+.main-navigation .current_page_item > a,
+.main-navigation .current_page_parent > a {
+background: rgba(0,0,0,.03);
+color: #5e5e5e;
+}
+/* Small menu */
+.menu-toggle {
+display: none;
+}
+.menu-toggle:focus, .menu-toggle:hover {
+background: #7fc7af;
+color: #ffffff;
+}
+@media screen and (max-width: 782px) {
+.menu-toggle,
+.main-navigation.toggled .nav-menu {
+display: block;
+width: 100%;
+float: left;
+}
+.menu-toggle {
+background: #ffffff;
+color: #b9b9b9;
+}
+.main-navigation ul {
+display: none;
+}
+}
+/*--------------------------------------------------------------
+Accessibility
+--------------------------------------------------------------*/
+/* Text meant only for screen readers */
+.screen-reader-text {
+clip: rect(1px, 1px, 1px, 1px);
+position: absolute !important;
+height: 1px;
+width: 1px;
+overflow: hidden;
+}
+.screen-reader-text:hover,
+.screen-reader-text:active,
+.screen-reader-text:focus {
+background-color: #f1f1f1;
+border-radius: 3px;
+box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+clip: auto !important;
+color: #21759b;
+display: block;
+font-size: 14px;
+font-size: 1.4rem;
+font-weight: bold;
+height: auto;
+left: 5px;
+line-height: normal;
+padding: 15px 23px 14px;
+text-decoration: none;
+top: 5px;
+width: auto;
+z-index: 100000; /* Above WP toolbar */
+}
+/*--------------------------------------------------------------
+Clearings
+--------------------------------------------------------------*/
+.clear:before,
+.clear:after,
+.entry-content:before,
+.entry-content:after,
+.site-headernbt:before,
+.site-headernbt:after,
+.site-contentnbt:before,
+.site-contentnbt:after,
+.site-footernbt:before,
+.site-footernbt:after,
+.entry-bottomnbt:before,
+.entry-bottomnbt:after {
+content: "";
+display: table;
+}
+.clear:after,
+.entry-content:after,
+.site-headernbt:after,
+.site-contentnbt:after,
+.site-footernbt:after,
+.entry-bottomnbt:after {
+clear: both;
+}
+/*--------------------------------------------------------------
+Widgets
+--------------------------------------------------------------*/
+.widget-areanbt .widget {
+margin: 0 0 2.5em;
+}
+/* Make sure select elements fit in widgets */
+.widget select {
+max-width: 100%;
+}
+/* Search widget */
+.widget_search .search-submitnbt {
+display: none;
+}
+/*--------------------------------------------------------------
+Content
+--------------------------------------------------------------*/
+.sitenbt {
+max-width: 1140px;
+margin: 7em auto 3em;
+}
+.theNavigationBar {
+z-index: 9999;
+position: fixed;
+top: 0;
+width: 100%;
+left: 0;
+background: #ffffff;
+box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+}
+header.site-headernbt {
+margin-bottom: 4em;
+}
+.theNavigationSocial {
+float: right;
+font-size: 13px;
+font-size: 1.3rem;
+line-height: 1.6;
+}
+.theNavigationSocial a {
+padding: 1.5em .5em;
+display: inline-block;
+color: #b9b9b9;
+}
+.theNavigationSocial a:hover {
+color: #7fc7af;
+}
+.theNavigationSocial .top-searchnbt {
+display: inline-block;
+background: #7fc7af;
+color: #ffffff;
+margin-left: .5em;
+width: 59px;
+height: 59px;
+text-align: center;
+padding: 1.5em .5em;
+cursor: pointer;
+-o-transition: background .3s ease-in-out;
+-moz-transition: background .3s ease-in-out;
+-webkit-transition: background .3s ease-in-out;
+transition: background .3s ease-in-out;
+}
+.theNavigationSocial .top-searchnbt:hover, .theNavigationSocial .top-searchnbt:focus {
+background: #b9b9b9;
+}
+.site-titlenbt {
+font-size: 50px;
+letter-spacing: -2px;
+}
+.site-descriptionnbt {
+font-size: 13px;
+font-size: 1.3rem;
+line-height: 1.6;
+text-transform: uppercase;
+letter-spacing: 2px;
+}
+.site-brandingnbt {
+text-align: center;
+}
+.content-areanbt {
+float: left;
+width: 71%;
+}
+.widget-areanbt {
+float: left;
+width: 26%;
+margin-left: 3%;
+}
+.entry-header, .entry-content, .entry-footernbt {
+padding: 0 5em;
+}
+.posted-onnbt, .bylinenbt {
+margin-right: 10px;
+}
+.floatLeft {
+float: left;
+}
+.readMoreLink {
+float: right;
+background: #7fc7af;
+padding: 1em 1.5em;
+-o-transition: background .3s ease-in-out;
+-moz-transition: background .3s ease-in-out;
+-webkit-transition: background .3s ease-in-out;
+transition: background .3s ease-in-out;
+}
+.readMoreLink a, .readMoreLink a:hover {
+color: #ffffff !important;
+}
+.readMoreLink:hover {
+background: #b9b9b9;
+}
+.entry-categorynbt {
+padding-bottom: 1.5em;
+text-transform: uppercase;
+font-size: 13px;
+font-size: 1.3rem;
+line-height: 1.7;
+letter-spacing: 2px;
+font-weight: 700;
+}
+.entry-metanbt {
+padding-top: 1.5em;
+padding-bottom: 1.5em;
+border-bottom: 1px dotted rgba(0,0,0,.1);
+}
+.entry-page-title {
+padding-bottom: 1.5em;
+border-bottom: 1px dotted rgba(0,0,0,.1);
+}
+.entry-bottomnbt {
+padding-top: 1.5em;
+border-top: 1px dotted rgba(0,0,0,.1);
+}
+.entry-header {
+padding-top: 2.5em;
+position: relative;
+overflow: hidden;
+clear: both;
+}
+.entry-footernbt {
+padding-bottom: 2.5em;
+}
+.entry-title, .page-title {
+letter-spacing: -1px;
+}
+#toTopnbt:hover {
+text-decoration: none;
+}
+#toTopnbt {
+display: none;
+position: fixed;
+bottom: 2em;
+right: 1.5em;
+width: 4rem;
+height: 4rem;
+line-height: 4rem;
+text-decoration: none;
+text-align: center;
+cursor: pointer;
+background: #ffffff;
+box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+-o-transition: border .3s ease-in-out;
+-moz-transition: border .3s ease-in-out;
+-webkit-transition: border .3s ease-in-out;
+transition: border .3s ease-in-out;
+}
+.edit-linknbt {
+display: block;
+}
+figure.entry-featuredImg {
+background: #7fc7af;
+position: relative;
+float: left;
+width: 100%;
+overflow: hidden;
+text-align: center;
+}
+figure.entry-featuredImg:after {
+content: "";
+position: absolute;
+bottom: -1em;
+left: 5em;
+background: #ffffff;
+z-index: 99;
+width: 2em;
+height: 2em;
+-ms-transform: rotate(45deg);
+-webkit-transform: rotate(45deg);
+transform: rotate(45deg);
+}
+figure.entry-featuredImg img {
+width: 100%;
+opacity: 1;
+display: block;
+-webkit-transition: opacity 0.35s;
+transition: opacity 0.35s;
+}
+figure.entry-featuredImg:hover a img {
+opacity: 0.7;
+}
+figure.entry-featuredImg figcaption {
+padding: 2em;
+color: #ffffff;
+text-transform: uppercase;
+letter-spacing: 2px;
+-webkit-backface-visibility: hidden;
+backface-visibility: hidden;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+figure.entry-featuredImg figcaption::before,
+figure.entry-featuredImg figcaption::after {
+position: absolute;
+top: 2em;
+right: 2em;
+bottom: 2em;
+left: 2em;
+content: '';
+opacity: 0;
+-webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
+transition: opacity 0.35s, transform 0.35s;
+}
+figure.entry-featuredImg figcaption::before {
+border-top: 1px solid #ffffff;
+border-bottom: 1px solid #ffffff;
+-webkit-transform: scale(0,1);
+transform: scale(0,1);
+}
+figure.entry-featuredImg figcaption::after {
+border-right: 1px solid #ffffff;
+border-left: 1px solid #ffffff;
+-webkit-transform: scale(1,0);
+transform: scale(1,0);
+}
+figure.entry-featuredImg p {
+padding: 0;
+margin: 0;
+position: absolute;
+font-size: 50px;
+margin-left: -22px;
+margin-top: -45px;
+width: 44px;
+height: 90px;
+top: 50%;
+left: 50%;
+color: #ffffff;
+opacity: 0;
+-webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
+transition: opacity 0.35s, transform 0.35s;
+-webkit-transform: translate3d(0,20px,0);
+transform: translate3d(0,20px,0);
+}
+figure.entry-featuredImg:hover figcaption::before,
+figure.entry-featuredImg:hover figcaption::after {
+opacity: 1;
+-webkit-transform: scale(1);
+transform: scale(1);
+}
+figure.entry-featuredImg:hover p {
+opacity: 1;
+-webkit-transform: translate3d(0,0,0);
+transform: translate3d(0,0,0);
+}
+#search-fullnbt {
+background: rgba(255,255,255,0.9);
+position: fixed;
+width: 100%;
+height: 100%;
+left: 0;
+top: 0;
+z-index: 99999;
+display: none;
+}
+.search-containernbt {
+position: relative;
+top: 47%;
+width: 100%;
+max-width: 930px;
+padding: 0 1.5em;
+margin: 0 auto;
+}
+#close-search {
+display: inline-block;
+cursor: pointer;
+float: right;
+padding-top: .5em;
+}
+/*--------------------------------------------------------------
+Posts and pages
+--------------------------------------------------------------*/
+.hentry {
+margin: 0 0 2.5em;
+padding-bottom: 1.8em;
+background: #ffffff;
+-webkit-box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+-moz-box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+}
+.entry-content {
+margin: 1.5em 0 0;
+}
+/*--------------------------------------------------------------
+Asides
+--------------------------------------------------------------*/
+.widget-areanbt .widget ul {
+margin: 0;
+padding: 0;
+list-style-type: none;
+}
+.widget-areanbt .widget ul li {
+border-bottom: 1px dotted rgba(0,0,0,.1);
+padding: 0.7em 0;
+}
+.widget-areanbt .widget ul li:last-child {
+border-bottom: 0px;
+}
+.widget-areanbt .widget ul li ul.sub-menu, .widget-areanbt .widget ul li ul.children {
+padding-left: 5%;
+}
+.widget-areanbt .widget ul li ul.sub-menu li, .widget-areanbt .widget ul li ul.children li {
+padding-top: 1em;
+}
+.widget-titlenbt {
+overflow: hidden;
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 1em;
+}
+.widget-titlenbt h2 {
+font-size: 14px;
+font-size: 1.4rem;
+}
+.widget-titlenbt h3 {
+font-size: 14px;
+font-size: 1.4rem;
+}
+.widget-titlenbt span {
+position: relative;
+display: inline-block;
+}
+.widget-titlenbt span:after {
+content: "";
+position: absolute;
+top: 50%;
+border-bottom: 1px solid;
+border-color: rgba(0,0,0,.1);
+width: 319px;
+margin: 0px 15px;
+}
+/*--------------------------------------------------------------
+12.0 Media
+--------------------------------------------------------------*/
+/* Make sure embeds and iframes fit their containers */
+embed,
+iframe,
+object {
+max-width: 100%;
+}
+@media all and (max-width: 1140px) {
+.sitenbt {
+padding: 0 1em;
+}
+}
+@media all and (max-width: 985px) {
+.content-areanbt {
+float: left;
+width: 100%;
+}
+.widget-areanbt {
+float: left;
+width: 100%;
+margin-left: 0;
+}
+#secondarynbt {
+margin-top: 1.5em;
+-webkit-column-count: 2;
+-webkit-column-gap: 15px;
+-moz-column-count: 2;
+-moz-column-gap: 15px;
+column-count: 2;
+column-gap: 15px;
+}
+#secondarynbt .widget {
+-webkit-column-break-inside: avoid;
+-moz-column-break-inside: avoid;
+column-break-inside: avoid;
+padding: 0 0.75em;
+}
+}
+@media all and (max-width: 782px) {
+.theNavigationBar {
+position: absolute;
+}
+.theNavigationSocial {
+position: absolute;
+right: 0;
+top: 0;
+}
+.theNavigationSocial .top-searchnbt {
+margin-left: .2em;
+}
+.menu-toggle, .theNavigationSocial .top-searchnbt {
+width: 50px;
+height: 50px;
+}
+.theNavigationSocial a, .menu-toggle, .theNavigationSocial .top-searchnbt {
+padding: 1.2em .2em;
+}
+.main-navigation {
+float: none;
+}
+.main-navigation a {
+border-bottom: 1px solid rgba(0,0,0,.05);
+}
+.main-navigation li {
+width: 100%;
+}
+.main-navigation ul ul, .main-navigation ul ul ul {
+float: none;
+position: relative;
+top: 0;
+left: 0;
+visibility: visible;
+opacity: 1;
+display: block;
+-webkit-transform: translate3d(0,0,0);
+transform: translate3d(0,0,0);
+padding-left: 5%;
+}
+.main-navigation div > ul > li > ul {
+padding-top: 0;
+}
+.main-navigation div > ul > li > ul > li:first-child {
+border-top: 0 !important;
+}
+.main-navigation div > ul > li > ul::before, .main-navigation div > ul > li > ul::after, .main-navigation li a:not(:last-child):after, .main-navigation ul ul li a:not(:last-child):after {
+display: none;
+}
+.main-navigation ul ul a {
+width: 100%;
+padding: 1.5em .8em;
+}
+}
+@media all and (max-width: 767px) {
+#secondarynbt {
+-webkit-column-count: auto;
+-webkit-column-gap: initial;
+-moz-column-count: auto;
+-moz-column-gap: initial;
+column-count: auto;
+column-gap: initial;
+}
+#secondarynbt .widget {
+-webkit-column-break-inside: initial;
+-moz-column-break-inside: initial;
+column-break-inside: initial;
+padding: 0;
+}
+.widget-titlenbt span:after {
+width: 700px;
+}
+.entry-header, .entry-content, .entry-footernbt {
+padding: 0 2.5em;
+}
+.entry-header {
+padding-top: 2.5em;
+}
+.entry-footernbt {
+padding-bottom: 1.25em;
+}
+figure.entry-featuredImg:after {
+left: 2.5em;
+}
+h1 {font-size: 23px; font-size: 2.3rem;}
+h2 {font-size: 20px; font-size: 2.0rem;}
+h3 {font-size: 17px; font-size: 1.7rem;}
+h4 {font-size: 15px; font-size: 1.5rem;}
+h5 {font-size: 12px; font-size: 1.2rem;}
+h6 {font-size: 10px; font-size: 1.0rem;}
+figure.entry-featuredImg:after {
+bottom: -.5em;
+width: 1em;
+height: 1em;
+}
+.sitenbt {
+margin: 5em auto 3em;
+}
+header.site-headernbt {
+margin-bottom: 2em;
+}
+.site-titlenbt {
+font-size: 30px;
+letter-spacing: -1px;
+}
+.sticky .entry-header:before {
+font-size: 25px;
+}
+}
+@media all and (max-width: 579px) {
+.sitenbt, #secondarynbt {
+padding: 0 0.5em;
+}
+.entry-header, .entry-content, .entry-footernbt {
+padding: 0 1em;
+}
+.entry-header {
+padding-top: 1.5em;
+}
+.entry-footernbt {
+padding-bottom: 0.8em;
+}
+figure.entry-featuredImg:after {
+left: 1em;
+}
+.entry-metanbt > span {
+display: block !important;
+margin-bottom: 0.3em;
+}
+.widget-titlenbt span:after {
+width: 400px;
+}
+}
+h2.date-header {
+margin: 10px 0px;
+display: none;
+}
+.main .widget {
+margin: 0 0 5px;
+padding: 0 0 2px;
+}
+.main .Blog {
+border-bottom-width: 0;
+}
+#header .description {
+}
+/* Comments----------------------------------------------- */
+#comments {
+padding:20px;
+margin-bottom:20px;
+background: #ffffff;
+-webkit-box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+-moz-box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+box-shadow: 0px 0px 2px rgba(0,0,0,.05);
+}
+#comments h4 {
+font-size:22px;
+margin-bottom:10px;
+}
+#comments ol {
+margin-left: 0;
+}
+.deleted-comment {
+font-style: italic;
+color: gray;
+}
+#blog-pager-newer-link {
+float: left;
+}
+#blog-pager-older-link {
+float: right;
+}
+#blog-pager {
+text-align: center;
+padding:5px;
+margin:10px 0;
+}
+.feed-links {
+clear: both;
+}
+.comment-form {
+}
+#navbar-iframe {
+height: 0;
+visibility: hidden;
+display: none;
+}
+.author-profile {
+background: #f6f6f6;
+border: 1px solid #eee;
+margin: 10px 0 10px 0;
+padding: 8px;
+overflow: hidden;
+}
+.author-profile img {
+border: 1px solid #ddd;
+float: left;
+margin-right: 10px;
+}
+.post-iconspbt {
+margin: 5px 0 0 0;
+padding: 0px 20px;
+}
+.post-locationpbt {
+margin: 5px 0;
+padding: 0px 20px;
+}
+.related-postbwrap {
+margin: 10px auto 0;
+padding: 10px 20px;
+}
+.related-postbwrap h4 {
+font-weight: bold;
+margin: 10px 0;
+}
+.related-post-style-2,.related-post-style-2 li {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+.related-post-style-2 li {
+border-top: 0px solid #eee;
+overflow: hidden;
+padding: 10px 0px;
+}
+.related-post-style-2 li:first-child {
+border-top: none;
+}
+.related-post-style-2 .related-post-item-thumbnail {
+width: 80px;
+height: 80px;
+max-width: none;
+max-height: none;
+background-color: transparent;
+border: none;
+float: left;
+margin: 2px 10px 0 0;
+padding: 0;
+}
+.related-post-style-2 .related-post-item-title {
+font-weight: normal;
+font-size: 100%;
+}
+.related-post-style-2 .related-post-item-summary {
+display: block;
+}
+.pbtsharethisbutt {
+overflow: hidden;
+padding: 10px 0 5px;
+margin: 0;
+}
+.pbtsharethisbutt ul {
+list-style: none;
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+.pbtsharethisbutt ul li {
+float: left;
+margin: 0;
+padding: 0;
+}
+.pbtsharethisbutt ul li a {
+padding: 0 10px;
+display: inline-block;
+}
+.pbtsharethisbutt ul li a:hover {
+}
+.separator a[style="margin-left: 1em; margin-right: 1em;"] {margin-left: auto!important;margin-right: auto!important;}
+.separator a[style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"] {clear: none !important; float: none !important; margin-bottom: 0em !important; margin-right: 0em !important;}
+.separator a[style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"] img {float: left !important; margin: 0px 10px 10px 0px;}
+.separator a[style="clear: right; float: right; margin-bottom: 1em; margin-left: 1em;"] {clear: none !important; float: none !important; margin-bottom: 0em !important; margin-left: 0em !important;}
+.separator a[style="clear: right; float: right; margin-bottom: 1em; margin-left: 1em;"] img {float: right !important; margin: 0px 0px 10px 10px;}
+.PopularPosts .widget-content ul li {
+padding:6px 0px;
+}
+.reaction-buttons table{
+border:none;
+margin-bottom:5px;
+}
+.reaction-buttons table, .reaction-buttons td{
+border:none !important;
+}
+.pbtthumbimg {
+float:left;
+margin:0px 10px 5px 0px;
+padding:4px;
+border:0px solid #eee;
+background:none;
+width:200px;
+height:auto;
+}
+.CSS_LIGHTBOX {
+z-index: 10000 !important;
+}
+
+--></style>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js' type='text/javascript'></script>
+<script type='text/javascript'>
+//<![CDATA[
+
+/*! jQuery Migrate v1.2.1 | (c) 2005, 2013 jQuery Foundation, Inc. and other contributors | jquery.org/license */
+jQuery.migrateMute===void 0&&(jQuery.migrateMute=!0),function(e,t,n){function r(n){var r=t.console;i[n]||(i[n]=!0,e.migrateWarnings.push(n),r&&r.warn&&!e.migrateMute&&(r.warn("JQMIGRATE: "+n),e.migrateTrace&&r.trace&&r.trace()))}function a(t,a,i,o){if(Object.defineProperty)try{return Object.defineProperty(t,a,{configurable:!0,enumerable:!0,get:function(){return r(o),i},set:function(e){r(o),i=e}}),n}catch(s){}e._definePropertyBroken=!0,t[a]=i}var i={};e.migrateWarnings=[],!e.migrateMute&&t.console&&t.console.log&&t.console.log("JQMIGRATE: Logging is active"),e.migrateTrace===n&&(e.migrateTrace=!0),e.migrateReset=function(){i={},e.migrateWarnings.length=0},"BackCompat"===document.compatMode&&r("jQuery is not compatible with Quirks Mode");var o=e("<input/>",{size:1}).attr("size")&&e.attrFn,s=e.attr,u=e.attrHooks.value&&e.attrHooks.value.get||function(){return null},c=e.attrHooks.value&&e.attrHooks.value.set||function(){return n},l=/^(?:input|button)$/i,d=/^[238]$/,p=/^(?:autofocus|autoplay|async|checked|controls|defer|disabled|hidden|loop|multiple|open|readonly|required|scoped|selected)$/i,f=/^(?:checked|selected)$/i;a(e,"attrFn",o||{},"jQuery.attrFn is deprecated"),e.attr=function(t,a,i,u){var c=a.toLowerCase(),g=t&&t.nodeType;return u&&(4>s.length&&r("jQuery.fn.attr( props, pass ) is deprecated"),t&&!d.test(g)&&(o?a in o:e.isFunction(e.fn[a])))?e(t)[a](i):("type"===a&&i!==n&&l.test(t.nodeName)&&t.parentNode&&r("Can't change the 'type' of an input or button in IE 6/7/8"),!e.attrHooks[c]&&p.test(c)&&(e.attrHooks[c]={get:function(t,r){var a,i=e.prop(t,r);return i===!0||"boolean"!=typeof i&&(a=t.getAttributeNode(r))&&a.nodeValue!==!1?r.toLowerCase():n},set:function(t,n,r){var a;return n===!1?e.removeAttr(t,r):(a=e.propFix[r]||r,a in t&&(t[a]=!0),t.setAttribute(r,r.toLowerCase())),r}},f.test(c)&&r("jQuery.fn.attr('"+c+"') may use property instead of attribute")),s.call(e,t,a,i))},e.attrHooks.value={get:function(e,t){var n=(e.nodeName||"").toLowerCase();return"button"===n?u.apply(this,arguments):("input"!==n&&"option"!==n&&r("jQuery.fn.attr('value') no longer gets properties"),t in e?e.value:null)},set:function(e,t){var a=(e.nodeName||"").toLowerCase();return"button"===a?c.apply(this,arguments):("input"!==a&&"option"!==a&&r("jQuery.fn.attr('value', val) no longer sets properties"),e.value=t,n)}};var g,h,v=e.fn.init,m=e.parseJSON,y=/^([^<]*)(<[\w\W]+>)([^>]*)$/;e.fn.init=function(t,n,a){var i;return t&&"string"==typeof t&&!e.isPlainObject(n)&&(i=y.exec(e.trim(t)))&&i[0]&&("<"!==t.charAt(0)&&r("$(html) HTML strings must start with '<' character"),i[3]&&r("$(html) HTML text after last tag is ignored"),"#"===i[0].charAt(0)&&(r("HTML string cannot start with a '#' character"),e.error("JQMIGRATE: Invalid selector string (XSS)")),n&&n.context&&(n=n.context),e.parseHTML)?v.call(this,e.parseHTML(i[2],n,!0),n,a):v.apply(this,arguments)},e.fn.init.prototype=e.fn,e.parseJSON=function(e){return e||null===e?m.apply(this,arguments):(r("jQuery.parseJSON requires a valid JSON string"),null)},e.uaMatch=function(e){e=e.toLowerCase();var t=/(chrome)[ \/]([\w.]+)/.exec(e)||/(webkit)[ \/]([\w.]+)/.exec(e)||/(opera)(?:.*version|)[ \/]([\w.]+)/.exec(e)||/(msie) ([\w.]+)/.exec(e)||0>e.indexOf("compatible")&&/(mozilla)(?:.*? rv:([\w.]+)|)/.exec(e)||[];return{browser:t[1]||"",version:t[2]||"0"}},e.browser||(g=e.uaMatch(navigator.userAgent),h={},g.browser&&(h[g.browser]=!0,h.version=g.version),h.chrome?h.webkit=!0:h.webkit&&(h.safari=!0),e.browser=h),a(e,"browser",e.browser,"jQuery.browser is deprecated"),e.sub=function(){function t(e,n){return new t.fn.init(e,n)}e.extend(!0,t,this),t.superclass=this,t.fn=t.prototype=this(),t.fn.constructor=t,t.sub=this.sub,t.fn.init=function(r,a){return a&&a instanceof e&&!(a instanceof t)&&(a=t(a)),e.fn.init.call(this,r,a,n)},t.fn.init.prototype=t.fn;var n=t(document);return r("jQuery.sub() is deprecated"),t},e.ajaxSetup({converters:{"text json":e.parseJSON}});var b=e.fn.data;e.fn.data=function(t){var a,i,o=this[0];return!o||"events"!==t||1!==arguments.length||(a=e.data(o,t),i=e._data(o,t),a!==n&&a!==i||i===n)?b.apply(this,arguments):(r("Use of jQuery.fn.data('events') is deprecated"),i)};var j=/\/(java|ecma)script/i,w=e.fn.andSelf||e.fn.addBack;e.fn.andSelf=function(){return r("jQuery.fn.andSelf() replaced by jQuery.fn.addBack()"),w.apply(this,arguments)},e.clean||(e.clean=function(t,a,i,o){a=a||document,a=!a.nodeType&&a[0]||a,a=a.ownerDocument||a,r("jQuery.clean() is deprecated");var s,u,c,l,d=[];if(e.merge(d,e.buildFragment(t,a).childNodes),i)for(c=function(e){return!e.type||j.test(e.type)?o?o.push(e.parentNode?e.parentNode.removeChild(e):e):i.appendChild(e):n},s=0;null!=(u=d[s]);s++)e.nodeName(u,"script")&&c(u)||(i.appendChild(u),u.getElementsByTagName!==n&&(l=e.grep(e.merge([],u.getElementsByTagName("script")),c),d.splice.apply(d,[s+1,0].concat(l)),s+=l.length));return d});var Q=e.event.add,x=e.event.remove,k=e.event.trigger,N=e.fn.toggle,T=e.fn.live,M=e.fn.die,S="ajaxStart|ajaxStop|ajaxSend|ajaxComplete|ajaxError|ajaxSuccess",C=RegExp("\\b(?:"+S+")\\b"),H=/(?:^|\s)hover(\.\S+|)\b/,A=function(t){return"string"!=typeof t||e.event.special.hover?t:(H.test(t)&&r("'hover' pseudo-event is deprecated, use 'mouseenter mouseleave'"),t&&t.replace(H,"mouseenter$1 mouseleave$1"))};e.event.props&&"attrChange"!==e.event.props[0]&&e.event.props.unshift("attrChange","attrName","relatedNode","srcElement"),e.event.dispatch&&a(e.event,"handle",e.event.dispatch,"jQuery.event.handle is undocumented and deprecated"),e.event.add=function(e,t,n,a,i){e!==document&&C.test(t)&&r("AJAX events should be attached to document: "+t),Q.call(this,e,A(t||""),n,a,i)},e.event.remove=function(e,t,n,r,a){x.call(this,e,A(t)||"",n,r,a)},e.fn.error=function(){var e=Array.prototype.slice.call(arguments,0);return r("jQuery.fn.error() is deprecated"),e.splice(0,0,"error"),arguments.length?this.bind.apply(this,e):(this.triggerHandler.apply(this,e),this)},e.fn.toggle=function(t,n){if(!e.isFunction(t)||!e.isFunction(n))return N.apply(this,arguments);r("jQuery.fn.toggle(handler, handler...) is deprecated");var a=arguments,i=t.guid||e.guid++,o=0,s=function(n){var r=(e._data(this,"lastToggle"+t.guid)||0)%o;return e._data(this,"lastToggle"+t.guid,r+1),n.preventDefault(),a[r].apply(this,arguments)||!1};for(s.guid=i;a.length>o;)a[o++].guid=i;return this.click(s)},e.fn.live=function(t,n,a){return r("jQuery.fn.live() is deprecated"),T?T.apply(this,arguments):(e(this.context).on(t,this.selector,n,a),this)},e.fn.die=function(t,n){return r("jQuery.fn.die() is deprecated"),M?M.apply(this,arguments):(e(this.context).off(t,this.selector||"**",n),this)},e.event.trigger=function(e,t,n,a){return n||C.test(e)||r("Global events are undocumented and deprecated"),k.call(this,e,t,n||document,a)},e.each(S.split("|"),function(t,n){e.event.special[n]={setup:function(){var t=this;return t!==document&&(e.event.add(document,n+"."+e.guid,function(){e.event.trigger(n,null,t,!0)}),e._data(this,n,e.guid++)),!1},teardown:function(){return this!==document&&e.event.remove(document,n+"."+e._data(this,n)),!1}}})}(jQuery,window);
+
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+
+function showrecentcomments(json){for(var i=0;i<a_rc;i++){var b_rc=json.feed.entry[i];var c_rc;if(i==json.feed.entry.length)break;for(var k=0;k<b_rc.link.length;k++){if(b_rc.link[k].rel=='alternate'){c_rc=b_rc.link[k].href;break;}}c_rc=c_rc.replace("#","#comment-");var d_rc=c_rc.split("#");d_rc=d_rc[0];var e_rc=d_rc.split("/");e_rc=e_rc[5];e_rc=e_rc.split(".html");e_rc=e_rc[0];var f_rc=e_rc.replace(/-/g," ");f_rc=f_rc.link(d_rc);var g_rc=b_rc.published.$t;var h_rc=g_rc.substring(0,4);var i_rc=g_rc.substring(5,7);var j_rc=g_rc.substring(8,10);var k_rc=new Array();k_rc[1]="Jan";k_rc[2]="Feb";k_rc[3]="Mar";k_rc[4]="Apr";k_rc[5]="May";k_rc[6]="Jun";k_rc[7]="Jul";k_rc[8]="Aug";k_rc[9]="Sep";k_rc[10]="Oct";k_rc[11]="Nov";k_rc[12]="Dec";if("content" in b_rc){var l_rc=b_rc.content.$t;}else if("summary" in b_rc){var l_rc=b_rc.summary.$t;}else var l_rc="";var re=/<\S[^>]*>/g;l_rc=l_rc.replace(re,"");if(m_rc==true)document.write('On '+k_rc[parseInt(i_rc,10)]+' '+j_rc+' ');document.write('<a href="'+c_rc+'">'+b_rc.author[0].name.$t+'</a> commented');if(n_rc==true)document.write(' on '+f_rc);document.write(': ');if(l_rc.length<o_rc){document.write('<i>&#8220;');document.write(l_rc);document.write('&#8221;</i><br/><br/>');}else{document.write('<i>&#8220;');l_rc=l_rc.substring(0,o_rc);var p_rc=l_rc.lastIndexOf(" ");l_rc=l_rc.substring(0,p_rc);document.write(l_rc+'&hellip;&#8221;</i>');document.write('<br/><br/>');}}}
+
+function rp(json){document.write('<ul>');for(var i=0;i<numposts;i++){document.write('<li>');var entry=json.feed.entry[i];var posttitle=entry.title.$t;var posturl;if(i==json.feed.entry.length)break;for(var k=0;k<entry.link.length;k++){if(entry.link[k].rel=='alternate'){posturl=entry.link[k].href;break}}posttitle=posttitle.link(posturl);var readmorelink="(more)";readmorelink=readmorelink.link(posturl);var postdate=entry.published.$t;var cdyear=postdate.substring(0,4);var cdmonth=postdate.substring(5,7);var cdday=postdate.substring(8,10);var monthnames=new Array();monthnames[1]="Jan";monthnames[2]="Feb";monthnames[3]="Mar";monthnames[4]="Apr";monthnames[5]="May";monthnames[6]="Jun";monthnames[7]="Jul";monthnames[8]="Aug";monthnames[9]="Sep";monthnames[10]="Oct";monthnames[11]="Nov";monthnames[12]="Dec";if("content"in entry){var postcontent=entry.content.$t}else if("summary"in entry){var postcontent=entry.summary.$t}else var postcontent="";var re=/<\S[^>]*>/g;postcontent=postcontent.replace(re,"");document.write(posttitle);if(showpostdate==true)document.write(' - '+monthnames[parseInt(cdmonth,10)]+' '+cdday);if(showpostsummary==true){if(postcontent.length<numchars){document.write(postcontent)}else{postcontent=postcontent.substring(0,numchars);var quoteEnd=postcontent.lastIndexOf(" ");postcontent=postcontent.substring(0,quoteEnd);document.write(postcontent+'...'+readmorelink)}}document.write('</li>')}document.write('</ul>')}
+
+//]]>
+</script>
+<script type='text/javascript'>
+summary_noimg = 400;
+summary_img = 300;
+img_thumb_height = 150;
+img_thumb_width = 200; 
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+
+function removeHtmlTag(strx,chop){ 
+	if(strx.indexOf("<")!=-1)
+	{
+		var s = strx.split("<"); 
+		for(var i=0;i<s.length;i++){ 
+			if(s[i].indexOf(">")!=-1){ 
+				s[i] = s[i].substring(s[i].indexOf(">")+1,s[i].length); 
+			} 
+		} 
+		strx =  s.join(""); 
+	}
+	chop = (chop < strx.length-1) ? chop : strx.length-2; 
+	while(strx.charAt(chop-1)!=' ' && strx.indexOf(' ',chop)!=-1) chop++; 
+	strx = strx.substring(0,chop-1); 
+	return strx+'...'; 
+}
+
+function createSummaryAndThumb(pID){
+	var div = document.getElementById(pID);
+	var imgtag = "";
+	var img = div.getElementsByTagName("img");
+	var summ = summary_noimg;
+	if(img.length>=1) {	
+		imgtag = '<img src="'+img[0].src+'" class="pbtthumbimg"/>';
+		summ = summary_img;
+	}
+	
+	var summary = imgtag + '<div>' + removeHtmlTag(div.innerHTML,summ) + '</div>';
+	div.innerHTML = summary;
+}
+
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+
+jQuery(document).ready(function($) {
+  $( ".widget-areanbt .widget h2" ).wrap( "<div class='widget-titlenbt'/>" );
+  $( ".widget-areanbt .widget h3" ).wrap( "<div class='widget-titlenbt'/>" );
+  $( ".widget-areanbt .widget h2" ).wrapInner( "<span/>" );
+  $( ".widget-areanbt .widget h3" ).wrapInner( "<span/>" );
+});
+
+//]]>
+</script>
+<link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=1097247117924260686&amp;zx=5e4f6fd2-40b6-4132-88dd-79290ac92a57' media='none' onload='if(media!=&#39;all&#39;)media=&#39;all&#39;' rel='stylesheet'/><noscript><link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=1097247117924260686&amp;zx=5e4f6fd2-40b6-4132-88dd-79290ac92a57' rel='stylesheet'/></noscript>
+<meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
+<meta name='google-adsense-platform-domain' content='blogspot.com'/>
+
+<!-- data-ad-client=ca-pub-2024895929870688 -->
+
+</head>
+<body>
+<div class='sitenbt'>
+<a class='skip-link screen-reader-text' href='#contentnbt'>Skip to content</a>
+<div class='theNavigationBar'>
+<div class='theNavigationBlock'>
+<nav class='main-navigation' id='site-navigation' role='navigation'>
+<button aria-controls='menu' aria-expanded='false' class='menu-toggle'><i class='fa fa-bars'></i></button>
+<!-- Pages-based menu added by BTemplates.com -->
+<div class='menu-nbt-menu-container'><div>
+<!-- Pages -->
+<div class='no-items section' id='pagesmenuwidget'></div>
+<!-- /Pages -->
+</div></div>
+</nav><!-- #site-navigation -->
+</div>
+</div>
+<!-- Start: Search Form -->
+<div id='search-fullnbt'>
+<div class='search-containernbt'>
+<form action='https://stratego-tips.blogspot.com/search/' id='search-formnbt' method='get' role='search'>
+<label>
+<span class='screen-reader-text'>Search for:</span>
+<input id='search-fieldnbt' name='q' placeholder='Type here and hit enter...' type='search'/>
+</label>
+</form>
+<span><a id='close-search'><i class='fa fa-close spaceRight'></i>Close</a></span>
+</div>
+</div>
+<!-- End: Search Form -->
+<header class='site-headernbt' id='mastheadnbt' role='banner'>
+<div class='site-brandingnbt'>
+<div class='headersec section' id='headersec'><div class='widget Header' data-version='1' id='Header1'>
+<div id='header-inner'>
+<div class='titlewrapper'>
+<h1 class='site-titlenbt'>
+<a href='https://stratego-tips.blogspot.com/'>Dobby125's Stratego Tips</a>
+</h1>
+</div>
+<p class='site-descriptionnbt'>
+</p>
+</div>
+</div></div>
+</div><!-- .site-branding -->
+</header><!-- #masthead -->
+<div class='site-contentnbt' id='contentnbt'>
+<div class='content-areanbt' id='primarynbt'>
+<div class='site-mainnbt' id='mainnbt' role='main'>
+<div class='mainblogsec section' id='mainblogsec'><div class='widget Blog' data-version='1' id='Blog1'>
+<div class='blog-posts hfeed'>
+<!--Can't find substitution for tag [defaultAdStart]-->
+
+          <div class="date-outer">
+        
+<h2 class='date-header'><span>Thursday, March 21, 2019</span></h2>
+
+          <div class="date-posts">
+        
+<div class='post-outer'>
+<article class='post hentry' itemprop='blogPost' itemscope='itemscope' itemtype='http://schema.org/BlogPosting'>
+<a name='3789407143214734787'></a>
+<header class='entry-header'>
+<div class='entry-categorynbt'>
+</div>
+<h1 class='post-title entry-title' itemprop='name'>
+<a href='https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html'>Python Code to Search Gravon Archive Stratego Files for Specific Gameboards</a>
+</h1>
+<div class='entry-metanbt smallPart'>
+<span class='posted-onnbt'><i class='fa fa-clock-o spaceLeftRight'></i><meta content='http://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html' itemprop='url'/><a class='timestamp-link' href='https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html' rel='bookmark' title='permanent link'><span class='published updated' itemprop='datePublished' title='2019-03-21T16:41:00-07:00'>March 21, 2019</span></a></span>
+<span class='comments-linknbt'><i class='fa fa-comments-o spaceLeftRight'></i><a href='https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html#comment-form' onclick=''>No comments</a></span>&nbsp;&nbsp;
+<span class='item-control blog-admin pid-1214729577'>
+<a href='https://www.blogger.com/post-edit.g?blogID=1097247117924260686&postID=3789407143214734787&from=pencil' title='Edit Post'>
+<img alt="" class="icon-action" height="18" src="//img2.blogblog.com/img/icon18_edit_allbkg.gif" width="18">
+</a>
+</span>
+</div>
+</header>
+<div class='post-header-line-1'></div>
+<div class='post-body entry-content' id='post-body-3789407143214734787' itemprop='articleBody'>
+<br />
+The Python Code below will list the games played by specific Stratego Gameboards.&nbsp; Just put all the Gravon archived Stratego game files in 1 folder.&nbsp; Then set the path in the Code below(line 4) to that folder.<br />
+To search for a specific gameboard, you need to use the American Stratego number system.&nbsp; Change the 40 character gameboard variable to the Stratego gameboard you are searching for.&nbsp; The bottom row are the 1st ten characters in the gameboard string, followed by the 2nd row, third row and top row.&nbsp; The program takes a few minutes to find all the games and then writes them to the screen.&nbsp; You can then watch the games on the <a href="https://www.gravon.de/gravon/stratego/strados2.jsp" target="_blank">Strados Stratego Viewer.</a><br />
+<br />
+The code below should output this:<br />
+<br />
+Player2 Won&nbsp; classic-2014.10-1192.xml<br />
+Player2 Won&nbsp; classic-2014.11-1195.xml<br />
+Player2 Won&nbsp; classic-2014.11-2287.xml<br />
+Player1 Won&nbsp; classic-2015.0-2322.xml<br />
+Player1 Won&nbsp; classic-2015.1-177.xml<br />
+Player2 Won&nbsp; classic-2015.1-1899.xml<br />
+Player2 Won&nbsp; classic-2015.1-1947.xml<br />
+Player2 Won&nbsp; classic-2015.1-2039.xml<br />
+Player2 Won&nbsp; classic-2015.1-2420.xml<br />
+Player2 Won&nbsp; classic-2015.1-869.xml<br />
+10<br />
+done<br />
+<br />
+<br />
+<br />
+<pre style="background-color: #2b2b2b; font-family: &quot;courier new&quot;; font-size: 9pt;"><span style="color: #cc7832; font-weight: bold;">import </span><span style="color: #a9b7c6;">re
+</span><span style="color: #cc7832; font-weight: bold;">import </span><span style="color: #a9b7c6;">glob
+filecount=</span><span style="color: #6897bb;"><span style="color: #a9b7c6;">0</span>
+</span><span style="color: #a9b7c6;">path = </span><span style="color: teal; font-size: 9pt;">'C:/Users/YourNameHere/Downloads/strategogames/*.xml'</span><span style="color: #a9b7c6; font-size: 9pt;">files=glob.glob(path)</span></pre>
+<pre style="background-color: #2b2b2b; color: #a9b7c6; font-family: 'Courier New'; font-size: 9.0pt;">file4=[]
+
+gameboard = <span style="color: teal;">"86BBFB88584968BB7S993997B462934715695957"</span><span style="color: teal;">
+</span><span style="color: #cc7832; font-weight: bold;">def </span><span style="font-weight: bold;">player1convert</span>(x1):
+
+    x1 = x1.replace(<span style="color: teal;">"L"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"1"</span>)
+    x1 = x1.replace(<span style="color: teal;">"K"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"2"</span>)
+    x1 = x1.replace(<span style="color: teal;">"J"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"3"</span>)
+    x1 = x1.replace(<span style="color: teal;">"I"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"4"</span>)
+    x1 = x1.replace(<span style="color: teal;">"H"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"5"</span>)
+    x1 = x1.replace(<span style="color: teal;">"G"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"6"</span>)
+    x1 = x1.replace(<span style="color: teal;">"F"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"7"</span>)
+    x1 = x1.replace(<span style="color: teal;">"E"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"8"</span>)
+    x1 = x1.replace(<span style="color: teal;">"D"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"9"</span>)
+    x1 = x1.replace(<span style="color: teal;">"M"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"F"</span>)
+    x1 = x1.replace(<span style="color: teal;">"C"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"S"</span>)
+
+    <span style="color: #cc7832; font-weight: bold;">return </span>x1
+
+<span style="color: #cc7832; font-weight: bold;">def </span><span style="font-weight: bold;">player2convert</span>(x2):
+
+    x2 = x2.replace(<span style="color: teal;">"X"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"1"</span>)
+    x2 = x2.replace(<span style="color: teal;">"W"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"2"</span>)
+    x2 = x2.replace(<span style="color: teal;">"V"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"3"</span>)
+    x2 = x2.replace(<span style="color: teal;">"U"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"4"</span>)
+    x2 = x2.replace(<span style="color: teal;">"T"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"5"</span>)
+    x2 = x2.replace(<span style="color: teal;">"S"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"6"</span>)
+    x2 = x2.replace(<span style="color: teal;">"R"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"7"</span>)
+    x2 = x2.replace(<span style="color: teal;">"Q"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"8"</span>)
+    x2 = x2.replace(<span style="color: teal;">"P"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"9"</span>)
+    x2 = x2.replace(<span style="color: teal;">"Y"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"F"</span>)
+    x2 = x2.replace(<span style="color: teal;">"O"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"S"</span>)
+    x2 = x2.replace(<span style="color: teal;">"N"</span><span style="color: #cc7832;">, </span><span style="color: teal;">"B"</span>)
+    <span style="color: #cc7832; font-weight: bold;">return </span>x2[::-<span style="color: #6897bb;">1</span>]
+
+<span style="color: #cc7832; font-weight: bold;">for </span>file <span style="color: #cc7832; font-weight: bold;">in </span>files:
+    f = <span style="color: #8888c6;">open</span>(file<span style="color: #cc7832;">, </span><span style="color: teal;">'r'</span>)
+    filecount += <span style="color: #6897bb;">1</span><span style="color: #6897bb;">
+</span><span style="color: #6897bb;">    </span><span style="color: #cc7832; font-weight: bold;">for </span>line <span style="color: #cc7832; font-weight: bold;">in </span>f:
+        match = re.search(<span style="color: teal;">'content'</span><span style="color: #cc7832;">, </span>line)
+        <span style="color: #cc7832; font-weight: bold;">if </span>match:
+            p1 = re.findall(<span style="color: teal;">'content="([A-Z]{40})'</span><span style="color: #cc7832;">, </span>line)
+            p2 = re.findall(<span style="color: teal;">"AAAA__AA__AA([A-Z]{40})"</span><span style="color: #cc7832;">, </span>line)
+            x1=player1convert(p1[<span style="color: #6897bb;">0</span>])
+            x2=player2convert(p2[<span style="color: #6897bb;">0</span>])
+
+            <span style="color: #cc7832; font-weight: bold;">for </span>line <span style="color: #cc7832; font-weight: bold;">in </span>f:
+                match1 = re.search(<span style="color: teal;">"result"</span><span style="color: #cc7832;">, </span>line)
+                <span style="color: #cc7832; font-weight: bold;">if </span>match1:
+                    line = line.strip()
+                    winner = line[<span style="color: #6897bb;">25</span>]
+
+            <span style="color: #cc7832; font-weight: bold;">if </span>x1 == gameboard:
+               <span style="color: #cc7832; font-weight: bold;">if </span>winner == <span style="color: teal;">'1'</span>:
+                   file4.append(<span style="color: teal;">"Player1 Won  " </span>+ file[<span style="color: #6897bb;">38</span>:])
+               <span style="color: #cc7832; font-weight: bold;">elif </span>winner == <span style="color: teal;">'2'</span>:
+                   file4.append(<span style="color: teal;">"Player1 Lost " </span>+ file[<span style="color: #6897bb;">38</span>:])
+               <span style="color: #cc7832; font-weight: bold;">else</span>:
+                   file4.append(<span style="color: teal;">"Player1 Tie  "</span>+ file[<span style="color: #6897bb;">38</span>:])
+                   <span style="color: #cc7832; font-weight: bold;">break</span>                    </pre>
+<pre style="background-color: #2b2b2b; color: #a9b7c6; font-family: 'Courier New'; font-size: 9.0pt;"><span style="color: #cc7832; font-weight: bold;">            if </span>x2 == gameboard:
+               <span style="color: #cc7832; font-weight: bold;">if </span>winner == <span style="color: teal;">'2'</span>:
+                   file4.append(<span style="color: teal;">"Player2 Won  " </span>+ file[<span style="color: #6897bb;">38</span>:])
+               <span style="color: #cc7832; font-weight: bold;">elif </span>winner == <span style="color: teal;">'1'</span>:
+                   file4.append(<span style="color: teal;">"Player2 Lost " </span>+ file[<span style="color: #6897bb;">38</span>:])
+               <span style="color: #cc7832; font-weight: bold;">else</span>:
+                   file4.append(<span style="color: teal;">"Player2 Tie  " </span>+ file[<span style="color: #6897bb;">38</span>:])
+
+
+<span style="color: #cc7832; font-weight: bold;">for </span>name <span style="color: #cc7832; font-weight: bold;">in </span>file4:
+    <span style="color: #8888c6;">print</span>(name)
+<span style="color: #8888c6;">print </span>(<span style="color: #8888c6;">len</span>(file4))
+<span style="color: #8888c6;">print</span>(<span style="color: teal;">"done"</span>)</pre>
+<div style='clear: both;'></div>
+<div class='pbtsharethisbutt'>
+<ul class='pbt-social-icons'>
+<li class='Share-this-arti'>Share This:&nbsp;&nbsp;</li>
+<li class='pbtfacebook'><a href='http://www.facebook.com/share.php?v=4&src=bm&u=https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html&t=Python Code to Search Gravon Archive Stratego Files for Specific Gameboards' onclick='window.open(this.href,"sharer","toolbar=0,status=0,width=626,height=436"); return false;' rel='nofollow' target='_blank' title='Share this on Facebook'><i class='fa fa-facebook-square'></i>&nbsp;Facebook</a></li><li class='pbttwitter'><a href='http://twitter.com/home?status=Python Code to Search Gravon Archive Stratego Files for Specific Gameboards -- https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html' rel='nofollow' target='_blank' title='Tweet This!'><i class='fa fa-twitter-square'></i>&nbsp;Twitter</a></li><li class='pbtgoogle'><a href='https://plus.google.com/share?url=https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html' onclick='javascript:window.open(this.href,   "", "menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600");return false;' rel='nofollow' target='_blank' title='Share this on Google+'><i class='fa fa-google-plus-square'></i>&nbsp;Google+</a></li><li class='pbtstumbleupon'><a href='http://www.stumbleupon.com/submit?url=https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html&title=Python Code to Search Gravon Archive Stratego Files for Specific Gameboards' rel='nofollow' target='_blank' title='Stumble upon something good? Share it on StumbleUpon'><i class='fa fa-stumbleupon-circle'></i>&nbsp;Stumble</a></li><li class='pbtdigg'><a href='http://digg.com/submit?phase=2&url=https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html&title=Python Code to Search Gravon Archive Stratego Files for Specific Gameboards' rel='nofollow' target='_blank' title='Digg this!'><i class='fa fa-digg'></i>&nbsp;Digg</a></li>
+</ul>
+</div>
+<div style='clear: both;'></div>
+</div>
+<div class='post-iconspbt'>
+<span class='post-icons' style='padding-right:10px;'>
+</span>
+<div class='post-share-buttons goog-inline-block'>
+<a class='goog-inline-block share-button sb-email' href='https://www.blogger.com/share-post.g?blogID=1097247117924260686&postID=3789407143214734787&target=email' target='_blank' title='Email This'><span class='share-button-link-text'>Email This</span></a><a class='goog-inline-block share-button sb-blog' href='https://www.blogger.com/share-post.g?blogID=1097247117924260686&postID=3789407143214734787&target=blog' onclick='window.open(this.href, "_blank", "height=270,width=475"); return false;' target='_blank' title='BlogThis!'><span class='share-button-link-text'>BlogThis!</span></a><a class='goog-inline-block share-button sb-twitter' href='https://www.blogger.com/share-post.g?blogID=1097247117924260686&postID=3789407143214734787&target=twitter' target='_blank' title='Share to Twitter'><span class='share-button-link-text'>Share to Twitter</span></a><a class='goog-inline-block share-button sb-facebook' href='https://www.blogger.com/share-post.g?blogID=1097247117924260686&postID=3789407143214734787&target=facebook' onclick='window.open(this.href, "_blank", "height=430,width=640"); return false;' target='_blank' title='Share to Facebook'><span class='share-button-link-text'>Share to Facebook</span></a>
+</div>
+<div style='clear: both;'></div>
+</div>
+<div class='post-location post-locationpbt'>
+</div>
+<div class='related-postbwrap' id='bpostrelated-post'></div>
+<div style='clear: both;'></div>
+<script type='text/javascript'>
+var labelArray = [];
+var relatedPostConfig = {
+      homePage: "https://stratego-tips.blogspot.com/",
+      widgetTitle: "<h4>Related Posts:</h4>",
+      numPosts: 5,
+      summaryLength: 150,
+      titleLength: "auto",
+      thumbnailSize: 80,
+      noImage: "http://1.bp.blogspot.com/-eKDf0B67A5Y/VkMHyy4mB4I/AAAAAAAABcg/CYa4quxZXS8/s000/no-img.png",
+      containerId: "bpostrelated-post",
+      newTabLink: false,
+      moreText: "Read More",
+      widgetStyle: 2,
+      callBack: function() {}
+};
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+
+/*! Related Post Widget for Blogger by Taufik Nurrohman => http://gplus.to/tovic */
+var randomRelatedIndex,showRelatedPost;(function(n,m,k){var d={widgetTitle:"<h4>Artikel Terkait:</h4>",widgetStyle:1,homePage:"http://www.dte.web.id",numPosts:7,summaryLength:370,titleLength:"auto",thumbnailSize:72,noImage:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC",containerId:"related-post",newTabLink:false,moreText:"Baca Selengkapnya",callBack:function(){}};for(var f in relatedPostConfig){d[f]=(relatedPostConfig[f]=="undefined")?d[f]:relatedPostConfig[f]}var j=function(a){var b=m.createElement("script");b.type="text/javascript";b.src=a;k.appendChild(b)},o=function(b,a){return Math.floor(Math.random()*(a-b+1))+b},l=function(a){var p=a.length,c,b;if(p===0){return false}while(--p){c=Math.floor(Math.random()*(p+1));b=a[p];a[p]=a[c];a[c]=b}return a},e=(typeof labelArray=="object"&&labelArray.length>0)?"/-/"+l(labelArray)[0]:"",h=function(b){var c=b.feed.openSearch$totalResults.$t-d.numPosts,a=o(1,(c>0?c:1));j(d.homePage.replace(/\/$/,"")+"/feeds/posts/summary"+e+"?alt=json-in-script&orderby=updated&start-index="+a+"&max-results="+d.numPosts+"&callback=showRelatedPost")},g=function(z){var s=document.getElementById(d.containerId),x=l(z.feed.entry),A=d.widgetStyle,c=d.widgetTitle+'<ul class="related-post-style-'+A+'">',b=d.newTabLink?' target="_blank"':"",y='<span style="display:block;clear:both;"></span>',v,t,w,r,u;if(!s){return}for(var q=0;q<d.numPosts;q++){if(q==x.length){break}t=x[q].title.$t;w=(d.titleLength!=="auto"&&d.titleLength<t.length)?t.substring(0,d.titleLength)+"&hellip;":t;r=("media$thumbnail" in x[q]&&d.thumbnailSize!==false)?x[q].media$thumbnail.url.replace(/\/s[0-9]+(\-c)?/,"/s"+d.thumbnailSize+"-c"):d.noImage;u=("summary" in x[q]&&d.summaryLength>0)?x[q].summary.$t.replace(/<br ?\/?>/g," ").replace(/<.*?>/g,"").replace(/[<>]/g,"").substring(0,d.summaryLength)+"&hellip;":"";for(var p=0,a=x[q].link.length;p<a;p++){v=(x[q].link[p].rel=="alternate")?x[q].link[p].href:"#"}if(A==2){c+='<li><img alt="" class="related-post-item-thumbnail" src="'+r+'" width="'+d.thumbnailSize+'" height="'+d.thumbnailSize+'"><a class="related-post-item-title" title="'+t+'" href="'+v+'"'+b+">"+w+'</a><span class="related-post-item-summary"><span class="related-post-item-summary-text">'+u+'</span> <a href="'+v+'" class="related-post-item-more"'+b+">"+d.moreText+"</a></span>"+y+"</li>"}else{if(A==3||A==4){c+='<li class="related-post-item" tabindex="0"><a class="related-post-item-title" href="'+v+'"'+b+'><img alt="" class="related-post-item-thumbnail" src="'+r+'" width="'+d.thumbnailSize+'" height="'+d.thumbnailSize+'"></a><div class="related-post-item-tooltip"><a class="related-post-item-title" title="'+t+'" href="'+v+'"'+b+">"+w+"</a></div>"+y+"</li>"}else{if(A==5){c+='<li class="related-post-item" tabindex="0"><a class="related-post-item-wrapper" href="'+v+'" title="'+t+'"'+b+'><img alt="" class="related-post-item-thumbnail" src="'+r+'" width="'+d.thumbnailSize+'" height="'+d.thumbnailSize+'"><span class="related-post-item-tooltip">'+w+"</span></a>"+y+"</li>"}else{if(A==6){c+='<li><a class="related-post-item-title" title="'+t+'" href="'+v+'"'+b+">"+w+'</a><div class="related-post-item-tooltip"><img alt="" class="related-post-item-thumbnail" src="'+r+'" width="'+d.thumbnailSize+'" height="'+d.thumbnailSize+'"><span class="related-post-item-summary"><span class="related-post-item-summary-text">'+u+"</span></span>"+y+"</div></li>"}else{c+='<li><a title="'+t+'" href="'+v+'"'+b+">"+w+"</a></li>"}}}}}s.innerHTML=c+="</ul>"+y;d.callBack()};randomRelatedIndex=h;showRelatedPost=g;j(d.homePage.replace(/\/$/,"")+"/feeds/posts/summary"+e+"?alt=json-in-script&orderby=updated&max-results=0&callback=randomRelatedIndex")})(window,document,document.getElementsByTagName("head")[0]);
+
+//]]>
+</script>
+</article>
+<div style='clear: both;'></div>
+<div class='blog-pager' id='blog-pager'>
+<span id='blog-pager-older-link'>
+<a class='blog-pager-older-link' href='https://stratego-tips.blogspot.com/2019/03/listing-of-most-popular-stratego-game.html' id='Blog1_blog-pager-older-link' title='Older Post'>Older Post</a>
+</span>
+<a class='home-link' href='https://stratego-tips.blogspot.com/'>Home</a>
+</div>
+<div class='clear'></div>
+<div class='comments' id='comments'>
+<a name='comments'></a>
+<h4>
+0
+comments:
+        
+</h4>
+<div id='Blog1_comments-block-wrapper'>
+<dl class='avatar-comment-indent' id='comments-block'>
+</dl>
+</div>
+<p class='comment-footer'>
+<div class='comment-form'>
+<a name='comment-form'></a>
+<h4 id='comment-post-message'>Post a Comment</h4>
+<p>
+</p>
+<a href='https://www.blogger.com/comment/frame/1097247117924260686?po=3789407143214734787&hl=en' id='comment-editor-src'></a>
+<iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'></iframe>
+<!--Can't find substitution for tag [post.friendConnectJs]-->
+<script src='https://www.blogger.com/static/v1/jsbin/3469866930-comment_from_post_iframe.js' type='text/javascript'></script>
+<script type='text/javascript'>
+      BLOG_CMT_createIframe('https://www.blogger.com/rpc_relay.html', '0');
+    </script>
+</div>
+</p>
+<div id='backlinks-container'>
+<div id='Blog1_backlinks-container'>
+</div>
+</div>
+</div>
+</div>
+<!--Can't find substitution for tag [defaultAdEnd]-->
+<div class='inline-ad'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- stratego-tips_mainblogsec_Blog1_1x1_as -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-2024895929870688"
+     data-ad-host="ca-host-pub-1556223355139109"
+     data-ad-host-channel="L0007"
+     data-ad-slot="7746032165"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<!--Can't find substitution for tag [adStart]-->
+
+        </div></div>
+      
+<!--Can't find substitution for tag [adEnd]-->
+</div>
+<div style='clear: both;'></div>
+</div></div>
+</div><!-- #main -->
+</div><!-- #primary -->
+<div class='widget-areanbt' id='secondarynbt' role='complementary'>
+<div class='widget widget_search'>
+<form action='https://stratego-tips.blogspot.com/search/' class='search-formnbt' method='get' role='search'>
+<label>
+<span class='screen-reader-text'>Search for:</span>
+<input class='search-fieldnbt' name='q' placeholder='Search...' title='Search for:' type='search' value=''/>
+</label>
+<input class='search-submitnbt' type='submit' value='Search'/>
+</form>
+</div>
+<div class='sidebarrightnbt section' id='sidebarrightnbt'><div class='widget AdSense' data-version='1' id='AdSense1'>
+<div class='widget-content'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- stratego-tips_sidebarrightnbt_AdSense1_1x1_as -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-2024895929870688"
+     data-ad-host="ca-host-pub-1556223355139109"
+     data-ad-host-channel="L0001"
+     data-ad-slot="3176231768"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<div class='clear'></div>
+</div>
+</div><div class='widget LinkList' data-version='1' id='LinkList1'>
+<h2>Stratego Sites</h2>
+<div class='widget-content'>
+<ul>
+<li><a href='http://forum.stratego.com/'>Stratego Forum</a></li>
+<li><a href='http://www.stratego.com'>Stratego.com</a></li>
+<li><a href='http://www.gravon.de/gravon/stratego/stratego.jsp?language=english'>Gravon Stratego</a></li>
+<li><a href='http://www.ultrastratego.com/index.php'>UltraStratego</a></li>
+</ul>
+<div class='clear'></div>
+</div>
+</div><div class='widget PopularPosts' data-version='1' id='PopularPosts1'>
+<h2>Popular Posts</h2>
+<div class='widget-content popular-posts'>
+<ul>
+<li>
+<div class='item-content'>
+<div class='item-thumbnail'>
+<a href='https://stratego-tips.blogspot.com/2017/05/best-winning-percentage-stratego-game.html' target='_blank'>
+<img alt='' border='0' height='72' src='https://3.bp.blogspot.com/-s2fHEqxsCvA/WReZqp2YgcI/AAAAAAAAAJQ/5Up-3y05Ous9Z5QRS4zDEytxLo8ZvW84gCLcB/s72-c/topstrategosetup.jpg' width='72'/>
+</a>
+</div>
+<div class='item-title'><a href='https://stratego-tips.blogspot.com/2017/05/best-winning-percentage-stratego-game.html'>Best Winning Percentage Stratego Game Board Setup on Gravon</a></div>
+<div class='item-snippet'>   One of the best ways to learn how to get better at playing any game, including Stratego, is to watch how great players play. &#160;&#160;I found al...</div>
+</div>
+<div style='clear: both;'></div>
+</li>
+<li>
+<div class='item-content'>
+<div class='item-title'><a href='https://stratego-tips.blogspot.com/2019/03/listing-of-most-popular-stratego-game.html'>Listing of Most Popular Stratego Game Board Setups from Gravon Archive</a></div>
+<div class='item-snippet'>Here&#39;s a listing of the most popular Stratego game setups played from the Gravon Archives(classic games only). The 4 by 10 grids below s...</div>
+</div>
+<div style='clear: both;'></div>
+</li>
+<li>
+<div class='item-content'>
+<div class='item-thumbnail'>
+<a href='https://stratego-tips.blogspot.com/2017/04/common-stratego-piece-placements.html' target='_blank'>
+<img alt='' border='0' height='72' src='https://1.bp.blogspot.com/-vgBSss9KITk/WN_q7PL8fPI/AAAAAAAAAH0/EHPmvW2ni307ZcYehqI43mC4zWfvPULlwCEw/s72-c/Slide1.JPG' width='72'/>
+</a>
+</div>
+<div class='item-title'><a href='https://stratego-tips.blogspot.com/2017/04/common-stratego-piece-placements.html'>Common Stratego Game Setups by Piece</a></div>
+<div class='item-snippet'>   The charts below show Stratego piece placements from 84,956 game setups.                              </div>
+</div>
+<div style='clear: both;'></div>
+</li>
+</ul>
+<div class='clear'></div>
+</div>
+</div><div class='widget BlogArchive' data-version='1' id='BlogArchive1'>
+<h2>Blog Archive</h2>
+<div class='widget-content'>
+<div id='ArchiveList'>
+<div id='BlogArchive1_ArchiveList'>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2019/'>2019</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='hierarchy'>
+<li class='archivedate expanded'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy toggle-open'>&#9660;&#160;</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2019/03/'>March</a>
+<span class='post-count' dir='ltr'>(2)</span>
+<ul class='posts'>
+<li><a href='https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html'>Python Code to Search Gravon Archive Stratego File...</a></li>
+<li><a href='https://stratego-tips.blogspot.com/2019/03/listing-of-most-popular-stratego-game.html'>Listing of Most Popular Stratego Game Board Setups...</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2017/'>2017</a>
+<span class='post-count' dir='ltr'>(8)</span>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2017/12/'>December</a>
+<span class='post-count' dir='ltr'>(2)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2017/11/'>November</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2017/05/'>May</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2017/04/'>April</a>
+<span class='post-count' dir='ltr'>(3)</span>
+</li>
+</ul>
+<ul class='hierarchy'>
+<li class='archivedate collapsed'>
+<a class='toggle' href='javascript:void(0)'>
+<span class='zippy'>
+
+          &#9658;&#160;
+        
+</span>
+</a>
+<a class='post-count-link' href='https://stratego-tips.blogspot.com/2017/03/'>March</a>
+<span class='post-count' dir='ltr'>(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class='clear'></div>
+</div>
+</div>
+<div class='widget Profile' data-version='1' id='Profile1'>
+<h2>About Me</h2>
+<div class='widget-content'>
+<dl class='profile-datablock'>
+<dt class='profile-data'>
+<a class='profile-name-link g-profile' href='https://www.blogger.com/profile/12391099203826016330' rel='author' style='background-image: url(//www.blogger.com/img/logo-16.png);'>
+Dobby125
+</a>
+</dt>
+</dl>
+<a class='profile-link' href='https://www.blogger.com/profile/12391099203826016330' rel='author'>View my complete profile</a>
+<div class='clear'></div>
+</div>
+</div>
+<div class='widget PageList' data-version='1' id='PageList1'>
+<div class='widget-content'>
+<ul>
+<li>
+<a href='https://stratego-tips.blogspot.com/'>Home</a>
+</li>
+<li>
+<a href='http://stratego-tips.blogspot.com/2017/04/terms-and-conditions-privacy-policy.html'>Privacy Policy and Terms and Conditions</a>
+</li>
+</ul>
+<div class='clear'></div>
+</div>
+</div></div>
+</div><!-- #secondary -->
+</div><!-- #content -->
+<footer class='site-footernbt' id='colophonnbt' role='contentinfo'>
+<div class='site-infonbt smallPart'>
+<!-- Do not edit or remove credits without our permission: newbloggerthemes.com -->
+Copyright &#169; <script type='text/javascript'>var creditsyear = new Date();document.write(creditsyear.getFullYear());</script>
+<a href='https://stratego-tips.blogspot.com/'>Dobby125's Stratego Tips</a> | Powered by <a href="//www.blogger.com/">Blogger</a><br/>Design by <a href='http://crestaproject.com/' target='_blank'>CrestaProject</a> | Blogger Theme by <a href='http://newbloggerthemes.com/' target='_blank' title='NewBloggerThemes.com'>NewBloggerThemes.com</a>
+</div><!-- .site-info -->
+</footer><!-- #colophon -->
+</div><!-- #page -->
+<a href='#top' id='toTopnbt'><i class='fa fa-angle-up fa-lg'></i></a>
+<script type='text/javascript'>
+//<![CDATA[
+
+(function($) {
+	"use strict";
+	
+		$(document).ready(function() {
+		
+		/*-----------------------------------------------------------------------------------*/
+		/*  Home icon in main menu
+		/*-----------------------------------------------------------------------------------*/ 
+			$('.main-navigation .menu-item-home a').prepend('<i class="fa fa-home spaceRight"></i>');
+			
+		/*-----------------------------------------------------------------------------------*/
+		/*  Search button
+		/*-----------------------------------------------------------------------------------*/ 
+			$('#open-searchnbt').click(function() {
+				$('#search-fullnbt').fadeIn(400);
+				if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+				} else {
+					$("#search-fullnbt #search-fieldnbt").focus();
+				}
+			});
+
+			$('#close-search').click(function() {
+				$('#search-fullnbt').fadeOut(400);
+			});
+		
+		/*-----------------------------------------------------------------------------------*/
+		/*  Detect Mobile Browser
+		/*-----------------------------------------------------------------------------------*/ 
+			if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+			} else {
+				
+				/*-----------------------------------------------------------------------------------*/
+				/*  Scroll To Top
+				/*-----------------------------------------------------------------------------------*/ 
+					$(window).scroll(function(){
+						if ($(this).scrollTop() > 700) {
+							$('#toTopnbt').fadeIn();
+						} 
+						else {
+							$('#toTopnbt').fadeOut();
+						}
+					}); 
+					$('#toTopnbt').click(function(){
+						$("html, body").animate({ scrollTop: 0 }, 1000);
+						return false;
+					});
+
+			}
+		
+		});
+	
+})(jQuery);
+
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+
+/**
+ * navigation.js
+ *
+ * Handles toggling the navigation menu for small screens.
+ */
+( function() {
+	var container, button, menu;
+
+	container = document.getElementById( 'site-navigation' );
+	if ( ! container ) {
+		return;
+	}
+
+	button = container.getElementsByTagName( 'button' )[0];
+	if ( 'undefined' === typeof button ) {
+		return;
+	}
+
+	menu = container.getElementsByTagName( 'ul' )[0];
+
+	// Hide menu toggle button if menu is empty and return early.
+	if ( 'undefined' === typeof menu ) {
+		button.style.display = 'none';
+		return;
+	}
+
+	menu.setAttribute( 'aria-expanded', 'false' );
+
+	if ( -1 === menu.className.indexOf( 'nav-menu' ) ) {
+		menu.className += ' nav-menu';
+	}
+
+	button.onclick = function() {
+		if ( -1 !== container.className.indexOf( 'toggled' ) ) {
+			container.className = container.className.replace( ' toggled', '' );
+			button.setAttribute( 'aria-expanded', 'false' );
+			menu.setAttribute( 'aria-expanded', 'false' );
+		} else {
+			container.className += ' toggled';
+			button.setAttribute( 'aria-expanded', 'true' );
+			menu.setAttribute( 'aria-expanded', 'true' );
+		}
+	};
+} )();
+
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+
+( function() {
+	var is_webkit = navigator.userAgent.toLowerCase().indexOf( 'webkit' ) > -1,
+	    is_opera  = navigator.userAgent.toLowerCase().indexOf( 'opera' )  > -1,
+	    is_ie     = navigator.userAgent.toLowerCase().indexOf( 'msie' )   > -1;
+
+	if ( ( is_webkit || is_opera || is_ie ) && document.getElementById && window.addEventListener ) {
+		window.addEventListener( 'hashchange', function() {
+			var element = document.getElementById( location.hash.substring( 1 ) );
+
+			if ( element ) {
+				if ( ! /^(?:a|select|input|button|textarea)$/i.test( element.tagName ) )
+					element.tabIndex = -1;
+
+				element.focus();
+			}
+		}, false );
+	}
+})();
+
+//]]>
+</script>
+
+<script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/1130602615-widgets.js"></script>
+<script type='text/javascript'>
+window['__wavt'] = 'AOuZoY4vI5hCHtacDarYfbzkxMadvPhpKA:1674023532100';_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d1097247117924260686','//stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html','1097247117924260686');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '1097247117924260686', 'title': 'Dobby125\x27s Stratego Tips', 'url': 'https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html', 'canonicalUrl': 'http://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html', 'homepageUrl': 'https://stratego-tips.blogspot.com/', 'searchUrl': 'https://stratego-tips.blogspot.com/search', 'canonicalHomepageUrl': 'http://stratego-tips.blogspot.com/', 'blogspotFaviconUrl': 'https://stratego-tips.blogspot.com/favicon.ico', 'bloggerUrl': 'https://www.blogger.com', 'hasCustomDomain': false, 'httpsEnabled': true, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'languageDirection': 'ltr', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'isDynamicViewsAvailable': true, 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Dobby125\x26#39;s Stratego Tips - Atom\x22 href\x3d\x22https://stratego-tips.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22Dobby125\x26#39;s Stratego Tips - RSS\x22 href\x3d\x22https://stratego-tips.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Dobby125\x26#39;s Stratego Tips - Atom\x22 href\x3d\x22https://www.blogger.com/feeds/1097247117924260686/posts/default\x22 /\x3e\n\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Dobby125\x26#39;s Stratego Tips - Atom\x22 href\x3d\x22https://stratego-tips.blogspot.com/feeds/3789407143214734787/comments/default\x22 /\x3e\n', 'meTag': '', 'adsenseClientId': 'ca-pub-2024895929870688', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'adsenseHasAds': true, 'adsenseAutoAds': false, 'boqCommentIframeForm': true, 'loginRedirectParam': '', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/67a7463faab5ac9d', 'plusOneApiSrc': 'https://apis.google.com/js/platform.js', 'disableGComments': true, 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'disableGooglePlus': true, 'googlePlusShareButtonWidth': 0, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}, 'hasCustomJumpLinkMessage': false, 'jumpLinkMessage': 'Read more', 'pageType': 'item', 'postId': '3789407143214734787', 'pageName': 'Python Code to Search Gravon Archive Stratego Files for Specific Gameboards', 'pageTitle': 'Dobby125\x27s Stratego Tips: Python Code to Search Gravon Archive Stratego Files for Specific Gameboards', 'metaDescription': ''}}, {'name': 'features', 'data': {'sharing_get_link_dialog': 'true', 'sharing_native': 'false'}}, {'name': 'messages', 'data': {'edit': 'Edit', 'linkCopiedToClipboard': 'Link copied to clipboard!', 'ok': 'Ok', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'custom', 'localizedName': 'Custom', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': true}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'Python Code to Search Gravon Archive Stratego Files for Specific Gameboards', 'description': 'A blog giving advice, tips and tricks on how to become a better Stratego player from a passionate player.  I love Stratego!', 'url': 'https://stratego-tips.blogspot.com/2019/03/python-code-to-search-gravon-archive.html', 'type': 'item', 'isSingleItem': true, 'isMultipleItems': false, 'isError': false, 'isPage': false, 'isPost': true, 'isHomepage': false, 'isArchive': false, 'isLabelSearch': false, 'postId': 3789407143214734787}}]);
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'headersec', document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'mainblogsec', document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'lightboxEnabled': true, 'lightboxModuleUrl': 'https://www.blogger.com/static/v1/jsbin/3693860462-lbx.js', 'lightboxCssUrl': 'https://www.blogger.com/static/v1/v-css/4046960807-lightbox_bundle.css'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AdSenseView', new _WidgetInfo('AdSense1', 'sidebarrightnbt', document.getElementById('AdSense1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LinkListView', new _WidgetInfo('LinkList1', 'sidebarrightnbt', document.getElementById('LinkList1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PopularPostsView', new _WidgetInfo('PopularPosts1', 'sidebarrightnbt', document.getElementById('PopularPosts1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebarrightnbt', document.getElementById('BlogArchive1'), {'languageDirection': 'ltr', 'loadingMessage': 'Loading\x26hellip;'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_ProfileView', new _WidgetInfo('Profile1', 'sidebarrightnbt', document.getElementById('Profile1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PageListView', new _WidgetInfo('PageList1', 'sidebarrightnbt', document.getElementById('PageList1'), {'title': '', 'links': [{'isCurrentPage': false, 'href': 'https://stratego-tips.blogspot.com/', 'title': 'Home'}, {'isCurrentPage': false, 'href': 'http://stratego-tips.blogspot.com/2017/04/terms-and-conditions-privacy-policy.html', 'title': 'Privacy Policy and Terms and Conditions'}], 'mobile': false}, 'displayModeFull'));
+</script>
+</body>
+</html>
