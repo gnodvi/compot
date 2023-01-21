@@ -50,20 +50,20 @@ IGRAPH_LIBS = `pkg-config   --libs igraph`
 
 #------------------------------------------------------------------
 
-PROGS_origin =  e_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
+PROGS =  e_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
 
-PROGS_igraph =  f_test 
 
-#-------------------------------------------------------------------------------
-
-all:  $(PROGS_origin)$(PROGS_igraph) 
+all:  
 	(cd IGRAPH; make)
+	(cd CURVAT; make)
+	(cd .; make origin)
+
+origin: $(PROGS) 
 
 test:  
+	# (cd IGRAPH; make test)
+	# (cd CURVAT; make test)
 	T_graphs.sh
-	# T_graphs.sh
-	# (cd IGRAPH;                     make test)
-	# (cd CURVAT/GraphRicciCurvature; make test)
 
 #-------------------------------------------------------------------------------
 
@@ -123,8 +123,9 @@ clean:
 	rm -f T/*.o $(PROGS)
 	rm -f T/*.o T/*.so T/*_wrap*
 	rm -f core 
-	(cd IGRAPH;   make clean)
 	rm -f T/*.dot T/*.png T/*.file
+	(cd IGRAPH;   make clean)
+	(cd CURVAT;   make CURVAT)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
