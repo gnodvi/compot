@@ -4,15 +4,15 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd saibalmars/GraphRicciCurvature; make)
+	(cd OlliverForman/GraphRicciCurvature; make)
 
 test:  
-	(cd saibalmars/GraphRicciCurvature; T.sh)
+	(cd OlliverForman/GraphRicciCurvature; T.sh)
 
 #-------------------------------------------------
 
 clean:  
-	(cd saibalmars/GraphRicciCurvature; make clean)
+	(cd OlliverForman/GraphRicciCurvature; make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

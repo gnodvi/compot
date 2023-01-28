@@ -6,7 +6,6 @@
  *                                                                             *
   ******************************************************************************
  */  
-
                                                                             
 #include  <stdio.h>
 #include  <stdlib.h>   
@@ -182,9 +181,9 @@ se_test_do (TR_NODE_TXT nodes[], int true_find, char *nodestring[])
   calc_find = mm_minimax (mm, (long)(n0), /* 10 */maxply, &bestmove, (long)(tr));
 
   if (calc_find==true_find) {
-    fprintf (stderr, ".......... OK \n");
+    printf (".......... OK \n");
   } else {
-    fprintf (stderr, "ERROR: se_test_do: TRUE= %d  CALC= %d  BESTMOVE= %s \n", true_find, calc_find,
+    printf ("ERROR: se_test_do: TRUE= %d  CALC= %d  BESTMOVE= %s \n", true_find, calc_find,
              se_name_move (/* (long)tr, */ bestmove, (long)tr));
   }
 

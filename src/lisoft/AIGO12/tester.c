@@ -51,9 +51,9 @@ test_play_one (int wins_true, char *prog1, char *prog2, int ii, int jj)
 
   int wins_calc = game_autoplay (g, prog1, prog2, /* is_print */FALSE, /*param*/0);
 
-  if (wins_calc == wins_true)  fprintf (stderr, ".......... OK \n");
+  if (wins_calc == wins_true)  printf (".......... OK \n");
   else {
-    fprintf (stderr, "\n.......... ERROR \n");
+    printf ("\n.......... ERROR \n");
     game_showboard (g);
   }
 
@@ -68,7 +68,7 @@ test_play_all (char *prog1, char *prog2)
   int BlackWin = STONE_BLACK;
   int WhiteWin = STONE_WHITE;
 
-  fprintf (stderr, "\n");
+  printf ("\n");
 
   //test_play_one (WhiteWin, prog1, prog2, 0, 0);
   // желательно этот крайний случай тоже рассмотреть потом!!!!!
@@ -144,10 +144,10 @@ test_prob_one (char *prog_string, YT_PROB_2x5x5 *prob)
   game_get_board (g, pos_new_calc);
 
   if (test_prob_compare (g->mywork, pos_new_calc, pos_new_true))
-    fprintf (stderr, ".......... OK \n");
+    printf (".......... OK \n");
   else {
-    fprintf (stderr, "\n");
-    fprintf (stderr, ".......... ERROR \n");
+    printf ("\n");
+    printf (".......... ERROR \n");
     game_showboard (g);
 
   }
@@ -210,7 +210,7 @@ test_prob_all (char *prog_string)
   }};  
  
 
-  fprintf (stderr, "\n");
+  printf ("\n");
   
   test_prob_one (prog_string, &prob1);
   test_prob_one (prog_string, &prob3);
@@ -262,7 +262,7 @@ test_eval_one (YT_POSITION *p)
 
   //OUTD (00);
   e = aigo_evaluate ((long)&(GAMER), (long)(&posi)/* , 0, STONE_BLACK */);
-  fprintf (stderr, "e = %d \n", e);
+  printf ("e = %d \n", e);
 
   //game_finish (g);
   return (e);
@@ -303,7 +303,7 @@ main_switch_test (int num_var, char **ptr_var)
   switch (mode) {
   case 20:
   case 0: //--------------------------------------------------------
-    if (mode==20)  fprintf (stderr, "0 - ALL TESTS [@ == debug] \n\n");
+    if (mode==20)  printf ("0 - ALL TESTS [@ == debug] \n\n");
     else {
       test_prob_all ("aigo1"); 
       test_play_all ("aigo", "aigo"); 
@@ -311,7 +311,7 @@ main_switch_test (int num_var, char **ptr_var)
     }
 
   case 1: //--------------------------------------------------------
-    if (mode==20)  fprintf (stderr, "1 - test_eval_all \n");
+    if (mode==20)  printf ("1 - test_eval_all \n");
     else {
 
       test_eval_all (); 
@@ -319,7 +319,7 @@ main_switch_test (int num_var, char **ptr_var)
     }
 
   case 2: //--------------------------------------------------------
-    if (mode==20)  fprintf (stderr, "2 - test_prob_all [prog] \n");
+    if (mode==20)  printf ("2 - test_prob_all [prog] \n");
     else {
       char *prog = ptr_var[1];
 
@@ -329,7 +329,7 @@ main_switch_test (int num_var, char **ptr_var)
 
   case 3: //--------------------------------------------------------
     if (mode==20)  {
-      fprintf (stderr, "3 - auto_play [prog1 prog2  ii jj] \n");
+      printf ("3 - auto_play [prog1 prog2  ii jj] \n");
     } else {
       char *prog1 = ptr_var[1];
       char *prog2 = ptr_var[2];
@@ -344,10 +344,10 @@ main_switch_test (int num_var, char **ptr_var)
 
   default: //--------------------------------------------------------
     if (mode!=20) 
-    fprintf (stderr, "Sorry, what you want ??\n");
+    printf ("Sorry, what you want ??\n");
   }
 
-  fprintf (stderr, "\n");
+  printf ("\n");
   return 1;
 } 
 /*----------------------------------win_test----------------------------------*/
@@ -358,7 +358,7 @@ win_test ()
   printf ("\n");
   win_sgr (SGR_BOLD);
   win_sgr (SGR_RED);
-  fprintf (stderr, "SGR_BOLD - SGR_RED \n");
+  printf ("SGR_BOLD - SGR_RED \n");
   win_sgr (SGR_DEFAULT);
   printf ("\n");
 
@@ -412,7 +412,7 @@ main (int argc, char **argv)
     ptr_var++;
   } 
   
-  fprintf (stderr, "\n");
+  printf ("\n");
   main_switch_test (num_var, ptr_var); 
 
   return 1;
