@@ -2,26 +2,18 @@
 #
 #-------------------------------------------------------------------------------
 
-#MAIN_SRC_DIR = ../h
-
-#include ./Make.mak
-
 include ./Make.mak
 
 #-------------------------------------------------------------------------------
 
 OPTIM = -O2 -fno-exceptions -Wall 
-
 GCC_ = LANG=C  gcc -x c 
-
 SOFT_DIR = $(HOME)/.MSOFT
-
 SYS_LIBS = -lm #-lsocket
 
 #----------------------------------------------
 
 CC = LANG=C gcc -g
-
 
 OPTIM = -fno-exceptions -Wall
 GCC   = LANG=C gcc -O2
@@ -37,15 +29,10 @@ GNUPLOTI_INC = -I$(GNUPLOTI_DIR)
 GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
 
 LITTLE_DIR = O/little
-Y_ZONE_DIR = Y
 
 #-------------------------------------------------------------------------------
 
-PROGS =  c_test T/c_capt.so # h-graf 
-
-#all:   PLOTER__ $(PROGS)   
-
-all:    LITTLE__ Y_ZONE__ ##$(PROGS)   
+all:    LITTLE__   
 
 
 #-------------------------------------------------------------------------------
@@ -53,45 +40,24 @@ all:    LITTLE__ Y_ZONE__ ##$(PROGS)
 LITTLE__ :
 	(cd $(LITTLE_DIR); make)
 
-Y_ZONE__ :
-	(cd $(Y_ZONE_DIR); make)
+#-------------------------------------------------------------------------------
+
+#c_test: c_test.cc
+#	$(GCC_)  -o $@ $^  $(TCL_INCS) $(TCL_LIBS)
 
 #-------------------------------------------------------------------------------
 
-c_test: c_test.cc
-	$(GCC_)  -o $@ $^  $(TCL_INCS) $(TCL_LIBS)
+#T/c_capt.so: T/c_capt.o
+#	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
 
-#-------------------------------------------------------------------------------
-
-T/c_capt.so: T/c_capt.o
-	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
-
-T/c_capt.o: c_capt.cc
-	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
-
-#-------------------------------------------------------------------------------
-
-#PLOTER__:
-#	(cd P; make)
-
-#-------------------------------------------------------------------------------
-
-#h-graf : T/h-graf.o  T/h_meta.o                                  
-#	$(GCC) -o $@ $< $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
-
-#T/h-graf.o : h-graf.c                                   
-#	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
-
-#T/h_meta.o : h_meta.c                                   
-#	$(GCC) -fPIC -x c -o $@ -c $< $(GNUPLOTI_INC)
+#T/c_capt.o: c_capt.cc
+#	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
 
 #-------------------------------------------------------------------------------
 
 clean : 
 	(cd $(LITTLE_DIR); make clean)
-	(cd $(Y_ZONE_DIR); make clean)
 	rm -f T/*.o $(PROGS)
-#	(cd P; make clean)
 
 #---------------------------------------------------------------
 

@@ -125,6 +125,9 @@ all: LIBS_make $(PROGS)
 
 LIBS_make:
 	(cd ../ploter; make)
+	(cd AIGO12;    make)
+	(cd SCRUZH;    make)
+	(cd Y-ZONE;    make)
 
 # ============================================================================#
 
@@ -264,6 +267,9 @@ dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
 clean : 
 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
 	(cd ../ploter; make clean)
+	(cd AIGO12;    make clean)
+	(cd SCRUZH;    make clean)
+	(cd Y-ZONE;    make clean)
 
 #------------------------------------------------------------- 
 
