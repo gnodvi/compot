@@ -142,12 +142,12 @@ void test_shortest_paths_dijkstra ()
 
   //#ifdef _0
   igraph_get_shortest_path_dijkstra (&g,
-                                      &v_ret,
-                                      &e_ret,
-                                      0,
-                                      5,
-                                      &weights_vec,
-                                      IGRAPH_OUT);
+                                     &v_ret,
+                                     &e_ret,
+                                     0,      // from
+                                     5,      // to
+                                     &weights_vec,
+                                     IGRAPH_OUT);
   //#endif
 
   
