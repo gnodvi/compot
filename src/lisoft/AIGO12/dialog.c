@@ -884,6 +884,7 @@ dlg_update_check_end ()
 void 
 menu_proc (Fl_Widget* w, void*) 
 {
+  
   Fl_Menu_* mw = (Fl_Menu_*)w;
   const Fl_Menu_Item* m = mw->mvalue();
 

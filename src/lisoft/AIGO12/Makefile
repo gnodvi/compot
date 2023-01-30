@@ -12,11 +12,11 @@ ifdef UNIX_LINUX
 
   #OPTIM = -O2 -w -Wunused -fno-exceptions # -Wall 
   #OPTIM = -fno-exceptions -Wreturn-type -Wimplicit -Wuninitialized
-  OPTIM = -fno-exceptions -Wall
+  OPTIM = -fno-exceptions -fpermissive  ##-Wwrite-strings -Wall 
   #APP = -mwindows 
 
-  FDIR_ROOT=$(HOME)/MGENA/fltk-s/fltk
-  FLTK_INCS = -I$(FDIR_ROOT)
+  FDIR_ROOT = ../../../../fltk-s
+  FLTK_INCS = -I$(FDIR_ROOT)/include
   FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
 
   CC    = gcc -O2
