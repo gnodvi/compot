@@ -1810,7 +1810,7 @@ proc MAIN {} {
       # 
       # TODO: надо сделать указание файла через параметры !!
 
-      source "./t_save.pl"
+      source "./d_save.pl"
 
       dict_print $PLOT 
       puts ""

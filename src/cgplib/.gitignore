@@ -1,3 +1,8 @@
+*.dot
+*.tex
+*.csv
+*.data
+*.chromo
 
 averageBehaviour
 createDataSet
