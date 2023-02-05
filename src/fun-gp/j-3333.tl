@@ -3520,6 +3520,7 @@ proc TEST_01 {} {
 
   puts ""
   puts "joy-rel-showstack: "
+
   joy-rel-showstack 
 
   DebugOff
