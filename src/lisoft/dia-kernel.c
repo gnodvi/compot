@@ -440,7 +440,8 @@ int My_Window::handle(int e) {
 #undef MY_FL_WINDOW
 
 /* #include "y_more.h"  */
-#include "y_zone.h" 
+//#include "y_zone.h" 
+#include "dia-y_zone.h" 
 
 #endif /* FLTK */ 
 

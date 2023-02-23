@@ -12,11 +12,11 @@ include Make.mak
 # =============================================================================
 
 M_OPTS = $($(SYS)_OPTS) $(YZONE_OPTS)
-F_OPTS = $(M_OPTS) $(FLTK_OPTS)
+#F_OPTS = $(M_OPTS) $(FLTK_OPTS)
 
 X_LIBS = $($(SYS)_LIBS) 
 Y_LIBS = dia-y_zone.a  
-F_LIBS = $(FLTK_LIBS)
+#F_LIBS = $(FLTK_LIBS)
 # =============================================================================
 
 
@@ -65,7 +65,6 @@ GAZ_LIBS = $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)
 #FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
 
 UNIX_LIBS = -L/usr/X11R6/lib  -lX11 -lm #-lXext 
-LIBS = $(FLTK_LIBS) $(UNIX_LIBS) 
 
 OPTIM = -fno-exceptions -Wall
 CCC   = gcc -O2
@@ -112,7 +111,13 @@ OPENGL_LIBS = -lGLU -lGL
 
 # ============================================================================#
 
-PROGS_DIAL = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
+Y_FLTK_OPEN_O = $(OBJ_DIR)/y_fltk_open.o
+Y_FLTK_MORE_O = $(OBJ_DIR)/y_fltk_more.o
+Y_FLTK_WIND_O = $(OBJ_DIR)/y_fltk_wind.o
+
+
+PROGS_DIAL  = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
+PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 dia-fltk-2
 
 PROGS_misc = testps solver dao-tester scloth 
 
@@ -158,11 +163,6 @@ T/yma-kernel.o: yma-kernel.c yma-kernel.h
 
 # ============================================================================#
 
-common.o : common.c common.h
-	$(CC) $(FLAGS) -o $@ -c common.c 
-
-# ============================================================================#
-
 solver : sol-solver.c sol-kernel.o                                                              
 	$(CC) -o solver  sol-solver.c sol-kernel.o $(GAZ_INCS) $(GAZ_LIBS) -lm        
 
@@ -193,17 +193,6 @@ scloth: scloth.c
 dao-tester : dao-tester.c                                                               
 	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm                                     
 
-# ============================================================================#
-
-#BOXNOT : BOXNOT.c common.o
-#	$(CCC) $(FLAGS) -o $@ BOXNOT.c common.o 
-# зачем-то FLTK
-
-#-Wwrite-strings
-
-testps: testps.c common.o 
-	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) testps.c common.o $(LIBS) -o $@
-
 # =============================================================================
 
 $(Y_OPEN_O) : dia-kernel.c dia-y_zone.h  
@@ -214,6 +203,7 @@ $(Y_WIND_O) : dia-kernel.c dia-y_zone.h
 	 $(CC) $(M_OPTS) -o $(Y_WIND_O) -c -DD_WIND dia-kernel.c
 $(Y_ALGO_O) : dia-algols.c dia-y_zone.h 
 	 $(CC) $(M_OPTS) -o $(Y_ALGO_O) -c -DD_ALGO dia-algols.c
+
 dia-y_zone.a : $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)   
 	 ar -cr dia-y_zone.a  $(Y_OPEN_O) $(Y_MORE_O)  $(Y_WIND_O) 
 
@@ -252,12 +242,56 @@ dia-studio : $(Y_LIBS) dia-dialog.c
 
 # =============================================================================
 
+#LIBS = $(FLTK_LIBS) $(UNIX_LIBS) 
+
+#BOXNOT : BOXNOT.c common.o
+#	$(CCC) $(FLAGS) -o $@ BOXNOT.c common.o 
+# зачем-то FLTK
+
+#-Wwrite-strings
+
+
+common.o : common.c common.h
+	$(CC) $(FLAGS) -o $@ -c common.c 
+
+testps: testps.c common.o 
+	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$(Y_FLTK_OPEN_O) : dia-kernel.c dia-y_zone.h  
+	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_OPEN -DFLTK dia-kernel.c 
+ 
+$(Y_FLTK_MORE_O) : dia-kernel.c dia-y_zone.h  
+	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_MORE -DFLTK dia-kernel.c
+
+$(Y_FLTK_WIND_O) : dia-kernel.c dia-y_zone.h  
+	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_WIND -DFLTK dia-kernel.c
+
+#D_FLTK_TEST1
+#D_FLTK_TEST2
+
+#ifdef  D_DIAL_2  
+
+dia-fltk-1 : dia-demons.c $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
+	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST1 $(FLTK_INCS) \
+	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+dia-fltk-2 : dia-demons.c ## $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
+	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
+	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+# =============================================================================
+
 dia-demo-1 : dia-demons.c $(Y_OPEN_O)  
 	$(CC) $(M_OPTS) -o dia-demo-1 -DD_DIAL_1  dia-demons.c $(Y_OPEN_O) $(X_LIBS) 
+
 dia-demo-2 : dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)  
 	$(CC) $(M_OPTS) -o dia-demo-2 -DD_DIAL_2  dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS) 
+
 dia-demo-3 : dia-algols.c $(Y_LIBS) $(Y_ALGO_O)  
 	$(CC) $(M_OPTS) -o dia-demo-3 -DD_DIAL_3  dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS) 
+
 dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
 	$(CC) $(M_OPTS) -o dia-sgames -DD_SGAMES dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS)   
 

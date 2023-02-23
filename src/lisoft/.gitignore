@@ -15,5 +15,7 @@ testps
 yboids
 yboids_new
 ymagic
+dia-fltk-1
+dia-fltk-2
 
 *.sol *.eos *.o *.a
