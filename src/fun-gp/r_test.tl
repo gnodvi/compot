@@ -126,16 +126,20 @@ proc _test_score {this_entity  task} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
-proc test_pGP {} {
+proc test_pGP {args} {
 
+  puts ""
+  puts "args = $args"
+  puts ""
 
   #global argc argv argv0
   #set argo [lrange $argv 2 end]
 
-  global argv 
-  set argv [lrange $argv 2 end]
+  #global argv 
+  #set argv [lrange $argv 2 end]
+
+  set argv $args
   
-  puts ""
   #argo_print $argo 
 
   set seed        [dict_parse $argv "-seed" 2016]
@@ -458,12 +462,12 @@ proc func_prepare_from_input {inp} {
 proc TEST_xx {args} {
 
 
-  if {$args == ""} {
-    global argc argv argv0
-    set argv [lrange $argv 2 end]
-  } else {
-    set argv $args
-  }
+  #   if {$args == ""} {
+  #     global argc argv argv0
+  #     set argv [lrange $argv 2 end]
+  #   } else {
+  set argv $args
+  #   }
   
   puts ""
 
@@ -838,20 +842,19 @@ proc NEXT_01 {args} {
 # TODO: на простейшей "программы" отладить все механмзмы
 #       SP - статистического программирования
 
-#t~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
+# r~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
 
 
-# l~.tl ANTS ANTS_gp 2012  10 15 2
-# l~.tl TEST TEST_pp 2014
+# r~.tl ANTS ANTS_gp 2012  10 15 2
+# r~.tl TEST TEST_pp 2014
 
-# t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
-# t~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1
+# r~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
+# r~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1
 
-# l~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
-# l~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
-# l~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
+# r~.tl TEST NEXT_01 -seed 2016 -lpop 10 -size 10 -nums  4
+# r~.tl TEST NEXT_01 -seed    @ -lpop 10 -size  1 -nums -1
+# r~.tl TEST NEXT_01 -seed 2020 -lpop 10 -size  1 -nums  5 
 
-# l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
-
+# r~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
 
 ###########################################################################################

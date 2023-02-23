@@ -1,4 +1,6 @@
 
+args = -nums 0
+
 individuals  = 10
 nums         = 0
 ::sum_target = 5

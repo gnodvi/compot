@@ -58,30 +58,33 @@ set ::print_defines 0
 # }
 
 #-------------------------------------------------------------------------------
+# создать контекс системы
 #
+# TODO - создать схему в виде графа или к
+# онечного автомата
+# 
 #-------------------------------------------------------------------------------
 proc joy_create_NEW {} {
 
   set j [dict_create]
   
-
   #   #$j configure -defined_locl  {} ;# определенные фунции Joy;
   #   #$j configure -builtin_dict  {} ;# TCL-процедуры с префиксами;
   #   #$j configure -datastack     {} ;# стек данных
-   
-  dict_set $j      "ip"        0 ;# оставить для имитации паралельности?
-  dict_set $j      "len"       0 ;# 
-  dict_set $j      "current"  {} ;# програмный код
+ 
+  SET $j  "ip"        0 ;# оставить для имитации паралельности?
+  SET $j  "len"       0 ;# 
+  SET $j  "current"  {} ;# програмный код
   
   #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  dict_set $j  "baza_user_types"   [list_create_num_val] ;# спец.обрабока (переменные)
-  dict_set $j  "baza_user_symbols" [list_create_num_val]  
-  dict_set $j  "local" {} ;# локальные переменые?
+  SET $j  "baza_user_types"   [list_create_num_val] ;# спец.обрабока (переменные)
+  SET $j  "baza_user_symbols" [list_create_num_val]  
+  SET $j  "local" {} ;# локальные переменые?
   
   
-  dict_set $j  "auxstack" {}  ;# [list_create]  ;# для отключения рекурсии в IFTE ?
-  dict_set $j  "retstack" {}  ;# для оптимизации хвостовой рекурсии ?
+  SET $j  "auxstack" {}  ;# [list_create]  ;# для отключения рекурсии в IFTE ?
+  SET $j  "retstack" {}  ;# для оптимизации хвостовой рекурсии ?
   
   return $j
 }

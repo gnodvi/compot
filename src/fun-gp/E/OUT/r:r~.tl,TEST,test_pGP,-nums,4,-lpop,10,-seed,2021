@@ -1,4 +1,6 @@
 
+args = -nums 4 -lpop 10 -seed 2021
+
 individuals  = 10
 nums         = 4
 ::sum_target = 5

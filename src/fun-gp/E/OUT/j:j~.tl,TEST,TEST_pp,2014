@@ -1,4 +1,5 @@
 
+args = 2014
 
 
 RANDTRUEPROG = dup dup i i dup i i i i dup

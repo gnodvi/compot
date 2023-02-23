@@ -3351,21 +3351,27 @@ proc make_randtrueprog {gp_list num_max ind_max fitnessfunc_check} {
   return $prg
 }
 #-------------------------------------------------------------------------------
-proc TEST_pp {} {
+proc TEST_pp {args} {
 
-  incr ::ind0
-  incr ::ind0
+  #incr ::ind0
+  #set ind $::ind0 
 
-  set ind $::ind0 
+  #read_seedflag  ind 
+  #read_seedflag [+ $::ind0 1] 
 
-  read_seedflag  ind 
+  puts ""
+  puts "args = $args"
+  puts ""
+  #return
+
+  set flag [lindex $args 0]
+  set_seedflag $flag 
 
 
   set num_max  10
   set ind_max 100
-  puts ""
 
-  set gp_list     "dup i i" 
+  set gp_list  "dup i i" 
 
   v1_init_all  
 
@@ -3470,14 +3476,19 @@ proc make_quotes_by_paras {prg paras n lappend_list_proc} {
   return $ret
 }
 #-------------------------------------------------------------------------------
-proc TEST_makeparas {} {
+proc TEST_makeparas {args} {
 
 
   # f~.tl TEST TEST_makeparas 2014
-  incr ::ind0
-  incr ::ind0
+  #incr ::ind0
+  #ncr ::ind0
 
-  read_seedflag ::ind0
+  #read_seedflag ::ind0
+
+  puts "args = $args"
+  puts ""
+
+  set_seedflag [lindex $args 0]
   #---------------------------------
 
   set n 10
@@ -3638,14 +3649,16 @@ proc FITPROC_01_NEW {p task args} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
-proc TEST_randprog {} {
+proc TEST_randprog {args} {
 
 
   # f~.tl TEST TEST_randprog 2014
-  incr ::ind0
-  incr ::ind0
+  #incr ::ind0
+  #incr ::ind0
 
-  read_seedflag ::ind0
+  #read_seedflag ::ind0
+
+  set_seedflag [lindex $args 0]
 
   #   set minlen 1
   #   set maxlen 8
@@ -3696,17 +3709,24 @@ proc TEST_randprog {} {
   
 }
 #-------------------------------------------------------------------------------
-proc NEXT_test {} {
+proc NEXT_test {args} {
 
 
   # f~.tl TEST NEXT_test 2014
-  incr ::ind0
-  incr ::ind0
+  #incr ::ind0
+  #incr ::ind0
 
-  read_seedflag ::ind0
+  #read_seedflag ::ind0
   #----------------------------------
 
+  #puts ""
+  puts "args = $args"
   puts ""
+
+  #set flag [lindex $args 0]
+  #set_seedflag $flag 
+
+  set_seedflag [lindex $args 0]
 
   set gp_list "p1 p3" 
   #set gp_list "dup * +"

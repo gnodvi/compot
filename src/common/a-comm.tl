@@ -4801,15 +4801,15 @@ proc parse_opts_3 {&par1    &par2    &par3
   return $::is_print
 }
 #-------------------------------------------------------------------------------
-proc read_seedflag {&ind} {
+proc set_seedflag {flag} {
 
-  USE_REFS
+#   USE_REFS
 
-  global argv0 argc argv
+#   global argv0 argc argv
   
-  set flag [lindex $argv $ind]
-  #puts "flag = $flag"
-  puts ""
+#   set flag [lindex $argv $ind]
+#   #puts "flag = $flag"
+#   puts ""
 
   # флажок для постоянства тестов (а обычно какая случайность выдается?) 
   # 
@@ -4822,6 +4822,36 @@ proc read_seedflag {&ind} {
     
     comm_random_seed $flag
   }
+
+#   incr ind ;# а так мы увеличиваем его!
+
+}
+#-------------------------------------------------------------------------------
+proc read_seedflag {&ind} {
+
+  USE_REFS
+
+  global argv0 argc argv
+  
+  set flag [lindex $argv $ind]
+  #puts "flag = $flag"
+  puts ""
+
+
+  set_seedflag $flag
+
+
+#   # флажок для постоянства тестов (а обычно какая случайность выдается?) 
+#   # 
+#   if {$flag == "@"} {
+#     #math_random_seed 2012
+#     #set s_rand 1020
+#   } else {
+#     #set s_rand $flag
+#     #math_random_seed $s_rand
+    
+#     comm_random_seed $flag
+#   }
 
   incr ind ;# а так мы увеличиваем его!
 
