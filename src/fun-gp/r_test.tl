@@ -677,8 +677,8 @@ proc TEST_xx {args} {
 }
 #-------------------------------------------------------------------------------
 #
-# t~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -news 1 -print 2
-# t~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -news 1 -print 2 -seed 13 -auto 1
+# r~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -print 1
+# r~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -print 1 -seed 13 -auto 1
 #
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -689,7 +689,6 @@ proc TEST_xx {args} {
 #
 # Параллельный алгоритм 
 # многовариантного эволюционного синтеза нелинейных моделей
-#
 #
 
 # x^3 + x^2      :  dup dup dup * + * 
@@ -736,12 +735,12 @@ proc TEST_xx {args} {
 #-------------------------------------------------------------------------------
 proc NEXT_01 {args} {
 
-  if {$args == ""} {
-    global argc argv argv0
-    set argo [lrange $argv 2 end]
-  } else {
-    set argo $args
-  }
+  #   if {$args == ""} {
+  #     global argc argv argv0
+  #     set argo [lrange $argv 2 end]
+  #   } else {
+  set argo $args
+  #   }
   
   argo_print $argo 
 
