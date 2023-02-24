@@ -438,8 +438,8 @@ main_proc (PFUNC_VAR)
   case YM_PAINT:  
     YDrawRectF (0, 0, WIN_W, WIN_H, YColorRGB (WHITE));
     
-    YWin (&n, newmain_proc, "", 10,      10, w,          WIN_H-20);    
-    YWin (&o, oldmain_proc, "", 10+w+10, 10, WIN_W-30-w, WIN_H-20);    
+    YWin (&n, newmain_proc, "", 10,      10,   w,          WIN_H-20);    
+    YWin (&o, oldmain_proc, "", 10+w+10, 10,   WIN_W-30-w, WIN_H-20);    
     break;  
   default: ;;;;  
   }  
@@ -468,7 +468,7 @@ MAIN (int argc, char *argv[])
 	YColor ("aqua")
 	);
 #else
-  YBig (&id, main_proc, "Hello, Y_ZONE!!", SC_DEF, SC_DEF, w, h);
+  YBig     (&id, main_proc, "Hello, Y_ZONE!!", SC_DEF, SC_DEF, w, h);
 #endif
     
   YRAND_S;
@@ -1103,14 +1103,14 @@ MAIN (int argc, char **argv)
   width  = XSCR(0.4);  
   height = YSCR(0.4);
   
-  //#ifdef _NEW
-  //YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0,
-  //	//YColorRGB (AQUA)
-  //	YColor ("aqua")
-  //	);
-  //#else
+#ifdef _NEW
+  YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0,
+  	//YColorRGB (AQUA)
+  	YColor ("aqua")
+  	);
+#else
   YBig (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);
-  //#endif
+#endif
  
   YWinBegPaint (id);   
   map = YWinMapGet (id);   
@@ -1122,9 +1122,11 @@ MAIN (int argc, char **argv)
   /* freshmap   = YCreatePixmap(id);  */
  
   boids = (Boid *) calloc (numboids, sizeof(_Boid)); 
-  for(i=0; i<numboids; i++) { 
-    boids[i] = new_boid(width, height); 
+
+  for (i = 0; i < numboids; i++) { 
+    boids[i] = new_boid (width, height); 
   } 
+
   center = zero_vec(); 
   avg_velocity = zero_vec(); 
     

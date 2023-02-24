@@ -121,7 +121,7 @@ PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 di
 
 PROGS_misc = testps solver dao-tester scloth 
 
-PROGS_boids = dialog yboids ymagic dialog_new yboids_new
+PROGS_boids = ybo-dialog ybo-yboids ymagic ybo-dialog-yma  ybo-yboids-yma
 
 
 PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc)
@@ -134,23 +134,111 @@ LIBS_make:
 	(cd SCRUZH;    make)
 	(cd Y-ZONE;    make)
 
+# =============================================================================
+
+$(Y_OPEN_O) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $(Y_OPEN_O) -c -DD_OPEN dia-kernel.c  
+$(Y_MORE_O) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $(Y_MORE_O) -c -DD_MORE dia-kernel.c
+$(Y_WIND_O) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $(Y_WIND_O) -c -DD_WIND dia-kernel.c
+
+$(Y_ALGO_O) : dia-algols.c dia-y_zone.h 
+	 $(CC) $(M_OPTS) -o $(Y_ALGO_O) -c -DD_ALGO dia-algols.c
+
+$(Y_LIBS): $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)   
+	 ar -cr dia-y_zone.a  $(Y_OPEN_O) $(Y_MORE_O)  $(Y_WIND_O) 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$(Y_FLTK_OPEN_O) : dia-kernel.c dia-y_zone.h  
+	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_OPEN -DFLTK dia-kernel.c 
+ 
+$(Y_FLTK_MORE_O) : dia-kernel.c dia-y_zone.h  
+	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_MORE -DFLTK dia-kernel.c
+
+$(Y_FLTK_WIND_O) : dia-kernel.c dia-y_zone.h  
+	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_WIND -DFLTK dia-kernel.c
+
+#D_FLTK_TEST1
+#D_FLTK_TEST2
+
+#ifdef  D_DIAL_2  
+
+dia-fltk-1 : dia-demons.c $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
+	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST1 $(FLTK_INCS) \
+	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+dia-fltk-2 : dia-demons.c ## $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
+	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
+	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+# -----------------------------------------------------------
+
+dia-demo-1 : dia-demons.c $(Y_OPEN_O)  
+	$(CC) $(M_OPTS) -o dia-demo-1 -DD_DIAL_1  dia-demons.c $(Y_OPEN_O) $(X_LIBS) 
+
+dia-demo-2 : dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)  
+	$(CC) $(M_OPTS) -o dia-demo-2 -DD_DIAL_2  dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS) 
+
+dia-demo-3 : dia-algols.c $(Y_LIBS) $(Y_ALGO_O)  
+	$(CC) $(M_OPTS) -o dia-demo-3 -DD_DIAL_3  dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS) 
+
+
+dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
+	$(CC) $(M_OPTS) -o dia-sgames -DD_SGAMES dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS)   
+
+# -----------------------------------------------------------
+
+dia-svisor.a : $(SV_ALL_O) $(SV_MAT_O) $(MATFUN_O) 
+	 ar -cr dia-svisor.a  $(MATFUN_O) $(SV_ALL_O) $(SV_MAT_O)   
+
+
+dia-svisor : $(Y_LIBS) $(Y_ALGO_O) dia-svisor.c $(Y_MISC_O) $(LIB_SVISOR) $(SVMIX3_O) 
+	$(CC) $(M_OPTS) -o dia-svisor -DD_SVISOR -DD_USERPKG dia-svisor.c $(SVMIX3_O) $(Y_LIBS) $(Y_ALGO_O) $(Y_MISC_O) \
+		$(LIB_SVISOR) -L$(OPENGL_LIB) $(OPENGL_LIBS) $(X_LIBS)
+
+
+$(MATFUN_O) : dia-svisor.c dia-svisor.h   
+	 $(CC) $(M_OPTS) -o $(MATFUN_O) -c -DD_MATFUN dia-svisor.c  
+$(SV_ALL_O) : dia-svisor.c dia-svisor.h  
+	 $(CC) $(M_OPTS) -o $(SV_ALL_O) -c -DD_ALL dia-svisor.c -I$(OPENGL_INC) 
+#	 $(CC) $(M_OPTS) -o $(SV_ALL_O) -c -DD_ALL -DD_MESA dia-svisor.c -I$(OPENGL_INC) 
+
+$(SV_MAT_O)  : dia-svisor.c dia-svisor.h  
+	 $(CC) $(M_OPTS) -o $(SV_MAT_O) -c -DD_MAT dia-svisor.c  
+$(Y_MISC_O) : dia-svisor.c dia-svisor.h   
+	 $(CC) $(M_OPTS) -o $(Y_MISC_O) -c -DD_MISC dia-svisor.c
+
+
+
+$(SVMIX3_O) : dia-dialog.c  dia-y_zone.h dia-algols.h dia-svisor.h dia-svmix3.h   
+	 $(CC) $(M_OPTS) -o $(SVMIX3_O) -c -DD_SVMIX3 dia-dialog.c 
+
+dia-songer : $(Y_LIBS) dia-dialog.c  
+	$(CC) $(M_OPTS) -o dia-songer -DD_SONGER dia-dialog.c $(Y_LIBS) $(X_LIBS)  
+
+dia-studio : $(Y_LIBS) dia-dialog.c  
+	$(CC) $(M_OPTS) -o dia-studio -DD_STUDIO dia-dialog.c $(Y_LIBS) $(X_LIBS)  
+
 # ============================================================================#
-
-dialog : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
-	$(CC) -o $@ -DDIALOG $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
-
-yboids : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
-	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
 T/ybo-kernel.o: ybo-kernel.c ybo-kernel.h 
 	$(CC) -o $@ -c -DY_$(SYST) $<  $(UNIX_INCS)  
 
+
+ybo-dialog : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
+	$(CC) -o $@ -DDIALOG $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
+
+ybo-yboids : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
+	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-dialog_new : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
+ybo-dialog-yma : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DDIALOG -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
-yboids_new : ybo-dialog.c ybo-kernel.h T/yma-kernel.o  
+ybo-yboids-yma: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -195,53 +283,6 @@ dao-tester : dao-tester.c
 
 # =============================================================================
 
-$(Y_OPEN_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $(Y_OPEN_O) -c -DD_OPEN dia-kernel.c  
-$(Y_MORE_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $(Y_MORE_O) -c -DD_MORE dia-kernel.c
-$(Y_WIND_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $(Y_WIND_O) -c -DD_WIND dia-kernel.c
-$(Y_ALGO_O) : dia-algols.c dia-y_zone.h 
-	 $(CC) $(M_OPTS) -o $(Y_ALGO_O) -c -DD_ALGO dia-algols.c
-
-dia-y_zone.a : $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)   
-	 ar -cr dia-y_zone.a  $(Y_OPEN_O) $(Y_MORE_O)  $(Y_WIND_O) 
-
-# =============================================================================
-
-dia-svisor.a : $(SV_ALL_O) $(SV_MAT_O) $(MATFUN_O) 
-	 ar -cr dia-svisor.a  $(MATFUN_O) $(SV_ALL_O) $(SV_MAT_O)   
-
-
-dia-svisor : $(Y_LIBS) $(Y_ALGO_O) dia-svisor.c $(Y_MISC_O) $(LIB_SVISOR) $(SVMIX3_O) 
-	$(CC) $(M_OPTS) -o dia-svisor -DD_SVISOR -DD_USERPKG dia-svisor.c $(SVMIX3_O) $(Y_LIBS) $(Y_ALGO_O) $(Y_MISC_O) \
-		$(LIB_SVISOR) -L$(OPENGL_LIB) $(OPENGL_LIBS) $(X_LIBS)
-
-
-$(MATFUN_O) : dia-svisor.c dia-svisor.h   
-	 $(CC) $(M_OPTS) -o $(MATFUN_O) -c -DD_MATFUN dia-svisor.c  
-$(SV_ALL_O) : dia-svisor.c dia-svisor.h  
-	 $(CC) $(M_OPTS) -o $(SV_ALL_O) -c -DD_ALL dia-svisor.c -I$(OPENGL_INC) 
-#	 $(CC) $(M_OPTS) -o $(SV_ALL_O) -c -DD_ALL -DD_MESA dia-svisor.c -I$(OPENGL_INC) 
-
-$(SV_MAT_O)  : dia-svisor.c dia-svisor.h  
-	 $(CC) $(M_OPTS) -o $(SV_MAT_O) -c -DD_MAT dia-svisor.c  
-$(Y_MISC_O) : dia-svisor.c dia-svisor.h   
-	 $(CC) $(M_OPTS) -o $(Y_MISC_O) -c -DD_MISC dia-svisor.c
-
-
-
-$(SVMIX3_O) : dia-dialog.c  dia-y_zone.h dia-algols.h dia-svisor.h dia-svmix3.h   
-	 $(CC) $(M_OPTS) -o $(SVMIX3_O) -c -DD_SVMIX3 dia-dialog.c 
-
-dia-songer : $(Y_LIBS) dia-dialog.c  
-	$(CC) $(M_OPTS) -o dia-songer -DD_SONGER dia-dialog.c $(Y_LIBS) $(X_LIBS)  
-
-dia-studio : $(Y_LIBS) dia-dialog.c  
-	$(CC) $(M_OPTS) -o dia-studio -DD_STUDIO dia-dialog.c $(Y_LIBS) $(X_LIBS)  
-
-# =============================================================================
-
 #LIBS = $(FLTK_LIBS) $(UNIX_LIBS) 
 
 #BOXNOT : BOXNOT.c common.o
@@ -257,45 +298,6 @@ common.o : common.c common.h
 testps: testps.c common.o 
 	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-$(Y_FLTK_OPEN_O) : dia-kernel.c dia-y_zone.h  
-	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_OPEN -DFLTK dia-kernel.c 
- 
-$(Y_FLTK_MORE_O) : dia-kernel.c dia-y_zone.h  
-	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_MORE -DFLTK dia-kernel.c
-
-$(Y_FLTK_WIND_O) : dia-kernel.c dia-y_zone.h  
-	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_WIND -DFLTK dia-kernel.c
-
-#D_FLTK_TEST1
-#D_FLTK_TEST2
-
-#ifdef  D_DIAL_2  
-
-dia-fltk-1 : dia-demons.c $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
-	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST1 $(FLTK_INCS) \
-	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
-
-dia-fltk-2 : dia-demons.c ## $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
-	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
-	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
-
-# =============================================================================
-
-dia-demo-1 : dia-demons.c $(Y_OPEN_O)  
-	$(CC) $(M_OPTS) -o dia-demo-1 -DD_DIAL_1  dia-demons.c $(Y_OPEN_O) $(X_LIBS) 
-
-dia-demo-2 : dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)  
-	$(CC) $(M_OPTS) -o dia-demo-2 -DD_DIAL_2  dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS) 
-
-dia-demo-3 : dia-algols.c $(Y_LIBS) $(Y_ALGO_O)  
-	$(CC) $(M_OPTS) -o dia-demo-3 -DD_DIAL_3  dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS) 
-
-dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
-	$(CC) $(M_OPTS) -o dia-sgames -DD_SGAMES dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS)   
-
-# ============================================================================#
 # ============================================================================#
 
 clean : 

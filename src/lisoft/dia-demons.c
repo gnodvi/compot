@@ -777,8 +777,8 @@ page1_proc (PFUNC_VAR)
     } 
     else if (mes1 == hOpen) {   
       if (ret_file = YFindFile ())  
-				/* 	OUTS ((char*)ret_file); */
-				YSend (hTest, YSTRING, 0,0,ret_file,0);
+        /* 	OUTS ((char*)ret_file); */
+        YSend (hTest, YSTRING, 0,0,ret_file,0);
     }
     else if (mes1 == hMess)   YMessageBox ("Do you like beer?", "Yes_No");
     else if (mes1 == hAbout)  YDlg (ABOUT, "About", 0,0,0,0, 0,0,0,0, CLR_DEF, TRUE); 
@@ -1098,10 +1098,10 @@ main_proc (PFUNC_VAR)
   switch (message) {       
   case YOPEN: 
   case YDRAW:       
-		printf("YOPEN : %d %d %d %d  \n", 0,0, WND->w,WND->h);
+    printf("YOPEN : %d %d %d %d  \n", 0,0, WND->w,WND->h);
 
     YPaintRectF (30,30, WND->w-60,WND->h-60, YColor("blue"));
-		YPaintLine  (30,30, WND->w-60,WND->h-60, YColor("white"));
+    YPaintLine  (30,30, WND->w-60,WND->h-60, YColor("white"));
 
     YWnd (Ph(), PUSH,   "PUSH",    70,10, 70,30, 0,0,0,0, YColor("yellow"));
     YWnd (Ph(), F_PUSH, "лопрлб", 150,10, 70,30, 0,0,0,0, YColor("yellow"));
@@ -1119,31 +1119,31 @@ main_proc (PFUNC_VAR)
     YWnd (Ph(), F_CLOCK,  "Edit:",  220,260, 100,100, 0,0,0,0, YColor("yellow"));
     break;        
   case YPUSH:
-		printf("YPUSH \n");
+    printf("YPUSH \n");
     break;        
   case YCHECK:
-		printf("YCHECK \n");
+    printf("YCHECK \n");
     break;        
   case YSCROLL:
-		printf("YSCROLL %d \n", mes1);
+    printf("YSCROLL %d \n", mes1);
     break;        
   case YLMOUSEDOWN:
-		printf("YLMOUSEDOWN (%d %d) \n", mes1, mes2);
-		YFindFile (); 
+    printf("YLMOUSEDOWN (%d %d) \n", mes1, mes2);
+    YFindFile (); 
     break;        
   case YLMOUSEUP:
-		printf("YLMOUSEUP (%d %d) \n", mes1, mes2);
-    YWnd (Ph(), PUSH, "PUSH", mes1,mes2, 70,30, 0,0,0,0, YColor("yellow"));
+    printf ("YLMOUSEUP (%d %d) !!!!!! \n", mes1, mes2);
     break;        
   case YRMOUSEDOWN:
-		printf("YRMOUSEDOWN (%d %d) \n", mes1, mes2);
+    printf("YRMOUSEDOWN (%d %d) \n", mes1, mes2);
     break;        
   case YRMOUSEUP:
-		printf("YRMOUSEUP (%d %d) \n", mes1, mes2);
-    YWnd (Ph(), F_PUSH, "F_PUSH", mes1,mes2, 70,30, 0,0,0,0, YColor("yellow"));
+    printf("YRMOUSEUP (%d %d) ?????? \n", mes1, mes2);
+    YWnd (Ph(), F_PUSH, "F_PUSH", mes1,    mes2, 70,30, 0,0,0,0, YColor("yellow"));
+    YWnd (Ph(),   PUSH,   "PUSH", mes1+100,mes2, 70,30, 0,0,0,0, YColor("yellow"));
     break;        
   case YKEYBOARD:
-		printf("YKEYBOARD \n");
+    printf("YKEYBOARD \n");
     break;        
   case YCLOSE:       
     /* YWndClean (id);  */       
@@ -1155,17 +1155,17 @@ main_proc (PFUNC_VAR)
 }
 /*-------------------------------MAIN-----------------------------------*/
 long
-MAIN (PFUNC_VAR)
+  MAIN (PFUNC_VAR)
 {
 
   switch (message) {
   case YCREATE:
     YInitWIND (); 
-		printf("MAIN-YCREATE \n");
+    printf("MAIN-YCREATE \n");
     YBigWindow (NULL, main_proc, "Dial FLTK", 0,0, 550,450, 0,0,0,0, CLR_DEF); 
     break; 
   case YFINAL:
-		printf("MAIN-YFINAL \n");
+    printf("MAIN-YFINAL \n");
     break; 
   }
 
@@ -1345,68 +1345,68 @@ test_cb (Fl_Widget* w, void*)
 
   if (!m) {
     printf("NULL\n");
-		return;
-	}
+    return;
+  }
 
-	if      (strcmp(m->label(), "Exit")==0) 
-		exit(0);
-	else if (strcmp(m->label(), "Min Menu")==0) {
-		printf("-- Min Menu -- \n");
-		window->make_current();
-		fl_color(FL_RED);  
-		fl_rectf(50, 50, 20, 20);
+  if      (strcmp(m->label(), "Exit")==0) 
+    exit(0);
+  else if (strcmp(m->label(), "Min Menu")==0) {
+    printf("-- Min Menu -- \n");
+    window->make_current();
+    fl_color(FL_RED);  
+    fl_rectf(50, 50, 20, 20);
 
-		static Fl_Button b1(60, 100, 80, 25, "&Beep");                       
-		window->add(b1);
+    static Fl_Button b1(60, 100, 80, 25, "&Beep");                       
+    window->add(b1);
 
-		window->redraw();
+    window->redraw();
 		
 
-		/* mw->menu(big_menu); */
-		/* (w->parent())->redraw(); */
-		/* redraw(); */
-		/* w->show(); */ /* ??? */
-	} else {
-		MessageBox ((char*)(m->label()));
-	}
+    /* mw->menu(big_menu); */
+    /* (w->parent())->redraw(); */
+    /* redraw(); */
+    /* w->show(); */ /* ??? */
+  } else {
+    MessageBox ((char*)(m->label()));
+  }
 
   if (m->shortcut())
     printf("%s - %s\n", m->label(), fl_shortcut_label(m->shortcut()));
   else
     printf("%s\n", m->label());
 
-	/* char buffer[80]; */
+  /* char buffer[80]; */
 
 }
 /*-----------------------------------main------------------------------*/
 int 
 main (int argc, char **argv) {
 
-	int h_menu;
-	int x, y, w, h;
-	int width  = 600;
-	int height = 400;
+  int h_menu;
+  int x, y, w, h;
+  int width  = 600;
+  int height = 400;
 
   window = new Fl_Window(width,height);
 
-	h_menu = 30;
+  h_menu = 30;
 
   Fl_Menu_Bar menubar (0,0,width,h_menu); 
 
-	menubar.menu(big_menu);
+  menubar.menu(big_menu);
   menubar.callback(test_cb);
-	menubar.color(FL_WHITE);
+  menubar.color(FL_WHITE);
   menubar.selection_color(FL_BLUE);
 
   window->size_range(300,20);
   window->color(FL_GREEN);
 
-	x = 170;
-	y = 20 + h_menu;
-	w = width - 190;
-	h = height - h_menu - 40;
+  x = 170;
+  y = 20 + h_menu;
+  w = width - 190;
+  h = height - h_menu - 40;
   Fl_Box *box = new Fl_Box (FL_BORDER_BOX, x,y,w,h, "Hello, World!");  
-	box->color(FL_YELLOW);
+  box->color(FL_YELLOW);
 
   window->end();
   window->show(argc, argv);

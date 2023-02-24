@@ -1,5 +1,6 @@
 
 dao-tester
+
 dia-demo-1
 dia-demo-2
 dia-demo-3
@@ -7,14 +8,18 @@ dia-sgames
 dia-songer
 dia-studio
 dia-svisor
-dialog
-dialog_new
+
 scloth
 solver
 testps
-yboids
-yboids_new
+
+ybo-dialog
+ybo-dialog-yma
+ybo-yboids
+ybo-yboids-yma
+
 ymagic
+
 dia-fltk-1
 dia-fltk-2
 
