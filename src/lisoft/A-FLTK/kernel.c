@@ -23,7 +23,7 @@
 using namespace std;
 /*----------------------------------------------------*/
 
-#include  "fltk-common.h" 
+#include  "a-comm.h" 
 #include  "kernel.h" 
 
 

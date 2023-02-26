@@ -96,7 +96,7 @@ AR = @ar ru
 CP = @-cp
 RM = @-rm
 
-EDIT_FILES = Makefile kernel.c kernel.h svisor.c
+EDIT_FILES = Makefile kernel.c kernel.h tester.c
 T=T
 
 # =============================================================================
@@ -104,12 +104,12 @@ T=T
 
 # =============================================================================
 
-#SVISOR_O = T/svisor.o
+#SVISOR_O = T/tester.o
 #KERNEL_O = T/kernel.o
 
-PROGS_old = d_gui d_new #evo_games d_map
+PROGS_old = kernel tester #evo_games d_map
 
-PROGS_fltk = fltk-testps fltk-demons
+PROGS_fltk = demops demons
 
 PROGS = $(PROGS_old) $(PROGS_fltk) 
 
@@ -128,19 +128,19 @@ all  : $(PROGS)
 CPP   = c++ -O2
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
-fltk-common.o : fltk-common.c fltk-common.h
-	gcc $(FLAGS) -o $@ -c fltk-common.c
+T/a-comm.o : a-comm.c a-comm.h
+	gcc $(FLAGS) -o $@ -c a-comm.c
 
 
-fltk-testps: fltk-testps.c fltk-common.o 
+demops: demops.c T/a-comm.o 
 	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
-fltk-demons : fltk-demons.c  
+demons : demons.c  
 	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
 	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
-d_gui: fltk-demons.c T/kernel.o T/svisor.o kernel.h fltk-common.o
-	$(CC) $(F_OPTS) -o $@ -DD_GUI fltk-demons.c $(FLTK_INCS) T/kernel.o T/svisor.o fltk-common.o \
+kernel: demons.c T/kernel.o T/tester.o kernel.h T/a-comm.o
+	$(CC) $(F_OPTS) -o $@ -DD_GUI demons.c $(FLTK_INCS) T/kernel.o T/tester.o T/a-comm.o \
 	$(F_LIBS) $(X_LIBS)
 
 # =============================================================================
@@ -148,25 +148,26 @@ d_gui: fltk-demons.c T/kernel.o T/svisor.o kernel.h fltk-common.o
 T/kernel.o : kernel.c kernel.h
 	$(CC) $(F_OPTS) -o $@ -c -DD_KERNEL kernel.c $(FLTK_INCS)        
 
-T/svisor.o : svisor.c kernel.h
-	$(CC) $(F_OPTS) -o T/svisor.o -c -DD_SVISOR svisor.c $(FLTK_INCS)        
+T/tester.o : tester.c kernel.h
+	$(CC) $(F_OPTS) -o T/tester.o -c -DD_SVISOR tester.c $(FLTK_INCS)        
 
-# d_gui: T/kernel.o T/svisor.o kernel.c   kernel.h
-# 	$(CC) $(F_OPTS) -o d_gui -DD_GUI kernel.c $(FLTK_INCS) T/kernel.o T/svisor.o $(F_LIBS) $(X_LIBS)
+# kernel: T/kernel.o T/tester.o kernel.c   kernel.h
+# 	$(CC) $(F_OPTS) -o kernel -DD_GUI kernel.c $(FLTK_INCS) T/kernel.o T/tester.o $(F_LIBS) $(X_LIBS)
 
-#d_map : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
-#	$(CC) $(F_OPTS) -o d_map -DD_MAP svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
+#d_map : $(KERNEL_O) $(SVISOR_O) tester.c kernel.h
+#	$(CC) $(F_OPTS) -o d_map -DD_MAP tester.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
 
-d_new : T/kernel.o T/svisor.o svisor.c kernel.h fltk-common.o
-	$(CC) $(F_OPTS) -o d_new -DD_NEW svisor.c $(FLTK_INCS) T/kernel.o T/svisor.o fltk-common.o $(F_LIBS) $(X_LIBS)
+tester : T/kernel.o T/tester.o tester.c kernel.h T/a-comm.o
+	$(CC) $(F_OPTS) -o $@ -DD_NEW tester.c $(FLTK_INCS) T/kernel.o T/tester.o T/a-comm.o $(F_LIBS) $(X_LIBS)
 
-#evo_games : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
-#	$(CC) $(F_OPTS) -o evo_games -DD_EVO_GAMES svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
+#evo_games : $(KERNEL_O) $(SVISOR_O) tester.c kernel.h
+#	$(CC) $(F_OPTS) -o evo_games -DD_EVO_GAMES tester.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
 
 # =============================================================================
 
 clean : 
 	rm -f  $(T)/*.o $(T)/*.so $(PROGS)  
+	rm -f  *.eps   
 
 ARX_NAME = dem_fl
 

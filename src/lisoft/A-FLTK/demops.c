@@ -22,8 +22,8 @@
 
 /****************************************************************************/
 
+#include "a-comm.h"
 #include "kernel.h"
-#include "fltk-common.h"
 //#include "client.h"
 
 
@@ -574,7 +574,7 @@ OPEN_DRAW () {
     if (i==0) DRAW_MODE = YREAL; 
     else      DRAW_MODE = YPOST; 
 
-    PS_Begin ("boxdlg.eps", "Times-Roman"); 
+    PS_Begin ("demo.eps", "Times-Roman"); 
     IS->transf_ymin = 0; 
     IS->transf_ymax = h(); 
 

@@ -20,7 +20,7 @@
 #include  <sys/time.h> 
   
            
-#include  "fltk-common.h" 
+#include  "a-comm.h" 
 #include  "kernel.h" 
 
 //------------------------------------------------------------------------------
