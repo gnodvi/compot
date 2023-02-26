@@ -120,19 +120,20 @@ PROGS_DIAL  = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor 
 PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #dia-fltk-2
 
 PROGS_misc = solver dao-tester scloth 
-PROGS_fltk =fltk-testps fltk-demons
+#PROGS_fltk =fltk-testps fltk-demons
 
 PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
 	ybo-yboids-yma-new ybo-yboids-yma-old  \
 	ybo-dialog-yma-new ybo-dialog-yma-old
 
 
-PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) $(PROGS_fltk)
+PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
 
-all: LIBS_make $(PROGS)  
+all: LIBS_make  $(PROGS)  
 
 LIBS_make:
 	(cd ../ploter; make)
+	(cd A-FLTK;    make)
 	(cd AIGO12;    make)
 	(cd SCRUZH;    make)
 	(cd Y-ZONE;    make)
@@ -302,21 +303,22 @@ dao-tester : dao-tester.c
 #-Wwrite-strings
 
 
-fltk-common.o : fltk-common.c fltk-common.h
-	$(CC) $(FLAGS) -o $@ -c fltk-common.c 
+#fltk-common.o : fltk-common.c fltk-common.h
+#	$(CC) $(FLAGS) -o $@ -c fltk-common.c 
 
-fltk-testps: fltk-testps.c fltk-common.o 
-	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+#fltk-testps: fltk-testps.c fltk-common.o 
+#	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
-fltk-demons : fltk-demons.c  
-	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
-	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+#fltk-demons : fltk-demons.c  
+#	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
+#	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
 # ============================================================================#
 
 clean : 
 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
 	(cd ../ploter; make clean)
+	(cd A-FLTK;    make clean)
 	(cd AIGO12;    make clean)
 	(cd SCRUZH;    make clean)
 	(cd Y-ZONE;    make clean)

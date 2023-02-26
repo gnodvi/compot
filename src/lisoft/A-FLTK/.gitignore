@@ -3,5 +3,8 @@ etc/*.txt
 etc/*.log
 d_gui
 d_new
+fltk-demons
+fltk-testps
+*.eps
 
 

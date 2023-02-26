@@ -17,13 +17,13 @@ EDIT_FILES = $(DEMO_C)
 
 all :
 	@-(cd $(YDIR_ROOT)/src    &&  make)      
-	@-(cd $(YDIR_ROOT)/ftk    &&  make) 
+#	@-(cd $(YDIR_ROOT)/ftk    &&  make) 
 
 #-----------------------------------------------------------------------------
 
 clean :   
 	@-(cd $(YDIR_ROOT)/src    &&  make clean)      
-	@-(cd $(YDIR_ROOT)/ftk    &&  make clean)
+#	@-(cd $(YDIR_ROOT)/ftk    &&  make clean)
 
 #-----------------------------------------------------------------------------
 

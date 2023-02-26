@@ -12,8 +12,6 @@ ybo-dialog
 ybo-yboids
 dia-fltk-1
 *.sol *.eos *.o *.a
-fltk-demons
-fltk-testps
 sol-COPY.sol
 sol-LAST.sol
 ybo-dialog-yma-new

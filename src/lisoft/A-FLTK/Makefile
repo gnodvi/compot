@@ -5,20 +5,20 @@
 #                                                                             #
 # ============================================================================#
 
-# ============================================================================#
 # YDIR_ROOT must be defined !!!
 #XDIR_ROOT = /usr/X11R6
 # 
 #XDIR_LIB = /usr/X11R6/lib
 #XDIR_LIB = /usr/X11R6/lib64
-XDIR_LIB = /home/max3/s1233/.MSOFT/x11r6/$(HOST_NAME)/lib
+#XDIR_LIB = /home/max3/s1233/.MSOFT/x11r6/$(HOST_NAME)/lib
+
 # ============================================================================#
 
 #FDIR_ROOT = $(HOME)/src/root_fltk
 #FDIR_ROOT = $(HOME)/MHOME/root_fltk
 #FDIR_ROOT=$(HOME)/.MSOFT/fltk/1.1.4/R/$(HOSTNAME)
 #FDIR_ROOT=../../../../S/fltk-1.1.4-R
-FDIR_ROOT=S/R
+#FDIR_ROOT=S/R
 
 #FDIR_INC  = $(FDIR_ROOT)
 #FDIR_LIB  = $(FDIR_ROOT)/lib
@@ -99,14 +99,47 @@ RM = @-rm
 EDIT_FILES = Makefile kernel.c kernel.h svisor.c
 T=T
 
-PROGS = d_gui d_new #evo_games d_map 
+# =============================================================================
+
+
+# =============================================================================
 
 SVISOR_O = $(T)/svisor.o
 KERNEL_O = $(T)/kernel.o
 
-# =============================================================================
+PROGS_old = d_gui d_new #evo_games d_map
+
+PROGS_fltk = fltk-testps fltk-demons
+
+PROGS = $(PROGS_old) $(PROGS_fltk) 
+
 all  : $(PROGS)
+
 # =============================================================================
+
+#LIBS = $(FLTK_LIBS) $(UNIX_LIBS) 
+
+#BOXNOT : BOXNOT.c common.o
+#	$(CCC) $(FLAGS) -o $@ BOXNOT.c common.o 
+# ÚÁÞÅÍ-ÔÏ FLTK
+
+#-Wwrite-strings
+
+CPP   = c++ -O2
+FLAGS = $(OPTIM) -D_UNIX -D_ENG
+
+fltk-common.o : fltk-common.c fltk-common.h
+	$(CC) $(FLAGS) -o $@ -c fltk-common.c 
+
+fltk-testps: fltk-testps.c fltk-common.o 
+	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+fltk-demons : fltk-demons.c  
+	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
+	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+# =============================================================================
+
 $(KERNEL_O) : kernel.c kernel.h
 	$(CC) $(F_OPTS) -o $(KERNEL_O) -c -DD_KERNEL kernel.c $(FLTK_INCS)        
 
@@ -121,20 +154,21 @@ d_gui: $(KERNEL_O) $(SVISOR_O) kernel.c  kernel.h
 
 d_new : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
 	$(CC) $(F_OPTS) -o d_new -DD_NEW svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
+
 #evo_games : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
 #	$(CC) $(F_OPTS) -o evo_games -DD_EVO_GAMES svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
+
 # =============================================================================
-# ============================================================================#
+
 clean : 
 	rm -f  $(T)/*.o $(T)/*.so $(PROGS)  
-# ============================================================================#
 
 ARX_NAME = dem_fl
-  
-# ============================================================================#
+
 save :  
 	tar --ignore-failed-read -cvf $(ARX_NAME).tar *.c *.h Makefile* 
 	gzip -6 $(ARX_NAME).tar  
 	(cd Archiv; mdat) 
+
 # ============================================================================#
-   
+
