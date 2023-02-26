@@ -1,0 +1,21 @@
+dao-tester
+dia-demo-1
+dia-demo-2
+dia-demo-3
+dia-sgames
+dia-songer
+dia-studio
+dia-svisor
+scloth
+solver
+ybo-dialog
+ybo-yboids
+dia-fltk-1
+*.sol *.eos *.o *.a
+sol-COPY.sol
+sol-LAST.sol
+ybo-dialog-yma-new
+ybo-dialog-yma-old
+ybo-yboids-yma-new
+ybo-yboids-yma-old
+yma-ymagic

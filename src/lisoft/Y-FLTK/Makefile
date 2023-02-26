@@ -7,7 +7,7 @@
 # ============================================================================#
 
 YDIR_ROOT = .
-include Make.mak
+include ../Make.mak
 
 # =============================================================================
 
@@ -43,7 +43,9 @@ XLIB = -L$(XDIR)/lib -lX11 #-lXext
 #GNUPLOTI_INC = -I$(GNUPLOTI_DIR)/src  
 #GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/gnuplot_i.o  
  
-GNUPLOTI_DIR = ../ploter
+#GNUPLOTI_DIR = ../ploter
+GNUPLOTI_DIR = PLOTER
+
 GNUPLOTI_INC = -I$(GNUPLOTI_DIR)  
 #GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/b_gnup.o 
 GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o 
@@ -80,7 +82,6 @@ S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB)
 SYST = UNIX 
 #SYST = WIND 
 
-#OBJ_DIR = O
 OBJ_DIR = T
 
 Y_OPEN_O = $(OBJ_DIR)/y_open.o
@@ -120,7 +121,8 @@ Y_FLTK_WIND_O = $(OBJ_DIR)/y_fltk_wind.o
 PROGS_DIAL  = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
 PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #dia-fltk-2
 
-PROGS_misc = solver dao-tester scloth 
+#PROGS_misc = solver dao-tester scloth 
+PROGS_misc = scloth 
 #PROGS_fltk =fltk-testps fltk-demons
 
 PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
@@ -128,11 +130,9 @@ PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
 	ybo-dialog-yma-new ybo-dialog-yma-old
 
 
-#PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
+PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
 
-PROGS = solver dao-tester
-
-all: LIBS_make  $(PROGS)  
+all: $(PROGS)#  LIBS_make  
 
 LIBS_make:
 	(cd ../ploter; make)
@@ -140,7 +140,6 @@ LIBS_make:
 	(cd AIGO12;    make)
 	(cd SCRUZH;    make)
 	(cd Y-ZONE;    make)
-	(cd Y-FLTK;    make)
 
 # =============================================================================
 
@@ -299,12 +298,11 @@ sol-kernel.o : sol-kernel.c sol-kernel.h
 clean : 
 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
 	rm -f *.a
-	(cd ../ploter; make clean)
-	(cd A-FLTK;    make clean)
-	(cd AIGO12;    make clean)
-	(cd SCRUZH; 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
-	(cd Y-ZONE;    make clean)
-	(cd Y-FLTK;    make clean)
+#	(cd ../ploter; make clean)
+#	(cd A-FLTK;    make clean)
+#	(cd AIGO12;    make clean)
+#	(cd SCRUZH; 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
+#	(cd Y-ZONE;    make clean)
 
 #------------------------------------------------------------- 
 
