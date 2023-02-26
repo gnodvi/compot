@@ -20,189 +20,15 @@
 //#include  <iostream.h>
 #include  <iostream>
 
-  using namespace std;
+using namespace std;
 /*----------------------------------------------------*/
 
+#include  "fltk-common.h" 
 #include  "kernel.h" 
 
 
-#ifdef  D_GUI  
-/*******************************************************************************
- *                                                                             *
- *        Demo for library FLTK                                                *  
- *                                                                             *
-  ******************************************************************************
- */ 
- 
-Fl_Window *window;
 
-/*----------------------------------------------------*/
-void 
-test_cb (Fl_Widget* w, void*) 
-{
-  Fl_Menu_* mw = (Fl_Menu_*)w;
-  const Fl_Menu_Item* m = mw->mvalue();
-
-  if (!m) {
-    printf("NULL\n");
-    return;
-  }
-
-  if      (strcmp(m->label(), "Exit")==0) 
-    exit(0);
-  else if (strcmp(m->label(), "Min Menu")==0) {
-    printf("-- Min Menu -- \n");
-    window->make_current();
-    fl_color(FL_RED);  
-    fl_rectf(50, 50, 20, 20);
-
-    static Fl_Button b1(60, 100, 80, 25, "&Beep");                       
-    window->add(b1);
-
-    window->redraw();
-		
-
-    /* mw->menu(big_menu); */
-    /* (w->parent())->redraw(); */
-    /* redraw(); */
-    /* w->show(); */ /* ??? */
-  } else {
-    YMessageBox ((char*)m->label());
-  }
- 
-  if (m->shortcut())
-    printf("%s - %s\n", m->label(), fl_shortcut_label(m->shortcut()));
-  else
-    printf("%s\n", m->label());
-
-  /* char buffer[80]; */
-
-}
-/*--------------------------my_page1_proc--------------------------------*/
-void 
-  my_page1_proc (void) 
-{  
-
-  YEdit ("input1:", 50, 10, 240, 40, "");
-  YEdit ("input2:", 50, 60, 240, 30, "");
-  YEdit ("input3:", 50, 90, 240, 80, "");
-
-  return;
-}
-/*--------------------------my_page2_proc--------------------------------*/
-void 
-  my_page2_proc (void) 
-{  
-
-  YPush ("button1", 10,  30, 60, 80, PROC_NULL);
-  YPush ("button2", 70,  30, 60, 80, PROC_NULL);
-  YPush ("button3", 130, 30, 60, 80, PROC_NULL);
-
-  return;
-}
-/*-------------------------------------main------------------------------*/
-int 
-main (int argc, char **argv) {
-
-static Fl_Menu_Item min_menu[] = {
-  {"Buffers", 0,0,0, FL_SUBMENU},
-    {"New Window", 0,0,0, FL_MENU_DIVIDER}, 
-    {"Open ..."},
-    {"Save"},     
-    {"Save All"},     
-    {"Save As ...", 0,0,0, FL_MENU_DIVIDER},     
-    {"Kill"},     
-    {"Split"},     
-    {"Unsplit"},     
-    {"List All", 0,0,0, FL_MENU_DIVIDER},     
-    {"Exit"},     
-    {0},
-  {"Edit", 0,0,0, FL_SUBMENU},
-    {"Undo"},
-    {"Redo", 0,0,0, FL_MENU_DIVIDER},
-    {"Cut"},
-    {"Copy"},
-    {"Paste"},
-    {0},
-  {"Search", 0,0,0, FL_SUBMENU},
-    {"Find ..."},
-    {"Find Again ...", 0,0,0, FL_MENU_DIVIDER},
-    {"Replace ..."},
-    {"Replace Again", 0,0,0, FL_MENU_DIVIDER},
-    {"Goto Line"},
-    {0},
-  {"Help", 0,0,0, FL_SUBMENU},
-    {"About"},
-    {"Index"}, 
-    {0},
-  {0}
-};
-
-  
-  static char *list1[]= {
-    "string_01", "string_02", "string_03",
-    "string_04", "string_05", "string_06", 
-    "string_07", "string_08", "string_09", 
-    "string_10", "string_11", "string_12", 
-    NULL}; 
-
-  int h_menu;
-  int x, y, w, h;
-  int width  = 350;
-  int height = 450;
-  int x_push, y_push, w_push, h_push;
-
-  static YT_BOOK pages[] = {        
-    {"Page1", my_page1_proc, FL_CYAN},       
-    {"Page2", my_page2_proc, FL_MAGENTA},       
-    {NULL}        
-  };        
-
-  Fl_Window *win;                                                               
-  {                                                                             
-    window = new Fl_Window(width+320,height);
-    win = window;                                                                 
-
-    window->color(FL_GREEN);
-
-    int OFF = 0/* width */;
-    Fl_Box *b = new Fl_Box (FL_BORDER_BOX, width,0,280,height, "Hello, World!");  
-    b->color(FL_YELLOW);
-
-    YTopmenu (OFF+0, 0, width, 25, min_menu, test_cb); 
-    /* YBook (OFF+0, 30, 300, 200);  */
-    YBook (0, 30, 300, 200, pages); 
-
-    YBeginGroup ("", 0, 235, width, 200, FL_MAGENTA);
-    YList (0, 240, 90, 100, list1, 3);
-    YDecimal ("DEC:", 50, 345, 130, 20, 0, 100); 
-    YScroll (50, 370, 130, 20, FL_HORIZONTAL, 100, 20, 50); 
-		
-    YPush ("Push", 100, 5, 60, 25, about_proc);
-		
-    YCheck ("Check", 100, 270, 25, 25);
-
-    YClock (170, 240, 50, 50);
-    YScroll (250, 260, 25, 130, FL_VERTICAL,  100, 20, 50);
-    YEdit ("Edit", 130, 65, 100, 25, "this is edit test-text...");
-    YEndGroup ();
-
-    window->end();                                                               
-  }                                                                       
-                                                                                
-  win->show(argc, argv);                                                        
-  return Fl::run();                                                             
-
-  /*   window->end(); */
-  /*   window->show(argc, argv); */
-  /*   window->make_current(); */
-
-  /*   return Fl::run(); */
-}
-/*******************************************************************************/
-
-#endif
-#ifdef  D_KERNEL  
+//#ifdef  D_KERNEL  
 
 int X0_DRAW;
 int Y0_DRAW;
@@ -903,4 +729,4 @@ about_proc (Fl_Widget *wid, void *ptr)
 }  
 /*==========================================================================*/
 
-#endif
+//#endif // D_KERNEL 

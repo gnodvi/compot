@@ -104,8 +104,8 @@ T=T
 
 # =============================================================================
 
-SVISOR_O = $(T)/svisor.o
-KERNEL_O = $(T)/kernel.o
+#SVISOR_O = T/svisor.o
+#KERNEL_O = T/kernel.o
 
 PROGS_old = d_gui d_new #evo_games d_map
 
@@ -129,7 +129,8 @@ CPP   = c++ -O2
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
 fltk-common.o : fltk-common.c fltk-common.h
-	$(CC) $(FLAGS) -o $@ -c fltk-common.c 
+	gcc $(FLAGS) -o $@ -c fltk-common.c
+
 
 fltk-testps: fltk-testps.c fltk-common.o 
 	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
@@ -138,22 +139,26 @@ fltk-demons : fltk-demons.c
 	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
 	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
+d_gui: fltk-demons.c T/kernel.o T/svisor.o kernel.h fltk-common.o
+	$(CC) $(F_OPTS) -o $@ -DD_GUI fltk-demons.c $(FLTK_INCS) T/kernel.o T/svisor.o fltk-common.o \
+	$(F_LIBS) $(X_LIBS)
+
 # =============================================================================
 
-$(KERNEL_O) : kernel.c kernel.h
-	$(CC) $(F_OPTS) -o $(KERNEL_O) -c -DD_KERNEL kernel.c $(FLTK_INCS)        
+T/kernel.o : kernel.c kernel.h
+	$(CC) $(F_OPTS) -o $@ -c -DD_KERNEL kernel.c $(FLTK_INCS)        
 
-$(SVISOR_O) : svisor.c kernel.h
-	$(CC) $(F_OPTS) -o $(SVISOR_O) -c -DD_SVISOR svisor.c $(FLTK_INCS)        
+T/svisor.o : svisor.c kernel.h
+	$(CC) $(F_OPTS) -o T/svisor.o -c -DD_SVISOR svisor.c $(FLTK_INCS)        
 
-d_gui: $(KERNEL_O) $(SVISOR_O) kernel.c  kernel.h
-	$(CC) $(F_OPTS) -o d_gui -DD_GUI kernel.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
+# d_gui: T/kernel.o T/svisor.o kernel.c   kernel.h
+# 	$(CC) $(F_OPTS) -o d_gui -DD_GUI kernel.c $(FLTK_INCS) T/kernel.o T/svisor.o $(F_LIBS) $(X_LIBS)
 
 #d_map : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
 #	$(CC) $(F_OPTS) -o d_map -DD_MAP svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
 
-d_new : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
-	$(CC) $(F_OPTS) -o d_new -DD_NEW svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
+d_new : T/kernel.o T/svisor.o svisor.c kernel.h fltk-common.o
+	$(CC) $(F_OPTS) -o d_new -DD_NEW svisor.c $(FLTK_INCS) T/kernel.o T/svisor.o fltk-common.o $(F_LIBS) $(X_LIBS)
 
 #evo_games : $(KERNEL_O) $(SVISOR_O) svisor.c kernel.h
 #	$(CC) $(F_OPTS) -o evo_games -DD_EVO_GAMES svisor.c $(FLTK_INCS) $(KERNEL_O) $(SVISOR_O) $(F_LIBS) $(X_LIBS)
