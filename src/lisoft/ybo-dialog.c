@@ -58,51 +58,8 @@ enum local_keys {
   MYPUSH_UP 
 };
 
-static int n, o;
-                                                                                 
-/*----------------------------draw_background-------------------------------*/   
-void   
-draw_background (int id)   
-{   
-  SC w = YWinW (id);   
-  SC h = YWinH (id);  
- 
-  YDrawRectF (0, 0, w, h, YColorRGB(LIME));         
-  YDrawRectFB (10, 10, w-20, h-20, YColorRGB(RED), YColorRGB(BLACK));   
-    
-  /*   YDrawLine (10, 10, 100, 100, YColorRGB(BLUE));  */
-  /*   YDrawTriB (20,20, 20,100, 150,20, YColorRGB (255,0,255));    */
-  /*   YDrawTriF (110,10, 200,10, 110,100, YColorRGB (YELLOW));     */
- 
-  /*   YDrawCircB (50,50, 20, YColorRGB(BLACK));     */
-  /*   YDrawCircFB (50,150, 20, YColorRGB(BLUE), YColorRGB(BLACK));     */
-   
-  /*   YDrawRectF (0, 0, 20, 20, YColorRGB(GREEN));   */
-  return; 
-}  
-/*-----------------------------draw_foreground------------------------------*/ 
-void 
-draw_foreground (int id) 
-{ 
-  int i;  
-  SC x, y, w=20, h=20, width, height;  
- 
-  width  = YWinW (id); 
-  height = YWinH (id); 
-   
-  printf ("draw_foreground: width = %3d, height = %3d \n", width, height);
+// ??
 
-  for (i=0; i<8; i++) {
-    
-    x = YRAND (w, width-2*w); 
-    y = YRAND (h, height-2*h);
-    
-    YDrawRectF (x, y, w, h, YColorRGB(YELLOW)); // это маленькие желтые квадратики
-    //printf ("draw_foreground: xywh = %3d, %3d, %3d, %3d \n", x, y, w, h);
-  }
-
-  return;
-}  
 /*-----------------------------push1_proc--------------------------------------*/   
 long   
 push1_proc (PFUNC_VAR)   
@@ -130,8 +87,8 @@ new_proc (PFUNC_VAR)
   switch (message) {   
   case YM_CREATE:  
   case YM_PAINT:   
-		YDrawRectF (0, 0, YWinW(id), YWinH(id), YColorRGB(YELLOW));            
-		/* YWin (&id_push, push_proc, "Push", 30, 30, 70, 25); */     
+    YDrawRectF (0, 0, YWinW(id), YWinH(id), YColorRGB(YELLOW));            
+    /* YWin (&id_push, push_proc, "Push", 30, 30, 70, 25); */     
     break;   
   case YLMOUSEDOWN:  
     printf ("YLMOUSEDOWN-new \n");  
@@ -159,19 +116,23 @@ new_proc (PFUNC_VAR)
 long  
 newmain_proc (PFUNC_VAR)  
 {  
+
 #define WIN_W  (YWinW(id)) 
 #define WIN_H  (YWinH(id)) 
-	int id_new=ID_NULL;
+
+  int id_new = ID_NULL;
   
   switch (message) {
     
   case YM_CREATE:  
-    printf ("YM_CREATE \n");  
+    printf ("newmain_proc .... YM_CREATE \n");  
   case YM_PAINT:  
+
     /*     printf ("YM_PAINT \n");   */
     /*     YDrawRectF (0, 0, WIN_W, WIN_H, YColorRGB(LIME));            */
     //draw_background (id);   
-    //YWin (&id_new, new_proc, "Hello, New Window!!", 100, 0, 150, 150);    
+    //YWin (&id_new, new_proc, "Hello, New Window!!", 100, 0, 150, 150); 
+   
     break;  
   case YLMOUSEDOWN:  
     printf ("YLMOUSEDOWN \n");  
@@ -181,6 +142,7 @@ newmain_proc (PFUNC_VAR)
     break; 
   case YLMOUSEUP: 
     printf ("YLMOUSEUP: \n");
+
     //YBig (&id_new, new_proc, "Hello, New Window!!", SC_DEF, SC_DEF, 150, 150);   
     break; 
   case YPUSH: 
@@ -425,7 +387,98 @@ oldmain_proc (PFUNC_VAR)
   
   RETURN_TRUE; 
 }
-/*-----------------------------main_proc--------------------------------------*/  
+// -----------------------------------------------------------------------------
+
+static int n, o;
+                                                                                 
+
+/*----------------------------draw_background-------------------------------*/   
+void   
+draw_background (int id)   
+{   
+  SC w = YWinW (id);   
+  SC h = YWinH (id);  
+ 
+  YDrawRectF (0, 0, w, h, YColorRGB(LIME));         
+  YDrawRectFB (10, 10, w-20, h-20, YColorRGB(RED), YColorRGB(BLACK));   
+    
+  /*   YDrawLine (10, 10, 100, 100, YColorRGB(BLUE));  */
+  /*   YDrawTriB (20,20, 20,100, 150,20, YColorRGB (255,0,255));    */
+  /*   YDrawTriF (110,10, 200,10, 110,100, YColorRGB (YELLOW));     */
+ 
+  /*   YDrawCircB (50,50, 20, YColorRGB(BLACK));     */
+  /*   YDrawCircFB (50,150, 20, YColorRGB(BLUE), YColorRGB(BLACK));     */
+   
+  /*   YDrawRectF (0, 0, 20, 20, YColorRGB(GREEN));   */
+  return; 
+}  
+/*-----------------------------draw_foreground------------------------------*/ 
+
+#define COLOR_VARS  int red, int green, int blue
+#define COLOR_VALS      red,     green,     blue
+
+void 
+draw_foreground (int id, COLOR_VARS) 
+{ 
+  int i;  
+  SC x, y, w = 20, h = 20, width, height;  
+ 
+  width  = YWinW (id); 
+  height = YWinH (id); 
+   
+  printf ("draw_foreground: width = %3d, height = %3d \n", width, height);
+
+  for (i = 0; i < 8; i++) {
+    
+    x = YRAND (w, width-2*w); 
+    y = YRAND (h, height-2*h);
+    
+    YDrawRectF (x, y, w, h, YColorRGB (/* YELLOW */ COLOR_VALS)); // это маленькие квадратики
+
+    //printf ("draw_foreground: xywh = %3d, %3d, %3d, %3d \n", x, y, w, h);
+  }
+
+  return;
+}  
+// -----------------------------------------------------------------------------
+void RunFictBoids (int id)
+{
+
+  YRAND_S;
+
+  YWinBegPaint (id);    
+
+  int map = YWinMapGet (id);  
+  YWinMapSet (map);
+  
+  draw_background (id);
+  
+  YWinMapSet (0); 
+  YWinMapPut (id, map);   
+  YWinEndPaint (id);  
+ 
+  YPauseSoft (500);
+  
+  while (!YQUIT) { \
+    
+    YCheckEvents(); 
+    if (YPauseSoft(0)) continue;  
+ 
+    YWinBegPaint (id);  
+    YWinMapPut (id, map);
+    
+    draw_foreground (id, /* YELLOW */ GREEN);
+    
+    YWinEndPaint (id);  
+  
+    YFlush ();
+    //YPauseHard (10000); 
+    YPauseSoft (500);  
+  } 
+
+  return;
+}
+/* -----------------------------main_proc--------------------------------------*/  
 long  
 main_proc (PFUNC_VAR)  
 {
@@ -441,66 +494,43 @@ main_proc (PFUNC_VAR)
     YWin (&n, newmain_proc, "", 10,      10,   w,          WIN_H-20);    
     YWin (&o, oldmain_proc, "", 10+w+10, 10,   WIN_W-30-w, WIN_H-20);    
     break;  
+
   default: ;;;;  
   }  
   
   RETURN_TRUE;  
 } 
-/**********************************************************888***************/ 
+// ****************************************************************************** 
 int  
 MAIN (int argc, char *argv[])  
 {   
   int w, h;  
-  static int id=ID_NULL;
+  static int id = ID_NULL;
   long map;
   
   YInit();  
   
   w = XSCR (0.4); 
-  h = YSCR (0.4 ); 
+  h = YSCR (0.4); 
   /* 	w = 550;  */
   /* 	h = 450;  */
   /* printf ("w=%d h=%d \n", w, h); */
 
 #ifdef _NEW
-  YBig_new (&id, main_proc, "Hello, Y_ZONE!!", SC_DEF, SC_DEF, w, h,  0,0,0,0,
-	//YColorRGB (AQUA)
-	YColor ("aqua")
-	);
+  YBig_new (&id, main_proc, "Hello, Y_ZONE from Big_new !!", SC_DEF, SC_DEF, w, h,  
+            0,0,0,0,
+            /* YColorRGB (AQUA) */ YColor ("aqua"));
 #else
-  YBig     (&id, main_proc, "Hello, Y_ZONE!!", SC_DEF, SC_DEF, w, h);
+  YBig     (&id, main_proc, "Hello, Y_ZONE from Big_old !!", SC_DEF, SC_DEF, w, h);
 #endif
-    
-  YRAND_S;
+   
+  // ------------------------------------------
+  // 
 
-  YWinBegPaint (n);    
-  map = YWinMapGet (n);  
-  YWinMapSet (map);
-  
-  draw_background(n);
-  
-  YWinMapSet (0); 
-  YWinMapPut (n, map);   
-  YWinEndPaint (n);  
- 
-  YPauseSoft (500);
-  
-  while (!YQUIT) { \
-    
-    YCheckEvents(); 
-    if (YPauseSoft(0)) continue;  
- 
-    YWinBegPaint (n);  
-    YWinMapPut (n, map);
-    
-    draw_foreground (n);
-    
-    YWinEndPaint (n);  
-  
-    YFlush ();
-    //YPauseHard (10000); 
-    YPauseSoft (500);  
-  } 
+  printf ("ybo-dialog: MAIN: id = %d, n = %d, o = %d .... RunFictBoids \n", id, n, o);
+
+  RunFictBoids (n /* o */);
+
  
   YRETURN;  
 }  
@@ -1077,55 +1107,30 @@ main_proc (PFUNC_VAR)
   
   RETURN_TRUE;  
 }  
-/*-----------------------------------------------------------------*/ 
-int 
-MAIN (int argc, char **argv) 
+
+// ------------------------------------------------------------------------------  
+void RunBoids (int id, int width, int height, int numboids) 
 {
-  
-  //long background, freshmap;  
-  int  numboids; 
-  Boid *boids; 
-  int i; 
-  Vec center, avg_velocity; 
-  int  width, height; 
-  //long bwin;
-  int map; 
-  int id;
-    
-  /*-------------------------------------------*/
-  
-  YRAND_S;
-  numboids = 30; 
- 
-  YInit ();    
-  setup_colormap (); 
- 
-  width  = XSCR(0.4);  
-  height = YSCR(0.4);
-  
-#ifdef _NEW
-  YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0,
-  	//YColorRGB (AQUA)
-  	YColor ("aqua")
-  	);
-#else
-  YBig (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);
-#endif
- 
+
   YWinBegPaint (id);   
-  map = YWinMapGet (id);   
+
+  int map = YWinMapGet (id);   
   YWinMapSet (map); 
+
   YDrawRectF (0,0, width,height, blk);
   YWinMapSet (0); 
   YWinEndPaint (id); 
 
   /* freshmap   = YCreatePixmap(id);  */
  
-  boids = (Boid *) calloc (numboids, sizeof(_Boid)); 
+  Boid *boids = (Boid *) calloc (numboids, sizeof(_Boid)); 
 
+  int  i;
   for (i = 0; i < numboids; i++) { 
     boids[i] = new_boid (width, height); 
   } 
+
+  Vec center, avg_velocity; 
 
   center = zero_vec(); 
   avg_velocity = zero_vec(); 
@@ -1140,19 +1145,20 @@ MAIN (int argc, char **argv)
     YWinBegPaint (id);    
     YWinMapPut (id, map);   
 
-    vec_clear(center); 
-    vec_clear(avg_velocity); 
-    for(i=0; i<numboids; i++) { 
-      vec_add(center, boids[i]->pos); 
-      vec_add(avg_velocity, boids[i]->vel); 
+    vec_clear (center); 
+    vec_clear (avg_velocity); 
+    for (i = 0; i < numboids; i++) { 
+      vec_add (center, boids[i]->pos); 
+      vec_add (avg_velocity, boids[i]->vel); 
     } 
        
-    for(i=0; i<numboids; i++) { 
-      boid_move(boids[i], boids, numboids, center, avg_velocity, width, height); 
+    for (i = 0; i < numboids; i++) { 
+      boid_move (boids[i], boids, numboids, center, avg_velocity, width, height); 
  
       if(boids[i]->onscreen) { 
 	/* YBeginPaint (freshmap, YPIX);  */
 	/* draw_boid (boids[i], freshmap);  */
+
 	draw_boid(boids[i]); 
       } 
     } 
@@ -1163,6 +1169,49 @@ MAIN (int argc, char **argv)
 
     YPauseHard (3000); 
   } 
+
+  return;
+}
+/*-----------------------------------------------------------------*/ 
+int 
+MAIN (int argc, char **argv) 
+{
+  
+  //long background, freshmap;  
+  //int i; 
+  //Vec center, avg_velocity; 
+  int  width, height; 
+  //long bwin;
+
+  //int map; 
+  int id; // главного окна ?
+    
+  /*-------------------------------------------*/
+  
+  YRAND_S;
+ 
+  YInit ();    
+  setup_colormap (); 
+ 
+  width  = XSCR(0.4);  
+  height = YSCR(0.4);
+  
+#ifdef _NEW
+  YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0,
+  	//YColorRGB (AQUA)
+  	YColor ("aqua")
+  	);
+#else
+  YBig     (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);
+#endif
+ 
+  // непосредственно рисем птичек -------------------------------
+  // id - главное окно
+
+  RunBoids (id, width, height, 30); 
+
+  // непосредственно рисем птичек -------------------------------
+
 	  
   YRETURN;  
 } 

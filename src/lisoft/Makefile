@@ -117,14 +117,17 @@ Y_FLTK_WIND_O = $(OBJ_DIR)/y_fltk_wind.o
 
 
 PROGS_DIAL  = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
-PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 dia-fltk-2
+PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #dia-fltk-2
 
-PROGS_misc = testps solver dao-tester scloth 
+PROGS_misc = solver dao-tester scloth 
+PROGS_fltk =fltk-testps fltk-demons
 
-PROGS_boids = ybo-dialog ybo-yboids ymagic ybo-dialog-yma  ybo-yboids-yma
+PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
+	ybo-yboids-yma-new ybo-yboids-yma-old  \
+	ybo-dialog-yma-new ybo-dialog-yma-old
 
 
-PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc)
+PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) $(PROGS_fltk)
 
 all: LIBS_make $(PROGS)  
 
@@ -169,9 +172,9 @@ dia-fltk-1 : dia-demons.c $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)
 	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST1 $(FLTK_INCS) \
 	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
-dia-fltk-2 : dia-demons.c ## $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)  
-	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
-	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+#dia-fltk-2 : dia-demons.c  
+#	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
+#	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
 # -----------------------------------------------------------
 
@@ -235,15 +238,22 @@ ybo-yboids : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ybo-dialog-yma : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
+ybo-dialog-yma-old : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DDIALOG       $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+ybo-dialog-yma-new : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DDIALOG -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
-ybo-yboids-yma: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
+
+ybo-yboids-yma-old: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+ybo-yboids-yma-new: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ymagic : yma-dialog.c yma-kernel.h T/yma-kernel.o 
+yma-ymagic : yma-ymagic.c yma-kernel.h T/yma-kernel.o 
 	$(CC) -o $@ $<  $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
 T/yma-kernel.o: yma-kernel.c yma-kernel.h 
@@ -292,11 +302,15 @@ dao-tester : dao-tester.c
 #-Wwrite-strings
 
 
-common.o : common.c common.h
-	$(CC) $(FLAGS) -o $@ -c common.c 
+fltk-common.o : fltk-common.c fltk-common.h
+	$(CC) $(FLAGS) -o $@ -c fltk-common.c 
 
-testps: testps.c common.o 
+fltk-testps: fltk-testps.c fltk-common.o 
 	$(CPP) $(APP) $(FLAGS) -Wno-write-strings $(FLTK_INCS) $^  $(FLTK_LIBS) $(UNIX_LIBS) -o $@
+
+fltk-demons : fltk-demons.c  
+	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
+	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
 
 # ============================================================================#
 

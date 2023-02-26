@@ -17,7 +17,7 @@
 #include  <sys/time.h> 
 #include  <sys/param.h>
                                                                              
-#include "common.h"
+#include "fltk-common.h"
 //#include "client.h"
 
 /*******************************************************************************/

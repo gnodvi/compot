@@ -1416,10 +1416,12 @@ YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h)
 {  
   YT_BOOL ret; 
   
-  /* printf ("YBig: mode_type=%d \n", mode_type); */ 
+  printf ("YMA: YBig:     mode_type=%d \n", mode_type); 
  
   bigwindow = TRUE;   
-  ret = YWin (pid, proc, wname, x, y, w, h);   
+
+  ret = YWin (pid, proc, wname, x, y, w, h); 
+  
   //bigwindow = FALSE;   
  
   return (ret); 
@@ -1427,16 +1429,19 @@ YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h)
 /*--------------------------------YBig_new------------------------*/   
 YT_BOOL   
 YBig_new (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h, 
-      long w_long1, long w_long2, long w_long3, long w_long4, YT_COLOR color)   
+          long w_long1, long w_long2, long w_long3, long w_long4, 
+          YT_COLOR color)   
 {  
   YT_BOOL ret; 
   
-  /* printf ("YBig: mode_type=%d \n", mode_type); */ 
+  printf ("YMA: YBig_new: mode_type=%d \n", mode_type); 
  
   bigwindow = TRUE;
   
   YModeType (TRUE, YOPEN); 
+
   ret = YWnd (pid, proc, wname, x, y, w, h, w_long1, w_long2, w_long3, w_long4, color);   
+
   YModeType (FALSE, YOPEN); 
 
   //bigwindow = FALSE;   
@@ -1449,7 +1454,9 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
       long w_long1, long w_long2, long w_long3, long w_long4, YT_COLOR color)   
 {
   
+
 #ifdef Y_UNIX 
+
   XSetWindowAttributes attributes;  
   int id, parent;
   Window  win, rootwin;  
@@ -1484,7 +1491,7 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
 		       CWBackingStore, &attributes);
 
   id = YAddWindow ((long)win, proc);
-  printf ("YAddWindow: %s \n", wname);
+  printf ("YWnd: YAddWindow: %s \n", wname);
 
   *pid = id; 
   BIGI(id)->parent = parent;
@@ -1591,7 +1598,7 @@ YWnd (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h,
   YSendFrom (id,ID_NULL, YOPEN, w_long1,w_long2,w_long3,w_long4);  
   //  mode_type = mode_type_old;  
  
-  if (!(glob_hdc = GetDC (hwnd)))  YERROR ("GetDC");   
+  if (!(glob_hdc = GetDC (hwnd)))        YERROR ("GetDC");   
   if (!(glob_hdcMemory = GetDC (hwnd)))  YERROR ("GetDC-Memory");   
  
   // Рисуем окно. Для этого после функции ShowWindow, 
@@ -1632,23 +1639,25 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
       int x, int y, int w, int h)   
 {
   
+  //printf ("YMA: YWin:  wname = %s \n", wname); 
+ 
 #ifdef Y_UNIX 
   XSetWindowAttributes attributes;  
   int id, parent;
-	Window  win, rootwin;  
+  Window  win, rootwin;  
  
   if (mode_type == YM_PAINT) return FALSE;  
-/* 	if (*pid != ID_NULL) return FALSE; */
+  /* 	if (*pid != ID_NULL) return FALSE; */
 
   attributes.backing_store = Always;   
-	parent = ID_LAST;
+  parent = ID_LAST;
 
   if (bigwindow || (parent == ID_ROOT)) { 
     rootwin = RootWindow (dpy, scr); 
     bigwindow = FALSE;   
   } else {
-		/* if (parent == ID_ROOT) YERROR ("YWin"); */
-	  rootwin = (Window)(BIGI(parent)->hwnd); 
+    /* if (parent == ID_ROOT) YERROR ("YWin"); */
+    rootwin = (Window)(BIGI(parent)->hwnd); 
   }
  
   if (x == SC_DEF) x = 0; 
@@ -1657,12 +1666,15 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
   if (h == SC_DEF) h = 0; 
   
   win = XCreateWindow (dpy, rootwin,  
-			   x, y, w, h,  
-			   1, CopyFromParent, InputOutput, CopyFromParent,  
-			   CWBackingStore, &attributes);
+                       x, y, w, h,  
+                       1, CopyFromParent, InputOutput, CopyFromParent,  
+                       CWBackingStore, &attributes);
 
-	id = YAddWindow ((long)win, proc);
-	BIGI(id)->parent = parent;
+  id = YAddWindow ((long)win, proc);
+  BIGI(id)->parent = parent;
+
+  printf ("YMA: YWin:  win = %d, id = %d ... YSendFrom \n", win, id); 
+ 
   YSendFrom (id,ID_NULL, YM_CREATE, 0,0,0,0);  
     
   XStoreName (dpy, win, wname);  
@@ -1673,7 +1685,6 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
 		| PointerMotionHintMask);  
   
   /* reg = XCreateRegion ();  */
- 
   /* YSkipExpose ();   */
 
   drawable = win;
@@ -1752,6 +1763,7 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
 #endif 
 }   
 // ======================================================================== 
+
 #ifdef Y_UNIX 
 #else
 

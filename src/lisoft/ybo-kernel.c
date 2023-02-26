@@ -37,7 +37,10 @@
 #include  <time.h>   
 #include  <ctype.h>
  
+
 #include "ybo-kernel.h" 
+
+  //#include "yma-kernel.h" 
  
  
 /***********************************************************************/ 
@@ -1269,7 +1272,7 @@ YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h)
 {  
   YT_BOOL ret; 
   
-  /* printf ("YBig: mode_type=%d \n", mode_type); */ 
+  printf ("YBO: YBig: mode_type=%d \n", mode_type); 
  
   bigwindow = TRUE;   
   ret = YWin (pid, proc, wname, x, y, w, h);   
@@ -1279,11 +1282,12 @@ YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h)
 } 
 /*----------------------------------YWin-----------------------------*/   
 YT_BOOL   
-YWin (int *pid, YT_PFUNC proc, char *wname,
+YWin (int *pid, YT_PFUNC proc, char *wname, 
       int x, int y, int w, int h)   
 {
   
 #ifdef Y_UNIX 
+
   XSetWindowAttributes attributes;  
   int id, parent;
   Window  win, rootwin;  
@@ -1313,7 +1317,11 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
 		       CWBackingStore, &attributes);
 
   id = YAddWindow ((long)win, proc);
+
   BIGI(id)->parent = parent;
+
+  printf ("YBO: YWin:  win = %d, id = %d ... YSendFrom \n", win, id); 
+ 
   YSendFrom (id,ID_NULL, YM_CREATE, 0,0,0,0);  
     
   XStoreName (dpy, win, wname);  
@@ -1328,6 +1336,7 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
   /* YSkipExpose ();   */
 
   drawable = win;  
+
   YModePaint (TRUE); 
   YSendFrom (YHwndToId((long)win),ID_NULL, YM_PAINT, 0,0,0,0);  
   YModePaint (FALSE); 
@@ -1388,12 +1397,13 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
   YSendFrom (id,ID_NULL, YM_CREATE, 0,0,0,0);  
   //  mode_type = mode_type_old;  
  
-  if (!(glob_hdc = GetDC (hwnd)))  YERROR ("GetDC");   
+  if (!(glob_hdc       = GetDC (hwnd)))  YERROR ("GetDC");   
   if (!(glob_hdcMemory = GetDC (hwnd)))  YERROR ("GetDC-Memory");   
  
   // Рисуем окно. Для этого после функции ShowWindow, 
   // рисующей  окно, вызываем функцию UpdateWindows, 
   // посылающую сообщение WM_PAINT в функцию окна 
+
   ShowWindow(hwnd, glob_nCmdShow); 
   UpdateWindow(hwnd);  
  
@@ -1402,6 +1412,7 @@ YWin (int *pid, YT_PFUNC proc, char *wname,
 #endif 
 }   
 // ======================================================================== 
+
 #ifdef Y_UNIX 
 #else 
 BOOL 

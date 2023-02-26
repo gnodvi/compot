@@ -37,7 +37,8 @@ extern "C" {
 /****************************************************************************/   
   enum y_enum { 
     YDESTROY, YM_PAINT, YLMOUSEDOWN, YRMOUSEDOWN,  
-    YLMOUSEUP, YRMOUSEUP, YM_NULL, YM_CREATE, YNONE, 
+    YLMOUSEUP, YRMOUSEUP, YM_NULL, YM_CREATE, 
+    YNONE,   // 8
     YWIN, YPIX, YPUSH, YDRAWITEM,
 		YKEY_LOCALS
   }; 
