@@ -15,7 +15,8 @@ M_OPTS = $($(SYS)_OPTS) $(YZONE_OPTS)
 #F_OPTS = $(M_OPTS) $(FLTK_OPTS)
 
 X_LIBS = $($(SYS)_LIBS) 
-Y_LIBS = dia-y_zone.a  
+Y_LIBS = dia-y_zone.a
+
 #F_LIBS = $(FLTK_LIBS)
 # =============================================================================
 
@@ -70,7 +71,8 @@ UNIX_LIBS = -L/usr/X11R6/lib  -lX11 -lm #-lXext
 
 OPTIM = -fno-exceptions -Wall
 CCC   = gcc -O2
-CPP   = c++ -O2
+CPP   = LANG=C c++ -O2
+
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
 GINC = -I$(XDIR)/include

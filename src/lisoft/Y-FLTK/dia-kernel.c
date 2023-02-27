@@ -5410,8 +5410,9 @@ YColmapEndDraw ()
 #include <FL/x.H>
 #include <FL/Fl_Slider.H>                                                       
 #include <FL/Fl_Scrollbar.H>                                                    
-#include <FL/Fl_Clock.H>                                                        
-#include <FL/fl_file_chooser.H>                                                 
+#include <FL/Fl_Clock.H>
+
+#include <FL/Fl_File_Chooser.H>                                                 
 #include <FL/Fl_Hold_Browser.H>
 
 extern Fl_Window *fltkwin;

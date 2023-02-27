@@ -501,20 +501,20 @@ testmsg_proc (PFUNC_VAR)
 #endif
 #ifdef  D_DIAL_2  
 /*************************************************************************/
-#ifdef FLTK
-#define PUSH     F_PUSH
-#define CHECK    F_CHECK
-#define SCROLL   F_SCROLL
-#define SCROLL_H F_SCROLL
-#define EDIT     F_EDIT
-#define CLOCK    F_CLOCK
-#define LIST     F_LIST
-#define TOPMENU  F_TOPMENU
+/* #ifdef FLTK */
+/* #define PUSH     F_PUSH */
+/* #define CHECK    F_CHECK */
+/* #define SCROLL   F_SCROLL */
+/* #define SCROLL_H F_SCROLL */
+/* #define EDIT     F_EDIT */
+/* #define CLOCK    F_CLOCK */
+/* #define LIST     F_LIST */
+/* #define TOPMENU  F_TOPMENU */
 
-#define CAPTION "Fltk_2"
-#else
+/* #define CAPTION "Fltk_2" */
+/* #else */
 #define CAPTION "Dial_2"
-#endif
+/* #endif */
 
 #include "dia-y_zone.h" 
 
