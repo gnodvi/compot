@@ -7,7 +7,7 @@
 # ============================================================================#
 
 YDIR_ROOT = .
-include Make.mak
+#include Make.mak
 
 # =============================================================================
 
@@ -112,7 +112,7 @@ PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #d
 
 #PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
 
-PROGS = f_solv d_test
+PROGS = d_test  # f_solv 
 
 all: $(PROGS)  #LIBS_make  
 
