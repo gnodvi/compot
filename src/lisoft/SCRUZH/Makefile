@@ -138,23 +138,27 @@ $(X_BABY_B) : $(X_BABY_C) $(X-OBJS)
 
 # =============================================================================#
 
-
 PROGS = $(A_TEST_B) $(B_TEST_B) $(X_BABY_B) $(X_TEST_B) $(X__TCL_O)  
 
-all : $(PROGS) 
+all : _AIGO12 $(PROGS) 
+
+_AIGO12:
+	(cd AIGO12; make)
 
 # =============================================================================#
+
 clean :
 	rm -f  T/*.o T/*.a $(PROGS) 
+	(cd AIGO12; make clean)
 
-# =============================================================================#
+# ------------------------------------------------------------------------------
 
-SLIST = *.c *.h *.t *.txt *.tcl *.sh E/*.sh E/OUT Makefile*  L  
+#SLIST = *.c *.h *.t *.txt *.tcl *.sh E/*.sh E/OUT Makefile*  L  
 
-ANAME = scruzh
-save :  
-	tar --ignore-failed-read -cvf $(ANAME).tar $(SLIST)
-	gzip -6 $(ANAME).tar  
-	(cd ../../A/scruzh; mdat) 
+#ANAME = scruzh
+# save :  
+# 	tar --ignore-failed-read -cvf $(ANAME).tar $(SLIST)
+# 	gzip -6 $(ANAME).tar  
+# 	(cd ../../A/scruzh; mdat) 
 
 # ============================================================================#

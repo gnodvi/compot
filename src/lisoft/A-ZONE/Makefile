@@ -134,13 +134,13 @@ PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
 
 PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
 
-all: $(PROGS)#  LIBS_make  
+all: LIBS_make $(PROGS)  
 
 LIBS_make:
-	(cd ../ploter; make)
+#	(cd ../ploter; make)
 	(cd A-FLTK;    make)
-	(cd AIGO12;    make)
-	(cd SCRUZH;    make)
+#	(cd AIGO12;    make)
+#	(cd SCRUZH;    make)
 	(cd Y-ZONE;    make)
 
 # =============================================================================
@@ -299,12 +299,12 @@ sol-kernel.o : sol-kernel.c sol-kernel.h
 
 clean : 
 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
-	rm -f *.a
+	rm -f *.a T/*.a
 #	(cd ../ploter; make clean)
-#	(cd A-FLTK;    make clean)
+	(cd A-FLTK;    make clean)
 #	(cd AIGO12;    make clean)
 #	(cd SCRUZH; 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
-#	(cd Y-ZONE;    make clean)
+	(cd Y-ZONE;    make clean)
 
 #------------------------------------------------------------- 
 

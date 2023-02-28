@@ -15,7 +15,9 @@ ifdef UNIX_LINUX
   OPTIM = -fno-exceptions -fpermissive  ##-Wwrite-strings -Wall 
   #APP = -mwindows 
 
-  FDIR_ROOT = ../../../../fltk-s
+  #FDIR_ROOT = ../../../../fltk-s
+  FDIR_ROOT = ../../FLTK-S
+
   FLTK_INCS = -I$(FDIR_ROOT)/include
   FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
 
@@ -105,11 +107,13 @@ PROGS = tester dialog search # mmm ttt ccc
 # help$(EXE) ago mmm-g 
 
 # ============================================================================#
+
 GSL_DIR = ./Others/link_scilib
 GSL_INC = -I$(GSL_DIR) 
 GSL_LIB = -L$(GSL_DIR)/.libs -lgsl -L$(GSL_DIR)/cblas/.libs -lgslcblas 
  
 # ============================================================================#
+
 LIB_GLUT = -L/usr/X11R6/lib -lGL -lGLU  -lXt -lXm -lXmu  Others/GLUT/libglut.a 
 
 TESTER_OBJS = $(TT)common.o $(TT)client.o $(TT)aboard.o $(TT)gowork.o $(TT)evalut.o $(TT)minmax.o 
@@ -118,6 +122,7 @@ DIALOG_OBJS = $(TESTER_OBJS)  $(TT)myfltk.o
 all : $(PROGS)
 
 # ============================================================================#
+
 #gsl-rand : gsl-rand.c                                   
 #	$(CC) -o gsl-rand  $(GSL_INC) gsl-rand.c  $(GSL_LIB) 
 #grafin : grafin.c                                                               
@@ -126,13 +131,16 @@ all : $(PROGS)
 # ============================================================================#
 #konkurs : konkurs.c konksco.c konkurs.h  common.o $(TT)myeuler.o                                 
 #	$(CPP) -o konkurs  $(GSL_INC) konkurs.c konksco.c  $(GSL_LIB) common.o $(TT)myeuler.o -lm 
+
 search : search.c  $(TESTER_OBJS)  
 	$(CC) $(FLAGS) -o $@ search.c $(TESTER_OBJS) 
 tester : tester.c $(TESTER_OBJS) 
 	$(CC) $(FLAGS) -o $@ tester.c $(TESTER_OBJS) 
 dialog : dialog.c $(DIALOG_OBJS) $(DIAL_ICONS) russia.h 
 	$(CPP) $(APP) $(FLAGS)  -o $@ dialog.c $(DIAL_ICONS) $(DIALOG_OBJS) $(FLTK_INCS) $(LIBS)
+
 # =============================================================================
+
 $(TT)minmax.o : minmax.c common.h minmax.h 
 	$(CC) $(FLAGS) -o $@ -c minmax.c 
 $(TT)common.o : common.c common.h client.h
@@ -148,23 +156,32 @@ $(TT)gowork.o : gowork.c common.h aboard.h gowork.h
 	$(CC) $(FLAGS) -o $@ -c gowork.c 
 $(TT)evalut.o : evalut.c common.h  aboard.h gowork.h evalut.h
 	$(CC) $(FLAGS) -o $@ -c evalut.c 
+
 # =============================================================================#
+
 $(TT)myfltk.o : myfltk.c myfltk.h
 	$(CPP) $(FLAGS) $(FLTK_INCS) -o $@ -c myfltk.c 
 #	$(CPP) $(FLAGS) $(FLTK_INCS) -c $<
+
 # =============================================================================#
+
 $(DIAL_ICONS): S\dialog.rc S\dialog.ico
 #	(cd T; $(WINDRES) $< $@)
 #	(cd S; $(WINDRES) dialog.rc ..\T\dialog.o)
 	(cd S; $(WINDRES) dialog.rc ../T/dialog.o)
+
 # =============================================================================#
+
 clean : 
 	rm -f *.exe *.obj *.lib *.o T\*.o *.so $(PROGS)  # *.dll *.exp 
 	(cd T ; rm -f *.o *.exe )
+
 #------------------------------------------------------------- 
+
 edit :                                                                           
 	xemacs Makefile                                             
 #------------------------------------------------------------- 
+
 save :  
 	tar --mode=a-x  --exclude=*.o --exclude=Output --ignore-failed-read -cvf savemin.tar  *.c *.cc *.cxx *.h *.H *.hh Makefile *.txt *.ini *.m S W 
 	gzip -6 savemin.tar 
