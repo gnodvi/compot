@@ -17,6 +17,7 @@ M_OPTS = $($(SYS)_OPTS) $(YZONE_OPTS)
 X_LIBS = $($(SYS)_LIBS) 
 Y_LIBS = dia-y_zone.a  
 #F_LIBS = $(FLTK_LIBS)
+
 # =============================================================================
 
 
@@ -39,27 +40,6 @@ XLIB = -L$(XDIR)/lib -lX11 #-lXext
 
 # ============================================================================#
 
-#GNUPLOTI_DIR = ./Others/link_gploti
-#GNUPLOTI_INC = -I$(GNUPLOTI_DIR)/src  
-#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/gnuplot_i.o  
- 
-#GNUPLOTI_DIR = ../ploter
-GNUPLOTI_DIR = PLOTER
-
-GNUPLOTI_INC = -I$(GNUPLOTI_DIR)  
-#GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/b_gnup.o 
-GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# sudo apt install libgsl-dev
-
-GSL_DIR = ./Others/link_scilib
-GSL_INC = -I$(GSL_DIR) 
-GSL_LIB = -L$(GSL_DIR)/.libs -lgsl -L$(GSL_DIR)/cblas/.libs -lgslcblas 
- 
-GAZ_INCS = $(XINC) $(GNUPLOTI_INC) $(GSL_INC) 
-GAZ_LIBS = $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
- 
 #-------------------------------------------------------------  
 
 #FDIR_ROOT = $(HOME)/MGENA/fltk-s/fltk
@@ -122,17 +102,17 @@ Y_FLTK_WIND_O = $(OBJ_DIR)/y_fltk_wind.o
 PROGS_DIAL  = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
 PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #dia-fltk-2
 
-PROGS_misc = solver dao-tester scloth 
+#PROGS_misc = solver dao-tester scloth 
 #PROGS_fltk =fltk-testps fltk-demons
 
-PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
-	ybo-yboids-yma-new ybo-yboids-yma-old  \
-	ybo-dialog-yma-new ybo-dialog-yma-old
+#PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
+#	ybo-yboids-yma-new ybo-yboids-yma-old  \
+#	ybo-dialog-yma-new ybo-dialog-yma-old
 
 
 #PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
 
-PROGS = solver dao-tester
+PROGS = f_solv d_test
 
 all: $(PROGS)  #LIBS_make  
 
@@ -285,16 +265,32 @@ scloth: scloth.c
 
 # ============================================================================#
 
-dao-tester : dao-tester.c                                                               
-	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm                                     
-#------------------------------------------------------------- 
+d_test : d_test.c                                                               
+	$(CC) -o $@ $^ $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm                                     
+# ============================================================================#
 
-solver : sol-solver.c sol-kernel.o                                                              
-	$(CC) -o solver  sol-solver.c sol-kernel.o $(GAZ_INCS) $(GAZ_LIBS) -lm        
+GNUPLOTI_DIR = PLOTER
+
+GNUPLOTI_INC = -I$(GNUPLOTI_DIR)  
+GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# sudo apt install libgsl-dev
+
+#GSL_DIR = ./Others/link_scilib
+#GSL_INC = -I$(GSL_DIR) 
+#GSL_LIB = -L$(GSL_DIR)/.libs -lgsl -L$(GSL_DIR)/cblas/.libs -lgslcblas 
+GSL_LIB = -lgsl -lgslcblas 
+
+GAZ_INCS = $(XINC) $(GNUPLOTI_INC) $(GSL_INC) 
+GAZ_LIBS = $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
 
 
-sol-kernel.o : sol-kernel.c sol-kernel.h                                                               
-	$(CC) -o sol-kernel.o -c sol-kernel.c  $(GAZ_INCS)                                   
+T/f-kern.o : f-kern.c f-kern.h                                                               
+	$(CC) -o $@ -c f-kern.c  $(GAZ_INCS)                                   
+
+f_solv : f_solv.c T/f-kern.o                                                              
+	$(CC) -o $@ $^ $(GAZ_INCS) $(GAZ_LIBS) -lm        
 
 # ============================================================================#
 

@@ -21,7 +21,7 @@
 //#include "b_gnup.h"  
 #include "p_gnup.h"  
 
-#include "sol-kernel.h"  
+#include "f-kern.h"  
 
 /*******************************************************************************/
 
@@ -1207,7 +1207,7 @@ MultiFor (int dim, BOOL works, int *IJK, int *ijk_calc, int *p_smena)
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 void
-  minproc_rand_init (YT_MINPROC *minproc, int num_multy)
+minproc_rand_init (YT_MINPROC *minproc, int num_multy)
 {
   int n, i;
 
@@ -1229,7 +1229,7 @@ void
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 void
-  minproc_gslspusk_s (YT_MINPROC *minproc, int algorifm, long long1, long long2)
+minproc_gslspusk_s (YT_MINPROC *minproc, int algorifm, long long1, long long2)
 {
   double g, xyz_cur[MAXA];
   int    n=0;
@@ -1256,7 +1256,7 @@ void
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 double
-  my_f (const gsl_vector *v, void *params)
+my_f (const gsl_vector *v, void *params)
 {
   double x, y;
   int    i;
@@ -1288,7 +1288,7 @@ double
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 double
-  my_diff_central (const gsl_vector *v_null, int i, void *params)
+my_diff_central (const gsl_vector *v_null, int i, void *params)
 {
   double f_plus, f_mins, df_dxyz;
   YT_MINPROC *minproc = (YT_MINPROC *)params;
