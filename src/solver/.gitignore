@@ -1,0 +1,4 @@
+*.sol *.eos *.o *.a
+sol-COPY.sol
+sol-LAST.sol
+f_solv
