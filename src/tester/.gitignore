@@ -1,5 +1,0 @@
-*.sol *.eos *.o *.a
-sol-COPY.sol
-sol-LAST.sol
-d_test
-f_solv

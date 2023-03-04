@@ -1,11 +1,10 @@
 # -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
 #
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
 
-#include ./Make.mak
+include ./Make.mak
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------
 
 OPTIM = -O2 -fno-exceptions -Wall 
 GCC_ = LANG=C  gcc -x c 
@@ -23,7 +22,6 @@ GCC   = LANG=C gcc -O2
 CPP   = c++ -O2
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 GCC  = LANG=C  gcc -g
@@ -50,12 +48,12 @@ IGRAPH_LIBS = `pkg-config   --libs igraph`
 
 #------------------------------------------------------------------
 
-PROGS =  f_test e_test T/e_tcl.so  T/e_jim.so T/e-0000.so 
+PROGS =  f_test e_test T/e_tcl.so  T/e_jim.so T/e-0000.so d_test 
 
 all:  
-	(cd IGRAPH; make)
-	(cd CURVAT; make)
-#	(cd .; make origin)
+#	(cd IGRAPH; make)
+#	(cd CURVAT; make)
+	(cd .; make origin)
 
 origin: $(PROGS) 
 
@@ -115,15 +113,23 @@ T/e_tcl.so: T/e_init.o T/e-0000.o ##$(GNUPLOTI_LIB)
 T/e_init.o: e_init.c e-0000.h
 	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $< $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
 
+# ============================================================================#
+
+S_INCS = $(XINC) $(GINC) $(GNUPLOTI_INC) $(GSL_INC) 
+S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
+
+d_test : d_test.c                                                               
+	$(CC) -o $@ $^ $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm            
+
 #--------------------------------------------
 
 clean:  
-#	rm -f T/*.o $(PROGS)
-#	rm -f T/*.o T/*.so T/*_wrap*
-#	rm -f core 
-#	rm -f T/*.dot T/*.png T/*.file
-	(cd IGRAPH;   make clean)
-	(cd CURVAT;   make clean)
+	rm -f T/*.o $(PROGS)
+	rm -f T/*.o T/*.so T/*_wrap*
+	rm -f core 
+	rm -f T/*.dot T/*.png T/*.file
+#	(cd IGRAPH;   make clean)
+#	(cd CURVAT;   make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
