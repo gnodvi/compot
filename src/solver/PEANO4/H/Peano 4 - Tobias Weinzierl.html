@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+	
+		<meta charset="utf-8">
+	<meta name="author" content="Tobias Weinzierl">
+	<link rel="pingback" href="https://tobiasweinzierl.webspace.durham.ac.uk/xmlrpc.php">
+
+		<meta name="HandheldFriendly" content="True">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<meta name="apple-mobile-web-app-title" content="Peano 4">
+
+		<meta name="application-name" content="Tobias Weinzierl">
+
+	
+		<script>
+			function is_browser() {
+				return (navigator.userAgent.indexOf("Chrome") !== - 1 || navigator.userAgent.indexOf("Opera") !== - 1 || navigator.userAgent.indexOf("Firefox") !== - 1 || navigator.userAgent.indexOf("MSIE") !== - 1 || navigator.userAgent.indexOf("Safari") !== - 1 || navigator.userAgent.indexOf("Edge") !== - 1);
+			}
+
+			function less_than_ie11() {
+				return (!window.atob || // IE9 and below
+						Function('/*@cc_on return document.documentMode===10@*/')() // IE10
+				);
+			}
+
+			function not_excluded_page() {
+				return (window.location.href.indexOf("/unsupported-browser/") === - 1 && document.title.toLowerCase().indexOf('page not found') === - 1);
+			}
+
+			if (is_browser() && less_than_ie11() && not_excluded_page()) {
+				window.location = location.protocol + '//' + location.host + '/unsupported-browser/';
+			}
+		</script>
+
+		<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	<!-- This site is optimized with the Yoast SEO plugin v20.1 - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Peano 4 - Tobias Weinzierl</title>
+	<link rel="canonical" href="https://tobiasweinzierl.webspace.durham.ac.uk/software/peano/" />
+	<meta property="og:locale" content="en_GB" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Peano 4 - Tobias Weinzierl" />
+	<meta property="og:description" content="Peano is a framework for solvers operating on dynamically adaptive Cartesian meshes. It is the base for a couple of further engines or toolboxes for different application areas, while the framework is really only about the mesh management, data storage, distribution and mesh traversal. The latest version of Peano is the 4th generation of the [&hellip;]" />
+	<meta property="og:url" content="https://tobiasweinzierl.webspace.durham.ac.uk/software/peano/" />
+	<meta property="og:site_name" content="Tobias Weinzierl" />
+	<meta property="article:modified_time" content="2023-02-15T12:48:12+00:00" />
+	<meta property="og:image" content="https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/uploads/sites/288/2022/01/Peano-logo.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:label1" content="Estimated reading time" />
+	<meta name="twitter:data1" content="2 minutes" />
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel='stylesheet' id='tribe-google-css' href='https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&#038;display=swap' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://tobiasweinzierl.webspace.durham.ac.uk/wp-includes/css/classic-themes.min.css?ver=1' media='all' />
+<style id='global-styles-inline-css'>
+body{--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;}:where(.is-layout-flex){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel='stylesheet' id='tribe-styles-master-css' href='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/css/dist/theme/master.min.css?ver=f77beec045bffc8709ab5dc174e42bff' media='all' />
+<link rel='stylesheet' id='tribe-styles-print-css' href='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/css/dist/theme/print.min.css?ver=a9070e358da6513f5e9a3a74b2be88b5' media='print' />
+<link rel="https://api.w.org/" href="https://tobiasweinzierl.webspace.durham.ac.uk/wp-json/" /><link rel="alternate" type="application/json" href="https://tobiasweinzierl.webspace.durham.ac.uk/wp-json/wp/v2/pages/23" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://tobiasweinzierl.webspace.durham.ac.uk/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://tobiasweinzierl.webspace.durham.ac.uk/wp-includes/wlwmanifest.xml" />
+<link rel='shortlink' href='https://tobiasweinzierl.webspace.durham.ac.uk/?p=23' />
+<link rel="alternate" type="application/json+oembed" href="https://tobiasweinzierl.webspace.durham.ac.uk/wp-json/oembed/1.0/embed?url=https%3A%2F%2Ftobiasweinzierl.webspace.durham.ac.uk%2Fsoftware%2Fpeano%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://tobiasweinzierl.webspace.durham.ac.uk/wp-json/oembed/1.0/embed?url=https%3A%2F%2Ftobiasweinzierl.webspace.durham.ac.uk%2Fsoftware%2Fpeano%2F&#038;format=xml" />
+<link rel='preload' href='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/js/dist/theme/scripts.min.js?ver=5d7f353f8030ff6f3e0db046b39d142a' as='script'/>
+<link rel='preload' href='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/js/dist/theme/vendor.min.js?ver=8c2529f9bddc87c2ab9f917200d25920' as='script'/>
+<style>
+:root {
+	--masthead-utility-nav-background-color: #151515;
+	--utility-nav-text-color: var(--color-white);
+	--utility-nav-text-hover-color: var(--color-neutral-30);
+	--footer-background-color: #ffffff;
+}
+</style>
+
+</head>
+
+<body class="page-template-default page page-id-23 page-child parent-pageid-5 wp-embed-responsive theme--core primary-text--light page-peano">
+
+	
+	<div class="l-wrapper" data-js="site-wrap">
+
+		
+<header  class="c-masthead c-masthead__desktop-view c-masthead__no-utility-nav" data-js="masthead">
+
+	<a href="#main-content" class="a11y-skip-link u-visually-hidden">
+		Skip to main content	</a>
+
+
+	<div class="c-masthead__logo-row" data-js="masthead-logo-row">
+
+		<div class="l-container">
+
+			<div class="c-masthead__logo" data-js="masthead-logo">
+				
+				
+<a  class="c-masthead__title" data-js="masthead-title" href="https://tobiasweinzierl.webspace.durham.ac.uk">
+	Tobias Weinzierl</a>
+			</div>
+
+			<div class="c-masthead__primary-wrap" data-js="desktop-primary-wrap">
+				<nav  class="c-nav c-nav-primary" data-js="primary-nav" aria-label="Primary navigation menu">
+	<ol  class="c-nav-primary__list">
+		<li class="primary__list-item primary__list-item--depth-0 primary__list-item--has-children primary__list-item--is-current-parent"><button title="Toggle Sub-Menu" id="menu-item-15" class="primary__action primary__action--depth-0 primary__action--has-children" data-js="trigger-child-menu"><span class="primary__action-span">Software</span></button>
+<div class="primary__wrap-child primary__wrap-child--depth-0"><div class="primary__wrap-child-inner primary__wrap-child-inner--depth-0">
+<ol id="menu-item-child-15" class="primary__list-child primary__list-child--depth-0" data-js="child-menu">
+	<li class="primary__list-item primary__list-item--depth-1 primary__list-item--is-current"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/software/peano/" id="menu-item-25" class="primary__action primary__action--depth-1">Peano 4</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/software/exahype/" id="menu-item-109" class="primary__action primary__action--depth-1">ExaHyPE 2</a></li>
+</ol>
+</div></div></li>
+<li class="primary__list-item primary__list-item--depth-0 primary__list-item--has-children"><button title="Toggle Sub-Menu" id="menu-item-16" class="primary__action primary__action--depth-0 primary__action--has-children" data-js="trigger-child-menu"><span class="primary__action-span">Projects</span></button>
+<div class="primary__wrap-child primary__wrap-child--depth-0"><div class="primary__wrap-child-inner primary__wrap-child-inner--depth-0">
+<ol id="menu-item-child-16" class="primary__list-child primary__list-child--depth-0" data-js="child-menu">
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://excalibur.ac.uk/projects/" id="menu-item-39" class="primary__action primary__action--depth-1">PAX HPC</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://excalibur.ac.uk/projects/exposing-parallelism-task-parallelism/" id="menu-item-36" class="primary__action primary__action--depth-1">ExCALIBUR task-based parallelism</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://www.durham.ac.uk/departments/academic/computer-science/research/outreach/intel-oneapi-academic-center-of-excellence/#d.en.885706" id="menu-item-37" class="primary__action primary__action--depth-1">Intel oneAPI Academic Center of Excellence</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://www.archer2.ac.uk/ecse/projects/" id="menu-item-40" class="primary__action primary__action--depth-1">eCSE2 &#8211; Upscaling ExaHyPE</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/projects/old-projects/" id="menu-item-158" class="primary__action primary__action--depth-1">Old projects</a></li>
+</ol>
+</div></div></li>
+<li class="primary__list-item primary__list-item--depth-0 primary__list-item--has-children"><button title="Toggle Sub-Menu" id="menu-item-17" class="primary__action primary__action--depth-0 primary__action--has-children" data-js="trigger-child-menu"><span class="primary__action-span">Research</span></button>
+<div class="primary__wrap-child primary__wrap-child--depth-0"><div class="primary__wrap-child-inner primary__wrap-child-inner--depth-0">
+<ol id="menu-item-child-17" class="primary__list-child primary__list-child--depth-0" data-js="child-menu">
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/research/workshops/" id="menu-item-120" class="primary__action primary__action--depth-1">Workshops</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/research/videos/" id="menu-item-42" class="primary__action primary__action--depth-1">Videos</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/research/posters/" id="menu-item-46" class="primary__action primary__action--depth-1">Posters</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://www.durham.ac.uk/staff/tobias-weinzierl/" id="menu-item-160" class="primary__action primary__action--depth-1">Papers</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/research/open-phd-posts/" id="menu-item-247" class="primary__action primary__action--depth-1">Open PhD posts</a></li>
+</ol>
+</div></div></li>
+<li class="primary__list-item primary__list-item--depth-0 primary__list-item--has-children"><button title="Toggle Sub-Menu" id="menu-item-58" class="primary__action primary__action--depth-0 primary__action--has-children" data-js="trigger-child-menu"><span class="primary__action-span">Books</span></button>
+<div class="primary__wrap-child primary__wrap-child--depth-0"><div class="primary__wrap-child-inner primary__wrap-child-inner--depth-0">
+<ol id="menu-item-child-58" class="primary__list-child primary__list-child--depth-0" data-js="child-menu">
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://link.springer.com/book/10.1007/978-3-030-76194-3?gclid=Cj0KCQiAmKiQBhClARIsAKtSj-lBbjD3iYuMDrVDUVCrDEMLbrg9YTNkN-0e_BZ_3YZjqoIGKT8iCsYaAjYEEALw_wcB" id="menu-item-102" class="primary__action primary__action--depth-1">Principles of Parallel Scientific Computing</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://link.springer.com/book/10.1007/978-3-642-38762-3" id="menu-item-66" class="primary__action primary__action--depth-1">Advanced Computing</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/books/phd-and-habilitation-thesis/" id="menu-item-61" class="primary__action primary__action--depth-1">PhD and habilitation thesis</a></li>
+</ol>
+</div></div></li>
+<li class="primary__list-item primary__list-item--depth-0 primary__list-item--has-children"><button title="Toggle Sub-Menu" id="menu-item-123" class="primary__action primary__action--depth-0 primary__action--has-children" data-js="trigger-child-menu"><span class="primary__action-span">About me</span></button>
+<div class="primary__wrap-child primary__wrap-child--depth-0"><div class="primary__wrap-child-inner primary__wrap-child-inner--depth-0">
+<ol id="menu-item-child-123" class="primary__list-child primary__list-child--depth-0" data-js="child-menu">
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/about-me/cv/" id="menu-item-101" class="primary__action primary__action--depth-1">Prose</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://tobiasweinzierl.webspace.durham.ac.uk/about-me/curriculum-vitae/" id="menu-item-126" class="primary__action primary__action--depth-1">Curriculum Vitae</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://www.durham.ac.uk/staff/tobias-weinzierl/#publications" id="menu-item-173" class="primary__action primary__action--depth-1">Publications (University website)</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://scholar.google.de/citations?user=pRrvub4AAAAJ" id="menu-item-175" class="primary__action primary__action--depth-1">Publications (Google Scholar)</a></li>
+	<li class="primary__list-item primary__list-item--depth-1"><a href="https://www.durham.ac.uk/staff/tobias-weinzierl/#esteem-indicators" id="menu-item-174" class="primary__action primary__action--depth-1">Esteem indicators</a></li>
+</ol>
+</div></div></li>
+	</ol>
+</nav>
+
+			</div>
+
+			<button  class="c-masthead__flyout-trigger" id="toggle-flyout" data-js="toggle-flyout" aria-expanded="false" aria-haspopup="true" aria-controls="masthead-flyout" data-label-mobile="Toggle site search form &amp; navigation" data-label-desktop="Toggle site search form" aria-label="Toggle site search form &amp; navigation">
+	<i class="icon"></i></button>
+
+		</div>
+	</div>
+
+	<div class="c-masthead__flyout" data-js="masthead-flyout" id="masthead-flyout" aria-hidden="true" aria-labelledby="toggle-flyout">
+		<div class="c-masthead__nav-wrap" data-js="mobile-nav-wrap">
+			<div class="c-masthead__search-form">
+				<div class="l-container">
+					
+<form
+	 class="c-search"	role="search" method="get" data-js="site-search__form"	action="https://tobiasweinzierl.webspace.durham.ac.uk"
+>
+
+	<label class="c-search__label form-control-label" for="sf-640319384de17">
+		Search	</label>
+	<span class="icon icon-search" aria-hidden="true"></span>
+	<input
+		class="c-search__input form-control"
+		type="text"
+		id="sf-640319384de17"
+		name="s"
+		placeholder="Search"
+		data-js="site-search__input"
+	/>
+
+	<button  class="c-search__button c-search__reset" name="reset" data-js="site-search__reset" type="reset" aria-label="Clear">
+	<span class="icon icon-close"></span></button>
+
+	<button  class="c-search__button c-search__submit" data-js="site-search__submit" type="submit" aria-label="Submit">
+	<span class="c-btn__text">Submit</span></button>
+
+</form>
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="c-masthead__utility-wrap" data-js="desktop-utility-wrap">
+			</div>
+
+</header>
+
+		<div class="l-content">
+
+	<main id="main-content">
+		<div  class="page-standard page-standard--has-sidebar-right">
+
+			
+<header  class="u-visually-hidden" >
+	<div class="l-container">
+		<div  class="c-subheader__content">
+			
+<h1  class="page-title h2" >
+	Peano 4</h1>
+					</div>
+	</div>
+</header>
+
+						<div class="l-container">
+			
+				<div class="page-standard__grid">
+
+					
+					<div class="page-standard__content">
+
+						<div  class="c-page__content s-padding s-sink t-sink l-sink l-sink--double c-page__content--has-sidebar">
+							
+<figure class="wp-block-image size-full"><img decoding="async" loading="lazy" width="298" height="300" src="https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/uploads/sites/288/2022/01/Peano-logo.png" alt="" class="wp-image-27" /></figure>
+
+
+
+<p>Peano is a framework for solvers operating on dynamically adaptive Cartesian meshes. It is the base for a couple of further engines or toolboxes for different application areas, while the framework is really only about the mesh management, data storage, distribution and mesh traversal. The latest  version of Peano is the 4th generation of the code. It is completely free, and hosted on the gitlab of the LRZ:</p>
+
+
+
+<pre class="wp-block-preformatted">git clone -b p4 https://gitlab.lrz.de/hpcsoftware/Peano.git</pre>
+
+
+
+<p>We are happy to give interested users write permissions to the repository such that they can merge their contributions into the public code base.</p>
+
+
+
+<h3>License</h3>
+
+
+
+<p>Peano has a BSD-like license. Clone the code and study the file COPY in the root folder. BSD-like means that you can basically do anything with the code including any commercial use, even if you directly inline code (what you have do if you use Peano&#8217;s templates). In return for all the freedom, we&#8217;d appreciate if you cited the code when you use it.</p>
+
+
+
+<h3>Documentation</h3>
+
+
+
+<p>Peano realises a relatively strict document-in-the-code paradigm for technical details. However, there&#8217;s a guidebook/cookbook that provides a convenient starting point and also discusses high-level concepts. Once you have cloned the repository, compile the guidebook as follows:</p>
+
+
+
+<pre class="wp-block-preformatted">cd documentation
+pdflatex documentation.tex</pre>
+
+
+
+<h3>Popular Peano toolboxes, extensions and applications</h3>
+
+
+
+<ul>
+<li><a href="https://tobiasweinzierl.webspace.durham.ac.uk/software/exahype/">ExaHyPE 2</a></li>
+
+
+
+<li><a href="https://www.durham.ac.uk/departments/academic/computer-science/research/outreach/intel-oneapi-academic-center-of-excellence/">OneExaHyPE</a></li>
+</ul>
+
+
+
+<p></p>
+
+
+
+<h3>Citing Peano</h3>
+
+
+
+<p>While Peano is a plain C++ code, most colleagues use it through its Python API. The API generates a lot of glue code plus a makefile such that Peano can run as stand-alone without any Python dependencies. It also generates a Readme file which clarifies which subcomponents of Peano you have used, where you find information about the underlying algorithmic concepts, and what to cite in this context. The Readme should be your first choice when you search for literature about the software.</p>
+
+
+
+<p>If you search for a generic overview paper which describes the fundamental design principles and ideas and provides a first overview, please read the <a href="https://dl.acm.org/doi/10.1145/3319797">ACM TOMS paper</a></p>
+
+
+
+<pre class="wp-block-preformatted">@article{Weinzierl:2019:Peano,
+  author = 	 {T. Weinzierl},
+  title = 	 {The Peano software---parallel, automaton-based, dynamically adaptive grid traversals},
+  journal = 	 {ACM Transactions on Mathematical Software},
+  year = 	 {2019},
+  volume = 	 {45},
+  number = 	 {2},
+  pages = 	 {14}
+}
+  </pre>
+						</div>
+
+						
+					</div>
+
+					<div  class="page-standard__sidebar c-sidebar c-block--layout-right" >
+
+	
+	<section id="block-8" class="widget widget_block">
+<figure class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"><div class="wp-block-embed__wrapper">
+<a class="twitter-timeline" data-width="500" data-height="750" data-dnt="true" href="https://twitter.com/hpcsoftware_?ref_src=twsrc%5Etfw">Tweets by hpcsoftware_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div></figure>
+</section></div>
+
+				</div>
+
+						</div>
+			
+		</div>
+	</main>
+
+
+		</div><!-- .l-content -->
+
+		
+<footer  class="site-footer site-footer--no-menu">
+
+	<div class="site-footer__inner l-container">
+
+		<div class="site-footer__upper">
+
+			<div class="site-footer__details">
+				<div class="site-footer__branding">
+											<a class="site-footer__logo-text-only" href="https://tobiasweinzierl.webspace.durham.ac.uk">
+							Tobias Weinzierl						</a>
+									</div>
+
+							</div>
+
+			
+		</div>
+
+		
+<div class="social-follow">
+
+	<ul class="social-follow__list">
+					<li class="social-follow__item social-follow__item--twitter">
+				<a href="http://@hpcsoftware_" class="social-follow__anchor" rel="me noopener"
+					title="Follow us on Twitter" target="_blank">
+					<i class="icon icon-twitter"></i>
+					<span class="u-visually-hidden">Follow us on Twitter</span>
+				</a>
+			</li>
+			</ul>
+
+</div>
+
+					<div class="site-footer__copyright">
+				<p>2023</p>
+			</div>
+		
+</footer>
+
+	</div><!-- .l-wrapper -->
+
+			<script>window.Promise ||
+			document.write('<script src="https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/js/vendor/es6-promise.auto.js"><\/script>');
+		</script>
+		<script src='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/js/vendor/jquery.min.js?ver=3.4.1' id='jquery-core-js'></script>
+<script src='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/js/dist/theme/vendor.min.js?ver=8c2529f9bddc87c2ab9f917200d25920' id='tribe-scripts-vendor-js'></script>
+<script id='tribe-scripts-scripts-js-extra'>
+var modern_tribe_i18n = {"help_text":{"msg_limit":"There is a limit to the messages you can post."},"tooltips":{"add_to_save":"Add Photo to Saved Items","in_this_photo":"Products in this photo"}};
+var modern_tribe_config = {"images_url":"https:\/\/tobiasweinzierl.webspace.durham.ac.uk\/wp-content\/themes\/core\/assets\/img\/theme","template_url":"https:\/\/tobiasweinzierl.webspace.durham.ac.uk\/wp-content\/themes\/core\/","script_debug":"","hmr_dev":"","block_theme_service_worker":""};
+</script>
+<script src='https://tobiasweinzierl.webspace.durham.ac.uk/wp-content/themes/core/assets/js/dist/theme/scripts.min.js?ver=5d7f353f8030ff6f3e0db046b39d142a' id='tribe-scripts-scripts-js'></script>
+
+</body>
+</html>
