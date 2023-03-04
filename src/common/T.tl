@@ -37,9 +37,9 @@ run_numer_tests  f . E/OUT
 
 puts ""
 
-run_numer_tests  r . E/OUT 
+# run_numer_tests  r . E/OUT 
 
-puts ""
+# puts ""
 
 #-------------------------------------------------------------------------------
 #

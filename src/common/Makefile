@@ -38,8 +38,9 @@ LITTLE_DIR = O/little
 
 #-------------------------------------------------------------------------------
 
-PROGS =  c_test T/c_capt.so    r_test T/r_tcl.so T/r_jim.so    # h-graf 
+PROGS =  c_test T/c_capt.so  ##  r_test T/r_tcl.so T/r_jim.so    
 
+# h-graf 
 #all:   PLOTER__ $(PROGS)   
 
 all:   PLOTER__ RANDOM__ $(PROGS)  #LITTLE__  
@@ -57,42 +58,12 @@ RANDOM__:
 #	(cd $(LITTLE_DIR); make)
 
 #-------------------------------------------------------------------------------
-
-r_test: r_test.c r-main.h T/r-main.o
-	gcc ${FLAGS} -o $@ $< T/r-main.o
-
-T/r-main.o: r-main.c r-main.h
-	gcc ${FLAGS} -c $<  -o $@
-
-#-------------------------------------------------------------------------------
-
-T/r_tcl.so: T/r-init.o T/r-main.o
-	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
-
-T/r-init.o: r-init.c
-	$(GCC_)  -o $@ -DNO_CONST=1 -c -fPIC $^ $(TCL_INCS) $(TCL_STUB_LIB_SPEC_clean)
-
-#------------------------------------------------------------------
-
-ifdef NOTEST
-BUILDOPTS := --notest
-endif
-
-JIM_DIR = ./JIM
-
-SRC =  r-main.c r-init.c
-DEP =  r-main.h
-
-T/r_jim.so:  $(SRC) $(DEP)
-	build-jim-ext -I$(JIM_DIR) -I$(JIM_DIR) $(BUILDOPTS) -D_JIM -o $@ $(SRC)
-
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 c_test: c_test.cc
 	$(GCC_)  -o $@ $^  $(TCL_INCS) $(TCL_LIBS)
 
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------
 
 T/c_capt.so: T/c_capt.o
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)

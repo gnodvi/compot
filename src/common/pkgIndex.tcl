@@ -1,6 +1,5 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
-
 #-------------------------------------------------------------------------------
 
 # package ifneeded compot::dialog 1.0 "
@@ -14,9 +13,7 @@
 #-------------------------------------------------------------------------------
 # package ifneeded compot::random 1.0 "
 
-
 #   load   [file join "$dir/T" "r_tcl.so"] Random 
-
 #   source [file join $dir "r-knut.tl"]
 #   source [file join $dir "random.tl"]
 
@@ -53,25 +50,25 @@ package ifneeded compot::common 1.0 "
   source [file join $dir "f-sort.tl"]
 
 
-
-  load   [file join "$dir/T" "r_tcl.so"] Random 
-
-  source [file join $dir "r-knut.tl"]
-  source [file join $dir "random.tl"]
+  load   [file join "$dir/RANDOM/T" "r_tcl.so"] Random 
+  source [file join $dir "RANDOM/r-knut.tl"]
+  source [file join $dir "RANDOM/random.tl"]
 
   package provide compot::common 1.0
 "
 
-#  package require compot::random 
-
+#   load   [file join "$dir/T" "r_tcl.so"] Random 
+#   source [file join $dir "r-knut.tl"]
+#   source [file join $dir "random.tl"]
 
 #-------------------------------------------------------------------------------
-#  source [file join $dir "g-graf.tl"]
 
+#  package require compot::random 
+
+#  source [file join $dir "g-graf.tl"]
 #  source [file join $dir "b-com0.tl"]
 #  load   [file join $dir ./a_capt.so] Capture
 
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 

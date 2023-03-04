@@ -41,12 +41,15 @@ proc package_require_compot {COMPOT_} {
   #set COM $COMPOT_/src/common
   #set COM $COMPOT_/COM/common
   
-  uplevel "load [file join "$COM/T" "r_jim.so"] Random" 
-
-  uplevel "source  $COM/r-knut.tl"
-  uplevel "source  $COM/random.tl"
+  uplevel "load [file join "$COM/RANDOM/T" "r_jim.so"] Random" 
+  uplevel "source  $COM/RANDOM/r-knut.tl"
+  uplevel "source  $COM/RANDOM/random.tl"
 
 }
+
+#   uplevel "load [file join "$COM/T" "r_jim.so"] Random" 
+#   uplevel "source  $COM/r-knut.tl"
+#   uplevel "source  $COM/random.tl"
 
 #-------------------------------------------
   #   source [file join $dir "a-disp.tl"]
