@@ -62,7 +62,8 @@ origin: $(PROGS)
 test:  
 	# (cd IGRAPH; make test)
 	# (cd CURVAT; make test)
-	T_graphs.sh
+#	T_graphs.sh
+	T.sh
 
 #-------------------------------------------------------------------------------
 

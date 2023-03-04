@@ -13,7 +13,7 @@ LIBS_make:
 	(cd SCRUZH;    make)
 #	(cd Y-ZONE;    make)
 #	(cd Y-FLTK;    make)
-	(cd SOLVER;    make)
+#	(cd SOLVER;    make)
 
 #-------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ clean :
 	(cd SCRUZH;    make clean)
 #	(cd Y-ZONE;    make clean)
 #	(cd Y-FLTK;    make clean)
-	(cd SOLVER;    make clean)
+#	(cd SOLVER;    make clean)
 
 #-------------------------------------------------------------------------------
 # 

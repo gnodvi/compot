@@ -7,7 +7,8 @@ all:
 	(cd OlliverForman/GraphRicciCurvature; make)
 
 test:  
-	(cd OlliverForman/GraphRicciCurvature; T.sh)
+	(cd OlliverForman/GraphRicciCurvature; make test)
+#	(cd OlliverForman/GraphRicciCurvature; T.sh)
 
 #-------------------------------------------------
 

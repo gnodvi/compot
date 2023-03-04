@@ -12,7 +12,7 @@ FUN-GP_DIR = ../fun-gp
 
 ##JIMTCL_DIR = ../jimtcl		
 OLDJOY_DIR = ../oldjoy		
-RANDOM_DIR = ../random		
+##RANDOM_DIR = ../random		
 PLOTER_DIR = ../ploter		
 LISOFT_DIR = ../lisoft	
 DIALOG_DIR = ../dialog
@@ -33,72 +33,77 @@ GAMERS_DIR = ../gamers
 #-------------------------------------------------------------------------------
 
 
-all:  OLDJOY__  RANDOM__ PLOTER__ COMMON__  LISOFT__  FUN-GP__  DIALOG__ CGPLIB__ LOGICS__  TENSOR__  GAMERS__ GRAPHS__  
+all:  COMMON_ OLDJOY_ LISOFT_ FUN-GP_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
+      GAMERS_ GRAPHS_ ORIGIN_  
 
+# RANDOM__ PLOTER__ 
 # CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ## TESTER__  ## JIMTCL__ 
 
 #-------------------------------------------------------------------------------
 
 
 
-GRAPHS__ :
+GRAPHS_ :
 	(cd ../graphs; make)
 
-OLDJOY__ :
+OLDJOY_ :
 	(cd $(OLDJOY_DIR); make)
 
-#JIMTCL__ :
+#JIMTCL_ :
 #	(cd $(JIMTCL_DIR); make)
 
-RANDOM__ :
-	(cd $(RANDOM_DIR); make)
+#RANDOM_ :
+#	(cd $(RANDOM_DIR); make)
 
-PLOTER__ :
-	(cd $(PLOTER_DIR); make)
+#PLOTER_ :
+#	(cd $(PLOTER_DIR); make)
 
-LISOFT__ :
+LISOFT_ :
 	(cd $(LISOFT_DIR); make)
 
-COMMON__ :
+COMMON_ :
 	(cd $(COMMON_DIR); make)
 
-FUN-GP__ :
+FUN-GP_ :
 	(cd $(FUN-GP_DIR); make)
 
-DIALOG__ :
+DIALOG_ :
 	(cd $(DIALOG_DIR); make)
 
-#ORIGIN__ :
-#	(cd ../origin; make)
+ORIGIN_ :
+	(cd ../origin; make)
+
+SOLVER_ :
+	(cd ../solver; make)
 
 
 #-------------------------------------------------------------------------------
 
-#OTHERS__ :
+#OTHERS_ :
 #	(cd $(OTHERS_DIR); make)
 
-#TESTER__ :
+#TESTER_ :
 #	(cd $(TESTER_DIR); make)
 
 #-------------------------------------------
 
-#CAUL-S__ :
+#CAUL-S_ :
 #	(cd $(CAUL-S_DIR); make)
 
-CGPLIB__ :
+CGPLIB_ :
 	(cd $(CGPLIB_DIR); make)
 
-LOGICS__ :
+LOGICS_ :
 	(cd $(LOGICS_DIR); make)
 
-TENSOR__ :
+TENSOR_ :
 	(cd $(TENSOR_DIR); make)
 
 
-# LISPER__ :
+# LISPER_ :
 # 	(cd $(LISPER_DIR); make)
 
-GAMERS__ :
+GAMERS_ :
 	(cd $(GAMERS_DIR); make)
 
 #---------------------------------------------
@@ -117,13 +122,14 @@ clean :
 	(cd     ../graphs; make clean)
 	(cd $(OLDJOY_DIR); make clean)
 #	(cd $(JIMTCL_DIR); make clean)
-	(cd $(RANDOM_DIR); make clean)
+#	(cd $(RANDOM_DIR); make clean)
 	(cd $(LISOFT_DIR); make clean)
-	(cd $(PLOTER_DIR); make clean)
+#	(cd $(PLOTER_DIR); make clean)
 	(cd $(COMMON_DIR); make clean)
 	(cd $(FUN-GP_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
-#	(cd ../origin; make clean)
+	(cd ../origin; make clean)
+	(cd ../solver; make clean)
 	(cd ../repo01; make clean)
 #	(cd $(TESTER_DIR); make clean)
 #	(cd $(OTHERS_DIR); make clean)
