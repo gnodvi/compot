@@ -8,12 +8,9 @@ exec tclsh "$0" ${1+"$@"}
 #-------------------------------------------------------------------------------
 
 # set COMPOT "./COMPOT"
-
 # set auto_path [linsert $auto_path 0 $COMPOT]
-
 # set auto_path [linsert $auto_path 0 $COMPOT/COM/common] ;# for JIM
 
-#------------------------------------------
 
 set auto_path [linsert $auto_path 0 "COMMON"]
 package require compot::common 
@@ -22,7 +19,6 @@ package require compot::common
 
 # source "b-com0.tl"
 # source "b-com1.tl"
-
 # source "f-rand.tl"
 
 source "p-corE.tl"

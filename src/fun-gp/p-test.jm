@@ -8,12 +8,13 @@ exec jimsh "$0" ${1+"$@"}
 # Josef Knecht @ Copyright 
 #-------------------------------------------------------------------------------
 
-set COMPOT "./COMPOT"
+#set COMPOT "./COMPOT"
 
-set auto_path [linsert $auto_path 0 $COMPOT]
+#set auto_path [linsert $auto_path 0 $COMPOT]
+set auto_path [linsert $auto_path 0 "COMMON"]
 
-set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
-set auto_path [linsert $auto_path 0 $COMPOT/src/random] ;# for JIM
+# set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
+# set auto_path [linsert $auto_path 0 $COMPOT/src/random] ;# for JIM
 
 #------------------------------------------
 

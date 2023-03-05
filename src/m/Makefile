@@ -11,7 +11,7 @@ COMMON_DIR = ../common
 FUN-GP_DIR = ../fun-gp
 
 ##JIMTCL_DIR = ../jimtcl		
-OLDJOY_DIR = ../oldjoy		
+#OLDJOY_DIR = ../oldjoy		
 ##RANDOM_DIR = ../random		
 PLOTER_DIR = ../ploter		
 LISOFT_DIR = ../lisoft	
@@ -33,10 +33,10 @@ GAMERS_DIR = ../gamers
 #-------------------------------------------------------------------------------
 
 
-all:  COMMON_ OLDJOY_ LISOFT_ FUN-GP_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
+all:  COMMON_  FUN-GP_  LISOFT_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
       GAMERS_ GRAPHS_ ORIGIN_  
 
-# RANDOM__ PLOTER__ 
+# RANDOM__ PLOTER__  OLDJOY_
 # CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ## TESTER__  ## JIMTCL__ 
 
 #-------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ all:  COMMON_ OLDJOY_ LISOFT_ FUN-GP_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
 GRAPHS_ :
 	(cd ../graphs; make)
 
-OLDJOY_ :
-	(cd $(OLDJOY_DIR); make)
+#OLDJOY_ :
+#	(cd $(OLDJOY_DIR); make)
 
 #JIMTCL_ :
 #	(cd $(JIMTCL_DIR); make)
@@ -120,7 +120,7 @@ test:
 
 clean : 
 	(cd     ../graphs; make clean)
-	(cd $(OLDJOY_DIR); make clean)
+#	(cd $(OLDJOY_DIR); make clean)
 #	(cd $(JIMTCL_DIR); make clean)
 #	(cd $(RANDOM_DIR); make clean)
 	(cd $(LISOFT_DIR); make clean)
