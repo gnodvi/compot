@@ -147,6 +147,9 @@ T/r_jim.so:  $(SRC) $(DEP)
 
 #------------------------------------------------------------------
 
+test: 
+	T.sh
+
 clean:
 	rm -f core *~ T/*.o  *.o  gmon.out *.tmp.* *.out $(PROGS) 
 

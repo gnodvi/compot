@@ -11,12 +11,14 @@ exec tclsh "$0" ${1+"$@"}
 
 #-------------------------------------------------------------------------------
 
-set COMPOT "./COMPOT"
+#set COMPOT "./COMPOT"
 
 #set auto_path [linsert $auto_path 0 $COMPOT]
 
-set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
-set auto_path [linsert $auto_path 0 $COMPOT/src/random] ;# for JIM
+set auto_path [linsert $auto_path 0 ..] ;# for JIM
+
+#set auto_path [linsert $auto_path 0 $COMPOT/src/common] ;# for JIM
+#set auto_path [linsert $auto_path 0 $COMPOT/src/random] ;# for JIM
 
 #-------------------------------------------------------------------------------
 
@@ -25,6 +27,23 @@ set auto_path [linsert $auto_path 0 $COMPOT/src/random] ;# for JIM
 package require compot::common 
 #package require compot::random 
 
+
+#-------------------------------------------------------------------------------
+
+# package require name ?version?
+
+# Searches for the package with the given name by examining each path in
+#  $::auto_path and trying to load $path/$name.so as a dynamic extension, or 
+# $path/$name.tcl as a script package.
+
+# The first such file which is found is considered to provide the package. (The 
+# version number is ignored).
+
+# If $name.so exists, it is loaded with the load command, otherwise if $name.tcl 
+# exists it is loaded with the source command.
+
+# If load or source fails, package require will fail immediately. No further 
+# attempt will be made to locate the file.
 
 #-------------------------------------------------------------------------------
 # установить ссылку для конкретного окружения

@@ -46,6 +46,9 @@ set ::RCS {"RCS: @(#) $Id: asteroids.tcl,v 1.13 2005/04/23 15:46:12 jgodfrey Exp
 
 set ::TOPDIR [file dirname [info script]] ;# откуда запустили скрипт-программу
 
+puts "::TOPDIR = $::TOPDIR"
+puts ",,,,,,, = [info script] ....  [pwd]"
+
 #-------------------------------------------------------------------------------
 proc doLink {c item} {
 

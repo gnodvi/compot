@@ -1,1 +1,1 @@
-../../COMPOT/lib.sh
+../../E/lib.sh

@@ -1,0 +1,133 @@
+// -*-   mode: text ; coding: koi8   -*- ---------------------------------------
+//------------------------------------------------------------------------------
+
+bench.tcl - from 0.81, 
+
+jimsh --version 0.80
+
+
+$ time jimsh bench.tcl 
+
+[while] busy loop     -       416 ms per iteration
+[for] busy loop       -       204 ms per iteration
+mini loops            -       188 ms per iteration
+fibonacci(25)         -       225 ms per iteration
+heapsort              -       191 ms per iteration
+sieve                 -       241 ms per iteration
+sieve [dict]          -       233 ms per iteration
+ary                   -       205 ms per iteration
+ary [dict]            -       172 ms per iteration
+ary [static]          -       430 ms per iteration
+repeat                -       172 ms per iteration
+upvar                 -       159 ms per iteration
+nested loops          -       232 ms per iteration
+rotate                -        32 ms per iteration
+dynamic code          -       159 ms per iteration
+dynamic code (list)   -        60 ms per iteration
+PI digits             -        67 ms per iteration
+expand                -        29 ms per iteration
+wiki.tcl.tk/8566      -       311 ms per iteration
+mandel                -       292 ms per iteration
+
+real	0m4.069s
+user	0m4.044s
+sys	0m0.020s
+
+$ time tclsh bench.tcl
+
+[while] busy loop     -       101 ms per iteration
+[for] busy loop       -       101 ms per iteration
+mini loops            -       104 ms per iteration
+fibonacci(25)         -       131 ms per iteration
+heapsort              -        59 ms per iteration
+sieve                 -        97 ms per iteration
+sieve [dict]          -       106 ms per iteration
+ary                   -       118 ms per iteration
+ary [dict]            - This test can't run on this interpreter (can't read "x(99999)": variable isn't array)
+ary [static]          -       185 ms per iteration
+repeat                -       499 ms per iteration
+upvar                 -       111 ms per iteration
+nested loops          -        58 ms per iteration
+rotate                - This test can't run on this interpreter (missing operand at _@_
+in expression "$v <<_@_< 1")
+dynamic code          -       538 ms per iteration
+dynamic code (list)   -       124 ms per iteration
+PI digits             -        19 ms per iteration
+expand                -        62 ms per iteration
+wiki.tcl.tk/8566      -       114 ms per iteration
+mandel                -       239 ms per iteration
+
+real	0m2.851s
+user	0m2.808s
+sys	0m0.036s
+
+//------------------------------------------------------------------------------
+
+bench.tcl - from 0.82
+
+$ time jimsh bench.tcl 
+
+[while] busy loop     - 3.94us per iteration
+[for] busy loop       - 2.84us per iteration
+[loop] busy loop      - 2.51us per iteration
+mini loops            - 20.7us per iteration
+fibonacci(4)          - 8.37us per iteration
+heapsort              - 808us per iteration
+sieve                 - 25.0ms per iteration
+sieve [dict]          - 23.3ms per iteration
+ary                   - 35.7us per iteration
+ary [dict]            - 33.2us per iteration
+ary [static]          - 9.99us per iteration
+repeat                - 5.66us per iteration
+upvar                 - 34.1us per iteration
+nested loops          - 48.6us per iteration
+rotate                - 32.7us per iteration
+dynamic code          - 147us per iteration
+dynamic code (list)   - 57.6us per iteration
+PI digits             - 7.42ms per iteration
+listcreate            - 39.1us per iteration
+expand                - 29.8ms per iteration
+wiki.tcl.tk/8566      - 80.4ms per iteration
+mandel                - 78.9ms per iteration
+
+real	0m23.198s
+user	0m22.884s
+sys	0m0.300s
+
+$ time tclsh bench.tcl 
+
+[while] busy loop     - 2.17us per iteration
+[for] busy loop       - 2.18us per iteration
+[loop] busy loop      - This test can't run on this interpreter (invalid command name "loop")
+mini loops            - 12.1us per iteration
+fibonacci(4)          - 5.46us per iteration
+heapsort              - 310us per iteration
+sieve                 - 12.0ms per iteration
+sieve [dict]          - 12.9ms per iteration
+ary                   - 18.4us per iteration
+ary [dict]            - This test can't run on this interpreter (can't read "x(19)": variable isn't array)
+ary [static]          - 5.17us per iteration
+repeat                - 11.1us per iteration
+upvar                 - 23.4us per iteration
+nested loops          - 12.0us per iteration
+rotate                - This test can't run on this interpreter (missing operand at _@_
+in expression "$v <<_@_< 1")
+dynamic code          - 531us per iteration
+dynamic code (list)   - 133us per iteration
+PI digits             - 2.26ms per iteration
+listcreate            - 12.0us per iteration
+expand                - 57.2ms per iteration
+wiki.tcl.tk/8566      - 30.9ms per iteration
+mandel                - 58.7ms per iteration
+
+real	0m21.017s
+user	0m20.640s
+sys	0m0.372s
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+
+
+
