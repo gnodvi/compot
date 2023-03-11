@@ -1,0 +1,157 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# Restart with tcl:  \
+exec wish $0 ${1+"$@"}
+
+#-------------------------------------------------------------------------------
+# https://wiki.tcl-lang.org/page/A+little+Morse+trainer
+# A little Morse trainer
+# 
+#-------------------------------------------------------------------------------
+
+# Richard Suchenwirth 2002-08-25 - This weekend fun project makes the computer
+# understand Morse code entered on the left mouse button, when over the "brass"
+# knob at top left. Below, you can adjust some timing thresholds, and see the
+# decoded dah-dit pattern and the resulting text on a sort of "ticker tape".
+# Clear the output with the "C" button. The "?" button opens a help field with
+# the complete alphabet, or closes it again if you know it by heart.
+
+# A starkit version of this code is available on sdarchive.
+#-------------------------------------------------------------------------------
+
+ package require Tk
+ array set morse {
+    .- A .-.- \u00C4 -... B -.-. C -.. D . E ..-. F --. G .... H .. I
+    .--- J -.- K .-.. L -- M -. N --- O ---. \u00D6 .--. P --.- Q .-. R
+    ... S - T ..- U ..-- \u00DC ...- V .-- W -..- X -.-- Y --.. Z
+    ----- 0 .---- 1 ..--- 2 ...-- 3 ....- 4 ..... 5 -.... 6 --... 7
+    ---.. 8 ----. 9 / " "
+ }
+ option add *Button -padx 0
+ proc ui {} {
+    global timevec morse
+    set font {Courier 10}
+    canvas .c -height 58 -relief sunken -borderwidth 1
+    .c create oval 5 5 55 55 -fill gold2 -outline gold3 -width 2 -tag key
+    .c create text 70 2 -text "Morse Trainer" -anchor nw \
+        -font {Times 24 {bold italic}}
+    .c create text 70 38 -anchor nw -text \
+        "Click the brass button to morse - have fun with Tcl/Tk!" 
+    .c bind key <1> {compute; %W move current 2 2}
+    .c bind key <ButtonRelease-1> {compute; %W move current -2 -2}
+    grid   .c - -sticky news
+    frame  .f
+    label  .f.lon -text On:
+    entry  .f.on  -textvar ::th_on -width 4
+    label  .f.loff -text Off:
+    entry  .f.off -textvar ::th_off -width 4
+    label  .f.lgap -text Gap:
+    entry  .f.gap -textvar ::th_gap -width 4
+    eval pack [winfo children .f] -side left
+    grid   .f -
+    button .clear -text C -command init
+    label  .info1 -textvar ::info1 -width 40 -font $font -anchor e
+    grid   .clear .info1 -sticky news
+    button .help -text ? -command {help .help}
+    label  .info2 -textvar ::info2 -bg white -width 40 -anchor e -font $font
+    grid   .help .info2 -sticky news
+    label  .h -textvar ::help -font $font -relief sunken -bg lightyellow
+    set tmp {}
+    foreach {mors char} [array get morse] {
+        lappend tmp [list $char $mors]
+    }
+    foreach {1 2 3 4 5} [lsort $tmp] {
+        foreach i {1 2 3 4 5} {
+            append ::help "[set $i]\t"
+        }
+        append ::help \n
+    }
+    grid columnconfigure . 1 -weight 1
+    init
+ }
+ proc help {w} {
+    if {[$w cget -text]=="?"} {
+        grid .h - -sticky news
+        $w config -text !
+    } else {
+        grid forget .h
+        $w config -text ?
+    }
+ }
+ proc init {} {
+    set ::info1 {}; set ::info2 {}; set ::timevec {}; set ::t 0
+    set ::th_on 200
+    set ::th_off 200
+    set ::th_gap 9
+ }
+ # Times for an on/off signal are measured here, and appended to timevec
+ proc compute {} {
+    global t timevec
+    global th_on th_off th_gap
+    set now [clock clicks -milliseconds]
+    if {$t} {lappend timevec [expr {$now - $t}]}
+    set t $now
+    set res ""
+    foreach {on off} $timevec {
+        if {$on>$th_on} {
+            append res -
+        } else {
+            append res .
+        }
+        if {$off > $th_off}    {append res " "}
+        if {$off > $th_off * $th_gap} {append res "/ "}
+    }
+    set ::info1 $res
+    set ::info2 [morsedecode $res]
+ }
+ # This maps "..." to "s", etc.
+ proc morsedecode string {
+    global morse
+    set res ""
+    foreach part $string {
+        if {[info exists morse($part)]} {
+            append res $morse($part)
+        } else {append res "?"}
+    }
+    set res
+ }
+ ui
+bind . <Escape> {exec wish $argv0 &; exit}
+
+#-------------------------------------------------------------------------------
+# FW: Using the Snack sound toolkit, you can make the Morse trainer beep (in
+# traditional Morse code style) while the mouse is held down over the "knob".
+# Just append this to the end of the code:
+#-------------------------------------------------------------------------------
+if {0} {
+  
+ package require sound
+
+ set playing 0
+ set beep [snack::sound -rate 22050]
+ set filter [snack::filter generator 1000 30000 0.0 sine]
+ rename compute _compute
+ proc compute {} {
+   global playing filter beep
+   if {$playing} {
+     $beep stop
+   } else {
+     $beep play -filter $filter
+   }
+   set playing [expr {!$playing}]
+   _compute
+ } ;# FW
+
+}
+#-------------------------------------------------------------------------------
+
+# RS: Thanks ever so much! This is the cooperative spirit that I love the Wiki
+# for! Your "snack magic" also went straight into A toy piano ;-)
+
+#-------------------------------------------------------------------------------
+#error Snack
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
