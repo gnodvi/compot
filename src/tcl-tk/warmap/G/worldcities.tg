@@ -1,0 +1,257 @@
+geo::Set {
+    Abadan city 30.35 -48.2667
+    Abidjan city 5.31667 4.01667
+    Accra city 5.55 0.2
+    Adana city 36.9833 -35.3
+    {Addis Ababa} city -0.9  -38.75
+    Adelaide city -34.93 -138.583
+    Aden city 12.83 -45.03
+    Ahmenabad city 23.03 -72.5833
+    Algiers city 36.7667 -30.05
+    {Alice Springs} city -23.8 -133.883
+    {Alma Ata} city 43.23 -76.8833
+    Amman city 31.95 -35.95
+    Amsterdam city 52.3833 -4.91667
+    Ankara city 39.95 -32.8833
+    Archangelsk city 64.55 -40.53
+    Asuncion city -25.2833 57.5
+    Asmara city 15.2833 -38.9167
+    Athens city 37.9667 -23.7167
+    Auckland city -36.85 -174.767
+    Baghdad city 33.33 -44.4
+    Bangalore city 12.95 -77.6167
+    Bangkok city 13.73 -100.5
+    Baranquilla city 10.9833 74.8
+    Barcelona city 41.4 -2.15
+    Beijing   city 40  -117
+    Beirut city 33.9 -35.4667
+    Belem city -1.45 48.4833
+    Belfast city 54.6 5.91667
+    Belgrade city 44.8 -20.4667
+    Belize city 17.5167 88.1833
+    {Belo Horizonte} city -19.93 43.95
+    Benghazi city 32.1 -20.0667
+    Bergen city 60.4 -5.31667
+    Berlin city 52.45 -13.3
+    Birmingham city 52.4833 1.933
+    Bogota city 4.6 74.0833
+    Mumbai city 18.9 -72.8167
+    Brasilia city -15.8667 47.9167
+    Brisbane city -27.4667 -153.033
+    Brussels city 50.8 -4.35
+    Bucuresti city 44.4167 -26.1
+    Budapest city 47.5167 -19.03
+    {Buenos Aires} city -34.5833 58.4833
+    Cairo city 29.8667 -31.33
+    Calcutta city 22.53 -88.33
+    Cali city 3.41667 76.5
+    {Cape Town} city -33.93 -18.4833
+    Caracas city 10.5 66.93
+    Cardiff city 51.4667 3.17
+    Casablanca city 33.5833 7.65
+    Cayenne city 4.933 52.45
+    Chengdu city 30.67 -104.06
+    Chittagong city 22.35 -91.83
+    Chongqing city 29.55 -106.55
+    Christchurch city -43.53 -172.617
+    Colombo city 6.9 -79.8667
+    Copenhagen city 55.6833 -12.55
+    Cordoba city -31.3667 64.25
+    Curitiba city -25.4167 49.2833
+    {Da Nang} city 16.0667 -108.217
+    Dakar city 14.7 17.4833
+    Damascus city 33.5 -36.33
+    {Dar es Salaam} city -6.833 -39.3
+    Darwin city -12.4667 -130.85
+    Dhahran city 26.2833 -50.15
+    Djakarta city -6.183 -106.833
+    Dublin city 53.3667 6.35
+    Edinburgh city 55.9167 3.183
+    {Fort De France} city 14.6167 61.0833
+    Fortaleza city -3.77 38.55
+    Fukuoka city 33.5833 -130.45
+    Georgetown city 6.833 58.2
+    Gibraltar city 36.15 5.37
+    Glasgow city 55.8667 4.283
+    Guadalajara city 20.6833 103.3
+    {Guantanamo Bay} city 19.9 75.15
+    {Guatemala City} city 14.6167 90.5167
+    Guayaquil city -2 79.8833
+    Hamburg city 53.55 -9.97
+    Hannover city 52.4 -9.67
+    Hanoi city 21.03 -105.867
+    Harbin city 45.75 -126.63
+    Havana city 23.13 82.35
+    Helsinki city 60.1667 -24.95
+    {Hong Kong} city 22.3 -114.167
+    Istanbul city 40.9667 -28.83
+    Izmir city 38.43 -27.1667
+    Jedda city 21.4667 -39.1667
+    Jerusalem city 31.7833 -35.2167
+    Johannesburg city -26.1833 -28.05
+    Kabul city 34.5833 -69.2
+    Kaliningrad city 54.7167 -20.5
+    Karachi city 24.8 -66.9833
+    Katmandu city 27.7 -85.2
+    Kharkov city 50 -36.23
+    Khartoum city 15.6167 -32.55
+    Kiev city 50.45 -30.5
+    Kilimanjaro mount -3 -37.5
+    Kinshasa  city -4.333 -15.3
+    Kisangani city -0.4333 -15.23
+    Krakow city 50.0667 -19.95
+    Krasnoyarsk city 56.0167 -92.95
+    {Kuala Lumpur} city 3.11667 -101.7
+    Kuibyshev city 53.1833 -50.1
+    Kupang city -10.1667 -123.567
+    {La Paz} city -16.5 68.15
+    Lagos city 6.45 -3.4
+    Lahore city 31.5833 -74.33
+    {Lajes (Terceira)} city 38.75 27.0833
+    {St Peterburg} city 59.93 -30.2667
+    Lima city -12.0833 77.05
+    Lisboa city 38.7167 9.133
+    London city 51.4833 0
+    Lyon city 45.7 -4.783
+    Chennai city 13.0667 -80.25
+    Madrid city 40.4167 3.683
+    Makassar city -5.133 -119.467
+    Managua city 12.1667 86.25
+    Mandalay city 21.9833 -96.1
+    Manila city 14.5833 -120.983
+    Mannheim city 49.5667 -8.47
+    Manokwari city -0.867 -134.083
+    Maracaibo city 10.65 71.6
+    Marseille city 43.3 -5.383
+    Medan city 3.583 -98.6833
+    Medellin city 6.21667 75.6
+    Melbourne city -37.8167 -144.967
+    Merida city 20.9667 89.63
+    Meshed city 36.2833 -59.6
+    {Mexico City} city 19.4 99.2
+    Milano city 45.45 -9.283
+    Minsk city 53.9 -27.55
+    Muqdisho city 2.033 -46
+    Monrovia city 6.3 10.8
+    Monterrey city 25.7 100.3
+    Montevideo city -34.85 56.2167
+    Moscow city 55.7667 -37.7
+    Mosul city 36.3167 -43.15
+    Munich city 48.15 -11.5667
+    Nagpur city 21.15 -79.1167
+    Nairobi city -1.27 -36.8
+    Nantes city 47.25 1.57
+    Napoli city 40.8833 -14.3
+    Narsarssuaq city 61.1833 45.4167
+    Nassau city 25.0833 77.35
+    {New Delhi} city 28.5833 -77.2
+    Nice city 43.7 -7.27
+    Odessa city 46.4833 -30.73
+    Oslo city 59.93 -10.73
+    Palembang city -3 -104.767
+    {Panama City} city 8.97 79.55
+    Paramaribo city 5.81667 55.15
+    Paris city 48.8167 -2.483
+    Penang city 5.41667 -100.317
+    Perth city -31.95 -115.85
+    Peshwar city 34.0167 -71.5833
+    Petropavlovsk city 52.8833 -158.7
+    {Phnom Penh} city 11.55 -104.85
+    {Port Au Prince} city 18.55 72.33
+    {Port Moresby} city -9.483 -147.15
+    {Port of Spain} city 10.7 61.5167
+    {Porto Alegre} city -30.03 51.2167
+    Prague city 50.0833 -14.4167
+    Pretoria city -25.75 -28.23
+    {Punta Arenas} city -53.1667 70.9
+    Pyongyang city 39.03 -125.683
+    Quito city -0.217 78.53
+    Rangoon city 16.7833 -96.15
+    Recife city -8.07 34.8833
+    Reykjavik city 64.13 21.93
+    {Rio de Janeiro} city -22.9167 43.2
+    Riyadh city 24.65 -46.7
+    Roma city 41.8 -12.6
+    {Rostov on Don} city 47.2167 -39.7167
+    Salvador city -13 38.5
+    {San Juan} city 18.4833 66.1167
+    {San Salvador} city 13.7 89.2167
+    {Santiago de Chile} city -33.45 70.7
+    {Santo Domingo} city 18.4833 69.9
+    {Sao Paulo} city -23.55 46.63
+    Sapporo city 43.0667 -141.35
+    Seoul city 37.5667 -126.967
+    Shanghai city 31.2 -121.433
+    Shannon city 52.6833 8.91667
+    Singapore city 1.3 -103.833
+    Sofia city 42.7 -23.33
+    Stockholm city 59.35 -18.0667
+    Strasbourg city 48.5833 -7.77
+    Surabaya city -7.21667 -112.717
+    Sverdlovsk city 56.8167 -60.63
+    Sydney city -33.8667 -151.2
+    Tainan city 22.95 -120.2
+    Taipei city 25.03 -121.517
+    Tananarive city -18.9167 -47.55
+    Tashkent city 41.33 -69.3
+    Tbilisi city 41.7167 -44.8
+    Tegucigalpa city 14.1 87.2167
+    Tehran city 35.6833 -51.4167
+    {Tel Aviv} city 32.1 -34.7833
+    Thessaloniki city 40.6167 -22.95
+    Tokyo city 35.6833 -139.767
+    Tucuman city -26.83 65.1667
+    Tunis city 36.7833 -10.2
+    Valencia city 39.4667 0.3833
+    Valparaiso city -33.0167 71.63
+    Varna  city 43.5 -27.9
+    {Vera Cruz} city 19.2 96.13
+    Vienna city 48.25 -16.3667
+    Vladivostok city 43.1167 -131.917
+    Volgograd city 48.7 -44.5167
+    Warsaw city 52.2167 -21.03
+    Wellington city -41.2833 -174.767
+    Zurich city 47.3833 -8.55
+
+    Albuquerque city 35.01 106.65
+    Atlanta city 33.39 84.25
+    Bismarck city 46.77 100.75
+    Boston city 42.35 71.05
+    Burlington city 44.28 73.09
+    Caribou city 46.87 68.02
+    Chicago city 41.87 87.63
+    Churchill city 58.75 94.07
+    Dallas city 32.54 97.02
+    Denver city 39.75 104.98
+    {Des Moines} city 41.60 93.6
+    Detroit city 42.33 83.05
+    Edmonton city 53.55 114.1
+    {El Paso} city 31.80 106.4
+    Fairbanks city 64.82 147.87
+    Fresno city 36.71 119.43
+    Gainesville city 29.39 82.19
+    {Goose Bay} city 53.32 60.38
+    {Green Bay} city 44.48 88.13
+    Halifax city 44.65 63.6
+    Houston city 29.75 95.37
+    Laramie city 41.32 105.58
+    {Los Angeles} city 34.05 118.23
+    Miami city 25.78 80.2
+    Minneapolis city 44.90 93.2
+    Montreal city 45.50 73.58
+    Nashville city 36.25 86.57
+    {New York} city 40.75 74
+    Philadelphia city 39.95 75.15
+    {Salt Lake City} city 40.80 111.9
+    Samalga city 52.78 169.25
+    {San Diego} city 32.72 117.17
+    {San Francisco} city 37.78 122.42
+    Saskatoon city 52.18 106.63
+    Seattle city 47.62 122.33
+    Spokane city 47.67 117.42
+    Tallahassee city 30.43 84.33
+    Toronto city 43.78 79.47
+    Tucson city 32.22 110.97
+    Washington city 38.90 77.02
+    Winnipeg city 49.88 97
+}

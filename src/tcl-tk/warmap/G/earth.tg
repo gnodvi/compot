@@ -1,0 +1,83 @@
+#------------------------------------------------------------------------------
+# structuring data for Earth geography, for use with TclWorld
+#------------------------------------------------------------------------------
+
+ source G/world.tg
+ 
+#------------------------------------------------------------------------------
+
+ geo::Set {
+    Earth is Africa' America Antarctica Asia' Europe' Oceania
+
+	Africa' is Africa Madagascar Reunion Mauritus Sokotra Afr.Lakes
+	Afr.Lakes is {Lake Tchad} {Lake Victoria} {Lake Tanganjika} {Lake Nyassa}
+
+	America is Canada' USA' Greenland Mexico Caribic AmericaCentral S.America GreatLakes
+	Canada' is Canada Newfoundland {Baffin Island} {Prince Edward Island} Toronto Ottawa
+	USA' is Alaska USA Hawaii' {Long Island} Washington {New York} {San Francisco} Denver
+	Hawaii' is Hawaii Maui Oahu Kauai Niihau Honolulu
+	Caribic is Cuba' {Puerto Rico} Hispaniola Jamaica Trinidad
+	Cuba' is Cuba Havana {Guantanamo Bay} {Isla de la Juventud}
+	Hispaniola is Haiti {Dominican Republic}
+	GreatLakes is {Lake Superior} {Lake Michigan} {Lake Huron} {Lake Erie} {Lake Ontario}
+	
+	S.America is "South America" Argentina Brazil Chile {Sao Paulo} {Buenos Aires}
+
+	Asia' is Asia India {Sri Lanka} Japan Indonesia Newguinea China
+	India is {New Delhi} Bombay
+	Japan is Hokkaido Honshu Kyushu Kitakyushu Tokyo Sapporo
+	China is Beijing Hainan Taiwan Shanghai {Hong Kong}
+	Indonesia is Sumatra Borneo Java Celebes Bali Sarawak Jakarta
+	Newguinea is "West Irian" Niugini
+
+	Oceania is Australia' NewZealand
+    Australia' is Australia "Darwin Island" "Kangaroo Island" Tasmania Melbourne
+	NewZealand is "NZ North" "NZ South" Wellington
+
+	Europe' is NorthernIsles Europe Scandinavia France' C.Europe S.Europe
+	NorthernIsles is Island Spitsbergen BritishIsles
+	BritishIsles is Ireland Britain London
+	Ireland is Eire N.Ireland Dublin
+	S.Europe is Iberia Italia' Balcan 
+	Balcan is Greece' Bulgaria Cyprus
+	Greece' is Greece Peloponnes Crete Rhodos Lesbos Athens
+
+	France' is France Corsica Paris Lyon Toulouse Bordeaux
+
+	C.Europe is Danmark Benelux Germany Switzerland Austria
+	Danmark is Jylland Sjaelland Fyn Lolland Copenhagen
+
+	E.Europe is Moscow Prague Budapest Bucharest Varna
+
+	Italia' is Italia Sicilia Sardegna Po Roma Napoli
+	Italia area IT-Med IT-SI AT-IT CH-IT FR-IT
+	Po   river {44.7033 -7.07378} {45.1843 -7.88251} {44.98 -12.27}
+ 
+    IT-Med bound FR.IT.Med {43.83 -8} {44.17 -8.25} {44.33 -8.67} {44.25 -9.17} \
+		{44.08 -9.5} {44 -10.08} {43.5 -10.17} {43.08 -10.42} {42.67 -10.92} \
+		{42.33 -11}  {42.33 -11.5} {41.92 -12} {41.5 -12.42} {41.25 -12.92} \
+		{41.25 -13.58} {40.92 -14} {40.67 -14.42} {40.58 -14.75} {40.17 -15} \
+		{40 -15.67} {39.67 -15.75} {39.25 -16} {38.83 -16.08} {38.58 -15.83} \
+		{38.17 -15.67} {37.92 -15.67} {37.92 -16} {38.17 -16.17} {38.42 -16.5} \
+		{38.83 -16.5} {39 -17} {39.42 -17} {39.67 -16.5} {40.17 -16.67} \
+		{40.5 -16.92} {40.33 -17.33} {40.25 -17.83} {39.92 -17.92} {39.83 -18.25} \
+		{40.17 -18.42} {40.58 -17.92} {40.83 -17.42} {41.08 -16.92} {41.33 -16.33} \
+		{41.5 -15.83} {41.83 -16.08} {41.83 -15.25} {42.08 -14.67} {42.33 -14.17} \
+		{42.58 -13.92} {43 -13.83} {43.42 -13.58} {43.67 -13.08} {43.92 -12.67} \
+		{44.25 -12.25} {44.58 -12.17} {44.92 -12.33} {45.17 -12.08} {45.5 -12.17} \
+		{45.5 -12.58} {45.75 -13.08} {45.67 -13.58} {45.42 -13.58}
+
+    IT-SI bound {45.42 -13.58} {45.5981 -13.7173} {45.69 -13.59} {45.75 -13.383} \
+	    {46.2972 -13.7191} {46.527 -13.7}
+	AT.CH.IT point 46.91 -10.48
+	AT-IT bound {46.527 -13.7} {46.6909 -12.44}  {47.0947 -12.189} AT.CH.IT
+	CH-IT bound AT.CH.IT {46.22 -10.14} {46.48 -9.3} {45.83 -9} {46.46 -8.43} \
+		{45.92 -7.87} CH.FR.IT
+	CH.FR.IT point 45.9 -7.05
+	FR-IT bound CH.FR.IT {45.81 -6.81} {45.41 -7.19} {45.13 -6.63} {44.41 -6.88}\
+		{44.19 -7.69} {43.81 -7.56} {43.83 -8} FR.IT.Med
+	FR.IT.Med point 43.78 -7.55
+ }
+#------------------------------------------------------------------------------
+
+
