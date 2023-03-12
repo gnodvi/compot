@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Tclers wiki'>
+<meta name='author' content=''>
+<link rel='icon' href='/img/favicon.ico'>
+<title>docstrip</title>
+
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+<link rel='stylesheet' href='/css/nikit.css' type='text/css'>
+<link rel='stylesheet' href='/css/sh_style.css' type='text/css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/css/theme.bootstrap_3.min.css' type='text/css'>
+<script src='//cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js'></script>
+</head>
+<body onload='sh_highlightDocument(); nikitUser();'>
+<nav class='navbar navbar-fixed-top navbar-inverse'>
+<div class='container'>
+<div class='navbar-header'>
+<button type='button' class='navbar-toggle' data-toggle='collapse' data-target='#myNavbar'>
+<span class='icon-bar'></span>
+<span class='icon-bar'></span>
+<span class='icon-bar'></span>
+</button>
+<ul class='nav navbar-nav'>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'>&nbsp;Tcler&#39;s Wiki<span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a href='/welcome'>Home</a></li>
+<li><a rel='nofollow' href='/recent'>Changes</a></li>
+<li><a rel='nofollow' href='/_random'>Random page</a></li>
+<li><a rel='nofollow' href='/_new'>New page</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class='collapse navbar-collapse' id='myNavbar'>
+<ul class='nav navbar-nav'>
+<li class='dropdown' id='li_idPageEdit' style='display:none'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_idPageEdit>Page</span><span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/_edit/docstrip?A=1'>Comment</a></li>
+<li><a rel='nofollow' hidden='true' href='/_edit/docstrip'>Edit</a></li>
+<li><a rel='nofollow' href='/_upload/docstrip'>Upload</a></li>
+<li><a rel='nofollow' href='/ref/docstrip'>References</a></li>
+<li><a rel='nofollow' href='/history/docstrip'>History</a></li>
+</ul>
+</li>
+<li class='dropdown' id='li_idPageNoEdit' style='display:none'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_idPageNoEdit>Page</span><span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/ref/docstrip'>References</a></li>
+<li><a rel='nofollow' href='/history/docstrip'>History</a></li>
+</ul>
+</li>
+<li><a href="/page/Tcl+Tutorial+Lesson+0">Tutorial</a></li>
+<li><a href="/page/Articles">Articles</a></li>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'>&nbsp;Help<span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/page/Help'>Page Markup</a></li>
+<li><a rel='nofollow' href='/page/How+do+Wiki+Categories+work'>Wiki Categories</a></li>
+<li><a rel='nofollow' href='/page/Contents'>Topics</a></li>
+<li><a rel='nofollow' target='_blank' href='https://chiselapp.com/user/stevel/repository/nikit/ticket'>Report Problems</a></li>
+<li><a rel='nofollow' href='/privacy'>Privacy</a></li>
+<li><a rel='nofollow' href='/license'>License</a></li>
+</ul>
+</li>
+</ul>
+<ul class='nav navbar-nav navbar-right'>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_SMenu>User</span><span class='caret'></span></a>
+<ul class='dropdown-menu' id='ul_SMenu'>
+</ul>
+</li>
+</ul>
+<form class='navbar-form navbar-right' method='post' action='/search' id='searchform'>
+<input name='Q' type='text' class='form-control' placeholder='Search...' />
+<input type="hidden" name="sites" value="wiki.tcl-lang.org" />
+</form>
+</div>
+</div>
+</nav>
+<div class='container'>
+<div class='row'>
+<div class='col-xs-12'>
+<h2>docstrip</h2>
+</div>
+</div>
+<div class='row'>
+<div class='col-xs-12'>
+<p class='mkup_p'>Most <a class='mkup_a mkup_known' href='/page/LaTeX'>LaTeX</a> packages (but not only such software) have their source code in a format that is sometimes called <b class='mkup_b'>.dtx</b> (after the most common extension) and other times <b class='mkup_b'>docstrip</b> (after the program used to process it). Features of this format is that code in different languages can occur in the same source file and that the source file as a whole can be made a LaTeX document which documents the software (hence a form of <a class='mkup_a mkup_known' href='/page/Literate+programming'>literate programming</a>).</p><p class='mkup_p'>The <a class='mkup_a mkup_known' href='/page/docstrip'>docstrip</a> module in <a class='mkup_a mkup_known' href='/page/Tcllib'>tcllib</a> implements the basic functionality of docstrip-the-program in Tcl. It also has a command docstrip::sourcefrom that lets a Tcl interpreter source code directly from the <b class='mkup_b'>.dtx</b> source, instead of having docstrip-the-program write it to file as is the traditional set-up. The current (2006) distribution of <a class='mkup_a mkup_known' href='/page/infix'>infix</a> makes use of this feature.</p><p class='mkup_p'>Documentation:</p><UL class='mkup_UL'><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tcllib.sourceforge.net/doc/docstrip.html'>http://tcllib.sourceforge.net/doc/docstrip.html <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a></li><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tcllib.sourceforge.net/doc/docstrip_util.html'>http://tcllib.sourceforge.net/doc/docstrip_util.html <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a></li></UL><hr><div class='mkup_centered'><table class='mkup_categories'><tr><td class='mkup_td'><a class='mkup_a' href='/page/Category+Package'>Category Package</a></td><td class='mkup_td'><a class='mkup_a' href='/page/Category+tcllib'>Category tcllib</a></td></tr></table></div>
+</div>
+</div>
+<div class='row'>
+<div class='col-xs-12'>
+<div class='Footer'>Updated 2011-12-18 00:22:29</div>
+</div>
+</div>
+</div>
+
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.combined.js'></script>
+
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+<script type='text/javascript' src='/scripts/nikit.js'></script>
+<script type='text/javascript' src='/scripts/sh_main.js'></script>
+<script type='text/javascript' src='/scripts/sh_tcl.js'></script>
+<script type='text/javascript' src='/scripts/sh_c.js'></script>
+<script type='text/javascript' src='/scripts/sh_cpp.js'></script>
+
+<script src='https://hcaptcha.com/1/api.js'></script>
+<script>var clipboard = new ClipboardJS('.copybtn', {
+  text: function(trigger) {
+    return document.querySelector(trigger.getAttribute('data-clipboard-target')).textContent + '\n';
+  }
+});
+sort_tables();
+</script>
+</body>
+</html>
