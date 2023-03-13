@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Tclers wiki'>
+<meta name='author' content=''>
+<link rel='icon' href='/img/favicon.ico'>
+<title>Sailplane Flying Game</title>
+
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+<link rel='stylesheet' href='/css/nikit.css' type='text/css'>
+<link rel='stylesheet' href='/css/sh_style.css' type='text/css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/css/theme.bootstrap_3.min.css' type='text/css'>
+<script src='//cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js'></script>
+</head>
+<body onload='sh_highlightDocument(); nikitUser();'>
+<nav class='navbar navbar-fixed-top navbar-inverse'>
+<div class='container'>
+<div class='navbar-header'>
+<button type='button' class='navbar-toggle' data-toggle='collapse' data-target='#myNavbar'>
+<span class='icon-bar'></span>
+<span class='icon-bar'></span>
+<span class='icon-bar'></span>
+</button>
+<ul class='nav navbar-nav'>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'>&nbsp;Tcler&#39;s Wiki<span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a href='/welcome'>Home</a></li>
+<li><a rel='nofollow' href='/recent'>Changes</a></li>
+<li><a rel='nofollow' href='/_random'>Random page</a></li>
+<li><a rel='nofollow' href='/_new'>New page</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class='collapse navbar-collapse' id='myNavbar'>
+<ul class='nav navbar-nav'>
+<li class='dropdown' id='li_idPageEdit' style='display:none'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_idPageEdit>Page</span><span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/_edit/Sailplane+Flying+Game?A=1'>Comment</a></li>
+<li><a rel='nofollow' hidden='true' href='/_edit/Sailplane+Flying+Game'>Edit</a></li>
+<li><a rel='nofollow' href='/_upload/Sailplane+Flying+Game'>Upload</a></li>
+<li><a rel='nofollow' href='/ref/Sailplane+Flying+Game'>References</a></li>
+<li><a rel='nofollow' href='/history/Sailplane+Flying+Game'>History</a></li>
+<li><hr></li>
+<li><a href='#47742718299e82699bc374b81e6ab6b22c2b19c674703379e03143e714e9e3c1'> Description </a>
+</li>
+<li><a href='#3352d79766ea90ef0092b13efb8ba76a833c018817ed1cb6246b7db498daca48'> Problems </a>
+</li>
+<li><a href='#b6846a95ee3faec48d83f011381a3dc2af7f16591a5c2237a059520f0f7b3140'> Goals </a>
+</li>
+</ul>
+</li>
+<li class='dropdown' id='li_idPageNoEdit' style='display:none'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_idPageNoEdit>Page</span><span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/ref/Sailplane+Flying+Game'>References</a></li>
+<li><a rel='nofollow' href='/history/Sailplane+Flying+Game'>History</a></li>
+<li><hr></li>
+<li><a href='#47742718299e82699bc374b81e6ab6b22c2b19c674703379e03143e714e9e3c1'> Description </a>
+</li>
+<li><a href='#3352d79766ea90ef0092b13efb8ba76a833c018817ed1cb6246b7db498daca48'> Problems </a>
+</li>
+<li><a href='#b6846a95ee3faec48d83f011381a3dc2af7f16591a5c2237a059520f0f7b3140'> Goals </a>
+</li>
+</ul>
+</li>
+<li><a href="/page/Tcl+Tutorial+Lesson+0">Tutorial</a></li>
+<li><a href="/page/Articles">Articles</a></li>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'>&nbsp;Help<span class='caret'></span></a>
+<ul class='dropdown-menu scrollable-menu' role='menu'><li><a rel='nofollow' href='/page/Help'>Page Markup</a></li>
+<li><a rel='nofollow' href='/page/How+do+Wiki+Categories+work'>Wiki Categories</a></li>
+<li><a rel='nofollow' href='/page/Contents'>Topics</a></li>
+<li><a rel='nofollow' target='_blank' href='https://chiselapp.com/user/stevel/repository/nikit/ticket'>Report Problems</a></li>
+<li><a rel='nofollow' href='/privacy'>Privacy</a></li>
+<li><a rel='nofollow' href='/license'>License</a></li>
+</ul>
+</li>
+</ul>
+<ul class='nav navbar-nav navbar-right'>
+<li class='dropdown'>
+<a class='dropdown-toggle' data-toggle='dropdown' href='#'><span id=name_SMenu>User</span><span class='caret'></span></a>
+<ul class='dropdown-menu' id='ul_SMenu'>
+</ul>
+</li>
+</ul>
+<form class='navbar-form navbar-right' method='post' action='/search' id='searchform'>
+<input name='Q' type='text' class='form-control' placeholder='Search...' />
+<input type="hidden" name="sites" value="wiki.tcl-lang.org" />
+</form>
+</div>
+</div>
+</nav>
+<div class='container'>
+<div class='row'>
+<div class='col-xs-12'>
+<h2>Sailplane Flying Game</h2>
+</div>
+</div>
+<div class='row'>
+<div class='col-xs-12'>
+<p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Sailplane+Flying+Game'>Sailplane Flying Game</a></p><p class='mkup_p'><img alt='http://tkfp.sourceforge.net/images/screensh.jpg' src='http://tkfp.sourceforge.net/images/screensh.jpg' onerror="this.src='/plume404.png'"></p>
+<h2 id='47742718299e82699bc374b81e6ab6b22c2b19c674703379e03143e714e9e3c1' class='mkup_h1'> Description </h2><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Alex+Caldwell'>Alex Caldwell</a> M.D.:</p><p class='mkup_p'>This is a project I started while trying to teach myself Tcl/Tk. It is a moving map using an aviation sectional chart. You can fly sailplanes over the map after selecting a set of goals, usually a triangular course. You can launch multiple sailplanes. Give each one a unique &quot;contest ID&quot;. You must &quot;stop flying&quot; or pause in order to launch a new sailplane. You can control the sailplane who's ID is in the box with the arrow keys. Pause or &quot;stop flying&quot; to Change ID no. to control a different sailplane. The other ones will continue on the same course and speed as they were on. Left and Right arrow steer left and right. Down arrow speeds up the sailplane. Up arrow slows it down. Your sailplane starts with 5000 ft. of altitude. There is a polar performance curve similar to a real sailplane. So if you try to fly faster to get ahead, you will lose altitude faster and risk &quot;landing out&quot; or running out of altitude. You can regain lost altitude by slowing down and lingering in randomly generated thermals of varying strength that appear on the map as brown smoke stack like images. Flying faster does not make you win. The pilot that makes the best judgement of how fast or slow to fly, given the lift conditions, will win. In general, if the lift conditions are strong and lots of thermals can be reached, it will pay to fly fast and reach the next thermal quicker in spite of the more rapid altitude loss. If the lift conditions are weak, it will take much longer to regain lost altitude, so it will pay you to fly slower between thermals and conserve your altitude. If you run out of altitude, you &quot;land out&quot; and the game is over for you. There is one consolation not available in a real sailplane race. If you can maneuver your glider behind an opponent, and line up your course in his or her direction, pressing the space bar will launch a cruise missle in his or her direction. If it hits within the bounding box of the opponents glider, he or she will disintegrate and be removed from competition.</p>
+<h2 id='3352d79766ea90ef0092b13efb8ba76a833c018817ed1cb6246b7db498daca48' class='mkup_h1'> Problems </h2><UL class='mkup_UL'><li class='mkup_li'>The distance calculations for this particular map are all hard coded in the program. Need to develop ability to import any map and calibrate flexibly, so the distances can be calculated on any chosen map. </li><li class='mkup_li'>The code violates a lot of good Tcl coding practices, which I did not know when I started out, so it may be obfuscated. </li></UL><h2 id='b6846a95ee3faec48d83f011381a3dc2af7f16591a5c2237a059520f0f7b3140' class='mkup_h1'> Goals </h2><UL class='mkup_UL'><li class='mkup_li'>I have a preliminary network game version that connects to a server, so two clients can play each other from remote network computers, it works, but it has a few lingering problems. </li><li class='mkup_li'>Use Tcl's new serial connection abilities to connect directly to a GPS receiver and plot courses in real time. Possibly on a PDA. The program is able now to read a Garmin .trk file and plot the positions on the map.</li><li class='mkup_li'>Add ability to import an &quot;IGC&quot; file, a special GPS file format used by glider pilots. So you can replay a GPS recording of a real glider flight. </li><li class='mkup_li'>Add circling flight by adding code such that when the speed goes below a certain value, the glider will start circling probably in a random right or left direction. Or when the steering input goes above a certain value, the glider will circle in that direction. Smaller imputs would continue to alter the straight line course. </li><li class='mkup_li'>A 3-D version using Tkogl, the Tcl extension to OpenGL</li><li class='mkup_li'>Hook it up to a joystick for speed and steering input.</li></UL><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/RS'>RS</a>: Thanks for showing this to us! Next question would be, whether it can be downloaded at some place?</p><hr class='mkup_hr'><p class='mkup_p'>You can download a Starkit from <a rel='nofollow' class='mkup_a' href='https://www.tcl-lang.org/starkits/soarmap2.kit'>https://www.tcl-lang.org/starkits/soarmap2.kit <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a></p><hr class='mkup_hr'><p class='mkup_p'>Here's the code. You also need these other two files saved in the same directory for the images:</p><UL class='mkup_UL'><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tkfp.sourceforge.net/soarmap/soarmap2.tcl'>http://tkfp.sourceforge.net/soarmap/soarmap2.tcl <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a> - the program file</li><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tkfp.sourceforge.net/soarmap/largeclr.gif'>http://tkfp.sourceforge.net/soarmap/largeclr.gif <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a> - the map image background - size 900kb</li><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tkfp.sourceforge.net/soarmap/pic45tra.gif'>http://tkfp.sourceforge.net/soarmap/pic45tra.gif <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a> - a small glider icon image</li></UL><p class='mkup_p'>optional:</p><UL class='mkup_UL'><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tkfp.sourceforge.net/soarmap/test2.trk'>http://tkfp.sourceforge.net/soarmap/test2.trk <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a> - a Garmin GPS track file to practice plotting fixes on map</li></UL><hr class='mkup_hr'><p class='mkup_p'>Here's the network version where two or more players can connect to a server and play each other remotely. Requires Incr Tcl extension for Tcl/Tk. It basically works for the most part. Server based on some examples in &quot;Incr Tcl/Tk from the Ground Up&quot; by Chad Smith. Follow instructions in the README file. </p><UL class='mkup_UL'><li class='mkup_li'><a rel='nofollow' class='mkup_a' href='http://tkfp.sourceforge.net/soarmap/SoarMap.tar.gz'>http://tkfp.sourceforge.net/soarmap/SoarMap.tar.gz <span class='glyphicon glyphicon-globe' aria-hidden='true'></span></a> </li></UL><hr class='mkup_hr'><p class='mkup_p'>The code for the non-network version.</p><div class='sh_sourceCode'><button class='copybtn btn pull-right' data-clipboard-target='#mkup_code_0' title='Click to copy code snippet to clipboard'><span class='glyphicon glyphicon-copy' aria-hidden='true'></span></button><pre id='mkup_code_0' class='sh_tcl sh_sourceCode'># program for Tcl/Tk (free standing version - not for plug-in)
+# By Alex Caldwell M.D.
+# <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6e0f020d0f020a2e1e1d0019400d0103">[email&#160;protected]</a>
+# Jan 5, 1997
+# Feb 11, 1999
+# Feb 16, 1999
+# Feb 21, 1999
+
+#########################################################################################################
+# this section doesn't do anything functional. It was just a way to document the important
+# global variables in the program
+
+global i              ;# variable that stores background image data for sectional map
+global g              ;# variable that stores background image data for little gliders
+global bmp            ;# variable that stores bitmap image
+
+global IC             ;# used in great circle distance calculation
+global COURSE         ;# compass course calculated from the course leg selected 
+global HEADING        ;# an array that holds the currently selected contestant's heading
+global TURNPOINT1     ;# variable that stores the name of turnpoint1
+global TURNPOINT2     ;# variable that stores the name of turnpoint2
+global turnpoints     ;# list that stores the list of turnpoint names
+global latdegrees     ;# list that stores a list of the turnpoint latitude degrees with the minutes truncated.
+global latmin
+global londegrees
+global lonmin
+global latdeg1
+global latmin1
+global londeg1
+global lonmin1
+global latdeg2
+global latmin2
+global londeg2
+global lonmin2
+global XAXIS          ;# variable that stores the difference between the x coordinates of the two turnpoints.
+global YAXIS          ;# variable that stores the difference between the y coordinates of the two turnpoints.
+global X1             ;# the x coordinate of the first turnpoint.
+global X2             ;# the x coordinate of the second turnpoint.
+global Y1             ;# the y coordinate of the first turnpoint.
+global Y2             ;# the y coordinate of teh second turnpoint.
+global SPEED          ;# an array that stores the value of each contestant's current speed
+global ALTITUDE       ;# an array that stores the value of each contestant's current altitude
+global text           ;# an array that stores the value of each contestant's contest no.
+global ID             ;# an array that stores the id of each contestant's small altitude text display 
+global shadow         ;# an array that stores the id of each contestant's shadow so it can be moved closer as altitude decreases
+global fileposition  
+global filecounter
+global filelinenumber
+global fileid
+global glider         ;# an array that stores the canvas id no.'s of the glider images.
+global contestno       ;# a variable that stores the current contest no.
+global yfraction       ;# I can't remember what this was supposed to do but I was afraid to delete it
+global xfraction       ;# I can't remember what this was supposed to do but I was afraid to delete it
+global combatants      ;# a list of the players by their contest no.
+global thermals        ;# a list of the thermals by no.
+global thermalstrength ;# an array that stores the strength of each thermal
+global daystrength     ;# a variable that sets the ramndom range for the average thermal strength
+global autoscroll      ;# stores value of variable that controls whether the map scrolls along with the glider 
+global tracking        ;# variable that controls whether tracking is on or off
+global distanceflown   ;# array storing the value of distance flown for each glider
+global angle_radians   ;# variable used in the calcheading change proc to make glider circle
+
+#########################################################################################################
+# this initializes some important global variables
+set contestno IB
+set yfraction 0
+set xfraction 0
+set TURNPOINT1 &quot;Avenal&quot;
+set TURNPOINT2 &quot;Delano&quot;
+set SPEED(IB) 60
+set ALTITUDE(IB) 5000
+set HEADING(IB) 0
+set fileposition 332
+set filecounter 0
+set filelinenumber 0
+set daystrength 6
+set autoscroll on
+set tracking on
+set angle_radians 0
+
+###################################################################
+
+set turnpoints {Avenal Corcoran Delano Porterville &quot;New Cuyama&quot;}
+set latdegrees  {36 36 35 36 34}
+set latmin {0 6.15 44.74 1.78 57}
+set londegrees {120 119 119 119 119}
+set lonmin {8 35.69 14.19 3.76 42}
+
+####################################################################
+
+proc RandomInit { seed } {
+    global <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f381929d979cb39ea0969697">[email&#160;protected]</a>
+    set randomSeed $seed
+}
+
+proc Random {} {
+    global randomSeed
+    set randomSeed [expr ($randomSeed*9301 + 49297) % 233280]
+    return [expr $randomSeed/double(233280)]
+}
+
+proc RandomRange { range } {
+    expr int([Random]*$range)
+}
+
+RandomInit [pid]
+
+#****************************************************************************************
+proc getturnpoint {} {
+
+global TURNPOINT1
+global TURNPOINT2
+global X1 X2 Y1 Y2
+global contestno
+global SPEED
+global HEADING
+global daystrength
+
+frame .turnpointframe
+frame .turnpointframe.turnpointframe1
+frame .turnpointframe.turnpointframe2
+label .turnpointframe.turnpointframe1.label1 -text {Select Turnpoint 1} -relief groove
+label .turnpointframe.turnpointframe2.label2 -text {Select Turnpoint2 } -relief groove 
+menubutton .turnpointframe.turnpointframe1.menu1 -text $TURNPOINT1 \
+-menu .turnpointframe.turnpointframe1.menu1.sub1 -relief raised
+set men1 [menu .turnpointframe.turnpointframe1.menu1.sub1]
+$men1 add radio -label Avenal -variable TURNPOINT1 -value Avenal \
+-command &quot;.turnpointframe.turnpointframe1.menu1 configure -text Avenal&quot;
+$men1 add r3adio -label Corcoran -variable TURNPOINT1 -value Corcoran \
+-command &quot;.turnpointframe.turnpointframe1.menu1 configure -text Corcoran&quot;
+$men1 add radio -label Delano -variable TURNPOINT1 -value Delano \
+-command &quot;.turnpointframe.turnpointframe1.menu1 configure -text Delano&quot;
+$men1 add radio -label Porterville -variable TURNPOINT1 -value Porterville \
+-command &quot;.turnpointframe.turnpointframe1.menu1 configure -text Porterville&quot; 
+$men1 add radio -label {New Cuyama} -variable TURNPOINT1 -value {New Cuyama} \
+-command &quot;.turnpointframe.turnpointframe1.menu1 configure -text {New Cuyama}&quot;
+ menubutton .turnpointframe.turnpointframe2.menu2 -text $TURNPOINT2 \
+-menu .turnpointframe.turnpointframe2.menu2.sub1 -relief raised
+set men2 [menu .turnpointframe.turnpointframe2.menu2.sub1]
+$men2 add radio -label Avenal -variable TURNPOINT2 -value Avenal \
+-command &quot;.turnpointframe.turnpointframe2.menu2 configure -text Avenal&quot;
+$men2 add radio -label Corcoran -variable TURNPOINT2 -value Corcoran \
+-command &quot;.turnpointframe.turnpointframe2.menu2 configure -text Corcoran&quot;
+$men2 add radio -label Delano -variable TURNPOINT2 -value Delano \
+-command &quot;.turnpointframe.turnpointframe2.menu2 configure -text Delano&quot;
+$men2 add radio -label Porterville -variable TURNPOINT2 -value Porterville \
+-command &quot;.turnpointframe.turnpointframe2.menu2  configure -text Porterville&quot;
+$men2 add radio -label {New Cuyama} -variable TURNPOINT2 -value {New Cuyama} \
+-command &quot;.turnpointframe.turnpointframe2.menu2 configure -text {New Cuyama}&quot;
+
+label .turnpointframe.turnpointframe1.contestnolabel -text {Enter Contest No.}
+label .turnpointframe.turnpointframe1.daystrength -text {Thermal Strength}
+entry .turnpointframe.turnpointframe2.contestnoentry -textvariable contestno -width 5 
+menubutton .turnpointframe.turnpointframe2.daystrength -text weak \
+-menu .turnpointframe.turnpointframe2.daystrength.m -relief raised
+menu .turnpointframe.turnpointframe2.daystrength.m
+.turnpointframe.turnpointframe2.daystrength.m add radio -label weak -variable daystrength -value 6
+.turnpointframe.turnpointframe2.daystrength.m add radio -label medium  -variable daystrength -value 11
+.turnpointframe.turnpointframe2.daystrength.m add radio -label strong -variable daystrength -value 18 
+
+button .turnpointframe.updatebutton  -text &quot;Start New Leg&quot; -command {destroybuttons
+getcoord
+calcdist $latdeg1 $latmin1 $londeg1 $lonmin1 $latdeg2 $latmin2 $londeg2 $lonmin2
+calcheading $latdeg1 $latmin1 $londeg1 $lonmin1 $latdeg2 $latmin2 $londeg2 $lonmin2
+plotline $latdeg1 $latmin1 $londeg1 $lonmin1 $latdeg2 $latmin2 $londeg2 $lonmin2
+showdist}    
+
+button .turnpointframe.launchglider -text &quot;Launch Glider&quot; -command {launchGlider;destroybuttons;showdist}
+button .turnpointframe.flybutton -text {Start Flying} -command {displayInfo}  
+
+scale .turnpointframe.speedscale -from 40 -to 200 -length 250 -variable SPEED($contestno) -orient horizontal \
+-label &quot;Speed $contestno - kts&quot; -tickinterval 50 -showvalue true
+bind . &lt;KeyPress-Down&gt; {set SPEED($contestno) [expr $SPEED($contestno) - 1]}
+bind . &lt;KeyPress-Up&gt; {set SPEED($contestno) [expr $SPEED($contestno) + 1]}
+scale .turnpointframe.headingscale -from -75  -to 75  -length 250  -variable HEADING($contestno) -orient horizontal \
+-label &quot;Steer  $contestno - L/R&quot; -tickinterval 15 -showvalue true
+bind . &lt;KeyPress-Left&gt; {set HEADING($contestno) [expr $HEADING($contestno) -1]}
+bind . &lt;KeyPress-Right&gt; {set HEADING($contestno) [expr $HEADING($contestno) +1]}
+button .turnpointframe.gpsbutton1 -text {last GPS fix} -command {gpsdisplay1}
+button .turnpointframe.gpsbutton2 -text {plot all GPS fixes} -command {gpsdisplay2}
+pack .frame .turnpointframe -side left
+pack .turnpointframe.turnpointframe1 .turnpointframe.turnpointframe2 -side left                                 
+pack .turnpointframe.turnpointframe1.label1
+pack .turnpointframe.turnpointframe1.menu1 -padx 5 -pady 5
+
+pack .turnpointframe.turnpointframe2.label2
+pack .turnpointframe.turnpointframe2.menu2 -padx 5 -pady 5
+pack .turnpointframe.turnpointframe1.contestnolabel
+pack .turnpointframe.turnpointframe1.daystrength
+pack .turnpointframe.turnpointframe2.contestnoentry
+pack .turnpointframe.turnpointframe2.daystrength      
+
+pack .turnpointframe.updatebutton .turnpointframe.launchglider \
+.turnpointframe.flybutton .turnpointframe.gpsbutton1 \
+.turnpointframe.gpsbutton2 \
+.turnpointfra3me6.speedscale .turnpointframe.headingscale
+
+}
+
+#*********************************************************************************************
+
+proc destroybuttons {} {
+
+ foreach item [winfo children .frame] {
+  destroy $item
+ }
+
+}
+
+#*********************************************************************************************
+# this is for launching a new glider whenever the launch glider button is pressed.
+# it is always launched at the first turnpoint that is currently selected with 5000 ft of altitude.
+
+proc launchGlider { } {
+
+global XAXIS YAXIS COURSE ALTITUDE ID shadow contestno combatants X1 Y1 glider text  
+set Y1 [expr $Y1 * 2136]
+set X1 [expr $X1 * 1759]
+
+# this creates the glider image
+# depending on the direction of flight, a different image is chosen.
+ 
+# this creates the glider image and the shadow image 
+# this creates the shadow of the glider first so the glider will be over it in the object order
+
+    if {$XAXIS &lt; 0 } {
+
+          if {$COURSE &gt; 225 } {
+         set shadow($contestno) [.c.canvas create image [expr $X1 + ($XAXIS/2)] [expr $Y1 + ($YAXIS/2)] \
+         -image glidershadowwest  -anchor center -tags &quot;st $contestno&quot;]
+         set glider($contestno)  [.c.canvas create image $X1 $Y1 \
+         -image gliderpairwest -anchor center -tags &quot;st $contestno&quot;]
+         } else {
+         set shadow($contestno)  [.c.canvas create image [expr $X1 + ($XAXIS/2)] [expr $Y1 + ($YAXIS/2)] \
+         -image glidershadowsouthwest  -anchor center -tags &quot;st $contestno&quot;]
+         set glider($contestno)  [.c.canvas create image $X1 $Y1 \
+         -image gliderpairsouthwest -anchor center -tags &quot;st $contestno&quot;]
+         }
+
+       } else {  
+
+           if {$COURSE &gt; 28 &amp;&amp; $COURSE &lt; 349} {
+          set shadow($contestno) [.c.canvas create image [expr $X1 + ($XAXIS/2)] [expr $Y1 + ($YAXIS/2)] \
+          -image glidershadow -anchor center -tags &quot;st $contestno&quot; ]
+          set glider($contestno)  [.c.canvas create image $X1 $Y1 \
+           -image gliderpair -anchor center -tags &quot;st $contestno&quot;]
+          } else {
+          set shadow($contestno) [.c.canvas create image [expr $X1 + ($XAXIS/2)] [expr $Y1 + ($YAXIS/2)] \  
+         -image glidershadownortheast -anchor center -tags &quot;st $contestno&quot; ]
+          set glider($contestno) [.c.canvas create image $X1 $Y1 \
+         -image gliderpairnortheast -anchor center -tags &quot;st $contestno&quot;]
+         }
+
+     } 
+
+   # place the contest no near the glider and move it along with it.
+    set text($contestno) [.c.canvas create text [expr $X1 + 22] [expr $Y1 + 3] \
+    -text &quot;$contestno&quot; -fill red -tags &quot;st $contestno&quot;]
+
+   # place some text that has the altitude displayed near the glider image
+
+    set ALTITUDE($contestno) 5000
+    set ID($contestno) [.c.canvas create text [expr $X1 + 22] [expr $Y1 + 25] \
+   -text &quot;$ALTITUDE($contestno)&quot; -fill black -tags &quot;st $contestno&quot;]
+
+ # this raises the gliders and their shadows above the course line
+.c.canvas raise st line
+
+ # these lines scroll the map to center the first  turnpoint where the new glider is launched.
+
+set Y1 [expr $Y1/2136]
+.c.canvas yview moveto $Y1
+set X1 [expr $X1/1759]
+.c.canvas xview moveto $X1
+
+# this adds the newly launched glider's contest no. to the list of &quot;combatants&quot;
+
+lappend combatants $contestno
+
+}
+
+#**********************************************************************************************
+
+proc calcdist  {latdeg1a latmin1a londeg1a lonmin1a latdeg2a latmin2a londeg2a lonmin2a} {
+
+global IC
+
+set A [ expr (($latdeg1a + $latmin1a / 60)  * 3.1416 / 180) ]
+set B [ expr (($latdeg2a + $latmin2a / 60) * 3.1416 / 180) ]
+set X [ expr (($londeg1a + $lonmin1a / 60) * 3.1416 /180) ]
+set Y [ expr (($londeg2a + $lonmin2a / 60) * 3.1416 / 180) ]
+set IT [ expr sin($A) * sin($B) + cos($A) * cos($B) * cos($X -$Y)]
+set IC [ expr 3.1416 / 2 - 2 * atan($IT / (1 + sqrt(1 - $IT * $IT)))]
+
+}  
+
+#***********************************************************************************************
+# this plots the course line between the two turnpoints selected see below for more info.
+
+proc plotline  {latdeg1a latmin1a londeg1a lonmin1a latdeg2a latmin2a londeg2a lonmin2a} {
+
+global contestno  combatants X1 Y1 X2 Y2 ALTITUDE ID shadow daystrength XAXIS YAXIS
+
+# this calculates the X Y coordinates of the two selected turnpoints and
+# plots a line between them on the canvas widget
+
+# upper left corner of map is 37deg 00min N. and 120deg 33min W
+# this is equal to 2220 and 7233 in minutes respectively
+# there are 14.23 pixels per minute of latitude (vertical direction)
+# there are 9.37 pixels per minute of longitude (horizontal direction)
+# this would have to be changed for each different map
+# but would be cool to have a routine like winGPS that could calibrate the
+# map by sensing the mouse position and entering two known positions
+
+# this calibrates the latitude and longitude coodinates to the pixel coordinate system
+# that Tcl/Tk uses for the background image.
+# This will have to be redone with different numbers for different maps.
+
+set X1 [ expr 7232.5 - (($londeg1a * 60) + $lonmin1a) ]
+set X1 [exddpr $X1 * 11.6 ]
+
+set Y1 [ expr 2222 - (($latdeg1a *60) + $latmin1a) ]
+set Y1 [ expr $Y1 * 13.8 ]
+
+set X2 [ expr 7232.5 -(($londeg2a * 60) + $lonmin2a) ]
+set X2 [ expr $X2 * 11.6 ]
+
+set Y2 [ expr 2222 -(($latdeg2a * 60) + $latmin2a) ] 
+set Y2 [ expr $Y2 * 13.8 ]
+
+d
+# this puts a glider bitmap cursor over the first turnpoint selected
+
+#.c.canvas delete st
+.c.canvas delete rm
+.c.canvas delete line    
+.c.canvas delete logo
+.c.canvas delete logo2
+.c.canvas delete thermal
+.c.canvas delete strength
+.c.canvas delete shadow
+.c.canvas delete laser
+
+
+# draws the yellow line on the canvas after the start new leg button is pressed        
+.c.canvas create line $X1 $Y1 $X2 $Y2 -width 3 -fill yellow -tag line
+
+# This calls the procedure that generates some random thermals and plots their position on the map
+# See comment above the procedure code
+
+generateThermals $X1 $Y1 $X2 $Y2 $daystrength
+     
+# this places the green circles around the selected goal turnpoint
+
+.c.canvas create oval [expr $X2 - 70] [expr $Y2 - 70] [expr $X2 + 70] [expr $Y2 + 70] \
+-outline green -width 2 -tags rm
+.c.canvas create oval [expr $X2 - 140] [expr $Y2 - 140] [expr $X2 + 140] [expr $Y2 + 140] \
+-outline green -width 2 -tags rm
+.c.canvas create oval [expr $X2 - 210] [expr $Y2 - 210] [expr $X2 + 210] [expr $Y2 + 210] \
+-outline green -width 2 -tags rm  
+
+# this raises the course line above the green circles around the goal.
+
+.c.canvas raise line rm
+
+# this scrolls the map to appoximately center the first turnpoint in view. 
+
+set Y1 [expr $Y1/2136]
+#.c.canvas yview moveto [expr $Y1/2136]
+.c.canvas yview moveto $Y1
+set X1 [expr $X1/1759]
+#.c.canvas xview moveto [expr $X1/1759]
+.c.canvas xview moveto $X1
+
+} 
+
+#*********************************************************************************
+# this calculates the compass heading based on the trigonometric functions of the angles
+# determined by which turnpoints are selected and whether the numbers are negative or
+# positive which translates into east/west north/south directions. The compass variation
+# of 15 deg. is sdubtracted. This would be different for different locations.
+
+proc calcheading {latdeg1a latmin1a londeg1a lonmin1a latdeg2a latmin2a londeg2a lonmin2a} {   
+
+  global COURSE
+  global XAXIS
+  global YAXIS
+  global HEADING
+
+  if {[expr $latdeg2a + $latmin2a] != [expr $latdeg1a + $latmin1a]} {
+    set YAXIS [expr (($latdeg1a * 60) + $latmin1a) - (($latdeg2a * 60) + $latmin2a)]
+
+  }
+
+  if {[expr $londeg2a + $lonmin2a] != [expr $londeg1a + $lonmin1a]} {
+     set XAXIS [expr (($londeg1a * 60) + $lonmin1a) - (($londeg2a * 60) + $lonmin2a)]
+
+     }
+
+  if {$XAXIS != 0 } {
+     set TN [expr $YAXIS / $XAXIS]
+     set ANGLE [expr atan($TN) * (180 / 3.1416)]  
+
+     }
+
+   if {$XAXIS &gt; 0 &amp;&amp; $YAXIS &lt; 0} {
+      set COURSE [expr 90 + $ANGLE - 15]
+
+
+      if {$COURSE &lt;= 0} {
+         set COURSE [expr $COURSE + 360]   
+
+         }
+
+     }
+    if {$XAXIS &gt; 0 &amp;&amp; $YAXIS &gt; 0} {
+       set COURSE [expr 90 + $ANGLE -15]
+        }
+                                                                                                                                                 
+   if {$XAXIS &lt; 0 &amp;&amp; $YAXIS &lt; 0} {
+      set COURSdE [expr 270 + $ANGLE -15]
+         }
+
+   if {$XAXIS &lt; 0 &amp;&amp; $YAXIS &gt; 0 } {
+      set COURSE [expr 270 + $ANGLE  -15]
+         }     
+   if {$XAXIS == 0 &amp;&amp; $YAXIS &gt; 0 } {
+      set COURSE [expr 180 -15]
+         }
+
+   if {$XAXIS == 0 &amp;&amp; $YAXIS &lt; 0} {
+      set COURSE [expr 360   -15]
+         }
+}
+
+#*******************************************************************************
+# this is used for stearing the gliders. Each frame of the animation will add or
+# subtract a bit to the direction of movement of the gliders in the x and y direction
+# depending on the value of the slider widget variable and the COURSE variable
+
+proc calcheadingchange { heading } {
+global XAXIS YAXIS HEADING XCHANGE YCHANGE contestno COURSE  SPEED angle_radians
+
+   # if heading change input is &gt; 40 or &lt; -40, make the glider circle
+   # radius of circle tightens as absolute value of heading_change input increases
+   # 100 points of the circle are plotted with each circle
+
+   if {$heading_change &gt; 40 || $heading_change &lt; -40} {
+
+     # reduce the glider speed to 0 so the circle will not continue on the course line
+     set SPEED($contestno) 0
+
+        # increase the angle in radians to 1/100th of the number of radians in a circle
+        set angle_radians  [expr $angle_radians + (6.2332/100)]
+
+       # this makes tshe glider circle to the right if the heading_change input is positive,
+       # or right arrow input and to the left if negative, or left arrow input.
+       if {$heading_change &gt; 0} {
+         set XCHANGE($contestno) [expr cos($angle_radians) * (12000/$heading_change)]
+         set YCHANGE($contestno) [expr sin($angle_radians) * (12000/$heading_change)]
+       } else {
+         set XCHANGE($contestno) [expr (cos($angle_radians) * (12000/$heading_change))]
+         set YCHANGE($contestno) [expr -(sin($angle_radians) * (12000/$heading_change))]
+       }
+
+     # return now, so the normal heading change calculations below will not be performed
+     # when circling
+
+     return 
+
+   } else {
+
+     # if the glider has been circling, but now you decrease the steering input below
+     # the circling threshold in order
+     # to stop circling, set the speed back to a default value of 60kts. 
+     if {$SPEED($contestno) == 0} {  
+       set angle_radians 0
+       set SPEED($contestno) 60
+     }
+    
+   }
+  
+# this is like for Delano to Porterville
+if {$XAXIS &gt; 0 &amp;&amp; $YAXIS &lt; 0 } {
+    if {$COURSE &lt; 30} {
+    set XCHANGE($contestno) [expr $XCHANGE($contestno) + (10 * tan($heading/57.295))]
+    set XCHANGE($contestno) [format &quot;%3.2f&quot; $XCHANGE($contestno)]
+    } else {
+    set YCHANGE($contestno) [expr $YCHANGE($contestno) + (10 * tan($heading/57.295))]  
+    set YCHANGE($contestno) [format &quot;%3.2f&quot; $YCHANGE($contestno)]
+    }
+       }
+
+# this is like for Avenal to Delano
+
+ if {$XAXIS &gt; 0 &amp;&amp; $YAXIS &gt; 0} {
+     if {$COUdRSE &gt; 119 } {
+     set XCHANGE($contestno) [expr $XCHANGE($contestno) - (10 * tan($heading/57.295))]   
+        set XCHANGE($contestno) [format &quot;%3.2f&quot; $XCHANGE($contestno)]
+     } else {
+     set YCHANGE($contestno) [expr $YCHANGE($contestno) + (10 * tan($heading/57.295))]
+     set YCHANGE($contestno) [format &quot;%3.2f&quot; $YCHANGE($contestno)]
+     }
+        }
+
+# this is like for Porterville to Corcoran  
+   
+
+ if {$XAXIS &lt; 0 &amp;&amp; $YAXIS &lt; 0} {
+    if {$COURSE &gt; 290 } {
+    set XCHANGE($contestno) [expr $XCHANGE($contestno) + (10 * tan($heading/57.295))]
+    set XCHANGE($contestno) [format &quot;%3.2f&quot; $XCHANGE($contestno)]
+    } else {
+    set YCHANGE($contestno) [expr $YCHANGE($contestno) - (10 * tan($heading/57.295))]
+    set YCHANGE($contestno) [format &quot;%3.2f&quot; $YCHANGE($contestno)]  
+      }
+        }
+# this is like for Porterville to Avenal or New Cuyama
+ if {$XAXIS &lt; 0 &amp;&amp; $YAXIS &gt; 0 } {
+    if {$COURSE &lt; 215 } {
+    set XCHANGE($contestno) [expr $XCHANGE($contestno) - (10 * tan($heading/57.295))]
+    set XCHANGE($contestno) [format &quot;%3.2f&quot; $XCHANGE($contestno)]
+    } else {
+    set YCHANGE($contestno) [expr $YCHANGE($contestno) - (10 * tan($heading/57.295))] 
+    set YCHANGE($contestno) [format &quot;%3.2f&quot; $YCHANGE($contestno)]
+    }
+         }
+
+}
+#********************************************************************************  
+ 
+proc showdist {} {
+
+global IC
+global COURSE
+global TURNPOINT1
+global TURNPOINT2
+global autoscroll
+global tracking  
+global distanceflown
+global contestno
+
+set COURSE [format &quot;%3.2f&quot; $COURSE]
+.turnpointframe.turnpointframe1.menu1 config -text $TURNPOINT1
+.turnpointframe.turnpointframe2.menu2 config -text $TURNPOINT2
+
+label .frame.label1 -text &quot;distance from $TURNPOINT1 to $TURNPOINT2...&quot; -relief groove 
+label .frame.label3 -text &quot;Auto Scroll ON/OFF&quot;
+label .frame.label4 -text &quot;Tracking ON/OFF&quot;
+radiobutton .frame.button5 -text OFF -variable autoscroll -value off
+radiobutton .frafme.button6 -text &quot; ON&quot; -variable autoscroll -value on
+radiobutton .frame.button3 -text OFF -variable tracking -value off
+radiobutton .frame.button4 -text &quot; ON&quot; -variable tracking -value on
+
+label .frame.[string tolower $contestno] -text &quot;Distance flown by $contestno -&quot;
+
+button .frame.button7 -text &quot;[format &quot;%3.2f&quot; [expr $IC * (180 / 3.1416) * (60 / .54042)]] KM&quot; \
+-relief sunken -borderwidth 3 -bg skyblue
+button .frame.button8 -text &quot;[format &quot;%3.2f&quot; [expr $IC * (180 / 3.1416) * (60 / .8674)]] SM&quot; \
+-relief sunken -borderwidth 3 -bg skyblue  
+button .frame.button9 -text &quot;[format &quot;%3.2f&quot; [expr $IC * 60 * 180 / 3.1416]] NM&quot; -relief sunken \
+-borderwidth 3 -bg skyblue
+label .frame.label2 -text &quot;Course - $COURSE deg.mag.&quot; -relief groove -bg peachpuff
+
+pack .frame.label3  
+pack .frame.button5
+pack .frame.button6
+pack .frame.label4
+pack .frame.button3
+pack .frame.button4
+pack .frame.[string tolower $contestno]
+pack .frame.label1
+
+  for {set i 7} {$i &lt;= 9 } {incr i} {
+    pack .frame.button$i
+  }
+
+pack .frame.label2
+
+} 
+#****************************************************************************
+
+proc getcoord {} {
+global TURNPOINT1
+global TURNPOINT2
+global turnpoints
+global latdegrees
+global latmin
+global londegrees
+global lonmin  
+global latdeg1
+global latmin1
+global londeg1
+global lonmin1
+global latdeg2
+global latmin2
+global londeg2
+global lonmin2
+set index [lsearch $turnpoints $TURNPOINT1] 
+set latdeg1 [lindex $latdegrees $index]
+set latmin1 [lindex $latmin $index]
+set londeg1 [lindex $londegrees $index]
+set lonmin1 [lindex $lonmin $index]
+set index [lsearch $turnpoints $TURNPOINT2]
+set latdeg2 [lindex $latdegrees $index]
+set latmin2 [lindex $latmin $index] 
+set londeg2 [lindex $londegrees $index]
+set lonmin2 [lindex $lonmin $index]
+
+}
+
+############################################################################
+
+proc ScrolledCanvas {c width height region } {  
+ frame $c -bg red -bd 3
+
+ canvas $c.canvas -width $width -height $height \
+   -scrollregion $region \
+   -xscrollcommand [list $c.xscroll set] \
+   -yscrollcommand [list $c.yscroll set]
+ scrollbar $c.xscroll -orient horizontal \
+   -command [list $c.canvas xview]
+ scrollbar $c.yscroll -orient vertical \ 
+       -command [list $c.canvas yview]
+ pack $c.xscroll -side bottom -fill x
+ pack $c.yscroll -side right -fill y
+ pack $c.canvas -side left -fill both -expand true
+ pack $c -side top -fill both -expand true
+
+ $c.canvas create image 1359 1836 -image sectional -anchor se
+ $c.canvas create image 40 40 -image gliders -anchor center -tag movable  
+ $c.canvas create image 40 40 -image gliderpair -anchor center -tag  movable
+ $c.canvas bind movable &lt;Button-1&gt; {CanvasMark %x %y %W}
+ $c.canvas bind movable &lt;B1-Motion&gt; {CanvasDrag %x %y %W}
+
+}
+
+proc CanvasMark { x y w } {
+    global canvas      
+  # Remember the object and its location
+    set canvas($w,obj) [$w find closest $x $y]
+    set canvas($w,x) $x
+    set canvas($w,y) $y
+}
+
+proc CanvasDrag { x y w } {
+    # Move the current object
+    global canvas
+      set dx [expr $x - $canvas($w,x)]
+    set dy [expr $y - $canvas($w,y)]
+    $w move $canvas($w,obj) $dx $dy
+    set canvas($w,x) $x
+    set canvas($w,y) $y
+}
+
+######################################################################
+# code for animating the glider bitmaps stolen from the Tcl Cookbook  
+                 
+# this is the code that moves everything on the canvas display tim is the argument
+# that determines how fast the screen updates
+proc movie {tim} {
+   global id              ;# used in movie procedure to restart it after the tim interval
+   global ID              ;# array that keeps track of the altitude display for each combatant glider
+   global XAXIS           ;# the amount of movement in the x direction for each screen update
+   global YAXIS           ;# the amount of movement in the y direction for each screen update     
+   global YAXIS           ;# the amount of movement in the y direction for each screen update
+   global SPEED           ;# array that holds the current speed value for each combatant
+                          ;# indexed by contestno from the combatant list
+
+   global ALTITUDE        ;# array that holds the current altitude for each combatant indexed by
+                          ;# contestno from the combatant list
+   global X1              ;# the x coordinate of the first turnpoint currently selected
+   global Y1              ;# the y coordinate of the first turnpoint currently selected
+   global combatants      ;# a list that holds the contest no's of each contestant or &quot;combatant&quot;
+   global contestno       ;# a simple variable that changes for each glider on the display  
+   global shadow          ;# array that stores the shadows for each glider indexed by their contest no.
+                          ;# from the combatant list
+   global HEADING         ;# array that stores the heading change right or left for each glider indexed
+                          ;# by contest no from combatants list
+   global COURSE          ;# the calculated course heading between the two selected turnpoints
+   global text            ;# an array that holds each contestant's contest no.
+   global thermals        ;# list of the thermals
+   global thermalstrength ;# array that stores the stregth of each thermal
+   global autoscroll      ;# variable that controls whether autoscrolling is enabled
+   global tracking        ;# variable that controls whether tracking is enabled
+   global glider          ;# array that stores the canvas id no.'s of the glider images  
+
+   global XCHANGE         ;# array that stores the amount of heading change for each glider
+   global YCHANGE         ;# array that stores the amount of heading change for each glider.
+   set headingchange 0
+   focus .c.canvas        ;# this prevents the space bar from entering spaces in the contest No. entry box when you press it
+                          ;# to fire the projectiles
+
+# go through list of combatants and move each one and change altitude display   
+
+for {set x 0} {$x &lt; [llength $combatants]} {incr x} {
+    set thermalfactor 0
+
+    if {[lindex $combatants $x] == &quot;&quot;} {continue}
+    ;# this creates the laser missles when the spacebar is pressed
+
+    bind . &lt;KeyPress-space&gt; &quot;.c.canvas create line \
+         [expr [lindex [.c.canvas coords $glider([lindex $combatants $x])] 0] + ($XAXIS/15)] \   
+         [expr [lindex [.c.canvas coords $glider([lindex $combatants $x])] 1] + ($YAXIS/15)] \
+         [expr [lindex [.c.canvas coords $glider([lindex $combatants $x])] 0] - ($XAXIS/15)] \
+         [expr [lindex [.c.canvas coords $glider([lindex $combatants $x])] 1] - ($YAXIS/15)] \
+         -width 3 -fill purple -arrow first -arrowshape {1 10 6} -tags laser &quot;
+
+    # check if the altitude has reached 0 and stop that glider, change altitude display to LANDED OUT
+    if { $ALTITUDE([lindex $combatants $x]) &gt; 0 } {   
+
+   # check to see if there has been an input to the steering slider
+    if {$HEADING([lindex $combatants $x]) != 0} {
+
+    calcheadingchange $HEADING([lindex $combatants $x])
+    }
+
+  # this plots the track of the glider in red if tracking is enabled
+
+      if {$tracking == &quot;on&quot;} {
+         .c.canvas create oval [lindex [.c.canvas coords $glider([lindex $combatants $x])] 0]\
+         [lindex [.c.canvas coords $glider([lindex $combatants $x])] 1] \
+         [lindex [.c.canvas coords $glider([lindex $combatants $x])] 0] \
+         [lindex [.c.canvas coords $glider([lindex $combatants $x])] 1] \ 
+          -width 1 -outline red -tags track
+         catch {.c.canvas lower track $contestno}
+         catch {.c.canvas lower $shadow([lindex $combatants $x]) [lindex $combatants $x]}
+         catch {.c.canvas lower track st}
+         }
+
+    # move the current glider a distance proportional to it's speed along the course direction
+    .c.canvas move $glider([lindex $combatants $x]) \
+    [expr ($XCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x])))]\  
+    [expr ($YCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x])))]
+
+    ;# move the other objects tagged with the glider's contest no.
+    .c.canvas move $shadow([lindex $combatants $x]) \
+    [expr ($XCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x]))) - \
+    (.00001 * $ALTITUDE([lindex $combatants $x]))] \
+    [expr ($YCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x]))) - \
+    (.0000075 * $ALTITUDE([lindex $combatants $x]))]   
+   
+    .c.canvas move $ID([lindex $combatants $x]) \
+    [expr ($XCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x])))] \
+    [expr ($YCHANGE([lindex $combatants $x])/(275 -$SPEED([lindex $combatants $x])))]
+
+    .c.canvas move $text([lindex $combatants $x]) \
+    [expr ($XCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x])))] \ 
+      [expr ($YCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x])))]
+
+    # this moves the laser missles
+
+    .c.canvas move laser \
+    [expr ($XCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x]))) + \
+    ($XCHANGE([lindex $combatants $x])/25)] \
+    [expr ($YCHANGE([lindex $combatants $x])/(275 - $SPEED([lindex $combatants $x]))) + \
+    ($YCHANGE([lindex $combatants $x])/25)]  
+  
+
+    # check current coordinate and check to see if inside bounding box of any thermals
+    # then adjust altitude change by thermal strength
+
+    for {set y 0 } {$y &lt; [llength $thermals]} { incr y} {
+
+    set coordinates [.c.canvas coords $glider([lindex $combatants $x])]    
+ 
+    set thermalbox [.c.canvas bbox [lindex $thermals $y]]
+
+    if {[lindex $coordinates 0] &gt;= [lindex $thermalbox 0] &amp;&amp; [lindex $coordinates 0] &lt;= [lindex $thermalbox 2]
+       &amp;&amp; [lindex $coordinates 1] &gt;= [lindex $thermalbox 1] &amp;&amp; [lindex $coordinates 1] &lt;= [lindex $thermalbox 3]} {
+       set thermalfactor $thermalstrength([lindex $thermals $y])
+
+      }  
+
+    }
+
+   # check to see if the glider has been hit by a missle
+    foreach item [.c.canvas find withtag laser] {
+    set coordinates [.c.canvas coords $item]
+
+    set gliderbox [.c.canvas bbox $glider([lindex $combatants $x])] 
+ 
+       if {[lindex $coordinates 0] &gt;= [lindex $gliderbox 0] &amp;&amp; [lindex $coordinates 0] &lt;= [lindex $gliderbox 2]
+         &amp;&amp; [lindex $coordinates 1] &gt;= [lindex $gliderbox 1] &amp;&amp; [lindex $coordinates 1] &lt;= [lindex $gliderbox 3]
+         &amp;&amp; [lindex $combatants $x] != $contestno } {
+        catch { .c.canvas itemconfigure $glider([lindex $combatants $x]) -image destroyed}
+        catch { .c.canvas itemconfigure $shadow([lindex $combatants $x]) -image destroyedshadow}
+        set ALTITUDE([lindex $combatants $x]) 0
+       .c.canvas dchars $ID([lindex $combatants $x]) 0 end
+       .c.canvas insert $ID([lindex $combatants $x]) 0 &quot;DESTROYED&quot;   
+ 
+      }
+
+    }
+ 
+    set ALTITUDE([lindex $combatants $x]) [expr $ALTITUDE([lindex $combatants $x]) - \
+    [expr int(pow($SPEED([lindex $combatants $x]),1.8)/1000)]]
+
+    # add some altitude if inside a thermal
+
+    set ALTITUDE([lindex $combatants $x])  [expr $ALTITUDE([lindex $combatants $x]) + (2 * $thermalfactor)]  
+ 
+    # delete and update the altitude display for each framechange
+    if {[.c.canvas itemcget $ID([lindex $combatants $x]) -text] != &quot;DESTROYED&quot;} {
+      .c.canvas dchars $ID([lindex $combatants $x]) 0 end
+      .c.canvas insert $ID([lindex $combatants $x]) 0 $ALTITUDE([lindex $combatants $x])
+    }               
+                                                                                                                                                  
+    } elseif { [.c.canvas itemcget $ID([lindex $combatants $x]) -text] != &quot;DESTROYED&quot;} {
+
+      .c.canvas dchars $ID([lindex $combatants $x]) 0 end
+      .c.canvas insert $ID([lindex $combatants $x]) 0 &quot;LANDED OUT&quot;       
+      .c.canvas delete $shadow([lindex $combatants $x])
+    }
+
+}
+
+    # this scrolls the background map proprotional to the speed and direction of the course line
+
+   if {$autoscroll == &quot;on&quot; } {             
+ 
+      set Y1 [expr (($YAXIS/(275 - $SPEED($contestno))) * .0007) + $Y1]
+      .c.canvas yview moveto $Y1
+
+      set X1 [expr (($XAXIS/(275 - $SPEED($contestno))) * .0007) + $X1]
+      .c.canvas xview moveto $X1
+
+    }  
+
+ 
+    set id [after $tim movie $tim]
+
+}
+
+proc displayInfo {} {
+
+global X1 Y1   
+global contestno
+global SPEED
+global COURSE
+global HEADING
+global XAXIS
+global YAXIS
+global XCHANGE
+global YCHANGE
+global combatants 
+
+.turnpointframe.speedscale config -variable SPEED($contestno)
+.turnpointframe.speedscale config -label &quot;SPEED $contestno - kts.&quot;
+set SPEED($contestno) 60
+.turnpointframe.headingscale config -variable HEADING($contestno)
+.turnpointframe.headingscale config -label &quot;Steer $contestno  - L/R&quot;
+set HEADING($contestno) 0
+  
+set XCHANGE($contestno) $XAXIS    
+set YCHANGE($contestno) $YAXIS
+
+  movie 250
+  .turnpointframe.flybutton configure -text &quot;Stop Flying&quot; -command \
+            {global id
+
+             after cancel $id
+            .turnpointframe.flybutton configure -text {The End}                                                                                                                                                                                
+            after 1000
+            .turnpointframe.flybutton configure -text &quot;Start Flying&quot; -command {displayInfo}
+ }
+}
+#****************************************************************************
+
+proc gpsdisplay1 { } {
+   set fileid [open &quot;test2.trk&quot; r]
+   seek $fileid -54 end      
+
+   set dataline [gets $fileid]
+   set latitude1 [string range $dataline 4 5]
+   set latitude2 [string range $dataline 6 10]
+   set longitude1 [string range $dataline 16 18]
+   set longitude2 [string range $dataline 19 23]
+
+   close $fileid 
+
+   set X1 [ expr 7232.5 - (($longitude1 * 60) + $longitude2) ]
+   set X1 [expr $X1 * 11.6 ]
+
+   set Y1 [ expr 2222 - (($latitude1 *60) + $latitude2) ]
+   set Y1 [ expr $Y1 * 13.8 ]
+
+   .c.canvas create image $X1 $Y1 -image gliderpair -anchor center -tags st
+
+  } 
+
+##########################################################################
+
+proc gpsdisplay2 {} {
+
+global fileid
+global filelinenumber
+
+set filelinenumber 0
+
+ set fileid [open &quot;test2.trk&quot; r]
+     while {[eof $fileid] != 1}  {
+
+       set a  [gets $fileid]
+       set b [eof $fileid]
+       incr filelinenumber
+
+     }       
+    set filelinenumber [expr $filelinenumber - 15]
+    close $fileid
+
+
+ for {set x 0} {$x &lt; $filelinenumber} {incr x 1} {
+   # time {set a &quot;Hello World&quot;} 20000
+    set fileid [open &quot;test2.trk&quot; r] 
+     set fileid [open &quot;test2.trk&quot; r]
+     seek $fileid [ expr (($x * 54)+ 332)] start
+        set dataline [gets $fileid]
+          set latitude1 [string range $dataline 4 5]
+          set latitude2 [string range $dataline 6 10]
+          set longitude1 [string range $dataline 16 18]
+          set longitude2 [string range $dataline 19 23]
+
+          close $fileid
+          set X1 [ expr 7232.5 - (($longitude1 * 60) + $longitude2) ]  
+           set X1 [expr $X1 * 11.6 ]
+
+          set Y1 [ expr 2222 - (($latitude1 *60) + $latitude2) ]
+          set Y1 [ expr $Y1 * 13.8 ]
+
+#      .c.canvas create image $X1 $Y1 -image gliderpair -anchor center -tags st
+       .c.canvas create oval [expr $X1 - 2] [expr $Y1 - 2] [expr $X1 + 2] [expr $Y1 + 2] -outline red -width 2 -tags rm
+
+  }
+  
+}
+
+########################################################################
+proc gpsdisplay3 {} {
+  global fileposition
+  global filecounter
+  global filelinenumber
+  global fileid       
+
+    #time {set a &quot;Hello World&quot;} 20000
+
+    set fileid [open &quot;test2.trk&quot; r]
+    while {[eof $fileid] != 1}  {
+
+     set a  [gets $fileid]
+      set b [eof $fileid]
+      incr filelinenumber 
+
+
+      }
+
+    set filelinenumber [expr $filelinenumber - 13]
+    seek $fileid [ expr (($filecounter * 54)+ $fileposition)] start
+          set filecounter [expr $filecounter + 1] 
+          set dataline [gets $fileid]
+          set latitude1 [string range $dataline 4 5]
+          set latitude2 [string range $dataline 6 10]
+          set longitude1 [string range $dataline 16 18]
+          set longitude2 [string range $dataline 19 23]
+
+          set X1 [ expr 7232.5 - (($longitude1 * 60) + $longitude2) ]
+          set X1 [expr $X1 * 11.6 ]  
+           set Y1 [ expr 2222 - (($latitude1 *60) + $latitude2) ]
+          set Y1 [ expr $Y1 * 13.8 ]
+
+    .c.canvas create image $X1 $Y1 -image gliderpair -anchor center -tags st
+
+     gpsdisplay4
+
+}     
+
+#############################################################################
+proc gpsdisplay4 {} {
+ global filecounter
+ global filelinenumber
+ global fileid
+
+
+ if {$filecounter &lt;= $filelinenumber} {
+    set filelinenumber 0   
+    gpsdisplay3
+
+   } else {
+    set filecounter 0
+    set filelinenumber 0
+    close $fileid
+ }
+
+} 
+ 
+###########################################################################
+# The code to generate some random thermals of random strength in the area
+# of the bounding box associated with the line that represents the course
+# line of the current leg which is created in the plotline procedure
+
+proc generateThermals {X1 Y1 X2 Y2 daystrength} {
+
+global thermals thermalstrength     
+# this makes sure that there is always one tiny thermal, then even if you by chance get 0 for the random no. of thermals,
+# the proc won't crash.
+set ID1 [.c.canvas create oval 1 3 5 7 -fill black -stipple gray12]
+
+lappend thermals $ID1
+
+# attempt to generate a set of thermals randomly - the number, strength and size in area are all set
+# separately but have a higher chance of being more numerous and stronger depending on the daystrength
+# variable that the user can set. 
+ 
+  for {set x 0} {$x &lt; [RandomRange $daystrength]} {incr x} {
+
+     # find out the lengths of the sides of the bounding box of the course line - all the thermals will be in
+     # this area only, prevents plotting thermals where you are never going to fly for the current course.
+      set xrange [expr $X2 - $X1]
+      set yrange [expr $Y2 - $Y1]
+
+     # this calculates the upper left and lower right corners of the bounding box for each thermal oval  
+     ;# this calculates the upper left and lower right corners of the bounding box for each thermal oval
+    set bboxx1 [expr $X1 + [RandomRange $xrange]]
+    set bboxy1 [expr $Y1 + [RandomRange $yrange]]
+
+    # this actually plots the thermal ovals in the randomly generated positions determined above
+    # the size is a random range up to 100 pixels but you could set this to a different number if desired.
+    #  set ID2 [.c.canvas create oval $bboxx1 $bboxy1  [expr $bboxx1 + [RandomRange 100]] [expr $bboxy1 + \
+    [RandomRange 100]] -fill black -stipple gray12 -tag thermal]
+    set ID2 [.c.canvas create image [expr $bboxx1 + [RandomRange 100]] [expr $bboxy1 + \
+    [RandomRange 100]] -image dustdevil -tag thermal]   
+  
+
+    # this adds the id no. of each thermal to the list thermals for later querying when a glider flies into it's bounding box
+    # the value of the thermal's strength can be queried.
+    lappend thermals $ID2
+
+    # this sets the thermal strength to a random value but max is determined by the user controllable daystrength variable
+    set thermalstrength($ID2) [RandomRange $daystrength]
+    if {$thermalstrength($ID2) == 0 } {set thermalstrength($ID2) 1}   
+     .c.canvas scale $ID2 [lindex [.c.canvas coords $ID2] 0] [lindex [.c.canvas coords $ID2] 1] \
+    $thermalstrength($ID2) $thermalstrength($ID2)
+
+    # this plots a text representation of the thermal's strength in the upper left corner of the thermal's bounding box
+    .c.canvas create text [lindex [.c.canvas coords $ID2] 0] [lindex [.c.canvas coords $ID2] 1] \
+    -text &quot;$thermalstrength($ID2)&quot; -fill red -tags strength
+
+    }
+}
+
+###########################################################################################
+# the code for the bitmap display for the small glider images - supposed to be
+# an AS-H 25. The first one is for a glider flying southeast.
+
+set g {R0lGODdhXQBbAPUAAAAAAP///1WSVf+SqgBJVVVJAFVJ/6q2VQAkqlUkVVVtqlWS/6ptVaqS
+qv+2/wAAVQBJAABJ/1VJqlVtAKpJVaq2qv+2Vf+2qgAkAAAkVQBJqlUkAFVJVVVtVVVt/1WS        
+qqptqqqSVarbqqrb///bqv/b/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAXQBbAAAG
+/kCAcEgsGo/IpHLJbDqf0Kh0Sq1ar9isdsvter/gsHhMLpvP4wsGzU4yOu14EXOR24UX+D3e
+OOzjBBYZf20XFYRsISRriGYJFSGNZxVqkmUMInqWXQpEGJSbXg2aAAMHHKFdJUQcFSSpXBWk
+FweMsEakTQSrQw0WDbdHDZFQJRNDBa7BRopRIbxCrqjLQ60btk0jmiGG1ERqDdNNFdAblNjU
+qB3ETB0lmpQC3rgM4koj0CGg80Uc60wNSOjhcOECBH5zCnBY8wBCAoX+IuKDYMiQAAkIMjxA
+yGTDtRIC3xygdEBBBxAKNGSwx9FIAxG8CjS4MIEDBwofOjCot6Hl/hEMJUowonQIADqfSC6M
+KNqqEqxOVxSAFELn1K0QwK6IIAFV3ytY7o5GaVBihBCCFcQSSrArl5QMMAsIUcTS0rtBVkiU
+EDG3QtFU8Rr0pMIAnxAIAQeHagUARIcGapmA/ICnglxYBITo/FB3nIgAQhjsW0bA8agoHMrK                
+TSDCQmRJGPw1EACicxIHMIUcuICXHweHZ6dBTmBTdoC9JRREMKBhgUakP4UQ2KBAALkKHyRo
+qOBBgQcNCmxDB7A3bUQQAroraFAh6/hvIhwIGYwtw+uWDfCtweCA3fskIMB0EAAB/bcEUH7N
+l5aBSuAmXzQMMJhEBTAxwoEFEiLBnlBDYXyVYT8VDhHCff9dx8qHRpSHohIvQbOiS/GRmGGI
+Lx5RlngrVjBChDW6BEmPuCQIpCcluDekEA78dSQAQi4JQAdKHgmUjBly6OSVWGap5ZZcdunl
+l2CGKeaYZJZp5plgBgEAOw}
+
+###############################################################################
+# this one is for a glider flying about due west 
+  set west {
+#define west_width 42
+#define west_height 52
+static char west_bits[] = {
+ 0x01,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,
+ 0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00,0x00,
+ 0x0c,0x00,0x00,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x00,0x00,0x18,0x00,0x00,
+ 0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x00,0x00,0x30,0x00,0x00,0x00,0x00,0x00, 
+ 0x60,0x00,0x00,0x00,0x00,0x00,0x60,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,
+ 0x00,0x00,0x00,0x80,0x01,0x00,0x00,0x00,0x00,0x80,0x01,0x00,0x00,0x00,0x00,
+ 0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x06,0x00,
+ 0x00,0x08,0x00,0x00,0x0e,0x00,0x00,0x10,0x00,0x00,0x0c,0x00,0x00,0x20,0x00,
+ 0x00,0x1c,0x00,0x00,0x60,0x00,0x00,0x18,0x00,0x00,0xf0,0x00,0x00,0x30,0x00,
+ 0x00,0xb8,0x01,0x00,0x70,0x00,0x00,0x1c,0x03,0x00,0x60,0x00,0x00,0x1e,0x00,
+ 0x00,0xe0,0xff,0xff,0x0f,0x00,0x00,0xfe,0xff,0x1f,0x00,0x00,0xc0,0xff,0x0f,
+ 0x00,0x00,0x00,0xf0,0x7f,0x03,0x00,0x00,0x00,0x00,0x00,0x07,0x00,0x00,0x00,
+ 0x00,0x00,0x0e,0x00,0x00,0x00,0x00,0x00,0x1c,0x00,0x00,0x00,0x00,0x00,0x1c,    
+ 0x00,0x00,0x00,0x00,0x00,0x38,0x00,0x00,0x00,0x00,0x00,0x70,0x00,0x00,0x00,
+ 0x00,0x00,0xe0,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0xc0,
+ 0x01,0x00,0x00,0x00,0x00,0x80,0x03,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,
+ 0x00,0x00,0x00,0x0e,0x00,0x00,0x00,0x00,0x00,0x0c,0x00,0x00,0x00,0x00,0x00,
+ 0x18,0x00,0x00,0x00,0x00,0x00,0x30,0x00,0x00,0x00,0x00,0x00,0x30,0x00,0x00,
+ 0x00,0x00,0x00,0x60,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,
+ 0x80,0x01,0x00,0x00,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x02,0x00,
+ 0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x08,0x00};
+}
+   
+# this one is for a glider flying northeast
+set northeast {
+#define northeast_width 30
+#define northeast_height 57
+static char northeast_bits[] = {
+ 0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x30,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x60,0x00,0x00,0x00,0x60,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x80,0x00, 
+ 0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x07,0x00,0x00,0x00,
+ 0x06,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x0c,0x00,0x00,0x00,0x18,0x00,0x00,
+ 0x00,0x38,0x00,0x00,0x00,0x30,0x00,0x00,0x00,0x70,0x00,0x02,0x00,0x60,0x00,
+ 0x02,0x00,0xe0,0x80,0x01,0x00,0xc0,0xc0,0x01,0x00,0x80,0xf1,0x00,0x00,0x80,
+ 0x73,0x00,0x00,0x00,0x7b,0x00,0x00,0x00,0x3f,0x00,0x00,0x00,0x3e,0x00,0x00,
+ 0x00,0x1f,0x00,0x00,0x00,0x07,0x00,0x00,0x80,0x1f,0x00,0x00,0x80,0x1b,0x00,
+ 0x00,0xc0,0x1b,0x00,0x00,0xc0,0x38,0x00,0x00,0x60,0x30,0x00,0x00,0x70,0x78,
+ 0x00,0x00,0x30,0x60,0x00,0x00,0x38,0x60,0x00,0x00,0x18,0x60,0x00,0x00,0x0c,
+ 0xc0,0x00,0x00,0x04,0xc0,0x01,0x01,0x02,0x80,0x01,\,0x03,0x80,0x03,0xf0, 
+ 0x01,0x80,0x01,0xfe,0x00,0x00,0x02,0xee,0x00,0x00,0x03,0x06,0x00,0x00,0x03,
+ 0x04,0x00,0x00,0x02,0x0c,0x00,0x00,0x0c,0x04,0x00,0x00,0x0c,0x00,0x00,0x00,
+ 0x08,0x00,0x00,0x00,0x18,0x00,0x00,0x00,0x18,0x00,0x00,0x00,0x18,0x00,0x00,
+ 0x00,0x10,0x00,0x00,0x00,0x30,0x00,0x00,0x00,0x20,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x20};
+}
+
+# this one is for a glider flying southwest
+set southwest {     
+    
+#define southwest_width 61
+#define southwest_height 29
+static char southwest_bits[] = {
+ 0x00,0x00,0x00,0x00,0x00,0x5f,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x4e,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x0c,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0c,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0e,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x0e,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0e,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x01,0x00,0x00,     
+ 0x00,0x80,0x00,0x00,0x00,0x0a,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x60,0x00,
+ 0x00,0x00,0x70,0x00,0x00,0x00,0xc0,0x06,0x00,0x00,0x30,0x00,0x00,0x00,0x00,
+ 0x1e,0x00,0x00,0x18,0x00,0x00,0x00,0x00,0xf8,0x01,0x00,0x1e,0x00,0x00,0x00,
+ 0x00,0x80,0x0f,0x80,0x07,0x00,0x00,0x00,0x00,0x00,0x3d,0x80,0x01,0x00,0x00,
+ 0x00,0x00,0x00,0xec,0xc2,0x01,0x00,0x00,0x00,0x00,0x00,0xe0,0xf7,0x01,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0xf8,0x9f,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0xbc,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x1e,
+ 0xf8,0x9f,0x00,0x00,0x00,0x00,0x00,0x1f,0x00,0xfe,0x07,0x00,0x00,0x00,0x00,
+ 0x07,0x00,0xa0,0x6e,0x01,0x00,0x00,0x00,0x03,0x00,0x00,0xf0,0x13,0x00,0x00, 
+ 0xc0,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x40,0x00,0x00,0x00,0x00,0x00};
+}
+
+# this one is for a destroyed glider
+set destroyed {
+#define destroyed_width 29
+#define destroyed_height 61
+static unsigned char destroyed_bits[] = {
+  0x00, 0x00, 0x80, 0x07, 0x00, 0x00, 0xc0, 0x1f, 0x00, 0x00, 0xc0, 0x1f,
+  0x01, 0x00, 0xc0, 0x10, 0x01, 0x00, 0xc0, 0x10, 0x03, 0x00, 0xe0, 0x00,
+  0x0f, 0x00, 0xe0, 0x00, 0x0c, 0x00, 0x60, 0x00, 0x18, 0x00, 0x60, 0x00,
+  0x30, 0x00, 0xe0, 0x00, 0x40, 0x40, 0x60, 0x00, 0x80, 0x67, 0x30, 0x00,
+  0x00, 0x7f, 0x30, 0x00, 0x00, 0x7f, 0x30, 0x00, 0x00, 0x40, 0x30, 0x00,
+  0x00, 0x00, 0x18, 0x00, 0x00, 0x60, 0x10, 0x00, 0x00, 0x00, 0x38, 0x00,
+  0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x18, 0x00,
+  0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x0c, 0x00,     
+  0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x0c, 0x00,
+  0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x04, 0x00, 0x20, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x08, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
+  0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+  0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x10, 0x01, 0x00, 0x00, 0x18,
+  0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x1c,
+   0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x80, 0x02, 0x06,
+  0x00, 0x00, 0x03, 0x06, 0x00, 0x00, 0x1e, 0x03, 0x00, 0x00, 0x3c, 0x07,
+  0x00, 0x00, 0x78, 0x03, 0x00, 0x00, 0xf0, 0x01, 0x00, 0x00, 0xf0, 0x03,
+  0x00, 0x00, 0xc0, 0x03};
+}
+
+set dustdevil {
+#define dustdevil_width 81
+#define dustdevil_height 89  
+static char dustdevil_bits[] = {
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x10,0x28,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x20,0x20,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x00,
+ 0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x40,0x4c,0x09,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x82,0x92,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x0c,0xb6,0x01,   
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x90,0x05,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x64,0x45,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,
+ 0x00,0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x99,0x13,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0xac,0x52,0x0a,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x10,0x0a,
+ 0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20,0xc0,0x0a,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x20,0xf4,0x16,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x22,0x0c,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x90,0x02,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x64,0x5a,0x15,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x20,0xd3,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xa0,
+ 0x21,0x18,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x42,0xa2,0x52,0x01,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x9d,0x21,0x3a,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x40,0x41,0xc1,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xf0,0x8a,0x05,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x60,0x3a,0x08,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0xa6,0xa9,0x21,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x10,
+ 0x28,0x59,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x82,0xfa,0x2b,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x40,0x40,0xa0,0x02,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x20,0x62,0xa9,0x25,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x58,0x29, 
+ 0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xfc,0xa9,0x15,0x0a,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0xa0,0xed,0xef,0x95,0x32,0x00,0x00,0x00,0x00,0x00,0x00,0x20,
+ 0xf8,0xaf,0xa0,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x9c,0x39,0x22,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xeb,0xe2,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0xa0,0x3b,0x26,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xc0,0x3f,
+ 0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xf8,0x7e,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0xf2,0x3e,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0xfe,0x2b,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xfd,0x27,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xbc,0x0f,0x06,0x00,0x00,0x00,0x00,   
+ 0x00,0x00,0x00,0x00,0xfe,0x0f,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0xfe,0x17,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x7d,0x87,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x20,0xfe,0x0f,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x40,0xfd,0x27,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xf2,
+ 0x07,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,0xf6,0x07,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0xbb,0x20,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xbe,0x05,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x03,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x40,0x7a,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,    
+ 0x40,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20,0xfe,0x07,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,0xf6,0x01,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0xda,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,
+ 0x7f,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xfd,0x01,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x40,0xdf,0x01,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x7e,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xee,
+ 0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xff,0x01,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0xfb,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x01,   
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xee,0x01,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0xdf,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0xfe,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x01,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xb6,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0xf6,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0xf6,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xce,0x01,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xfe,0x01,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x40,0x7f,0x12,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xfd,
+ 0x05,0x07,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xc0,0xff,0x5d,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00,0x00,0xe4,0x7d,0xff,0x02,0x00,0x00,0x00,0x00,0x00,0x00,
+ 0x00,0xfd,0xaf,0xbe,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xd9,0x6b,0xbe,
+ 0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x7d,0x7c,0xf7,0x00,0x00,0x00,0x00,
+ 0x00,0x00,0x00,0x00};
+}
+
+set bmp {
+#define pic45tra_width 93
+#define pic45tra_height 91
+static unsigned char pic45tra_bits[] = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,    
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,  
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00,   
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x60, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x70, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x38, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x3c, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x3c, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x76, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,    
+  0x00, 0x00, 0xf0, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0xe0, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0xc0, 0x3f, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0xc0, 0xff, 0xff, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0xfc, 0xff, 0x0f, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x80, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x80, 0xc3, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0xc0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   
+  0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,          
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+}
+#########################################################################
+# Main Body of Program                                                            
+# next two lines create the images use for non plugin version comment out for plugin version
+ image create photo sectional -file largeclr.gif -gamma 1
+ image create photo gliders -file pic45tra.gif -gamma 1
+
+ # uncomment next 2 lines for plugin version (non plugin can't use -data statement)
+ #image create photo gliders -data $g
+ #image create photo sectional -date $i
+
+ # bitmaps work with -data in both versions 
+image create bitmap gliderpair -data $bmp -foreground white
+image create bitmap gliderpairwest -data $west -foreground white
+image create bitmap glidershadow -data $bmp -foreground gray50
+image create bitmap glidershadowwest -data $west -foreground gray50
+image create bitmap gliderpairnortheast -data $northeast -foreground white
+image create bitmap glidershadownortheast -data $northeast -foreground gray50
+image create bitmap gliderpairsouthwest -data $southwest -foreground white
+image create bitmap glidershadowsouthwest -data $southwest -foreground gray50
+image create bitmap destroyed -data $destroyed -foreground white   
+image create bitmap destroyedshadow -data $destroyed -foreground gray50
+image create bitmap dustdevil -data $dustdevil -foreground brown
+
+ScrolledCanvas .c 400 300 { 0 0 1359 1836 }
+
+
+frame .frame ;#frame for holding the great circle distance calculation
+pack .frame
+#*******************************************************************************
+
+
+getturnpoint  ;#procedure to get the index value of the selected turnpoints
+#bind . &lt;KeyPress-Left&gt; {set SPEED(IB) [expr $SPEED(IB) - 1]}
+
+getcoord      ;#gets the coordinates from the list for the selected turnpoints   
+  
+calcdist  $latdeg1 $latmin1 $londeg1 $lonmin1 $latdeg2 $latmin2 $londeg2 $lonmin2
+
+
+
+calcheading $latdeg1 $latmin1 $londeg1 $lonmin1 $latdeg2 $latmin2 $londeg2 $lonmin2
+
+
+#plotline $latdeg1 $latmin1 $londeg1 $lonmin1 $latdeg2 $latmin2 $londeg2 $lonmin2  
+
+#set HEADING($contestno) $COURSE
+showdist
+
+
+.c.canvas yview moveto .45
+.c.canvas xview moveto .1
+
+.c.canvas create text [expr 400 + 105] [expr 1025 - 45] -text &quot;Glider Combat!!!&quot; \
+-font -freefont-futura_poster-*-r-*-*-*-400-*-*-*-*-*-* -fill black  -tags logo
+.c.canvas create text [expr 400 + 95] [expr 1025 - 55] -text &quot;Glider Combat!!!&quot; \
+-font -freefont-futura_poster-*-r-*-*-*-400-*-*-*-*-*-* -fill olivedrab -tags logo2
+
+.c.canvas create text [expr 400 + 110] [expr 1025 - 10] -text &quot;by Alex Caldwell&quot; \
+-font -freefont-futura_poster-*-r-*-*-*-400-*-*-*-*-*-* -fill purple  -tags logo
+
+
+# End of Program</pre></div><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/Alex+Caldwell'>Alex Caldwell</a> 2003-06-15: I added some code to the calcheadingchange proc that now enables the gliders to circle in thermals, instead of just making &quot;S&quot; turns. New global variable &quot;angle_radians&quot; added that gets increased by .01 x the number of radians in a circle with each frame until the steering input decreases back below the circling threshold. When the steering input value reaches a threshold of  absolute value 40 or more, the glider will circle right or left depending on left arrow or right arrow input. The radius of the circle decreases proportional to the absolute value of the steering input. </p><hr class='mkup_hr'><p class='mkup_p'><a class='mkup_a mkup_known' href='/page/AMG'>AMG</a>: This code seems to have suffered some form of bit rot. Running in Tcl 8.6.4, I get this error:</p><div class='sh_sourceCode'><button class='copybtn btn pull-right' data-clipboard-target='#mkup_code_1' title='Click to copy code snippet to clipboard'><span class='glyphicon glyphicon-copy' aria-hidden='true'></span></button><pre id='mkup_code_1' class='mkup_pre sh_sourceCode'>format error in bitmap data
+    while executing
+&quot;image create bitmap gliderpair -data $bmp -foreground white&quot;
+    (file &quot;./sailplane.tcl&quot; line 1338)</pre></div><p class='mkup_p'>Apparently there's a bitmap format incompatibility. I have no time to investigate now, just reporting the issue.</p><hr><div class='mkup_centered'><table class='mkup_categories'><tr><td class='mkup_td'><a class='mkup_a' href='/page/Category+Games'>Category Games</a></td><td class='mkup_td'><a class='mkup_a' href='/page/Category+Geography'>Category Geography</a></td><td class='mkup_td'><a class='mkup_a' href='/page/Category+Tcl+Browser+Plugin'>Category Tcl Browser Plugin</a></td></tr></table></div>
+</div>
+</div>
+<div class='row'>
+<div class='col-xs-12'>
+<div class='Footer'>Updated 2021-01-01 23:10:43</div>
+</div>
+</div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.combined.js'></script>
+
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+<script type='text/javascript' src='/scripts/nikit.js'></script>
+<script type='text/javascript' src='/scripts/sh_main.js'></script>
+<script type='text/javascript' src='/scripts/sh_tcl.js'></script>
+<script type='text/javascript' src='/scripts/sh_c.js'></script>
+<script type='text/javascript' src='/scripts/sh_cpp.js'></script>
+
+<script src='https://hcaptcha.com/1/api.js'></script>
+<script>var clipboard = new ClipboardJS('.copybtn', {
+  text: function(trigger) {
+    return document.querySelector(trigger.getAttribute('data-clipboard-target')).textContent + '\n';
+  }
+});
+sort_tables();
+</script>
+</body>
+</html>

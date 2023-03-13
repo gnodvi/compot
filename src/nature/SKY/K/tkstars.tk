@@ -1,0 +1,104 @@
+# -*-   mode: tcl  ; coding: utf-8   -*- ---------------------------------------
+
+#!/bin/sh
+# \
+exec wish "$0" ${1+"$@"}
+
+package require Tk ;# ÔÏÇÄÁ × Windows CMD ×ÉÄÅÎ ×Ù×ÏÄ × STDOUT
+
+#-------------------------------------------------------------------------------
+
+# 
+# tkstars.wish: Drawing star flows.
+# 
+#     [1996/07/25] OSHIRO Naoki.
+# 
+#     $Log:$
+#
+
+#
+# Parameters
+#
+set width   	256
+set height  	128
+set update_time 100
+set flow_speed 	-50
+set star_num 	20
+set star_col	gold
+
+#
+# Initial Setup
+#
+set width2  [expr $width/2]
+set height2 [expr $height/2]
+
+wm minsize . $width $height
+wm maxsize . $width $height
+bind . <q> {destroy .}
+
+canvas .c -width $width -height $height -bg black
+pack .c
+
+#
+# Rand
+#
+set rand_next 1
+proc rand {} {
+	global rand_next;
+	set rand_next [expr $rand_next*1103515245 + 12345]
+	return [expr (($rand_next/65536)%32768)/32768.0];
+}
+
+#
+# Update 
+#
+proc update {{w}} {
+	global width2 height2 stars star_num
+	global flow_speed update_time
+	set z_d $flow_speed
+
+	after $update_time update $w
+
+	for {set i 0} {$i < $star_num} {incr i} {
+		set star $stars($i)
+		set id [lindex $star 0]
+		set x [lindex $star 1]
+		set y [lindex $star 2]
+		set z [lindex $star 3]
+		set z2 [expr $z+$z_d]
+		if {$z2<1} {
+			set z 1000
+			set z2 [expr $z+$z_d]
+		}
+
+		set ix  [expr $width2+$x*2000/$z]
+		set iy  [expr $height2+$y*2000/$z]
+
+		set ix2 [expr $width2+$x*2000/$z2]
+		set iy2 [expr $height2+$y*2000/$z2]
+#puts [format "%d %6.3f %6.3f %6.3f" $id $z $ix $iy]
+#puts $id
+		$w coords $id $ix $iy $ix2 $iy2
+
+		set z $z2
+		set stars($i) [list $id $x $y $z]
+	}
+}
+
+#
+# Init
+#
+proc init {{w}} {
+	global stars star_num star_col
+
+	for {set i 0} {$i < $star_num} {incr i} {
+		set id [$w create line 0 0 0 0 -fill $star_col]
+		set x [expr int([rand]*50-25)]
+		set y [expr int([rand]*50-25)]
+		set z [expr int([rand]*1000)]
+		set stars($i) [list $id $x $y $z]
+	}
+}
+
+init .c
+update .c

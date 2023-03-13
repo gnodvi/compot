@@ -1,0 +1,331 @@
+
+#-----------------------------------------------------------------------------------------
+
+https://towardsdatascience.com/ai-feynman-2-0-learning-regression-equations-from-data-3232151bd929
+
+#-----------------------------------------------------------------------------------------
+
+Sign In
+Towards Data Science
+Published in
+
+Towards Data Science
+Daniel Shapiro, PhD
+Daniel Shapiro, PhD
+Follow
+
+Jul 1, 2020
+9 min read
+·
+A NEW AI LIBRARY FROM MAX TEGMARK’S LAB AT MIT
+
+AI Feynman 2.0: Learning Regression Equations From Data
+
+
+Let’s kick the tires on a brand new library
+Image by Gerd Altmann from Pixabay (CC0)
+
+#-----------------------------------------------------------------------------------------
+
+Table of Contents
+
+1. Introduction
+2. Code
+3. Their Example
+4. Our Own Easy Example
+5. Symbolic Regression on Noisy Data
+1. A New Symbolic Regression Library
+
+I recently saw a post on LinkedIn from MIT professor Max Tegmark about a new ML library
+his lab released. I decided to try it out. The paper is AI Feynman 2.0: Pareto-optimal
+symbolic regression exploiting graph modularity, submitted June 18th, 2020. The first
+author is Silviu-Marian Udrescu, who was generous enough to hop on a call with me and
+explain the backstory of this new machine learning library. The library, called
+AI Feynman 2.0, helps to fit regression formulas to data. More specifically, it helps to
+fit formulas to data at different levels of complexity (defined in bits). The user can
+select the operators that the solver will use from sets of operators, and the solver does
+its thing. Operators are things like exponentiation, cos, arctan, and so on.
+
+Symbolic regression is a way of stringing together the user-specified mathematical
+functions to build an equation for the output “y” that best fits the provided dataset.
+That provided dataset takes the form of sample points (or observations) for each input
+variable x0, x1, and so forth, along with the corresponding “y”. Since we don’t want to
+overfit on the data, we need to limit the allowed complexity of the equation or at least
+have the ability to solve under a complexity constraint. Unlike a neural network, learning
+one formula with just a few short expressions in it gives you a highly interpretable model,
+and can lead to insights that you might not get from a neural network model with millions
+of weights and biases.
+
+Why is this interesting? Well, science tends to generate lots of observations (data) that
+scientists want to generalize into underlying rules. These rules are equations that “fit”
+the observations. Unlike a “usual” machine learning model, equations of the form y=f(x)
+are very clear, and they can omit some of the variables in the data that are not needed.
+In the practicing machine learning engineer’s toolbox, regression trees would be the
+closest concept I can think of that implements this idea of learning an interpretable
+model that connects observations to a prediction. Having a new way to try and fit a
+regression
+model to data is a good addition to the toolbox of stuff you can try on your dataset.
+
+In this article, I want to explore this new library as a user (how to use it), rather than a
+scientist (how does it work). AI-Feynman 2.0 reminds me of UMAP, in that it includes very
+fancy math on the inside of the solver, but does something useful to me in an abstracted
+way that I can treat as a black box. I understand that the code is going to be updated in
+stages over the next several months, and so the way the interface to the code looks today
+may not be the way it works when you are reading this. Hopefully, more documentation will
+also be added to give you a quick path to trying this on your data. For the moment, I’m
+including a notebook with this article so that you can dive in and get everything working
+from one place.
+
+The library uses machine learning to help with the equation discovery, breaking the problem
+into subproblems recursively, but let’s not get too far into the weeds. Let’s instead turn
+our attention to using the library. You are welcome to read the paper to learn more about
+how the library does what it does to solve the symbolic regression mystery on your data.
+
+#-----------------------------------------------------------------------------------------
+
+A Google Collab notebook containing all of the code for this article is available here:
+dcshapiro/AI-Feynman
+Permalink Dismiss GitHub is home to over 50 million developers working together to host and
+review code, manage…
+
+github.com
+
+#-----------------------------------------------------------------------------------------
+2. Code
+
+
+Some notes on the output are important. The solver prints many times the Complexity, RMSE,
+and Expression. Be aware that the RMSE number is not actually the Root Mean Squared Error.
+It is the Mean Error Description Length (MEDL) described in the paper, and that message
+will be changed soon. Also, the Expression printout is not the equation for the dataset,
+but rather for the sub-problem within the overall problem graph that the solver is currently
+working on. This is important because you will find that sometimes there is a printout that
+seems like it has a very low error, but it only applies to some subproblem and is not the
+equation you are trying to find. The final results are stored in the results folder using
+the name of the input file.
+
+#-----------------------------------------------------------------------------------------
+3. Try the First Example from the AI-Feynman Repository
+
+Clone the repository and install the dependencies. Next, compile the Fortran code and run
+the first example dataset from the AI-Feynman repository (example1.txt from the repository).
+
+The first few steps are listed here:
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ai-feynman-2-0-setup-sh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Next, put this file into the Code directory and run it with python3:
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ai_feynman_magic-py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first line of the example1.txt file is:
+
+1.6821347439986711 1.1786188905177983 4.749225735259924 1.3238356535004034 3.462199507094163
+
+Example 1 contains data generated from an equation, where the last column is the regression
+target, and the rest of the columns are the input data. The following example shows the
+relationship between the first line of the file example1.txt and the formula used to make t
+he data.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ai-feynman-example1-analysis-py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We can see from running the code snippet above that the target “y” data points in
+example1.txt are generated using the equation on line 3, where the inputs are all the
+columns except for the last one, and the equation generates the last column.
+
+Let’s now run the program. In the folder AI-Feynman/Code/ run the command python3
+ai_feynman_magic.py to run the program we wrote above which in turn fits equations to
+the example1.txt dataset.
+
+The solver runs for a long time, trying different kinds of equations at different levels
+of complexity, and assessing the best fit for each one. As it works through the solution,
+it prints intermediate results. If it hits a super low error you can stop the program
+and just use the equation. It’s really your call if you let it run to the end. For the
+input file example1.txt, the results show up in AI-Feynman/Code/results/solution_example1.txt.
+There are other spots where results are generated, but this is the place we care about
+right now. That file “solution_…txt” ranks the identified solutions. It’s funny that
+assuming y is a constant is a common strategy for the solver. Constants have no input
+variables, and so they have low complexity in terms of the number of bits. In the case of
+example 1, the equation ((x0-x1)**2 + (x2-x3)**2)**0.5 fit the best.
+
+4. Try Our Own Simple Example
+
+In the Collab notebook, I now moved the repository and data to Google Drive so that it
+will persist. The following code generates 10,000 examples from an equation. This example
+has 2 “x” variables and 2 duplicated “x” variables. Of course, y is still the output.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ai_feynman_datagen-py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Plotting the first variable against Y we get:
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Img1
+Plot of x0 against y for our example
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Img2
+Plot of x2 against y for our example
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now that we took a peek at what our data looks like, let’s ask the solver to find a simple
+equation that fits our data, using our dataset. The idea is that we want the solver to
+notice that you don’t need all of the supplied variables in order to fit the data.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ai_feynman_duplicate_variables-py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is an example of a permissions problem:
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+permissionissue-txt
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+If you have file permission issues when you try to run the code, open up the file
+permissions like this:
+
+chmod +777 AI-Feynman/Code/*
+
+Below is the command to run the solver. Go get coffee, because this is not going to be
+fast…
+
+python3 ai_feynman_duplicate_variables.py
+
+If you have nothing better to do, watch the solver go. Notice the solver goes through
+a list of equation types before mixing it up. The initial models it tries out are quickly
+mapped to x0 and x2 as it “realized” x1 and x3 are duplicates and so not needed.
+Later on, the solver found the equation 3.000000000000+log(sqrt(exp((x2-x1)))) which is
+a bit crazy but looks like a plane.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Img3
+Source: WolframAlpha
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+We can see on WolframAlpha that an equivalent form of this equation is:
+
+y=(x2 - x1)/2 + 3.000000000000
+
+which is what we used to generate the dataset!
+
+The solver settled on y=log(sqrt(exp(-x1 + x3))) + 3.0 which we know is a correct
+description of our plane, from the wolfram alpha thing above. The solver ended up using
+x1 and x3, dropping x0 because it is a copy of x1 and so not needed, and similarly
+dropping x2 because it is not needed when using x3.
+
+Now, that worked, but it was a bit of a softball problem. The data has an exact solution,
+and so it didn’t need to fit noisy data, which is not a realistic real-world situation.
+Real data is messy. Let’s now add noise to the dataset and see how the library holds up.
+We don’t need to go as far as introducing missing variables and imputation. Let’s just
+make the problem a tiny bit harder to mess with the solver.
+
+
+5. Symbolic Regression on Noisy Data
+
+The following code creates points on the same plane as the previous example, but this
+time noise is added.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+planepointswithnoise-py
+
+Note: In the notebook code I increased the dataset size to 100K samples (from the current
+10K samples) to make the dataset size similar to example1. You don’t need to do that,
+and so I left this GIST as 10K samples.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following figure shows how the duplicate columns are now no longer exact duplicates.
+Will the solver average the points with noise on them to get a better signal? I would
+average x0 and x1 into a cleaner point, and then average x2 and x3 into a cleaner point.
+Let’s see what the solver decides to do.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Img4, Img5
+Img6, Img7
+
+plots for x0, x1, x2, and x3 against y. The labels are the column number. 0 for x0, 1 for
+x1, and so forth. The last column, column 4, is y.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+We now make yet another runner file as follows:
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ai_feynman_duplicatevarswithnoise-py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+If you have permissions issues, do the chmod 777 thing, or 775 or whatever. To run the
+program do this:
+
+python3 ai_feynman_duplicateVarsWithNoise.py
+
+As the solver works through ideas, it comes up with some wild stuff. You can sort of see
+in the figure below the plane-like shape in one solution the solver tried:
+1.885417681639+log((((x1+1)/cos((x0–1)))+1)). Unfortunately the 2 variables it tried
+there are x0 and x1, which are duplicates of each other with a small amount of noise added.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Img8
+A WolframAlpha 3D plot of one of the solver’s early solutions.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Nice try solver. Let’s keep it running and see what happens next.
+
+The solver found the equation:
+
+y = 3.0–0.25*((x0+x1)-(x2+x3))
+
+As I had hoped, the solver figured out that averaging x0 and x1 gets you a cleaner
+(less noisy) x01, and averaging x2 and x3 similarly results in a less noisy x23. Recall
+that the original formula used to make “y” was operating on the input data before we
+added noise to the inputs:
+
+y = -0.5*x01+0.5*x23+3
+
+Interestingly, the solver also found
+
+y=3.000000000000+log(sqrt(exp((x2-x0))))
+
+This is another version of the formula that uses fewer variables in exchange for a slightly
+less perfect fit to the data (because of the added noise). And so the solver gives you,
+the user, the option to see the formula that fits the data at different levels of complexity.
+
+6. Conclusion
+
+A symbolic regression solver called AI-Feynman 2.0 was tested out in this article, starting
+with the example that comes with the repo, moving to an example we make ourselves from
+scratch, and finally challeng
+ing the solver by adding some noise. A notebook for reproducing this article can be found HERE.
+
+Special thanks to Silviu Marian Udrescu for helping me to better understand the code,
+and for reviewing an earlier draft of this work to make sure I don’t say silly things.
+This is going to be fun to tryon real-world problems. I have been containerizing this
+library for Gravity-ai.com to apply to real-world datasets. Hopefully you will find it
+useful and use it for your own work.
+
+If you liked this article, then have a look at some of my most read past articles, like
+“How to Price an AI Project” and “How to Hire an AI Consultant.” And hey, join the
+newsletter!
+
+Until next time!
+
+#-----------------------------------------------------------------------------------------
+-Daniel
+Lemay.ai
+daniel@lemay.ai
+
+#-----------------------------------------------------------------------------------------

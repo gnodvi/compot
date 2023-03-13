@@ -1,0 +1,108 @@
+# -*-  mode: sh   ; coding: koi8   -*- -----------------------------------------
+
+#-----------------------------------------------------------------------
+
+CUR_DIR=$PWD
+
+#-----------------------------------------------------------------------
+#
+#-----------------------------------------------------------------------
+
+REL=3.2.2
+
+RELNAME=freeglut-${REL}
+ARXNAME=v${REL}
+
+#ADDR=https://github.com/FreeGLUTProject/freeglut/releases/download
+ADDR=https://github.com/FreeGLUTProject/freeglut/archive/refs/tags
+
+## https://github.com/FreeGLUTProject/freeglut/archive/refs/tags/v3.2.2.tar.gz
+# export https_proxy=https://127.0.0.1:3128
+# export http_proxy=http://127.0.0.1:3128
+
+#--------------------------------------------
+update ()
+{
+
+  if [ -f ./A/${ARXNAME}.tar ] ; then   
+    echo ""
+    echo "File exist: exit and not update !!"
+    echo ""
+    exit
+  fi
+       
+  mkdir -p A
+  cd A;
+
+  wget ${ADDR}/v${REL}/${ARXNAME}.tar.gz
+
+  gzip -fd ${ARXNAME}.tar.gz
+
+}
+#--------------------------------------------
+cleansrc ()
+{
+
+  #rm -fR ./${RELNAME}
+  rm -fR ./T/${RELNAME}
+
+  rm -f cmake
+  rm -f make
+  rm -f make_install
+
+}
+#--------------------------------------------
+# cleanrel ()
+# {
+
+#   cleansrc
+  
+#   rm -fR ./R
+
+# }
+#--------------------------------------------
+# cleanarx ()
+# {
+
+#   cleanrel
+  
+#   rm -fR ./A
+
+# }
+#--------------------------------------------
+make_and_install ()
+{
+
+#   if [ -d ./R ] ; then   
+#     echo ""
+#     echo "./R exist: exit and not make !!"
+#     echo ""
+#     exit
+#   fi
+       
+  if [ -f ./R/lib/libglut.a ] ; then   
+    echo ""
+    echo "./Rlib/libglut.a exist: exit and not make !!"
+    echo ""
+    exit
+  fi
+       
+  cd A;
+  tar xvf ${ARXNAME}.tar
+  cd ..;
+
+  cleansrc    
+  #mv A/${RELNAME} .
+  mv A/${RELNAME} ./T
+
+  #cd $CUR_DIR/freeglut-3.2.2
+  cd $CUR_DIR/T/freeglut-3.2.2
+  
+  cmake -DCMAKE_INSTALL_PREFIX=$CUR_DIR/R   .   2>&1 | tee  $CUR_DIR/cmake
+  make         2>&1 | tee  $CUR_DIR/make  
+  make install 2>&1 | tee  $CUR_DIR/make_install
+
+}
+#-----------------------------------------------------------------------
+#
+#-----------------------------------------------------------------------

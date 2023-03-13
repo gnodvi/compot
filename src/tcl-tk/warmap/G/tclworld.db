@@ -1,0 +1,99 @@
+ # tclworld.db -- sample database for dbapi/dbgui, used for Tclword
+ set db [db "Tclworld database"]
+interp alias {} + {} $db
+
+ + Earth      : {planet in Solar system} see.also continent \
+                major.countries {China USA Russia India Japan}
+ + continent  : {large continuous land mass, as opposed to an island .
+                The Earth 's continents are: Africa America Antarctica Asia Australia
+                Europe}
+ + Africa     : continent major.countries {Egypt Kenya Nigeria {South Africa}}
+ + America    : continent parts {{North America} {Central America} {South America}}
+ + Asia       : continent NB {In fact, part of the Eurasia land mass} \
+                major.countries {India China Japan Russia Indonesia}
+ + Alabama    : {state of USA} abbr AL pop 4,335,400 capital Montgomery \
+                nick "Yellowhammer State" largest.city Birmingham,AL
+ + Alaska     : {state of USA} abbr AK pop 611,500 capital Juneau \
+                nick "Last Frontier" largest.city Anchorage
+ + Arizona    : {state of USA} abbr AZ pop 4,664,600 capital Phoenix \
+                nick "Grand Canyon State"
+ + Arkansas   : {state of USA} abbr AR pop 2,531,000 capital "Little Rock" \
+                nick "The Natural State"
+ + Austin     : {capital of Texas}
+ + Beijing    : {capital of China} zh: \u5317\u4EAC
+ + California : {state of USA} abbr CA pop 33,198,100 nick "Golden State"\
+                capital Sacramento largest.city {Los Angeles}
+ + Canada     @ flags/cd.gif : {country in {North America}} capital Ottawa
+ + China      @ flags/cn.gif : {country in Asia} zh: \u4E2D\u56FD capital Beijing \
+                country.code CN
+ + Connecticut : {state of USA} abbr CT  nick "Constitution State" \
+                pop 3,271,100 capital Hartford largest.city Bridgeport
+ + Cuba       : {country in America in the Caribbean Sea} capital Havana
+ + EU         @ flags/eu.gif : {European Union, a community of countries in Europe} \
+                members {Austria Belgium Denmark Finland France Germany {Great Britain}
+                Greece Ireland Italy Luxemburg Netherlands Portugal Sweden Spain}
+ + Eurasia    : {continent} parts {Europe Asia} NB {For historical
+                reasons, Europe and Asia are mostly called continents, although
+                connected}
+ + Europe     : {continent - in fact a subcontinent of Eurasia} NB {
+                Most European countries are members of the EU}
+ + France     @ flags/fr.gif : {country in Europe} capital Paris country.code FR
+ + Germany    @ flags/de.gif : {country in Europe} capital Berlin\
+                 country.code DE
+ + Hartford   : {capital of Connecticut}
+ + island     : {smaller land mass surrounded by water, as opposed to
+                a continent . Examples: {Long Island} , {Puerto Rico}}
+ + Italia     : {country in Europe} country.code IT capital Roma
+ + Japan      @ flags/jp.gif : {country in Asia} jp: \u65E5\u672C\u56FD capital Tokyo \
+                 country.code JP 
+ + {Long Island} : {island in {New York State}}
+ + Moscow     : {capital of Russia} ru: \u041C\u043E\u0441\u043A\u0432\u0430
+ + {New York,NY} : {city in {New York} state} nick "Big Apple" abbr NYC\
+                NB {Largest city of the USA}
+ + {New York} : {state of USA} abbr NY capital Albany \
+                largest.city {{New York,NY}}
+ + {North America} : {part of America} countries {Canada USA Mexico}
+ + Paris      : {capital of France} see.also Paris,TX
+ + Russia     @ flags/ru.gif : {country in Europe and Asia} capital Moscow \
+                ru: \u0420\u043E\u0441\u0441\u0438\u044F country.code RU
+ + {Salt Lake City} : {capital of Utah} pop 2,071,500
+ + Texas      : {state of USA} abbr TX nick "Lone Star State" capital Austin
+ + Tokyo      : {capital of Japan} jp: \u6771\u4EAC
+ + USA        @ flags/us.gif : {country in {North America}} pop 270,253,500 \
+                full.name "United States of America" \
+                capital Washington,DC largest.city {{New York}} country.code US
+ + Utah       : {state of USA} abbr UT nick "Beehive State" capital {Salt Lake City}
+ + Washington : {state of USA} abbr WA pop 5,674,900 see.also Washington,DC
+ + Washington,DC : {capital of USA} pop 523,800 see.also Washington
+ + Zürich     : {capital of Switzerland} loc {47.4006 -8.5341} en: Zurich it: Zurigo
+
+#---------------- leveling cities
+foreach i {
+	Tokyo {Mexico City} Mumbai {New York} Shanghai Lagos {Los Angeles}
+	Calcutta {Buenos Aires} Beijing Karachi Delhi Dhaka Manila Cairo Osaka
+	{Rio de Janeiro} Tianjin Moscow Paris Roma Toronto Sydney  {Cape Town}
+                Bogota Lima  Seattle Houston Perth  Kinshasa
+} {+ $i level 1} ;# Megalopolises - agglomeration pop > 10,000,000
+foreach i {
+	Djakarta Istanbul  London Tehran Bangkok Chicago
+	Hyderabad Chennai Hangzhou {Hong Kong} Lahore Shenyang Changchun
+	Harbin Chengdu Guangzhou {St Peterburg}
+	Baghdad Jinan Wuhan Yangon Algier Qingdao Milano Seoul Riyadh
+	Pusan {Belo Horizonte} Ahmadabad Madrid {San Francisco} Berlin
+	{Addis Ababa} Casablanca   {La Paz} Asuncion Lisboa Khartoum
+} {+ $i level 2} ;# Metropolises - agglomeration pop > 4,000,000
+foreach i {
+	Alexandria Washington Dallas Guadalajara Chongqing Medellin
+	Handan Frankfurt {Porto Alegre} Hanoi  {Santo Domingo} Singapore
+	Katowice Pune Bandung Monterrey Montreal Nagoya Nanjing Houston
+	Abidjan Xi'an Recife Düsseldorf Ankara Melbourne Salvador
+	Dalian Caracas Athens Köln Maputo Hamburg Munich
+	Fortaleza  {Sao Paulo}  {Santiago de Chile} Barcelona
+	Warsaw  Budapest Denver Tunis Stockholm Bucuresti Sofia Oslo
+} {+ $i level 3} ;# agglomeration pop > 3,000,000
+foreach i {
+	Philadelphia Napoli  Helsinki Vienna Zurich Boston Reykjavik Detroit
+} {+ $i level 4}
+
+ #----------- end of data; the last command returns the database name
+ set db

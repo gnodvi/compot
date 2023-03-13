@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base href="https://core.tcl-lang.org/tips/doc/trunk/tip/263.md" />
+<title>Tcl Improvement Proposals: TIP 263: Quantum Tcl</title>
+<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/tips/timeline.rss" />
+<link rel="stylesheet" href="/tips/style.css?id=65ae81af" type="text/css" media="screen" />
+<script src="/tips/doc/trunk/scripts/tablesort.js"></script>
+</head>
+<body>
+<div class="header">
+<div class="title"><h1>TIP 263: Quantum Tcl</h1></div>
+<div class="status"><a href='/tips/login'>Login</a>
+</div>
+</div>
+<div class="mainmenu">
+<a href='/tips/doc/trunk/index.md'>Home</a>
+<a href='/tips/timeline'>Timeline</a>
+<a href='/tips/dir?ci=tip'>Files</a>
+<a href='/tips/brlist'>Branches</a>
+<a href='/tips/taglist'>Tags</a>
+<a href='/tips/doc/trunk/doc/help.md'>Help</a>
+</div>
+<div class="adunit_banner">
+<div style="width: 640px; margin: 12px auto;">
+<img style="float: left; width: 32px; height: 32px; padding-right: 10px;" src="/images/fa-bounties.png">
+<a href="https://github.com/flightaware/Tcl-bounties">Bounty program</a>
+for improvements to Tcl and certain Tcl packages.
+</div></div>
+<div class="content"><span id="debugMsg"></span>
+<div class="markdown">
+<pre><code>Author:		Lars Hellström &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="84c8e5f6f7aacce1e8e8f7f0f6ebe9c4f6e1f7ede0e1eaf7e1f0aaeae1f0">[email&#160;protected]</a>&gt;
+State:		Draft
+Type:		Project
+Vote:		Pending
+Tcl-Version:	9.2
+Created:	01-Apr-2006
+Post-History:	
+</code></pre>
+<hr />
+<h1>Abstract</h1>
+<p>A new Tcl command <strong>qubit</strong> is proposed. This command makes it possible to
+handle quantum information in the form of qubits.</p>
+<h1>Rationale</h1>
+<p>As stated in <a href="131.md">[131]</a>, what Tcl needs in order to succeed in the marketplace is a
+feature that no other programming language provides, a "killer app" as it
+were. The Tk toolkit, Expect, cross-platform portability, starkits, tkcon, and
+excellent embed/extend-ability with respect to other languages are all well
+and good, but they have clearly failed to push Tcl usage to the point of
+having critical mass. The <strong>qubit</strong> command makes it possible to achieve an
+exponential speedup for important problems and should therefore provide a
+powerful enough incentive that even Perl programmers would be compelled to
+switch languages.</p>
+<h1>Background</h1>
+<p>Quantum computing makes use of phenomena in quantum mechanics to, at each time
+step, carry out an exponential amount of work using only a linear amount of
+hardware. The way this maps onto physical reality is pretty mind-boggling, but
+for the programmer it is sufficient to think of the Quantum Processing Unit
+(QPU) as an extremely powerful but somewhat specialised coprocessor and leave
+it at that. (Chances are anyway that the QPU isn't physically located in your
+desktop computer, as they tend to involve lots of lasers, magnets, vacuum
+chambers, liquid nitrogen cooling, etc.)</p>
+<p>Quantum information display an interesting duality in that it is analog during
+a computation, but becomes digital as soon as one measures it. (Wave/particle
+duality, in case anyone came to think of that, is the kind of "mapping onto
+physical reality" issue that will not be treated here.) This makes the design
+of quantum algorithms somewhat different from the design of classical
+algorithms, in a manner similar to that in which the design of analog
+electronic circuits is different from the design of digital electronic
+circuits, as one must often work out the numbers rather than rely on a
+discrete case-by-case analysis. Another curious feature is that all fully
+quantum operations must be reversible, which in particular has the effect that
+quantum information can neither be duplicated nor (in the absence of
+measurements) destroyed, only rearranged. There is in particular no quantum
+analogue to assignments such as [set a $b], since not only need this copy
+the value of b, it also irrecoverably destroys the old value of a; the closest
+one gets to such an assignment is exchanging the values of a and b.</p>
+<p>For more information on quantum computing in general, see e.g.:</p>
+<ul>
+<li><p>Wikipedia article "Quantum computer"
+<a href="https://en.wikipedia.org/wiki/Quantum_computer">http://en.wikipedia.org/wiki/Quantum_computer</a> .</p></li>
+<li><p>J. Gruska: Quantum Computing (1999), ISBN 0-07-709503-0,
+<a href="http://www.fi.muni.cz/usr/gruska/quantum/">http://www.fi.muni.cz/usr/gruska/quantum/</a> .</p></li>
+</ul>
+<h1>Specification</h1>
+<p>The quantum computing model supported by the <strong>qubit</strong> command is that of
+<em>quantum bits</em> (more commonly called <em>qubits</em>) and <em>quantum boolean
+circuits</em>. While other more fancy models such as "Quantum Turing Machines"
+exist, this is generally considered to be the most realistic model, and it is
+also the one most closely related to the number-of-gates complexity measure
+for classical computing. Should it in the future prove desirable to support
+also some other model, then one may do so through a separate command.</p>
+<p>In this model, a quantum state of N qubits is completely specified by a set of
+2**N complex numbers, usually known as <em>probability amplitudes</em> (they are
+not probabilities as such, but they do completely determine the probabilities
+for various events). Many different bases are possible, but in the standard
+(also known as the computational) basis each of these amplitudes corresponds
+to a particular assignment of 0s and 1s to the qubits. Operations on a quantum
+state can be understood as operations on the vector of amplitudes.</p>
+<p>The <strong>qubit</strong> command has the five subcommands.</p>
+<h2>The 'new' Subcommand</h2>
+<blockquote>
+<p><strong>qubit new</strong> ?<em>-option value</em> ?...??</p>
+</blockquote>
+<p>Allocate/create a new qubit, and return a handle for the new qubit that
+identifies it in subsequent operations, or throw an error if
+allocation/creation failed (possible causes include, but are not limited to,
+lack of resources on the hardware side and user having insufficient
+permissions). New qubits are not entangled with any of the old ones, but their
+state is otherwise unspecified.</p>
+<p>The options are meant as a means for supplying extra information about the new
+qubit, such as for example whether it is being protected from decoherence by a
+scheme of quantum error correction codes (the Tcl core can easily implement
+such features on platforms where the C level APIs only provide raw qubits);
+however at present no options are defined.</p>
+<h2>The 'operate' Subcommand</h2>
+<blockquote>
+<p><strong>qubit operate</strong> <em>gate id0</em> ?<em>id1</em> ?...??</p>
+</blockquote>
+<p>Perform a quantum operation (the <em>gate</em>) on one or more qubits (specified
+using the handles <em>id0</em>, <em>id1</em>, etc.). Returns the operation actually
+applied.</p>
+<p>In the interest of generality, gates are specified as unitary matrices (this
+is a universal representation for quantum gates), or more concretely as lists
+of lists of lists of doubles. The innermost lists must have length 2 and
+encode the real (index 0) and imaginary (index 1) parts of an element of the
+matrix. Indices in the middle list level select a column and indices in the
+outer list level consequently a row. Put another way,</p>
+<pre><code> lindex $gate $i $j 0 ; # Returns Re gate(i,j)
+ lindex $gate $i $j 1 ; # Returns Im gate(i,j)
+</code></pre>
+<p>The row/column index corresponding to the <em>id0</em> qubit having value $r0, the
+<em>id1</em> qubit having value $r1, etc. is $r0*(2**0) + $r1*(2**1) + ... A
+<em>gate</em> for operating on <em>n</em> qubits must thus have side 2**<em>n</em>. Columns
+correspond to qubit states before the operation and rows correspond to qubit
+states after the operation.</p>
+<p>An error is thrown if the number of qubit arguments does not match the side of
+the <em>gate</em> matrix, if not all <em>idN</em> arguments are qubit handles, if some
+qubit occurs twice in the list, and if <em>gate</em> is not a proper matrix (too
+many or too few elements in some list, elements not recognised as doubles,
+etc.).</p>
+<p>An error is <em>not</em> thrown if the <em>gate</em> is not unitary. In general the
+operation actually applied has to be supported by the available hardware, so
+the <strong>qubit operate</strong> command (or some lower level interface) should
+determine which supported operation most closely approximates the specified
+<em>gate</em> and apply that instead. The user can check what was done (up to
+numeric precision) by inspecting the return value. Using a return value from
+<strong>qubit operate</strong> as the <em>gate</em> for another call should result in the
+exact same operation being carried out.</p>
+<h2>The 'measure' Subcommand</h2>
+<blockquote>
+<p><strong>qubit measure</strong> <em>id</em></p>
+</blockquote>
+<p>Measures a qubit with respect to the standard basis. Returns 0 or 1 depending
+on the resulting state.</p>
+<p><em>Note</em> that measuring a qubit changes the quantum state to one in which that
+qubit has a pure value. If other qubits are initially entangled with the one
+being measured, then these will also be affected by this operation. Measuring
+a qubit causes it to be disentangled from all other qubits (or perhaps
+entangles the state of the entire universe with the qubit, depending on your
+philosophical point of view).</p>
+<h2>The 'dispose' Subcommand</h2>
+<blockquote>
+<p><strong>qubit dispose</strong> <em>id</em></p>
+</blockquote>
+<p>Frees/deallocates a qubit, returning it to whatever pool of resources <strong>qubit
+new</strong> got it from, but before doing that the qubit is measured to safely
+disentangle it from any remaining qubits. The return value is 0 or 1 as for
+the corresponding <strong>qubit measure</strong>.</p>
+<h2>The 'names' Subcommand</h2>
+<blockquote>
+<p><strong>qubit names</strong></p>
+</blockquote>
+<p>This is an instrospection command. It returns a list of all qubit handles
+currently available in this interpreter.</p>
+<h2>Future Expansion</h2>
+<p>Other subcommands may be added in the future, but this set is complete for
+single interpreter algorithms.</p>
+<h1>Examples</h1>
+<p>The syntax of <strong>qubit operate</strong> was chosen to facilitate the creation of
+aliases for common gates, as this should make programs more readable. An alias
+for the CNOT (conditional not) gate can be created as</p>
+<pre><code> interp alias {} CNOT {} qubit operate {
+    { {1 0} {0 0} {0 0} {0 0} }
+    { {0 0} {0 0} {0 0} {1 0} }
+    { {0 0} {0 0} {1 0} {0 0} }
+    { {0 0} {1 0} {0 0} {0 0} }
+ }
+</code></pre>
+<p>after which one can use the command</p>
+<pre><code> CNOT $control $target
+</code></pre>
+<p>The more significant $target qubit is negated if the $control qubit is 1 but
+left alone otherwise.</p>
+<p>Another standard gate is the Hadamard gate, which can be defined as follows.</p>
+<pre><code> set rsqrt2 [list [expr {1/sqrt(2)}] 0] ; # Reciprocal square root of  2.
+ interp alias {} Hadamard {} qubit operate [
+   list [list $rsqrt2 $rsqrt2] [list $rsqrt2 [list [expr -sqrt(0.5)]  0]]
+ ]
+</code></pre>
+<p>The Hadamard gate is used to create states that are uniform superpositions of
+0s and 1s. A simple application of that is the following random bit generator.</p>
+<pre><code>	 proc randombit {} {
+	     set id [qubit new]        ; # Allocate qubit
+	     qubit measure $id         ; # Make pure 0 or pure 1
+	     Hadamard $id              ; # Make an equal mix of 0 and 1
+	     return [qubit dispose $id]; # Measure and clean up
+	 }
+</code></pre>
+<p>Note that this (provided, of course, that one believes in the standard
+interpretation of quantum mechanics) is not a psuedo-random bit generator, but
+a truly random bit generator. Even if the Hadamard gate would be slightly off
+(unlikely, as this is a very standard gate, but possible) this would not
+affect the essential randomness of the bits produced, but only the exact
+probability.</p>
+<p>A third type of elementary gate is the phase shift gate, which changes the
+phase (but not the size) of some probability amplitude. To change the phase of
+the 1 amplitude of a qubit $id by the angle $phi, one would use the command</p>
+<pre><code> qubit operate [list {{1.0 0.0} {0.0 0.0}} [list {0.0 0.0} [
+     list [expr {cos($phi)}] [expr {sin($phi)}]
+ ]]] $id
+</code></pre>
+<p>Phase changes do not change the probability distribution for any qubit
+measurement, but they do affect the state in ways that can lead to different
+probabilities further on, and thus illustrate the fact that there is more to a
+quantum state than the probability distribution it gives rise to here and
+now. As a concrete example of this, assuming $id is a qubit, and with aliases
+as above, the script:</p>
+<pre><code> set before [qubit measure $id]
+ Hadamard $id
+ Hadamard $id
+ set after [qubit measure $id]
+ expr {$before == $after}
+</code></pre>
+<p>will with probability 1 produce the result 1, whereas the script:</p>
+<pre><code> set before [qubit measure $id]
+ Hadamard $id
+ qubit operate {{{1 0} {0 0}} {{0 0} {-1 0}}} $id
+ Hadamard $id
+ set after [qubit measure $id]
+ expr {$before == $after}
+</code></pre>
+<p>will with probability 1 produce the result 0. The only difference is the 180
+degrees phase shift of the 1 amplitude in the explicit <strong>qubit operate</strong>
+command, which transforms one state with equal probabilities for 0 and 1 to
+another state with equal probabilities for 0 and 1!</p>
+<h1>Rejected Alternatives</h1>
+<p>One might expect that a truly Quantum Tcl would keep quantum information as
+"first class data", i.e., in Tcl_Objs to be passed around by value rather than
+as qubits that can only be passed around by name, but that is impossible
+(unless one goes to such lengths as to run the entire Tcl process in a QPU,
+which again will probably never be possible) due to a fundamental
+incompatibility between the laws of quantum mechanics and Tcl's Everything Is
+A String principle.</p>
+<p>Beginning with the EIAS side, one may observe that for a quantum state to be
+encodable into a Tcl_Obj, it must be serializable - there must be a way of
+generating a string that completely encodes the state. Since quantum mechanics
+does not permit extracting that much information about a quantum state, there
+are only two options: either everything is kept within the QPU (not
+realistic), or nothing is kept in the QPU. In the latter case, one loses
+entirely the advantage of quantum computation, so it is rather pointless.</p>
+<p>On the quantum side, one may observe that most of the things that are
+routinely done to Tcl_Objs are simply impossible to do to quantum information.
+The fundamental problem here is that Tcl_Objs must be duplicatable, whereas it
+is a theorem in quantum mechanics that quantum states cannot be duplicated
+(the "No cloning" theorem). Somewhat related is the problem that quantum
+information can only be read (used as input to some operation) once, whereas a
+Tcl_Obj can be written once but read an unlimited number of times.</p>
+<h1>Security Implications</h1>
+<p>As the <strong>qubit</strong> command only manipulates data and cannot be used for any
+form of communication, it may in principle be made available also in safe
+interpreters. However since <strong>qubit new</strong> seizes a global resource that can
+be expected to be in limited supply on a system, it is probably better to be
+safe than sorry, and therefore the <strong>qubit</strong> command shall initially be
+hidden in a safe interpreter.</p>
+<p>Omitting the command entirely and instead alias all qubit operations to the
+<strong>qubit</strong> command of the parent interpreter is <em>not</em> a good idea, as the
+quick (but sloppy) implementation of this would allow untrusted code evaluated
+in the safe interpreter access also to the qubits of the parent.</p>
+<p>It should be noted that the easy access to quantum computing that this command
+provides would have significant implications for the security of many external
+systems. Such issues are outside the scope of this TIP.</p>
+<h1>Future Extensions</h1>
+<p>Besides quantum algorithms, many interesting applications of quantum
+information processing involves communication through the means of a quantum
+state shared by different parties. While fast long distance qubit
+transportation is physically made possible by means of quantum teleportation
+(which really isn't as fancy as it sounds - basically it amounts to a
+combination of the old TV chef trick of having prepared something in advance,
+in this case physically transferring a qubit, and the patchfile trick of only
+transmitting a diff against what was physically distributed), there are
+currently no standardised protocols for this, and until the time that there is
+there probably isn't much point in specifying some <strong>qubit socket</strong> command
+for Tcl either. It may however be observed that <em>non-open</em> commercial
+systems <a href="http://www.magiqtech.com/">http://www.magiqtech.com/</a> transmitting quantum information over long
+distances are available today.</p>
+<p>While transferring qubits between different machines obviously present some
+technical problems, it may seem that transferring qubits between different
+interpreters in the same process should at least be straightforward, but the
+presence of multiple threads in the process introduce complications also for
+this case. Concretely, transferring a qubit from one thread to another will in
+general cause these threads to become entangled! In order to not make thread
+maintenance even more complicated by introducing the concept of quantum
+deadlock due to thread tangles, this TIP does not treat the subject of a
+mechanism for transferring qubits between interpreters.</p>
+<h1>Reference Implementation</h1>
+<p>A Tcl level emulation of the <strong>qubit</strong> command (minus some error checking,
+but also not requiring a QPU) is available as SF patch no 1462755
+<a href="http://sf.net/tracker/?func=detail&amp;aid=1462755&amp;group_id=10894&amp;atid=310894">http://sf.net/tracker/?func=detail&amp;aid=1462755&amp;group_id=10894&amp;atid=310894</a> .
+This emulation uses the standard Tcl rand() function for generating random
+numbers, so it is not cryptographically safe. Also note that it internally
+uses of some tcllib packages, which must therefore be available.</p>
+<p>No C implementation exists at present, but creating one is a simple matter of
+programming (SMOP). In particular, since the details of the command
+implementations for the foreseeable future almost surely will have some
+dependence on the particular hardware present, it seems appropriate to assign
+to each subcommand an entry in the internal stubs table and then simply have
+the main <em>Tcl_QubitObjCmd</em> call each as appropriate.</p>
+<pre><code>   int
+   Tcl_QubitObjCmd(
+       ClientData clientData,      /* Might be used. */
+       Tcl_Interp *interp,         /* Current interpreter. */
+       int objc,                   /* Number of arguments. */
+       Tcl_Obj *CONST objv[])      /* Argument objects. */
+   {
+       int index;
+       static CONST char *options[] = {
+           "dispose",     "measure",     "names",
+           "new",         "operate",     (char *) NULL
+       };
+       enum options {
+           QUBIT_DISPOSE, QUBIT_MEASURE, QUBIT_NAMES,
+           QUBIT_NEW,     QUBIT_OPERATE
+       };
+
+       if (objc &lt; 2) {
+           Tcl_WrongNumArgs(interp, 1, objv, "subcmd ?arg ...?");
+           return TCL_ERROR;
+       }
+
+       if (Tcl_GetIndexFromObj(interp, objv[1], options, "subcommand",  0,
+               &amp;index) != TCL_OK) {
+           return TCL_ERROR;
+       }
+
+       switch ((enum options) index) {
+       case QUBIT_DISPOSE:
+           return TclQubitDisposeObjCmd(clientData, interp, objc,  objv);
+       case QUBIT_MEASURE:
+           return TclQubitMeasureObjCmd(clientData, interp, objc,  objv);
+       case QUBIT_NAMES:
+           return TclQubitNamesObjCmd(clientData, interp, objc, objv);
+       case QUBIT_NEW:
+           return TclQubitNewObjCmd(clientData, interp, objc, objv);
+       case QUBIT_OPERATE:
+           return TclQubitOperateObjCmd(clientData, interp, objc,  objv);
+       }
+
+       /*
+        * We won't get this far.
+        */
+
+       Tcl_Panic("unhandled subcommand");
+       return TCL_ERROR;
+   }
+</code></pre>
+<p>A fallback definition of <em>TclQubitNewObjCmd</em> that can be used when Tcl is
+compiled without hardware QPU support is:</p>
+<pre><code>   int
+   TclQubitNewObjCmd(
+       ClientData dummy,           /* Not used. */
+       Tcl_Interp *interp,         /* Current interpreter. */
+       int objc,                   /* Number of arguments. */
+       Tcl_Obj *CONST objv[])      /* Argument objects. */
+   {
+       int optArgIdx, index;
+       static CONST char *optionStrings[] = {
+           (char *) NULL           /* Currently there are no options.  */
+       };
+
+       if (objc % 2 != 0) {
+           Tcl_WrongNumArgs(interp, 2, objv, "?-option value ...?");
+           return TCL_ERROR;
+       }
+       for (optArgIdx = 2 ; optArgIdx &lt; objc ; optArgIdx += 2) {
+           if (Tcl_GetIndexFromObj(interp, objv[optArgIdx], optionStrings,
+                   "option", TCL_EXACT, &amp;index) != TCL_OK) {
+               return TCL_ERROR;
+           }
+
+           /*
+            * When options are added, handle them here.
+            */
+       }
+
+       /*
+        * Fail gracefully.
+        */
+
+       Tcl_SetErrno(ENXIO);        /* QPU not configured. */
+       Tcl_AppendResult(interp, "couldn't allocate a qubit: ",
+               Tcl_PosixError(interp), NULL);
+       return TCL_ERROR;
+   }
+</code></pre>
+<p>Other fallback definitions obviously follow the same pattern. Filling in the
+details should be a cultivating exercise for Robert Abitbol.</p>
+<h1>Copyright</h1>
+<p>This document has been placed in the public domain.</p>
+</div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script nonce='4fa8e25557134384e8c4eff2f357e4d50048518f2d4699e2'>/* builtin.c:620 */
+(function(){
+if(window.NodeList && !NodeList.prototype.forEach){NodeList.prototype.forEach = Array.prototype.forEach;}
+if(!window.fossil) window.fossil={};
+window.fossil.version = "2.21 [f9aa474081] 2023-02-25 19:23:39 UTC";
+window.fossil.rootPath = "/tips"+'/';
+window.fossil.config = {projectName: "Tcl Improvement Proposals",
+shortProjectName: "",
+projectCode: "ebd7b7e33fa7d533ebd3a97bb24d845de95f8199",
+/* Length of UUID hashes for display purposes. */hashDigits: 10, hashDigitsUrl: 16,
+diffContextLines: 5,
+editStateMarkers: {/*Symbolic markers to denote certain edit states.*/isNew:'[+]', isModified:'[*]', isDeleted:'[-]'},
+confirmerButtonTicks: 3 /*default fossil.confirmer tick count.*/,
+skin:{isDark: false/*true if the current skin has the 'white-foreground' detail*/}
+};
+window.fossil.user = {name: "guest",isAdmin: false};
+if(fossil.config.skin.isDark) document.body.classList.add('fossil-dark-style');
+window.fossil.page = {name:"doc/trunk/tip/263.md"};
+})();
+</script>
+<script nonce='4fa8e25557134384e8c4eff2f357e4d50048518f2d4699e2'>/* doc.c:430 */
+window.addEventListener('load', ()=>window.fossil.pikchr.addSrcView(), false);
+</script>
+</div>
+<script nonce="4fa8e25557134384e8c4eff2f357e4d50048518f2d4699e2">/* style.c:913 */
+function debugMsg(msg){
+var n = document.getElementById("debugMsg");
+if(n){n.textContent=msg;}
+}
+</script>
+<script nonce='4fa8e25557134384e8c4eff2f357e4d50048518f2d4699e2'>
+/* fossil.bootstrap.js *************************************************************/
+"use strict";
+(function () {
+if(typeof window.CustomEvent === "function") return false;
+window.CustomEvent = function(event, params) {
+if(!params) params = {bubbles: false, cancelable: false, detail: null};
+const evt = document.createEvent('CustomEvent');
+evt.initCustomEvent( event, !!params.bubbles, !!params.cancelable, params.detail );
+return evt;
+};
+})();
+(function(global){
+const F = global.fossil;
+const timestring = function f(){
+if(!f.rx1){
+f.rx1 = /\.\d+Z$/;
+}
+const d = new Date();
+return d.toISOString().replace(f.rx1,'').split('T').join(' ');
+};
+const localTimeString = function ff(d){
+if(!ff.pad){
+ff.pad = (x)=>(''+x).length>1 ? x : '0'+x;
+}
+d || (d = new Date());
+return [
+d.getFullYear(),'-',ff.pad(d.getMonth()+1),
+'-',ff.pad(d.getDate()),
+' ',ff.pad(d.getHours()),':',ff.pad(d.getMinutes()),
+':',ff.pad(d.getSeconds())
+].join('');
+};
+F.message = function f(msg){
+const args = Array.prototype.slice.call(arguments,0);
+const tgt = f.targetElement;
+if(args.length) args.unshift(
+localTimeString()+':'
+);
+if(tgt){
+tgt.classList.remove('error');
+tgt.innerText = args.join(' ');
+}
+else{
+if(args.length){
+args.unshift('Fossil status:');
+console.debug.apply(console,args);
+}
+}
+return this;
+};
+F.message.targetElement =
+document.querySelector('#fossil-status-bar');
+if(F.message.targetElement){
+F.message.targetElement.addEventListener(
+'dblclick', ()=>F.message(), false
+);
+}
+F.error = function f(msg){
+const args = Array.prototype.slice.call(arguments,0);
+const tgt = F.message.targetElement;
+args.unshift(timestring(),'UTC:');
+if(tgt){
+tgt.classList.add('error');
+tgt.innerText = args.join(' ');
+}
+else{
+args.unshift('Fossil error:');
+console.error.apply(console,args);
+}
+return this;
+};
+F.encodeUrlArgs = function(obj,tgtArray,fakeEncode){
+if(!obj) return '';
+const a = (tgtArray instanceof Array) ? tgtArray : [],
+enc = fakeEncode ? (x)=>x : encodeURIComponent;
+let k, i = 0;
+for( k in obj ){
+if(i++) a.push('&');
+a.push(enc(k),'=',enc(obj[k]));
+}
+return a===tgtArray ? a : a.join('');
+};
+F.repoUrl = function(path,urlParams){
+if(!urlParams) return this.rootPath+path;
+const url=[this.rootPath,path];
+url.push('?');
+if('string'===typeof urlParams) url.push(urlParams);
+else if(urlParams && 'object'===typeof urlParams){
+this.encodeUrlArgs(urlParams, url);
+}
+return url.join('');
+};
+F.isObject = function(v){
+return v &&
+(v instanceof Object) &&
+('[object Object]' === Object.prototype.toString.apply(v) );
+};
+F.mergeLastWins = function(){
+var k, o, i;
+const n = arguments.length, rc={};
+for(i = 0; i < n; ++i){
+if(!F.isObject(o = arguments[i])) continue;
+for( k in o ){
+if(o.hasOwnProperty(k)) rc[k] = o[k];
+}
+}
+return rc;
+};
+F.hashDigits = function(hash,forUrl){
+const n = ('number'===typeof forUrl)
+? forUrl : F.config[forUrl ? 'hashDigitsUrl' : 'hashDigits'];
+return ('string'==typeof hash ? hash.substr(
+0, n
+) : hash);
+};
+F.onPageLoad = function(callback){
+window.addEventListener('load', callback, false);
+return this;
+};
+F.onDOMContentLoaded = function(callback){
+window.addEventListener('DOMContentLoaded', callback, false);
+return this;
+};
+F.shortenFilename = function(name){
+const a = name.split('/');
+if(a.length<=2) return name;
+while(a.length>2) a.shift();
+return '.../'+a.join('/');
+};
+F.page.addEventListener = function f(eventName, callback){
+if(!f.proxy){
+f.proxy = document.createElement('span');
+}
+f.proxy.addEventListener(eventName, callback, false);
+return this;
+};
+F.page.dispatchEvent = function(eventName, eventDetail){
+if(this.addEventListener.proxy){
+try{
+this.addEventListener.proxy.dispatchEvent(
+new CustomEvent(eventName,{detail: eventDetail})
+);
+}catch(e){
+console.error(eventName,"event listener threw:",e);
+}
+}
+return this;
+};
+F.page.setPageTitle = function(title){
+const t = document.querySelector('title');
+if(t) t.innerText = title;
+return this;
+};
+F.debounce = function f(func, wait, immediate) {
+var timeout;
+if(!wait) wait = f.$defaultDelay;
+return function() {
+const context = this, args = Array.prototype.slice.call(arguments);
+const later = function() {
+timeout = undefined;
+if(!immediate) func.apply(context, args);
+};
+const callNow = immediate && !timeout;
+clearTimeout(timeout);
+timeout = setTimeout(later, wait);
+if(callNow) func.apply(context, args);
+};
+};
+F.debounce.$defaultDelay = 500;
+})(window);
+/* fossil.dom.js *************************************************************/
+"use strict";
+(function(F){
+const argsToArray = (a)=>Array.prototype.slice.call(a,0);
+const isArray = (v)=>v instanceof Array;
+const dom = {
+create: function(elemType){
+return document.createElement(elemType);
+},
+createElemFactory: function(eType){
+return function(){
+return document.createElement(eType);
+};
+},
+remove: function(e){
+if(e.forEach){
+e.forEach(
+(x)=>x.parentNode.removeChild(x)
+);
+}else{
+e.parentNode.removeChild(e);
+}
+return e;
+},
+clearElement: function f(e){
+if(!f.each){
+f.each = function(e){
+if(e.forEach){
+e.forEach((x)=>f(x));
+return e;
+}
+while(e.firstChild) e.removeChild(e.firstChild);
+};
+}
+argsToArray(arguments).forEach(f.each);
+return arguments[0];
+},
+};
+dom.splitClassList = function f(str){
+if(!f.rx){
+f.rx = /(\s+|\s*,\s*)/;
+}
+return str ? str.split(f.rx) : [str];
+};
+dom.div = dom.createElemFactory('div');
+dom.p = dom.createElemFactory('p');
+dom.code = dom.createElemFactory('code');
+dom.pre = dom.createElemFactory('pre');
+dom.header = dom.createElemFactory('header');
+dom.footer = dom.createElemFactory('footer');
+dom.section = dom.createElemFactory('section');
+dom.span = dom.createElemFactory('span');
+dom.strong = dom.createElemFactory('strong');
+dom.em = dom.createElemFactory('em');
+dom.ins = dom.createElemFactory('ins');
+dom.del = dom.createElemFactory('del');
+dom.label = function(forElem, text){
+const rc = document.createElement('label');
+if(forElem){
+if(forElem instanceof HTMLElement){
+forElem = this.attr(forElem, 'id');
+}
+dom.attr(rc, 'for', forElem);
+}
+if(text) this.append(rc, text);
+return rc;
+};
+dom.img = function(src){
+const e = this.create('img');
+if(src) e.setAttribute('src',src);
+return e;
+};
+dom.a = function(href,label){
+const e = this.create('a');
+if(href) e.setAttribute('href',href);
+if(label) e.appendChild(dom.text(true===label ? href : label));
+return e;
+};
+dom.hr = dom.createElemFactory('hr');
+dom.br = dom.createElemFactory('br');
+dom.text = function(){
+return document.createTextNode(argsToArray(arguments).join(''));
+};
+dom.button = function(label,callback){
+const b = this.create('button');
+if(label) b.appendChild(this.text(label));
+if('function' === typeof callback){
+b.addEventListener('click', callback, false);
+}
+return b;
+};
+dom.textarea = function(){
+const rc = this.create('textarea');
+let rows, cols, readonly;
+if(1===arguments.length){
+if('boolean'===typeof arguments[0]){
+readonly = !!arguments[0];
+}else{
+rows = arguments[0];
+}
+}else if(arguments.length){
+rows = arguments[0];
+cols = arguments[1];
+readonly = arguments[2];
+}
+if(rows) rc.setAttribute('rows',rows);
+if(cols) rc.setAttribute('cols', cols);
+if(readonly) rc.setAttribute('readonly', true);
+return rc;
+};
+dom.select = dom.createElemFactory('select');
+dom.option = function(value,label){
+const a = arguments;
+var sel;
+if(1==a.length){
+if(a[0] instanceof HTMLElement){
+sel = a[0];
+}else{
+value = a[0];
+}
+}else if(2==a.length){
+if(a[0] instanceof HTMLElement){
+sel = a[0];
+value = a[1];
+}else{
+value = a[0];
+label = a[1];
+}
+}
+else if(3===a.length){
+sel = a[0];
+value = a[1];
+label = a[2];
+}
+const o = this.create('option');
+if(undefined !== value){
+o.value = value;
+this.append(o, this.text(label || value));
+}else if(undefined !== label){
+this.append(o, label);
+}
+if(sel) this.append(sel, o);
+return o;
+};
+dom.h = function(level){
+return this.create('h'+level);
+};
+dom.ul = dom.createElemFactory('ul');
+dom.li = function(parent){
+const li = this.create('li');
+if(parent) parent.appendChild(li);
+return li;
+};
+dom.createElemFactoryWithOptionalParent = function(childType){
+return function(parent){
+const e = this.create(childType);
+if(parent) parent.appendChild(e);
+return e;
+};
+};
+dom.table = dom.createElemFactory('table');
+dom.thead = dom.createElemFactoryWithOptionalParent('thead');
+dom.tbody = dom.createElemFactoryWithOptionalParent('tbody');
+dom.tfoot = dom.createElemFactoryWithOptionalParent('tfoot');
+dom.tr = dom.createElemFactoryWithOptionalParent('tr');
+dom.td = dom.createElemFactoryWithOptionalParent('td');
+dom.th = dom.createElemFactoryWithOptionalParent('th');
+dom.fieldset = function(legendText){
+const fs = this.create('fieldset');
+if(legendText){
+this.append(
+fs,
+(legendText instanceof HTMLElement)
+? legendText
+: this.append(this.legend(legendText))
+);
+}
+return fs;
+};
+dom.legend = function(legendText){
+const rc = this.create('legend');
+if(legendText) this.append(rc, legendText);
+return rc;
+};
+dom.append = function f(parent){
+const a = argsToArray(arguments);
+a.shift();
+for(let i in a) {
+var e = a[i];
+if(isArray(e) || e.forEach){
+e.forEach((x)=>f.call(this, parent,x));
+continue;
+}
+if('string'===typeof e
+|| 'number'===typeof e
+|| 'boolean'===typeof e
+|| e instanceof Error) e = this.text(e);
+parent.appendChild(e);
+}
+return parent;
+};
+dom.input = function(type){
+return this.attr(this.create('input'), 'type', type);
+};
+dom.checkbox = function(value, checked){
+const rc = this.input('checkbox');
+if(1===arguments.length && 'boolean'===typeof value){
+checked = !!value;
+value = undefined;
+}
+if(undefined !== value) rc.value = value;
+if(!!checked) rc.checked = true;
+return rc;
+};
+dom.radio = function(){
+const rc = this.input('radio');
+let name, value, checked;
+if(1===arguments.length && 'boolean'===typeof name){
+checked = arguments[0];
+name = value = undefined;
+}else if(2===arguments.length){
+name = arguments[0];
+if('boolean'===typeof arguments[1]){
+checked = arguments[1];
+}else{
+value = arguments[1];
+checked = undefined;
+}
+}else if(arguments.length){
+name = arguments[0];
+value = arguments[1];
+checked = arguments[2];
+}
+if(name) this.attr(rc, 'name', name);
+if(undefined!==value) rc.value = value;
+if(!!checked) rc.checked = true;
+return rc;
+};
+const domAddRemoveClass = function f(action,e){
+if(!f.rxSPlus){
+f.rxSPlus = /\s+/;
+f.applyAction = function(e,a,v){
+if(!e || !v
+) return;
+else if(e.forEach){
+e.forEach((E)=>E.classList[a](v));
+}else{
+e.classList[a](v);
+}
+};
+}
+var i = 2, n = arguments.length;
+for( ; i < n; ++i ){
+let c = arguments[i];
+if(!c) continue;
+else if(isArray(c) ||
+('string'===typeof c
+&& c.indexOf(' ')>=0
+&& (c = c.split(f.rxSPlus)))
+|| c.forEach
+){
+c.forEach((k)=>k ? f.applyAction(e, action, k) : false);
+}else if(c){
+f.applyAction(e, action, c);
+}
+}
+return e;
+};
+dom.addClass = function(e,c){
+const a = argsToArray(arguments);
+a.unshift('add');
+return domAddRemoveClass.apply(this, a);
+};
+dom.removeClass = function(e,c){
+const a = argsToArray(arguments);
+a.unshift('remove');
+return domAddRemoveClass.apply(this, a);
+};
+dom.toggleClass = function f(e,c){
+if(e.forEach){
+e.forEach((x)=>x.classList.toggle(c));
+}else{
+e.classList.toggle(c);
+}
+return e;
+};
+dom.hasClass = function(e,c){
+return (e && e.classList) ? e.classList.contains(c) : false;
+};
+dom.moveTo = function(dest,e){
+const n = arguments.length;
+var i = 1;
+const self = this;
+for( ; i < n; ++i ){
+e = arguments[i];
+this.append(dest, e);
+}
+return dest;
+};
+dom.moveChildrenTo = function f(dest,e){
+if(!f.mv){
+f.mv = function(d,v){
+if(d instanceof Array){
+d.push(v);
+if(v.parentNode) v.parentNode.removeChild(v);
+}
+else d.appendChild(v);
+};
+}
+const n = arguments.length;
+var i = 1;
+for( ; i < n; ++i ){
+e = arguments[i];
+if(!e){
+console.warn("Achtung: dom.moveChildrenTo() passed a falsy value at argument",i,"of",
+arguments,arguments[i]);
+continue;
+}
+if(e.forEach){
+e.forEach((x)=>f.mv(dest, x));
+}else{
+while(e.firstChild){
+f.mv(dest, e.firstChild);
+}
+}
+}
+return dest;
+};
+dom.replaceNode = function f(old,nu){
+var i = 1, n = arguments.length;
+++f.counter;
+try {
+for( ; i < n; ++i ){
+const e = arguments[i];
+if(e.forEach){
+e.forEach((x)=>f.call(this,old,e));
+continue;
+}
+old.parentNode.insertBefore(e, old);
+}
+}
+finally{
+--f.counter;
+}
+if(!f.counter){
+old.parentNode.removeChild(old);
+}
+};
+dom.replaceNode.counter = 0;
+dom.attr = function f(e){
+if(2===arguments.length) return e.getAttribute(arguments[1]);
+const a = argsToArray(arguments);
+if(e.forEach){
+e.forEach(function(x){
+a[0] = x;
+f.apply(f,a);
+});
+return e;
+}
+a.shift();
+while(a.length){
+const key = a.shift(), val = a.shift();
+if(null===val || undefined===val){
+e.removeAttribute(key);
+}else{
+e.setAttribute(key,val);
+}
+}
+return e;
+};
+const enableDisable = function f(enable){
+var i = 1, n = arguments.length;
+for( ; i < n; ++i ){
+let e = arguments[i];
+if(e.forEach){
+e.forEach((x)=>f(enable,x));
+}else{
+e.disabled = !enable;
+}
+}
+return arguments[1];
+};
+dom.enable = function(e){
+const args = argsToArray(arguments);
+args.unshift(true);
+return enableDisable.apply(this,args);
+};
+dom.disable = function(e){
+const args = argsToArray(arguments);
+args.unshift(false);
+return enableDisable.apply(this,args);
+};
+dom.selectOne = function(x,origin){
+var src = origin || document,
+e = src.querySelector(x);
+if(!e){
+e = new Error("Cannot find DOM element: "+x);
+console.error(e, src);
+throw e;
+}
+return e;
+};
+dom.flashOnce = function f(e,howLongMs,afterFlashCallback){
+if(e.dataset.isBlinking){
+return;
+}
+if(2===arguments.length && 'function' ===typeof howLongMs){
+afterFlashCallback = howLongMs;
+howLongMs = f.defaultTimeMs;
+}
+if(!howLongMs || 'number'!==typeof howLongMs){
+howLongMs = f.defaultTimeMs;
+}
+e.dataset.isBlinking = true;
+const transition = e.style.transition;
+e.style.transition = "opacity "+howLongMs+"ms ease-in-out";
+const opacity = e.style.opacity;
+e.style.opacity = 0;
+setTimeout(function(){
+e.style.transition = transition;
+e.style.opacity = opacity;
+delete e.dataset.isBlinking;
+if(afterFlashCallback) afterFlashCallback();
+}, howLongMs);
+return e;
+};
+dom.flashOnce.defaultTimeMs = 400;
+dom.flashOnce.eventHandler = (event)=>dom.flashOnce(event.target)
+dom.flashNTimes = function(e,n,howLongMs,afterFlashCallback){
+const args = argsToArray(arguments);
+args.splice(1,1);
+if(arguments.length===3 && 'function'===typeof howLongMs){
+afterFlashCallback = howLongMs;
+howLongMs = args[1] = this.flashOnce.defaultTimeMs;
+}else if(arguments.length<3){
+args[1] = this.flashOnce.defaultTimeMs;
+}
+n = +n;
+const self = this;
+const cb = args[2] = function f(){
+if(--n){
+setTimeout(()=>self.flashOnce(e, howLongMs, f),
+howLongMs+(howLongMs*0.1));
+}else if(afterFlashCallback){
+afterFlashCallback();
+}
+};
+this.flashOnce.apply(this, args);
+return this;
+};
+dom.addClassBriefly = function f(e, className, howLongMs, afterCallback){
+if(arguments.length<4 && 'function'===typeof howLongMs){
+afterCallback = howLongMs;
+howLongMs = f.defaultTimeMs;
+}else if(arguments.length<3 || !+howLongMs){
+howLongMs = f.defaultTimeMs;
+}
+this.addClass(e, className);
+setTimeout(function(){
+dom.removeClass(e, className);
+if(afterCallback) afterCallback();
+}, howLongMs);
+return this;
+};
+dom.addClassBriefly.defaultTimeMs = 1000;
+dom.copyTextToClipboard = function(text){
+if( window.clipboardData && window.clipboardData.setData ){
+window.clipboardData.setData('Text',text);
+return true;
+}else{
+const x = document.createElement("textarea");
+x.style.position = 'fixed';
+x.value = text;
+document.body.appendChild(x);
+x.select();
+var rc;
+try{
+document.execCommand('copy');
+rc = true;
+}catch(err){
+rc = false;
+}finally{
+document.body.removeChild(x);
+}
+return rc;
+}
+};
+dom.copyStyle = function f(e, style){
+if(e.forEach){
+e.forEach((x)=>f(x, style));
+return e;
+}
+if(style){
+let k;
+for(k in style){
+if(style.hasOwnProperty(k)) e.style[k] = style[k];
+}
+}
+return e;
+};
+dom.effectiveHeight = function f(e){
+if(!e) return 0;
+if(!f.measure){
+f.measure = function callee(e, depth){
+if(!e) return;
+const m = e.getBoundingClientRect();
+if(0===depth){
+callee.top = m.top;
+callee.bottom = m.bottom;
+}else{
+callee.top = m.top ? Math.min(callee.top, m.top) : callee.top;
+callee.bottom = Math.max(callee.bottom, m.bottom);
+}
+Array.prototype.forEach.call(e.children,(e)=>callee(e,depth+1));
+if(0===depth){
+f.extra += callee.bottom - callee.top;
+}
+return f.extra;
+};
+}
+f.extra = 0;
+f.measure(e,0);
+return f.extra;
+};
+dom.parseHtml = function(){
+let childs, string, tgt;
+if(1===arguments.length){
+string = arguments[0];
+}else if(2==arguments.length){
+tgt = arguments[0];
+string  = arguments[1];
+}
+if(string){
+const newNode = new DOMParser().parseFromString(string, 'text/html');
+childs = newNode.documentElement.querySelector('body');
+childs = childs ? Array.prototype.slice.call(childs.childNodes, 0) : [];
+}else{
+childs = [];
+}
+return tgt ? this.moveTo(tgt, childs) : childs;
+};
+F.connectPagePreviewers = function f(selector,methodNamespace){
+if('string'===typeof selector){
+selector = document.querySelectorAll(selector);
+}else if(!selector.forEach){
+selector = [selector];
+}
+if(!methodNamespace){
+methodNamespace = F.page;
+}
+selector.forEach(function(e){
+e.addEventListener(
+'click', function(r){
+const eTo = '#'===e.dataset.fPreviewTo[0]
+? document.querySelector(e.dataset.fPreviewTo)
+: methodNamespace[e.dataset.fPreviewTo],
+eFrom = '#'===e.dataset.fPreviewFrom[0]
+? document.querySelector(e.dataset.fPreviewFrom)
+: methodNamespace[e.dataset.fPreviewFrom],
+asText = +(e.dataset.fPreviewAsText || 0);
+eTo.textContent = "Fetching preview...";
+methodNamespace[e.dataset.fPreviewVia](
+(eFrom instanceof Function ? eFrom.call(methodNamespace) : eFrom.value),
+function(r){
+if(eTo instanceof Function) eTo.call(methodNamespace, r||'');
+else if(!r){
+dom.clearElement(eTo);
+}else if(asText){
+eTo.textContent = r;
+}else{
+dom.parseHtml(dom.clearElement(eTo), r);
+}
+}
+);
+}, false
+);
+});
+return this;
+};
+return F.dom = dom;
+})(window.fossil);
+/* fossil.pikchr.js *************************************************************/
+(function(F){
+"use strict";
+const D = F.dom, P = F.pikchr = {};
+P.addSrcView = function f(svg){
+if(!f.hasOwnProperty('parentClick')){
+f.parentClick = function(ev){
+if(ev.altKey || ev.metaKey || ev.ctrlKey
+|| this.classList.contains('toggle')){
+this.classList.toggle('source');
+ev.stopPropagation();
+ev.preventDefault();
+}
+};
+};
+if(!svg) svg = 'svg.pikchr';
+if('string' === typeof svg){
+document.querySelectorAll(svg).forEach((e)=>f.call(this, e));
+return this;
+}else if(svg.forEach){
+svg.forEach((e)=>f.call(this, e));
+return this;
+}
+if(svg.dataset.pikchrProcessed){
+return this;
+}
+svg.dataset.pikchrProcessed = 1;
+const parent = svg.parentNode.parentNode;
+const srcView = parent ? svg.parentNode.nextElementSibling : undefined;
+if(!srcView || !srcView.classList.contains('pikchr-src')){
+return this;
+}
+parent.addEventListener('click', f.parentClick, false);
+return this;
+};
+})(window.fossil);
+</script>
+</body>
+</html>
