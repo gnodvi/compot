@@ -4,21 +4,33 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd   ./S; make)
+	(cd ext;   make)
 	(cd src/m; make)
 
 test:  
-	(cd   ./S; make test)
-	(cd     .; T.sh)
+	(cd ext; make test)
+	T.sh
 
 #--------------------------------------------
 
 clean:  
-	(cd   ./S; make clean)
+	(cd ext;   make clean)
 	(cd src/m; make clean)
 
 cleanall:  clean
-	(cd   ./S; make cleanall)
+	(cd ext;   make cleanall)
+
+#--------------------------------------------
+MIN = ../compot_min
+
+savemin:
+	mkdir  -p   $(MIN)
+	mkdir  -p   $(MIN)/src
+	cp -r ./P   $(MIN)
+	cp -r ./src/common/ $(MIN)/src/
+	cp -r ./P   $(MIN)
+	cp -r ./Makefile $(MIN)
+	cp -r ./Make.mak $(MIN)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
