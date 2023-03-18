@@ -25,12 +25,13 @@ MIN = ../compot_min
 
 savemin:
 	mkdir  -p   $(MIN)
-	mkdir  -p   $(MIN)/src
+#	mkdir  -p   $(MIN)/src
 	cp -r ./P   $(MIN)
-	cp -r ./src/common/ $(MIN)/src/
-	cp -r ./P   $(MIN)
-	cp -r ./Makefile $(MIN)
-	cp -r ./Make.mak $(MIN)
+	cp -r ./src/common/ $(MIN)/
+	cp -r ./src/fun-gp/ $(MIN)/
+	cp -r ./src/tester/ $(MIN)/
+	cp    ./Make.min    $(MIN)/Makefile
+	cp    ./src/common/Make.mak    $(MIN)/
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
