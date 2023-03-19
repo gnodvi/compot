@@ -4,22 +4,13 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd common;  make)
-	(cd fun-gp;  make)
-	(cd repo01;  make)
-	(cd tester;  make)
+	(cd NEWTON;  make)
 
 test:  
-	(cd common;  make test)
-	(cd fun-gp;  make test)
-	(cd repo01;  make test)
-	(cd tester;  make test)
+	(cd NEWTON;  make test)
 
 clean:  
-	(cd common;  make clean)
-	(cd repo01;  make clean)
-	(cd fun-gp;  make clean)
-	(cd tester;  make clean)
+	(cd NEWTON;  make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

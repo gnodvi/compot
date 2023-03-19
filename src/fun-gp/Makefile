@@ -21,6 +21,9 @@ clean :
 	rm -f core 
 	(cd OLDJOY; make clean)
 
+test:
+	T.sh
+
 #-------------------------------------------------------------------------------
 
 # The problem is that in the link step you tell the compiler to treat 

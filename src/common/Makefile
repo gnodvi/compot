@@ -90,6 +90,9 @@ clean :
 	(cd RANDOM; make clean)
 	rm -f T/*.o $(PROGS)
 
+test:
+	T.sh
+
 #---------------------------------------------------------------
 
 # The problem is that in the link step you tell the compiler to treat 
