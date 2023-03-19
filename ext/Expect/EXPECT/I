@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+#-------------------------------------------------------------------------------
+
+CUR_DIR=$PWD
+
+#VER_MAJ=8.6
+VER_MAJ=8.5
+
+#VER_MIN=b2
+#VER_MIN=0
+VER_MIN=19
+
+
+#-------------------------------------------------------------------------------
+#  TCL  TCL  TCL  TCL  TCL  TCL  TCL  TCL  TCL  TCL   
+#-------------------------------------------------------------------------------
+
+#cd $CUR_DIR/tcl$VER_MAJ.$VER_MIN/unix
+
+#./configure --prefix=$CUR_DIR/R  2>&1 | tee  $CUR_DIR/tcl_configure  
+
+#-------------------------------------------------
+#
+# ~/.MGENA/q/Qpilot/PILOT/cp6923$ ac~.tl TEST_capture
+# alloc: invalid block: 0x845d568: 0 0
+# Aborted
+#
+#./configure --disable-threads --prefix=$CUR_DIR/R  1>  $CUR_DIR/tcl_configure  2>&1
+#
+
+# in QNX not implement fork for child process - not threads !!!
+# 
+# ~/.MGENA/q/Qpilot/PILOT/cp6923$ ac~.tl TEST_capture
+# RET1 = HHHHHHHHH
+# RET2 = AAAAAAAAA
+
+#-------------------------------------------------
+
+#make  2>&1 | tee  $CUR_DIR/tcl_make  
+
+#make install   2>&1 | tee  $CUR_DIR/tcl_make_install 
+
+
+# сделать ссылку:
+# R/bin/tclsh8.4 -> R/bin/tclsh
+#
+#(cd $CUR_DIR/R/bin ; ln -s tclsh$VER_MAJ tclsh)
+
+#-------------------------------------------------------------------------------
+#  EXPECT  EXPECT  EXPECT  EXPECT  EXPECT  EXPECT  
+#-------------------------------------------------------------------------------
+
+cd $CUR_DIR/expect5.45
+
+# QNX: sdelaem patch dly nto-6.5.0:
+# cp ../A/exp_clib.c    exp_clib.c
+# cp ../A/exp_command.c exp_command.c
+
+#./configure  --prefix=/  --exec-prefix=/ 2>&1 | tee  $CUR_DIR/exp_configure  
+
+# QNX: dobavim -lsocket -lz -lm 
+# 
+#
+#make  1>  $CUR_DIR/exp_make  2>&1
+
+
+make DESTDIR=$CUR_DIR/R install  2>&1 | tee  $CUR_DIR/exp_make_install  
+
+# ссылку:
+# R/lib/expect5.45/....so -> R/lib
+#
+#(cd $CUR_DIR/R/lib ; ln -s expect5.45/libexpect5.45.so  libexpect5.45.so)
+
+#-------------------------------------------------------------------------------
+#  TK   TK   TK   TK   TK   TK   TK   TK   TK   TK    
+#-------------------------------------------------------------------------------
+
+#cd $CUR_DIR/tk8.6.0/unix
+#cd $CUR_DIR/tk$VER_MAJ.$VER_MIN/unix
+  
+#./configure --disable-threads --prefix=$CUR_DIR/R 1>  $CUR_DIR/tk_configure  2>&1
+
+# QNX:
+# ./configure --x-includes=/usr/pkg/include --disable-threads --prefix=$CUR_DIR/R 1>  $CUR_DIR/tk_configure  2>&1
+#
+# and by hand add to /unix/MAkefile:
+# X11_INCLUDES = -I/usr/pkg/include
+#
+
+#make   2>&1 | tee  $CUR_DIR/tk_make 
+
+#make install  2>&1 | tee  $CUR_DIR/tk_make_install  
+
+#----------------
+# сделать ссылку:
+# R/bin/wish8.4 -> R/bin/wish
+#
+#(cd $CUR_DIR/R/bin ; ln -s wish$VER_MAJ wish)
+
+#-------------------------------------------------------------------------------
