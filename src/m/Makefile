@@ -20,7 +20,7 @@ DIALOG_DIR = ../dialog
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #OTHERS_DIR = ../others/m
-#TESTER_DIR = ../tester/m
+TESTER_DIR = ../test-s
 
 CAUL-S_DIR = ../gaul-s		
 CGPLIB_DIR = ../cgplib		
@@ -34,10 +34,10 @@ GAMERS_DIR = ../gamers
 
 
 all:  COMMON_  FUN-GP_  LISOFT_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
-      GAMERS_ GRAPHS_ ORIGIN_  
+      GAMERS_ GRAPHS_ ORIGIN_ TESTER_
 
 # RANDOM__ PLOTER__  OLDJOY_
-# CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ## TESTER__  ## JIMTCL__ 
+# CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ##   ## JIMTCL__ 
 
 #-------------------------------------------------------------------------------
 
@@ -82,8 +82,8 @@ SOLVER_ :
 #OTHERS_ :
 #	(cd $(OTHERS_DIR); make)
 
-#TESTER_ :
-#	(cd $(TESTER_DIR); make)
+TESTER_ :
+	(cd $(TESTER_DIR); make)
 
 #-------------------------------------------
 
@@ -131,7 +131,7 @@ clean :
 	(cd ../origin; make clean)
 	(cd ../solver; make clean)
 	(cd ../repo01; make clean)
-#	(cd $(TESTER_DIR); make clean)
+	(cd $(TESTER_DIR); make clean)
 #	(cd $(OTHERS_DIR); make clean)
 	(cd $(CAUL-S_DIR); make clean)
 	(cd $(CGPLIB_DIR); make clean)
