@@ -29,7 +29,6 @@ savemin:
 	cp -r ./src/common/ $(MIN)/
 	cp -r ./src/fun-gp/ $(MIN)/
 	cp -r ./src/tester/ $(MIN)/
-	cp -r ./src/repo01/ $(MIN)/
 	cp    ./Make.min    $(MIN)/Makefile
 	cp    ./src/common/Make.mak    $(MIN)/
 

@@ -1,0 +1,262 @@
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+#!/bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tk ;# тогда в Windows CMD виден вывод в STDOUT
+
+#-------------------------------------------------------------------------------
+# http://blog.tcl.tk/12596
+# https://wiki.tcl-lang.org/page/Runge%2DKutta
+#-------------------------------------------------------------------------------
+
+# GWM Runge-Kutta methods of solving ODE Ordinary Differential Equations are
+# numerical techniques to find the solution to an ODE. R-K methods are more
+# stable and accurate than Euler Methods. The Tcllib package math::calculus has
+# a R-K implementation; this page is about a simple code to show how RK works.
+# A slightly more accurate solver is the Runge-Kutta-Fehlberg solver which has
+# automatic integration step reduction and error estimation.
+
+# A number of steps are used to advance a parameter through time (or space,
+# depending on the equation). For example:
+
+# d/dt(N)=-k.N
+
+# (rate of change of number proportional to the population).
+
+# Euler method would try:
+
+#  loop (until fed up) {
+#    N=N-k.N*dt
+#    time=time+dt
+#  }
+
+# Which deviates from the true solution very quickly since the population is
+# changing during the time step; very short time steps will reduce the error
+# but take a long time.
+
+# R-K methods use a numerical integration procedure which takes several
+# (often 4) intermediate calculations to find an approximate integral of the
+# equation. See reference 1 below for more details. The following code will
+# solve d(N)/dt=-2*n with good accuracy.
+
+#-------------------------------------------------------------------------------
+# tcl runge-kutta solution of ODES
+# single variable - use rk4step (included for simplicity)
+
+proc decay { time xn } {
+  
+  ;# simple decay proportional to amount (gives radioactive half life, eg)
+  return [expr -2.0*$xn]
+}
+
+proc rk4step {x time dt dxdtproc } {
+  ;# proc is such that dx/dt = dxdtproc(t)
+  set k1 [$dxdtproc  $time  $x] ;# k1 = f (tn, xn)
+  set k2 [$dxdtproc  [expr $time+($dt*0.5)] [expr $x + $dt*0.5*$k1]] ;# k2 = f (tn + h?2, xn + h?2 k1)
+  set k3  [$dxdtproc [expr $time +$dt*0.5] [expr $x + $dt*0.5*$k2] ] ;# k3= f (tn + h?2, xn + h?2 k2)
+  set k4  [$dxdtproc [expr $time +$dt] [expr $x + $dt*$k3] ] ;# k4= f (tn + h, xn + h k3) 
+  return  [expr $x + $dt/6.0 *($k1 + 2*$k2 + 2*$k3 + $k4)] ;# h/6(simpsons rule)
+ }
+
+ proc test {} {
+   set y 0
+   set mass 1
+   set dt 0.1 ;# try shortening dt to see numerical inaccuracy
+ # use single equation R_K scheme - log decay of radioactivity eg (dN/dt=-n-->> N(t)=exp(-t)
+   for {set time 0} {[expr $time<=2] } { set time [expr $time+$dt]} {
+    puts "At time $time $mass"
+    set mass [rk4step $mass $time $dt decay] ;# dmass/dt = -mass - mass=m0(1-exp(time/k))
+   }
+ }
+
+ test
+#-------------------------------------------------------------------------------
+
+# at time =0.5 decay should be exp(-1)=0.367879441171 the solver gives
+# 0.367885238126 at time =1.0 decay should be exp(-2)=0.135335283237 the solver
+# gives 0.135339548431
+
+#-------------------------------------------------------------------------------
+
+# If you have more complex ODEs such as the damped harmonic oscillator
+# (of order 2, ie uses d2N/dt2):
+
+# y" -k.y' + om.y=0
+
+# you should break this into 2 equations using v=y':
+
+#  v' = k.v - om.y
+#  y' = v
+
+# and solve as suggested in reference 1 below. I have added a simple plotting 
+# algorithm (copied and simplified from A little graph plotter) to show the 
+# solution of this equation for a range of damping coefficients 'k'.
+
+#-------------------------------------------------------------------------------
+# tcl runge-kutta solution of ODES
+# N variables - use rk4step_array. Can be used for higher order ODEs
+# A simple plotting algorithm on a canvas is added.
+
+set k -0.25
+set omega [expr 2*3.14159]
+
+ # plotted example - damped oscillator;  dv/dt = -k.v -omega.y & dx/dt=v
+ proc dxdt { time dt xn} { ;# xn  is array of current variables; dx/dt is first element = speed
+        upvar 1 $xn x  ;# array of values
+        return $x(0)
+ }
+
+ proc oscdvdt { time dt xn} { ;
+        upvar 1 $xn x  ;# array of values
+        global k omega ;# allows editing, eg to see negatively damped oscilation type "set k 0.2; plot"
+        return [expr $k*$x(0)-$x(1)*$omega ] ;# if omega = 2Pi takes 1 sec to oscillate once (Slightly longer if highly damped!)
+ }
+
+ proc rk4step_array {vars time dt dxdts } { ;# proc is such that dx/dt = dxdtproc(t,x)
+ # for each member of the array 'vars' there is function dxdtproc(i)
+ # such that d/dt(vars(i) = dxdtproc(i)
+ # dxdtproc(i) has args time, step, array of values
+  upvar 1 $vars x  ;# upvar 1 means: use the variable in the calling routine - called $vars with local name x
+  upvar 1 $dxdts dxdtproc ;# list of functions for the rhs of equations
+  set neqs [array size dxdtproc] ;# number of equations being solved
+
+  for {set i 0} {$i<$neqs} { incr i} {
+      set k1($i) [ $dxdtproc($i)  $time $dt x] ;# k1 = f (tn,   xn,   yn)
+      set xnu($i) [expr $x($i) + 0.5*$dt*$k1($i) ] ;# next values to evaluate df/dx
+  }
+
+ for {set i 0} {$i<$neqs} { incr i} {
+         set k2($i) [$dxdtproc($i)   $time $dt xnu]
+        set xnu2($i) [expr $x($i) + 0.5*$dt*$k2($i) ] ;# next values
+ }
+
+  for {set i 0} {$i<$neqs} { incr i} {
+         set k3($i) [$dxdtproc($i) $time $dt xnu2]
+        set xnu3($i) [expr $x($i) + $dt*$k3($i) ] ;# next values
+  }
+
+  for {set i 0} {$i<$neqs} { incr i} {
+           set k4($i) [$dxdtproc($i) $time $dt xnu3]
+ }
+  for {set i 0} {$i<$neqs} { incr i} {
+        set dv [expr  $k1($i) + 2*($k2($i) + $k3($i)) + $k4($i) ]
+         set x($i)  [expr $x($i) + $dt*0.1666667 * $dv]
+  }
+ }
+
+ proc plot {} { ;# uses the simple graph plotter found on https://wiki.tcl-lang.org/8552
+  # --------------------------
+  #   params
+  # --------------------------
+  # title
+  # canvas width & height
+  # delay between plots
+  # x = f(t)
+  # initial & final times
+  array set params \
+  {
+    title     {Damped Oscillator}
+    width     400
+    height    400
+    delay     0
+    x         {$t / 50.}
+    t0        0
+    t1        400
+  }
+
+  # --------------------------
+  #   plotting
+  # --------------------------
+  # computed heights used to scale vertical units
+  set h $params(height)
+  set h1 [expr {int($h * 0.5)}]  ;# canvas mid-height
+  set h2 [expr {$h1 + 1}]
+  set h3 [expr {int($h * 0.4)}]  ;# graph mid-height
+  # canvas
+ if [winfo exists .c] { ;# delete it. Same as clear.
+  destroy .c
+ }
+  canvas .c -width $params(width) -height $h \
+            -xscrollincrement 1 -bg beige
+  pack .c
+  # plotting
+  wm title . $params(title)
+  set t $params(t0)
+
+ # GWM start up the oscillator solver
+  array set fns [list 0 oscdvdt 1 dxdt] ;# dv/dt and dx/dt equations to be solved in 'parallel'.
+  array set vars [list 0 0 1 0.5] ;# initial values of time and X
+
+     set tspace [expr $params(t1)/8.0] ;# how often to draw grid
+     set nexttic $tspace
+      .c create text 20 10 -anchor n -text "Velocity" -fill red
+      .c create text 20 25 -anchor n -text "Position" -fill black
+
+  while {$t != $params(t1)} \
+  {
+    update
+    set time [expr $t/30.0]
+
+    rk4step_array vars $time 0.02 fns ;# integrate the second order ODE
+
+    set x [expr $params(x)]
+    set vv $vars(1)
+    set v [expr {int($vv * $h3) + $h1}]
+    if {$t >= $nexttic} {
+      set nexttic [expr $nexttic+$tspace]
+      .c create text $t 0 -anchor n -text $t -fill gray
+      .c create line $t 0 $t $h -fill gray
+    }
+    .c create line $t $h1 $t $h2 -fill gray
+    .c create rectangle $t $v $t $v
+    set vv $vars(0)
+    set v [expr {int($vv * $h3) + $h1}]
+    .c create rectangle $t $v $t $v -outline red
+    incr t
+  }
+ }
+
+ for {set k 0 } {$k>-1.0} {set k [expr $k-0.1]} {
+    after 120 ;# wait for a moment....
+    plot
+ }
+
+#-------------------------------------------------------------------------------
+
+# If you have copied and pasted this code into Wish, when the automatic runs are 
+# ended use commands such as "set k -0.44;plot" to draw with damping term 0.44; 
+# "set k 0.2;plot" to show a growing sinusoid; "set omega 12;plot" to use a 
+# higher oscillation frequency.
+
+# The method (and the code) works for N variables - you could have 2 linked 
+# equations such as
+
+#  y" -k.y' + om.y + a.x=0
+#  x" -k.x' + om2.x + b.y=0
+
+# yielding
+
+#  u' = k.u - om2.x +b.y
+#  x' = u
+#  v' = k.v - om.y + a.x
+#  y' = v
+
+# Creating functions to evaluate u', v' and extending the array of variables 
+# to store x and u will solve the linked equations numerically.
+
+#-------------------------------------------------------------------------------
+# You might prefer the plotting in Bernoulli using math::calculus.
+#-------------------------------------------------------------------------------
+
+# This reference is simple & easy to follow: [1 ] (and useful).
+
+# The pdf reference is very comprehensive [2 ] including adaptive stepsize 
+# control and higher order methods for error limitation.
+
+# Recommended exercise: see the Runge-Kutta-Fehlberg page for a better solver. 
+# Cash-Karp automatic accuracy methods could also be implemented (see [3 ].
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
