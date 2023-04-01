@@ -90,25 +90,187 @@ proc ANTS {} {
 
 # }
 #-------------------------------------------------------------------------------
+#
+# Типичный пример. Выявлем (раскручиваем) программу, вычисляющую квадрат числа.
+# Лучшая програма :  "DUP *"
+# Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
+#
+#-------------------------------------------------------------------------------
+proc FITPROC_xx_NEW {prog task args} {
+
+  set is_print [dict_parse $args "-is_print"   0]
+
+  set x_list [get_x_list  0 2  10]
+
+  #puts "x_list = $x_list"
+  #exit
+
+  # ???? 
+  # 
+  set func [GET $task "func"]
+  #set joyf [GET $task "joyf"]
+
+  # начинаем в цикле подсчет фитнеса --------------------------
+
+  #set is_print 0
+
+  if {$is_print} {
+    puts stderr ""
+    puts stderr "-------------------------------------------------------------------"
+    puts stderr ""
+    puts stderr "FITPROC_xx: x_list = $x_list"
+    puts stderr "FITPROC_xx: func   = $func"
+    #puts stderr "FITPROC_xx: joyf   = $joyf"
+    puts stderr ""
+  }
+
+  set fitness 0
+
+  set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
+
+
+
+  foreach x $x_list {
+
+    #---------------------------------------------------------------
+
+    set real [expr $func] ;# рельное значение для функции в этой точке
+
+    ##run_v1_src $joyf     ;# выполнить исходник
+
+    # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
+    # 
+    set calc [getresult_prog_val  $prog $x] ;# посчитанное
+ 
+    #---------------------------------------------------------------
+
+    set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
+
+    #puts stderr "::joy_ST = $::joy_ST,  len = $len"
+    #puts "calc = $calc"
+
+    #set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
+
+    if {$is_print} {
+      puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
+    }
+    #---------------------------------------------------------------
+    #
+
+    if {$calc eq {}}  {
+
+      if {$is_print} {
+        puts stderr "FITPROC_xx: x = $x, calc eq {} , ERROR operator??"
+      }
+      # ошибка программы (на первом ошибочном операторе) !!
+      # 
+      # можно бы попробовать гибкую реакци. на "неверные" операторы программы, т.е.
+      # не вываливаться сразу в ошибку, а продолжать выпонять остальные операторы !
+      #
+      # но пока просто даим не слишком большой штраф, в пределах дельта-ошибок
+      
+      incr fitness 25 ;# 10 50 150
+      #
+      # может сразу выходить из цикла по точкам, они же все такие будут?
+      break
+
+    } elseif {![string is integer $calc] && ![string is double $calc]} {
+
+      # здесь может быть просто списко или символ-строка, а не число!
+      # но пока кроме числе и {ошибки} в стеке ничего не предвидится
+      #
+      puts "FITPROC_xx: NOT DIGITAL ???? !!!"
+      exit
+
+      incr fitness 50 ;# при каждой ошибке добавляем дельту
+      # 
+      # может сразу выходить из цикла по точкам, они же все такие будут?
+      break
+
+    } else {
+
+      #set delta [expr {abs($o-$calc)}] ;# 
+      set delta [expr {( $real - $calc ) ** 2 } ] ;# !! может корень из суммы квадратов?
+
+      #if {$delta > 1000} {
+      #  # anti overflow ???
+      #  set delta 1000
+      #}
+
+      set delta_sum [+ $delta_sum $delta]
+
+      if {$is_print} {
+        puts stderr "FITPROC_xx: x = $x, real = $real, calc = $calc, delta = $delta, delat_sum = $delta_sum"
+      }
+
+      #set fitness [+ $fitness $delta]
+    }
+    #---------------------------------------------------------------
+
+  }
+    
+  #set fitness [+ $fitness $delta_sum]
+  set fitness [expr {$fitness + sqrt ($delta_sum)}]
+
+  # 1) TODO
+  # длину учитывать ? но тогда генетич. разнообразие ухудшается?
+  #
+  set len [calc_len_prog $prog]
+
+  #set fitness [+ $fitness [* 0.01 $len]]
+
+
+  # 2) TODO
+  # нам не нужны лишние результаты в стеке ? тоже ухудшает? лучше потом преобразовать?
+  #
+  #incr fitness $len
+
+
+  #puts stderr "FITPROC_xx, prg = $src, fitness = $fitness"
+
+  return $fitness
+}
+#-------------------------------------------------------------------------------
 proc TEST {} {
 
-  #source "f-0000.tl"  ;# общие части
-  #source "f-1111.tl"  ;# простой jOY  
-  #source "f-prog.tl"
-  
-  source "p-corE.tl"
-
-  #source "t-proJ.tl"  ; # тесты на JOY
-  source "r_test.tl"  ; #
+  source "p-corE.tl" 
+  source "r_test.tl" 
   
   global argc argv
 
   incr ::ind0 ;# указатель следуюшему обработчику, откуда начинать парсить
 
-  #eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
-  eval [lindex $argv 1] [lrange $argv 2 end] ;# с параметрами
+  set next_prog [lrange $argv 1 end] 
 
+  if {$next_prog != ""} {
+
+    # вызываем вспомогательную секонд-функцию с параметрами
+    #eval [lindex $argv 1] [lrange $argv 2 end] 
+
+    eval $next_prog
+    return;
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  set fit_func     "FITPROC_xx_NEW"
+  set fit_tobest   "MIN"
+
+  #set target_funtion "x pow 3 plus x"
+  set target_funtion "x pow 2 plus x"
+
+
+  TEST_xx -nums -1 -news 1 -func $target_funtion -print 1 \
+    -init 0 \
+    -fit_func $fit_func  -fit_tobest $fit_tobest \
+    -list "dup * +" 
+
+  # NEXT_01 -seed @ -lpop 5 -size 2 -nums -1 -list "p1 p3 p5" 
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  return
 }
 #-------------------------------------------------------------------------------
 #

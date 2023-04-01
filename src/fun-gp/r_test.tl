@@ -461,14 +461,10 @@ proc func_prepare_from_input {inp} {
 #-------------------------------------------------------------------------------
 proc TEST_xx {args} {
 
-
-  #   if {$args == ""} {
-  #     global argc argv argv0
-  #     set argv [lrange $argv 2 end]
-  #   } else {
   set argv $args
-  #   }
-  
+
+  puts ""
+  puts "TEST_xx $args"
   puts ""
 
   #------------------------------------------------------
@@ -484,11 +480,14 @@ proc TEST_xx {args} {
 
   set print       [dict_parse $argv "-print"    1]
   set ::is_print  $print
-  
+
+  set fit_func     [dict_parse $argv "-fit_func"    "FITPROC_xx"] 
+  set fit_tobest   [dict_parse $argv "-fit_tobest"  "MIN"] 
 
   #------------------------------------------------------
 
   set ::INIT  [dict_parse $argv "-init"   0] 
+
   ;# 0 - не делаем специально начальеую инициацию
   ;# 1 - кладем сразу начальное значение x в стек несколько раз с запасом dup dup dup
 
@@ -545,11 +544,12 @@ proc TEST_xx {args} {
 
   set task [task_create  \
 	      -ios_begin 1 -ios_final 1 \
-              -fit_func "FITPROC_xx"  -fit_tobest     "MIN" \
-              -func           $func \
-              -gp_list    $gp_list ] 
-
-##              -joyf           $joyf \
+              -fit_func $fit_func  -fit_tobest $fit_tobest \
+              -func       $func \
+              -gp_list    $gp_list\
+             ] 
+  
+  ##              -joyf           $joyf \
   #------------------------------------------------------
   #
   # задаем начальную "случайность"
@@ -586,8 +586,7 @@ proc TEST_xx {args} {
     set fit_target     0    
     # т.е. тоже больше фитнес - лучше, но мы приближаемся сдева к точносу 0 !!
   
-    set task_fs [task_create  -fit_func $fitness_func \
-                   -fit_tobest       "MAX" \
+    set task_fs [task_create  -fit_func $fitness_func -fit_tobest "MAX" \
                    -fit_target $fit_target \
                    -fit_error  0.01        \
                    -gp_list    $gp_list]  
