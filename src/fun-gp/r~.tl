@@ -231,6 +231,102 @@ proc FITPROC_xx_NEW {prog task args} {
   return $fitness
 }
 #-------------------------------------------------------------------------------
+proc TEST_xx_SIMP {args} {
+
+  set argv $args
+
+  puts ""
+  puts "TEST_xx $args"
+  puts ""
+
+  #------------------------------------------------------
+
+  set seed       @   ;# каждый выхов случаен
+
+  set lpop      10   ;# колич-во ботов 
+  set size       6   ;# макс. длина ботов (при начальном старте?)
+  set nums      10   ;# шагов эволюции 
+
+  set print       [dict_parse $argv "-print"    1]
+  set ::is_print  $print
+
+  set fit_func     "FITPROC_xx_NEW" 
+  set fit_tobest   "MIN"
+
+  #------------------------------------------------------
+
+  set ::INIT  [dict_parse $argv "-init"   0] 
+
+  ;# 0 - не делаем специально начальеую инициацию
+  ;# 1 - кладем сразу начальное значение x в стек несколько раз с запасом dup dup dup
+
+  if {$::INIT} {
+    set gp_list     [dict_parse $argv "-list"   "* nop +"]
+  } else {
+    set gp_list     [dict_parse $argv "-list"   "dup * +"]
+  }
+
+  #------------------------------------------------------
+
+  set func   {$x ** 2 + $x}
+
+  #set func        [dict_parse $argv "-func"   {x pow 2 plus x}]
+  #set func [func_prepare_from_input $func] 
+
+  set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
+  #puts "joyf = $joyf"
+
+  #------------------------------------------------------
+  # флажки для новейших алгоритмов
+  # 
+  # 
+  set ::NEWS      [dict_parse $argv "-news"  $::NEWS]
+  set ::AUTO      [dict_parse $argv "-auto"  $::AUTO]
+  set ::DEEP      [dict_parse $argv "-deep"  $::DEEP]
+  
+  ios_init_TEST_xx 
+
+  v1_init_all  ;# !!!!!!!!!!! ???
+
+  set task [task_create  \
+	      -ios_begin 1 -ios_final 1 \
+              -fit_func $fit_func  -fit_tobest $fit_tobest \
+              -func       $func \
+              -gp_list    $gp_list\
+             ] 
+  
+  # задаем начальную "случайность"
+  
+  if {$seed == "@"} {set seed [clock seconds]}
+  
+  comm_random_seed $seed 
+
+  #comm_random_seed [clock seconds]  
+
+
+  # распечатаем начальные значения
+
+  puts "func = $func"
+  puts "seed = $seed"
+  puts "init = $::INIT"
+  puts "list = $gp_list"
+
+
+  #------------------------------------------------------
+  #
+  # запускаем эволюцию GP напрямую, через функцию
+
+  run_gp_evolution_for_task $task $seed \
+    -lpop $lpop  -size $size -nums $nums  
+
+
+  puts ""
+  puts "===================================================================="
+
+  
+  return
+}
+#-------------------------------------------------------------------------------
 proc TEST {} {
 
   source "p-corE.tl" 
@@ -261,7 +357,7 @@ proc TEST {} {
   set target_funtion "x pow 2 plus x"
 
 
-  TEST_xx -nums -1 -news 1 -func $target_funtion -print 1 \
+  TEST_xx_SIMP    -nums -1 -news 1 -func $target_funtion -print 1 \
     -init 0 \
     -fit_func $fit_func  -fit_tobest $fit_tobest \
     -list "dup * +" 
