@@ -465,24 +465,30 @@ proc itemlist_print {itemlist ind_form gen_form {out "stdout"}} {
 }
 #-------------------------------------------------------------------------------
 ################################################################################
-################################################################################
-
 
 #set ::len_is_constant 0
 
 #set ::randinstr   "randinstr_MAIN"
 #set ::quotes_proc "quotes_proc_NULL"
 
-
-
 ##set ::A(news) 0
 
-set ::NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
 
-set ::DEEP 5 ;# глубина последовательности мутации
+set ::gp_NEWS 0 ;# флажок формирования новейших изменений в алгоритмах:
 
-set ::AUTO 0 ;# флажок применения динамического словаря
+set ::gp_DEEP 5 ;# глубина последовательности мутации
 
+set ::gp_AUTO 0 ;# флажок применения динамического словаря
+
+#-------------------------------------------------------------------------------
+proc dict_parse_GLOBAL {name argv} {
+
+
+  # set ::gp_NEWS [dict_parse $argv "::gp_NEWS"  $::gp_NEWS]
+
+  set $name [dict_parse $argv $name  [set $name]]
+
+}
 #-------------------------------------------------------------------------------
 # сфомируем совокупный на этот момент список: GP_LIST = gp_list + gp_dict
 #
@@ -505,7 +511,7 @@ proc only_names_from_gpdict {gp_dict} {
 proc make_GP_LIST {gp_list gp_dict} {
 
 
-  if {$::AUTO} {
+  if {$::gp_AUTO} {
 
     set GP_LIST {} 
     
@@ -2423,7 +2429,7 @@ proc gp_joyprg_mutate {task prg mutprob} {
       
   set gp_list [GET $task gp_list]
 
-  if {$::NEWS} {
+  if {$::gp_NEWS} {
 
     # по новому алгоритму - хотим ьенять точечно и семантически осмыслено 
     # 

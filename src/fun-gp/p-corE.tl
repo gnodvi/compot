@@ -3611,8 +3611,10 @@ proc pop_evolution {pop task max_generations  args} {
     }
   
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  # 
+  #  
   set evolfunc  [dict_parse $args "-evol"  "NOTEVOLFUNC"]
+
+  ##puts "evolfunc = $evolfunc"
 
   $evolfunc  $pop $task {*}$args 
 
@@ -5080,7 +5082,7 @@ proc gp_evolution_4 {pop task args} {
   #---------------------------------------
   # 2) выделяем библиотечные шаблоны
 
-  if {$::AUTO} {
+  if {$::gp_AUTO} {
 
     works_on_gp_dict $leaders_items
   }
@@ -5088,15 +5090,17 @@ proc gp_evolution_4 {pop task args} {
   #---------------------------------------
   # 3) MUTATION
    
-  if {$::NEWS} {
-    
+  if {$::gp_NEWS} {
+
+    #puts "::gp_NEWS ............................." ;# ??????????????????????????/
+
     # совсем новый механизм: (форк от лучших и затем мутация)
 
-    # TODO: клонировать с рефакторингом (::AUTO)
+    # TODO: клонировать с рефакторингом (::gp_AUTO)
     # 
     set pop_items [cyclic_clone_from_leaders $leaders_items $len]
 
-    set pop_items [try_mutate_for_all_items   $pop_items $task $::DEEP]
+    set pop_items [try_mutate_for_all_items   $pop_items $task $::gp_DEEP]
 
   } else {
     
@@ -5125,7 +5129,7 @@ proc gp_evolution_4 {pop task args} {
   SET $pop "itemlist" $pop_items
 
 
-  if {$::AUTO} {
+  if {$::gp_AUTO} {
   if {$::is_print >= 2} {
     puts ""
     puts stderr "  ::gp_dict = [set $::gp_dict]"

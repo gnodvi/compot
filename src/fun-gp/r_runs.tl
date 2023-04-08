@@ -55,7 +55,7 @@ proc next_01 {} {
   #t~.tl TEST NEXT_01 -seed 123 -lpop 10 -size 1 -nums -1 -list { p1 p3 p5 } 
   
   #set ::GP_iscrossover 0
-  #set ::NEWS 1
+  #set ::gp_NEWS 1
   
   #NEXT_01 -seed @ -lpop 6 -size 1 -nums -1 -list "p1 p3 p5" -seed 2021 -print 1
   NEXT_01 -seed @ -lpop 6 -size 1 -nums -1 -list "p1 p3 p5" -seed @ -print 1 -news 1
@@ -66,7 +66,7 @@ proc test_xx {} {
 
   #set ::GP_iscrossover 0
   
-  #set ::NEWS 1   - лучше передавать параметром? -news 1 
+  #set ::gp_NEWS 1   - лучше передавать параметром? -news 1 
   set ::DEEP 20
   
   # TODO:

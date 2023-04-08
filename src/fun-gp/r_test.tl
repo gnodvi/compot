@@ -504,17 +504,23 @@ proc TEST_xx {args} {
 
   set func [func_prepare_from_input $func] 
 
-  set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
+  #set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
   #puts "joyf = $joyf"
 
   #------------------------------------------------------
   # флажки для новейших алгоритмов
   # 
   # 
-  set ::NEWS      [dict_parse $argv "-news"  $::NEWS]
-  set ::AUTO      [dict_parse $argv "-auto"  $::AUTO]
-  set ::DEEP      [dict_parse $argv "-deep"  $::DEEP]
+  #set ::gp_NEWS      [dict_parse $argv "-news"  $::gp_NEWS]
+  #set ::gp_NEWS      [dict_parse $argv "::gp_NEWS"  $::gp_NEWS]
+
+  dict_parse_GLOBAL "::gp_NEWS" $argv
+  dict_parse_GLOBAL "::gp_AUTO" $argv
+
+  ##set ::gp_DEEP  [dict_parse $argv "-deep"  $::DEEP]
+  dict_parse_GLOBAL "::gp_DEEP" $argv
   
+
   ios_init_TEST_xx 
 
   #set ::randinstr   randinstr_MAIN 
@@ -575,6 +581,7 @@ proc TEST_xx {args} {
 
   if {$vers == "fs"} {
   #------------------------------------------------------
+  # r~.tl TEST TEST_xx  -seed 2013 -lpop 30 -nums -1 -vers fs
     #
     # ga_evolution, ищем как обычную строку 
 
@@ -652,7 +659,7 @@ proc TEST_xx {args} {
   #------------------------------------------------------
     
     #
-    # а теперь запустим "соревнование"
+    # а теперь запустим "соревнование" ???????????????/
     
     set obj_gp [BOT33 new   -lpop $lpop -lsrc $size \
                 -task $task -print $print]
@@ -723,12 +730,12 @@ proc TEST_xx {args} {
 
 #-------------------------------------------------------------------------------
 
-# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
-# l~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+# r~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
+# r~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
   
 # OUT:
-# l~.tl TEST TEST_xx  -seed    0 -lpop  5 -size 6 -nums -1 -vers gp -print 2 
-# l~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
+# r~.tl TEST TEST_xx  -seed    0 -lpop  5 -size 6 -nums -1 -vers gp -print 2 
+# r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
 
 ################################################################################
 #-------------------------------------------------------------------------------
@@ -762,8 +769,13 @@ proc NEXT_01 {args} {
   # флажки для новейших алгоритмов
   # 
   # 
-  set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
-  set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
+  #set ::gp_NEWS      [dict_parse $argo "-news"  $::gp_NEWS]
+  #set ::gp_NEWS      [dict_parse $argo "::gp_NEWS"  $::gp_NEWS]
+
+  dict_parse_GLOBAL "::gp_NEWS" $argo
+  dict_parse_GLOBAL "::gp_AUTO" $argo
+
+  #set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
   
 
   # TODO 
@@ -778,7 +790,8 @@ proc NEXT_01 {args} {
   #set ::IOS_begin 0
   #set ::IOS_final 0
 
-  # t~.tl TEST NEXT_01 -nums -1 -seed @ -target 5 -news 1 -list "p1 p3 m1" -print 2
+  # r~.tl TEST NEXT_01 -seed 2016
+  # r~.tl TEST NEXT_01 -nums -1 -seed @ -target 5 -news 1 -list "p1 p3 m1" -print 2
 
   #------------------------------------------------------
 

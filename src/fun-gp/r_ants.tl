@@ -2337,8 +2337,8 @@ proc ANTS_gp_new {} {
   # флажки для новейших алгоритмов
   # 
   # 
-  set ::NEWS      [dict_parse $argo "-news"  $::NEWS]
-  set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
+  dict_parse_GLOBAL "::gp_NEWS" $argo
+  dict_parse_GLOBAL "::gp_AUTO" $argo
 
 
   ios_add_new  M  {} {} 
