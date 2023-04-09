@@ -288,6 +288,8 @@ proc getresult_prog_val {prog val} {
 # Лучшая програма :  "DUP *"
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
+# r~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga
+# 
 #-------------------------------------------------------------------------------
 proc FITPROC_xx {prog task args} {
 
@@ -300,20 +302,20 @@ proc FITPROC_xx {prog task args} {
 
   # ???? 
   # 
-  set func [GET $task "func"]
-  #set joyf [GET $task "joyf"]
+  #set func [GET $task "func"]
+  set joyf [GET $task "joyf"] ;# наверное удобне в консоли задавать строку на JOY
 
   # начинаем в цикле подсчет фитнеса --------------------------
 
   #set is_print 0
 
-  if {$is_print} {
+  if {0} {
     puts stderr ""
     puts stderr "-------------------------------------------------------------------"
     puts stderr ""
     #puts stderr "FITPROC_xx: prg    = $src"
     puts stderr "FITPROC_xx: x_list = $x_list"
-    puts stderr "FITPROC_xx: func   = $func"
+    #puts stderr "FITPROC_xx: func   = $func"
     puts stderr "FITPROC_xx: joyf   = $joyf"
     puts stderr ""
   }
@@ -328,14 +330,48 @@ proc FITPROC_xx {prog task args} {
 
     #---------------------------------------------------------------
 
-    set real [expr $func] ;# рельное значение для функции в этой точке
+    if {0} {
+      set real [expr $func] ;# рельное значение для функции в этой точке
+    } else {
+      #run_v1_src  $joyf     ;# выполнить исходник ??
+      set real [v1_get_result_from_one_arg  $joyf $x]
+    }
 
-    ##run_v1_src $joyf     ;# выполнить исходник
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
     # 
-    set calc [getresult_prog_val  $prog $x] ;# посчитанное
+    #set calc [getresult_prog_val  $prog $x] ;# посчитанное
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  
+    v0_set_stack_null ;# и не более того !!!!
+    
+    # кладем одно значение в стек
+    # 
+    push $x 
+    
+    if {$::INIT} {
+      push $x 
+      push $x 
+      push $x 
+      push $x 
+      push $x 
+    }
+    
+    # выполняем программку
+    # 
+    run_v1_prog $prog
+
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # забираем одно значение из стека
+    # 
+    set calc [pop]
+
+
     #---------------------------------------------------------------
 
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
@@ -501,11 +537,9 @@ proc TEST_xx {args} {
 
   #set func        [dict_parse $argv "-func"   {x ** 2 + x}]
   set func        [dict_parse $argv "-func"   {x pow 2 plus x}]
-
   set func [func_prepare_from_input $func] 
 
-  #set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
-  #puts "joyf = $joyf"
+  set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
 
   #------------------------------------------------------
   # флажки для новейших алгоритмов
@@ -551,11 +585,11 @@ proc TEST_xx {args} {
   set task [task_create  \
 	      -ios_begin 1 -ios_final 1 \
               -fit_func $fit_func  -fit_tobest $fit_tobest \
-              -func       $func \
-              -gp_list    $gp_list\
+              -func  $func \
+              -joyf  $joyf \
+              -gp_list    $gp_list \
              ] 
   
-  ##              -joyf           $joyf \
   #------------------------------------------------------
   #
   # задаем начальную "случайность"
@@ -572,6 +606,7 @@ proc TEST_xx {args} {
   # распечатаем начальные значения
 
   puts "func = $func"
+  puts "joyf = $joyf"
   puts "seed = $seed"
   puts "init = $::INIT"
   puts "list = $gp_list"
@@ -741,12 +776,7 @@ proc TEST_xx {args} {
 #-------------------------------------------------------------------------------
 proc NEXT_01 {args} {
 
-  #   if {$args == ""} {
-  #     global argc argv argv0
-  #     set argo [lrange $argv 2 end]
-  #   } else {
   set argo $args
-  #   }
   
   argo_print $argo 
 

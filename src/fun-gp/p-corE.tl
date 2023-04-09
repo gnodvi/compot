@@ -369,6 +369,8 @@ proc pop_print {p {out "stdout"}} {
   #puts $out "SIZE        = [GET $p size] "
   puts $out "SIZE        = [get_pop_size $p] "
   puts $out "BEST        = $best "
+  puts stderr "::gp_dict = [set $::gp_dict]"
+
   puts $out ""
   
   if {$best != -1 && $best != ""} {
@@ -5131,8 +5133,8 @@ proc gp_evolution_4 {pop task args} {
 
   if {$::gp_AUTO} {
   if {$::is_print >= 2} {
-    puts ""
-    puts stderr "  ::gp_dict = [set $::gp_dict]"
+    #puts ""
+    #puts stderr "  ::gp_dict = [set $::gp_dict]"
   }
   }
    

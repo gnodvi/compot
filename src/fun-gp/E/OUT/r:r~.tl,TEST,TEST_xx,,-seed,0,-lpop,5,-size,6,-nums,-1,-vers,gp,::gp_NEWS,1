@@ -2,6 +2,7 @@
 TEST_xx -seed 0 -lpop 5 -size 6 -nums -1 -vers gp ::gp_NEWS 1
 
 func = $x**2+$x
+joyf = dup dup * +
 seed = 0
 init = 0
 list = dup * +

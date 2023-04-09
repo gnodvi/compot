@@ -128,9 +128,6 @@ proc task_create {args} {
   SET $t ios_BEGIN {} ;# входы/выходы списком типов
   SET $t ios_FINAL {}
 
-  #SET $t ios_begin  0 ;# входы/выходы размерами списков IOS_begin
-  #SET $t ios_final  0
-
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   #
   dict_parse_all_minus $t {*}$args ;# заносив убирая минусы если что-то есть !
@@ -3642,11 +3639,11 @@ proc FITPROC_01_NEW {p task args} {
 
   set joy_prg  [item_get_mainsrc $p]
 
-
-
   set result [getresult_prg  $joy_prg]
 
   set fitness [expr {abs($::sum_target-$result)}]  ;# ??
+
+  #puts stderr "FITPROC_01_NEW: result = $result, joy_prg = $joy_prg"
 
   #set fitness [expr {($::sum_target - $result)}] 
   #set fitness [expr {sqrt ( abs ($::sum_target * $::sum_target - $result * $result))}] 
@@ -3759,7 +3756,7 @@ proc NEXT_test {args} {
 }
 #-------------------------------------------------------------------------------
 
-# f~.tl TEST NEXT_test
+# j~.tl TEST NEXT_test
 
 # f~.tl TEST TEST_randprog @
 # f~.tl TEST TEST_makeparas

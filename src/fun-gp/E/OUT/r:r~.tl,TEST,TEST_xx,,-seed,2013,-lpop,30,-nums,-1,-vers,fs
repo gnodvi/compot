@@ -2,6 +2,7 @@
 TEST_xx -seed 2013 -lpop 30 -nums -1 -vers fs
 
 func = $x**2+$x
+joyf = dup dup * +
 seed = 2013
 init = 0
 list = dup * +
