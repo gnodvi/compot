@@ -517,8 +517,8 @@ proc TEST_xx {args} {
   set print       [dict_parse $argv "-print"    1]
   set ::is_print  $print
 
-  set fit_func     [dict_parse $argv "-fit_func"    "FITPROC_xx"] 
-  set fit_tobest   [dict_parse $argv "-fit_tobest"  "MIN"] 
+  set fit_func    [dict_parse $argv "-fit_func"    "FITPROC_xx"] 
+  set fit_tobest  [dict_parse $argv "-fit_tobest"  "MIN"] 
 
   #------------------------------------------------------
 
@@ -617,6 +617,9 @@ proc TEST_xx {args} {
   if {$vers == "fs"} {
   #------------------------------------------------------
   # r~.tl TEST TEST_xx  -seed 2013 -lpop 30 -nums -1 -vers fs
+
+
+
     #
     # ga_evolution, ищем как обычную строку 
 
@@ -633,18 +636,72 @@ proc TEST_xx {args} {
                    -fit_error  0.01        \
                    -gp_list    $gp_list]  
 
-    set obj \
+    #set obj \
       [BOT01 new  -lpop $lpop -lsrc $size -task $task_fs -vers $vers] 
 
-    set pop [GET $obj "pop"]
+
+    set pop [pop1_create  -lpop $lpop -lsrc $size -task $task_fs] ;#   -vers $vers 
+
+    #SET $pop  select_one   "ga_select_one_sus"
+    #SET $pop  select_two   "ga_select_two_sus"
+
+    #set pop [GET $obj "pop"]
+
+
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"
 
 
     set m [dict merge   {-print  1} $argv]
     puts "m = $m"
-    set ret [calc_BOT01 $obj {*}$m]
 
+    #---------------------------------------------------------
+    #
+    #
+    # r~.tl TEST TEST_xx -seed 2013 -lpop 30 -nums -1 -vers fs 
+    #---------------------------------------------------------
+    ## proc calc_BOT01 {obj args} {}
+
+    #if {1} {
+      
+      #set args {*}$m
+      set args $m
+
+      ##set pop [GET $obj pop]
+      
+      SET $pop  seedproc "maintest_seed_proc" ;# ??
+      
+      #------------------
+      
+      set task            $task_fs ;# [dict_parse $args "-task"  [GET $obj "task"]] 
+      set max_generations [dict_parse $args "-nums"  10] 
+      ##set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
+      
+      #puts stderr ""
+      #puts stderr "calc_BOT01: args = $args" 
+      #puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
+      #puts stderr "calc_BOT01: vers = $vers"  
+      #task_print $task  
+      puts stderr ""
+      
+      ##set  pop [GET $obj "pop"]
+      # 
+      SET $pop "generation" 0
+      SET $pop "itemlist"   {}
+      
+      #puts "[procname]: task = [set $task]"
+      # exit
+      
+      set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
+      
+      ##return $ret
+
+    #} else {
+    #
+    #  set ret [calc_BOT01 $obj {*}$m]
+    #}
+
+   
   #------------------------------------------------------
   }
   if {$vers == "gp"} {
@@ -653,8 +710,8 @@ proc TEST_xx {args} {
   #
   # запускаем эволюцию GP напрямую, через функцию
 
-    run_gp_evolution_for_task $task $seed \
-      -lpop $lpop  -size $size -nums $nums      \
+    run_gp_evolution_for_task $task $seed  \
+      -lpop $lpop  -size $size -nums $nums \
 
 #      $lpop $size $nums  \
     # -printproc 0 \
@@ -669,14 +726,20 @@ proc TEST_xx {args} {
   } 
   if {$vers == "ga"} {
   #------------------------------------------------------
+    ## proc calc_BOT01 {obj args} {}
     
     #set ::is_print $print
     
-    set obj_ga \
+    #set obj_ga \
       [BOT01 new  -lpop $lpop -lsrc $size -task $task -vers $vers] 
     
+      set pop [pop1_create  -lpop $lpop -lsrc $size -task $task] ;#  -vers $vers 
 
-    set pop [GET $obj_ga "pop"]
+    SET $pop  select_one   "ga_select_one_sus"
+    SET $pop  select_two   "ga_select_two_sus"
+
+
+    #set pop [GET $obj_ga "pop"]
     
     # только эти функции выбора работают для GP!
     # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
@@ -685,8 +748,47 @@ proc TEST_xx {args} {
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"    
          
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers ga
 
-    calc_BOT01 $obj_ga  -nums $nums   -print 1
+
+    #if {1} {
+      set args [list -nums $nums   -print 1]
+
+      ##set pop [GET $obj pop]
+      
+      SET $pop  seedproc "maintest_seed_proc" ;# ??
+      
+      #------------------
+      
+      ##set task            $task_fs ;# [dict_parse $args "-task"  [GET $obj "task"]] 
+      set max_generations [dict_parse $args "-nums"  10] 
+      ##set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
+      
+      puts stderr ""
+      
+      ##set  pop [GET $obj "pop"]
+      # 
+      SET $pop "generation" 0
+      SET $pop "itemlist"   {}
+      
+      #puts "[procname]: task = [set $task]"
+      # exit
+      
+      set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
+      
+      ##return $ret
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    #} else {
+
+      ##set ret [calc_BOT01 $obj {*}$m]
+
+    #  calc_BOT01 $obj_ga  -nums $nums   -print 1
+    #}
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+
 
   #------------------------------------------------------
   } 
