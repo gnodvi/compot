@@ -4138,20 +4138,11 @@ proc calc_BOT33  {obj args} {
 
   set task [dict_parse $args "-task" $task_local] 
   
-  #dict_print_real $task_local
-  #dict_print_real $task
-  #exit
-
   #????
   #if {! [info exists max_generations]} {
   set max_generations [dict_parse $args "-nums" ] 
   #}
   
-  #set print            [dict_parse $args "-print"           1]
-  # set game_print_proc  [dict_parse $args "-printproc" 0]
-  # set mutprob          [dict_parse $args "-mutprob"         0.1]
-   
-  #set randpop_proc     [dict_parse $args "-randpop_proc"  "make_rand_prgpop"]
 
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   #  
@@ -4221,22 +4212,10 @@ proc run_gp_evolution_for_task {
                        args
                      } {
 
-
-  # TODO - вводить как опции/параметры
-  # 
-  # set population_size  [dict_parse $args "-lpop" $population_size]
-  # set len_chromosomes  [dict_parse $args "-size" $len_chromosomes]
-  # set max_generations  [dict_parse $args "-nums" $max_generations]
-
   set population_size  [dict_parse $args "-lpop" 10]
   set len_chromosomes  [dict_parse $args "-size"  2]
   set max_generations  [dict_parse $args "-nums"  2]
   
-  #puts stderr "population_size = $population_size !!!!!!!!!!!!!!!"
-  #puts stderr "len_chromosomes = $len_chromosomes !!!!!!!!!!!!!!!"
-  #puts stderr "max_generations = $max_generations !!!!!!!!!!!!!!!"
-
-  #-------------------------------------
   if {$seed == "@"} {
 
     set seed [clock seconds]
@@ -4246,36 +4225,39 @@ proc run_gp_evolution_for_task {
   comm_random_seed $seed 
 
   #-------------------------------------
+
   # -lsrc $len_chromosomes  ??? почему ен -size ??
 
-  set obj [BOT33 new \
-       {*}$args      \
-       -lsrc $len_chromosomes  -printchform  "% s " \
-      ]
-   
-  #	     -lpop $population_size -lsrc $len_chromosomes -task $task \
-    
+
+  set pop [POP new  {*}$args   -lsrc $len_chromosomes  -printchform  "% s " ]
+
+
+  #????
+  #if {! [info exists max_generations]} {
+  set max_generations [dict_parse $args "-nums" ] 
+  #}
+  
+
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
-  # и  выпоняем эволюционный поиск 
-
-  #RUN1 "calc_" $obj \
-  #puts "nums = $nums !!"
-  #puts stderr "max_generations = $max_generations !!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-  # важно сначала выдать {*}$args а затем индивидуальные парамеры
-  # 
+  #  
 
 
-  calc_BOT33  $obj \
-    {*}$args                          \
-    -task            $task            \
-    -print           $::is_print      \
+  set population_size [GET $pop "stable_size"]
+  set len_chromosomes [GET $pop "len_chromosomes"]
+  
 
-#  -randpop_proc    $randpop_proc    \
-
-
-#    -nums           $max_generations  \
-  # -printproc $game_print_proc \
+  set itemlist [make_itemlist $task \
+                   $population_size $len_chromosomes]
+  
+  SET $pop "itemlist" $itemlist
+  
+  # gp_evolution_main  $task $pop  $max_generations \
+  #   $game_print_proc \
+  #   $mutprob  
+  
+  ga_evolution_main  $task $pop  $max_generations {*}$args \
+    -evol "gp_evolution_4"  
+  
 
   return
 }
