@@ -130,9 +130,12 @@ clean :
 	(cd $(DIALOG_DIR); make clean)
 	(cd ../origin; make clean)
 	(cd ../solver; make clean)
-	(cd ../repo01; make clean)
+
+#	(cd ../repo01; make clean)
+
 	(cd $(TESTER_DIR); make clean)
-#	(cd $(OTHERS_DIR); make clean)
+##	(cd $(OTHERS_DIR); make clean)
+
 	(cd $(CAUL-S_DIR); make clean)
 	(cd $(CGPLIB_DIR); make clean)
 	(cd $(LOGICS_DIR); make clean)
