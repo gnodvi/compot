@@ -60,7 +60,7 @@ orc = OllivierRicci.OllivierRicci (G, alpha=0.5, verbose="INFO")
 
 print ("..... 03 .... \n")
 
-orc.compute_ricci_curvature()
+#############################    orc.compute_ricci_curvature()
 
 print ("..... 04 .... \n")
 
