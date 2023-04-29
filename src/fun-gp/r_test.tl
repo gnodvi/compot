@@ -509,13 +509,13 @@ proc TEST_xx {args} {
   set seed        [dict_parse $argv "-seed"  @] ;# каждый выхов случаен
 
   set lpop        [dict_parse $argv "-lpop"  10]   ;# колич-во ботов 
-  set size        [dict_parse $argv "-size"   6]   ;# макс. длина ботов (при начальном старте?)
+  set lsrc        [dict_parse $argv "-size"   6]   ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
 
   set vers        [dict_parse $argv "-vers"  "gp"] ;# по умолчанию 
 
-  set print       [dict_parse $argv "-print"    1]
-  set ::is_print  $print
+  ##set print       [dict_parse $argv "-print"    1]
+  set ::is_print  [dict_parse $argv "-print"    1]  ;# $print
 
   set fit_func    [dict_parse $argv "-fit_func"    "FITPROC_xx"] 
   set fit_tobest  [dict_parse $argv "-fit_tobest"  "MIN"] 
@@ -623,7 +623,7 @@ proc TEST_xx {args} {
 
     set gp_list      "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
     set ::target_text  "nop dup dup nop nop nop nop * nop + nop nop"
-    set size 12
+    set lsrc 12
 
     set fitness_func   "FITPROC_list_FS"
     set fit_target     0    
@@ -637,7 +637,7 @@ proc TEST_xx {args} {
 
 
 
-    set pop [pop1_create  -lpop $lpop -lsrc $size -task $task_fs] ;#   -vers $vers 
+    set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task_fs] ;#   -vers $vers 
 
     #SET $pop  select_one   "ga_select_one_sus"
     #SET $pop  select_two   "ga_select_two_sus"
@@ -687,7 +687,7 @@ proc TEST_xx {args} {
   # запускаем эволюцию GP напрямую, через функцию
 
     run_gp_evolution_for_task $task $seed  \
-      -lpop $lpop  -size $size -nums $nums \
+      -lpop $lpop  -lsrc $lsrc -nums $nums \
 
 
     puts ""
@@ -696,10 +696,10 @@ proc TEST_xx {args} {
   #------------------------------------------------------
   } 
   if {$vers == "ga"} {
-    # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums 10 -vers ga
+    # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
 
     
-    set pop [pop1_create  -lpop $lpop -lsrc $size -task $task] ;#  -vers $vers 
+    set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task] ;#  -vers $vers 
     
     SET $pop  select_one   "ga_select_one_sus"
     SET $pop  select_two   "ga_select_two_sus"
@@ -798,8 +798,8 @@ proc NEXT_01 {args} {
   argo_print $argo 
 
   set seed        [dict_parse $argo "-seed"  @]
-  set individuals [dict_parse $argo "-lpop" 10]
-  set len         [dict_parse $argo "-size" 10] 
+  set lpop        [dict_parse $argo "-lpop" 10]
+  set lsrc        [dict_parse $argo "-size" 10] 
   set nums        [dict_parse $argo "-nums"  4]
   set ::is_print  [dict_parse $argo "-print" 1] 
   set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
@@ -844,8 +844,8 @@ proc NEXT_01 {args} {
 
   set ::sum_target [dict_parse $argo "-target" 20]
 
-  puts "individuals  = $individuals" ;# колич-во ботов
-  puts "len          = $len"         ;# макс. длина ботов (при начальном старте?)
+  puts "lpop         = $lpop"        ;# колич-во ботов
+  puts "lsrc         = $lsrc"        ;# макс. длина ботов (при начальном старте?)
   puts "nums         = $nums"        ;# шагов эволюции  
   puts "gp_list      = $gp_list"     ;#   
 
@@ -881,7 +881,7 @@ proc NEXT_01 {args} {
   run_gp_evolution_for_task    \
       $task                    \
       $seed \
-      -lpop $individuals  -size $len  -nums $nums \
+      -lpop $lpop  -lsrc $lsrc  -nums $nums \
       {*}$argo                 \
 
   # -print        $is_print  \

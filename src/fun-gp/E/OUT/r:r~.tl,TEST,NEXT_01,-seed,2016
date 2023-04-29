@@ -10,8 +10,8 @@ set DICT {
 tclinit = 
 nums = 4
 
-individuals  = 10
-len          = 10
+lpop         = 10
+lsrc         = 10
 nums         = 4
 gp_list      = p1
 ::sum_target = 20
@@ -25,9 +25,9 @@ prgpop = {p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1} {p1 p1 p1 p1 p1 p1 p1 p1 p1}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
-step 000)     best =   11.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 
-step 001)     best =    9.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
-step 002)     best =    8.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
-step 003)     best =    7.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
-step 004)     best =    6.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+step 000)  best=  11.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 
+step 001)  best=   9.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+step 002)  best=   8.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+step 003)  best=   7.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
+step 004)  best=   6.000 :   p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 
 

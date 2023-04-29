@@ -4200,9 +4200,9 @@ proc run_gp_evolution_for_task {
                        args
                      } {
 
-  set population_size  [dict_parse $args "-lpop" 10]
-  set len_chromosomes  [dict_parse $args "-size"  2]
-  set max_generations  [dict_parse $args "-nums"  2]
+  set lpop  [dict_parse $args "-lpop" 10]
+  set lsrc  [dict_parse $args "-lsrc"  2]
+  set nums  [dict_parse $args "-nums"  2]
   
   if {$seed == "@"} {
 
@@ -4214,37 +4214,16 @@ proc run_gp_evolution_for_task {
 
   #-------------------------------------
 
-  # -lsrc $len_chromosomes  ??? почему ен -size ??
+  #set pop [POP new  {*}$args   -lsrc $lsrc  -printchform  "% s " ]
+  set pop [POP new  {*}$args  -printchform  "% s " ]
 
-
-  set pop [POP new  {*}$args   -lsrc $len_chromosomes  -printchform  "% s " ]
-
-
-  #????
-  #if {! [info exists max_generations]} {
-  set max_generations [dict_parse $args "-nums" ] 
-  #}
-  
 
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   #  
-
-
-  set population_size [GET $pop "stable_size"]
-  set len_chromosomes [GET $pop "len_chromosomes"]
+  SET $pop "itemlist" [make_itemlist $task $lpop $lsrc]
   
-
-  set itemlist [make_itemlist $task \
-                   $population_size $len_chromosomes]
   
-  SET $pop "itemlist" $itemlist
-  
-  # gp_evolution_main  $task $pop  $max_generations \
-  #   $game_print_proc \
-  #   $mutprob  
-  
-  ga_evolution_main  $task $pop  $max_generations {*}$args \
-    -evol "gp_evolution_4"  
+  ga_evolution_main  $task $pop $nums  {*}$args -evol "gp_evolution_4"  
   
 
   return
@@ -4372,7 +4351,7 @@ proc _gp_test {} {
 
     set seed   [dict_parse $argv "-seed" 2013]
     set bnums  [dict_parse $argv "-lpop" 10]
-    set bsize  [dict_parse $argv "-size"  6] 
+    set lsrc   [dict_parse $argv "-size"  6] 
     set steps  [dict_parse $argv "-nums" 10]
 
   #----------------------------------------------------------------
@@ -4387,8 +4366,8 @@ proc _gp_test {} {
   set  fitnessfunc  "FITPROC_list_FS"
 
   puts ""
-  puts "bnums  = $bnums"  ;# колич-во ботов
-  puts "bsize  = $bsize"  ;# макс. длина ботов (при начальном старте?)
+  puts "nums   = $bnums"  ;# колич-во ботов
+  puts "lsrc   = $lsrc "  ;# макс. длина ботов (при начальном старте?)
   puts "steps  = $steps"  ;# шагов эволюции  
   puts ""
 
@@ -4402,7 +4381,7 @@ proc _gp_test {} {
   run_gp_evolution_for_task \
     $task \
     $seed  \
-    -lpop $bnums  -size $bsize -nums $steps 
+    -lpop $bnums  -lsrc $lsrc -nums $steps 
     
 
   return
@@ -4414,7 +4393,6 @@ proc _gp_test {} {
 # g_stru.tl _gp_test 2013   30  6  250
 
 
-# ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------

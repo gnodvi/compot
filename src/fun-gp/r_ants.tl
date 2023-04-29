@@ -2285,8 +2285,7 @@ proc ANTS_gp {} {
   run_gp_evolution_for_task        \
       $task                        \
       0 \
-      -lpop $individuals  -size $len  -nums $nums   \
-      \
+      -lpop $individuals -lsrc $len -nums $nums 
 
   # -mutprob          0.1        \
   #     -printproc  0 
@@ -2372,7 +2371,7 @@ proc ANTS_gp_new {} {
   run_gp_evolution_for_task \
       $task                        \
       $seed \
-      -lpop $individuals  -size $len  -nums $nums   \
+      -lpop $individuals  -lsrc $len  -nums $nums   \
       -printproc  game_print                \
 
   # -mutprob          0.1        \
