@@ -3573,7 +3573,9 @@ proc pop_print_step_info {pop task args} {
 # ------------------------------------------------------------------------------
 # основная программа вызова "эволюционной" функции
 # ------------------------------------------------------------------------------
-proc pop_evolution {pop task max_generations  args} {
+proc pop_evolution {pop task nums  args} {
+
+  #set nums   [dict_parse $args "-nums"] 
 
 
   # если какие-то недосчитаны, то посчитать фитнес
@@ -3595,7 +3597,7 @@ proc pop_evolution {pop task max_generations  args} {
   # проверяем не пора ли закончить цикл
   #   
 
-  if [is_check_generation_break  $pop $task $max_generations] \
+  if [is_check_generation_break  $pop $task $nums] \
     { 
       return false
     }
@@ -3629,7 +3631,7 @@ proc pop_evolution {pop task max_generations  args} {
 # //  parameters:
 # //  return:
 # //----------------------------------------------------------------------------
-proc ga_evolution_main {task pop max_generations args} {
+proc ga_evolution_main {task pop nums args} {
 
 
   # Do all the generations:
@@ -3647,7 +3649,7 @@ proc ga_evolution_main {task pop max_generations args} {
   #------------------------------------------------
   while {1} {
 
-    set ret [pop_evolution  $pop $task $max_generations {*}$args]
+    set ret [pop_evolution  $pop $task $nums {*}$args]
     
     if {! $ret} {break;}
 
@@ -3686,7 +3688,7 @@ proc ga_evolution_main {task pop max_generations args} {
 # g_stru.jm _05_test  2 10 1
 # 
 # ------------------------------------------------------------------------------
-proc ga_evolution_archipelago {task  num_pops pops  max_generations } {
+proc ga_evolution_archipelago {task  num_pops pops nums} {
 
   set print $::is_print
 
@@ -3733,7 +3735,7 @@ proc ga_evolution_archipelago {task  num_pops pops  max_generations } {
 
       set pop [lindex $pops $i]
 
-      if {! [pop_evolution  $pop $task $max_generations -evol "ga_evolution_6"]} {
+      if {! [pop_evolution  $pop $task $nums -evol "ga_evolution_6"]} {
 	
         set complete TRUE
         break;
@@ -3748,7 +3750,7 @@ proc ga_evolution_archipelago {task  num_pops pops  max_generations } {
   return $generation
 }
 # //------------------------------------------------------------------------------
-proc ga_evolution {task pop  max_generations args} {
+proc ga_evolution {task pop nums args} {
 
 
   # Score and sort the initial population members.
@@ -3762,8 +3764,7 @@ proc ga_evolution {task pop  max_generations args} {
   }
 
 
-  #set generation [ga_evolution_main  $task $pop $max_generations {*}$args]
-  set generation [ga_evolution_main  $task $pop $max_generations \
+  set generation [ga_evolution_main  $task $pop $nums {*}$args \
 		    -print $::is_print -evol "ga_evolution_6"]
 
   return $generation
@@ -3953,8 +3954,8 @@ dict_class_create BOT {} {
 #---------------------------------------------------------
 proc calc_BOT {obj args} {
     
-  set task            [dict_parse $args "-task"  [GET $obj "task"]] 
-  set max_generations [dict_parse $args "-nums"] 
+  set task [dict_parse $args "-task"  [GET $obj "task"]] 
+  set nums [dict_parse $args "-nums"] 
   
   set  pop [GET $obj "pop"]
   
@@ -3963,7 +3964,7 @@ proc calc_BOT {obj args} {
 
   #puts "args = $args"
 
-  ga_evolution  $task $pop  $max_generations {*}$args
+  ga_evolution  $task $pop  $nums {*}$args
 
 }
 #---------------------------------------------------------
@@ -4123,13 +4124,9 @@ proc gp_dict_add_item {item} {
 proc calc_BOT33  {obj args} {
   
   set task_local [GET $obj "task"]
-
   set task [dict_parse $args "-task" $task_local] 
   
-  #????
-  #if {! [info exists max_generations]} {
-  set max_generations [dict_parse $args "-nums" ] 
-  #}
+  set nums [dict_parse $args "-nums" ] 
   
 
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
@@ -4137,21 +4134,17 @@ proc calc_BOT33  {obj args} {
 
   set  pop [GET $obj "pop"]
 
-  set population_size [GET $pop "stable_size"]
-  set len_chromosomes [GET $pop "len_chromosomes"]
+  set lpop [GET $pop "stable_size"]
+  set lsrc [GET $pop "len_chromosomes"]
   
 
-  set itemlist [make_itemlist $task \
-                   $population_size $len_chromosomes]
+  #set itemlist [make_itemlist $task $lpop $lsrc]
   
-  SET $pop "itemlist" $itemlist
+  #SET $pop "itemlist" $itemlist
+  SET $pop "itemlist" [make_itemlist  $task $lpop $lsrc]
   
-  # gp_evolution_main  $task $pop  $max_generations \
-  #   $game_print_proc \
-  #   $mutprob  
   
-  ga_evolution_main  $task $pop  $max_generations {*}$args \
-    -evol "gp_evolution_4"  
+  ga_evolution_main  $task $pop  $nums {*}$args -evol "gp_evolution_4"  
   
   return
 }
@@ -4204,6 +4197,7 @@ proc run_gp_evolution_for_task {
   set lsrc  [dict_parse $args "-lsrc"  2]
   set nums  [dict_parse $args "-nums"  2]
   
+  #-------------------------------------
   if {$seed == "@"} {
 
     set seed [clock seconds]
@@ -4214,13 +4208,12 @@ proc run_gp_evolution_for_task {
 
   #-------------------------------------
 
-  #set pop [POP new  {*}$args   -lsrc $lsrc  -printchform  "% s " ]
   set pop [POP new  {*}$args  -printchform  "% s " ]
 
 
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   #  
-  SET $pop "itemlist" [make_itemlist $task $lpop $lsrc]
+  SET $pop "itemlist" [make_itemlist  $task $lpop $lsrc]
   
   
   ga_evolution_main  $task $pop $nums  {*}$args -evol "gp_evolution_4"  
@@ -4485,15 +4478,10 @@ proc calc_BOT01 {obj args} {
   
   #------------------
 
-  set task            [dict_parse $args "-task"  [GET $obj "task"]] 
-  set max_generations [dict_parse $args "-nums"  10] 
-  set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
+  set task   [dict_parse $args "-task"  [GET $obj "task"]] 
+  set nums   [dict_parse $args "-nums"  10] 
+  set vers   [dict_parse $args "-vers"  [GET $obj "vers"]]
 
-  #puts stderr ""
-  #puts stderr "calc_BOT01: args = $args" 
-  #puts stderr "calc_BOT01: nums = $max_generations"  ;# шагов эволюции  
-  #puts stderr "calc_BOT01: vers = $vers"  
-  #task_print $task  
   puts stderr ""
   
   set  pop [GET $obj "pop"]
@@ -4504,7 +4492,7 @@ proc calc_BOT01 {obj args} {
   #puts "[procname]: task = [set $task]"
   # exit
 
-  set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
+  set ret [ga_evolution  $task $pop  $nums {*}$args]
 
   return $ret
 }
@@ -4770,17 +4758,17 @@ proc maintest_run {botobjs  task_correct
 # ------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 proc parse_opts_NEW {argv 
-                     &population_size &max_generations &len_chromo  
-                     def_population_size def_max_generations def_len_chromo} {
+                     &lpop &nums &lsrc  
+                     def_lpop def_nums def_lsrc} {
 
   USE_REFS
 
   #global argv
   #set argv [lrange $argv 1 end]
 
-  set population_size [dict_parse $argv  "-lpop"   $def_population_size]
-  set max_generations [dict_parse $argv  "-nums"   $def_max_generations]
-  set len_chromo      [dict_parse $argv  "-size"   $def_len_chromo]
+  set lpop [dict_parse $argv  "-lpop"   $def_lpop]
+  set nums [dict_parse $argv  "-nums"   $def_nums]
+  set lsrc      [dict_parse $argv  "-size"   $def_lsrc]
   set print           [dict_parse $argv  "-verb"   0]
 
   set ::is_print $print
@@ -4828,22 +4816,22 @@ proc super_de {task seed_proc step_proc args} {
 
   set s { "DE/best/1/bin" GA_DE_STRATEGY_BEST GA_DE_CROSSOVER_BINOMIAL 1  0.8  0.5  0.5 }
 
-  set population_size  "" 
-  set max_generations  ""
-  set len_chromo       ""
+  set lpop  "" 
+  set nums  ""
+  set lsrc       ""
   # 
-  set print [parse_opts_NEW  $args   population_size max_generations len_chromo  40 50 4]
+  set print [parse_opts_NEW  $args   lpop nums lsrc  40 50 4]
 
   puts ""
-  puts "population_size = $population_size"
-  puts "max_generations = $max_generations"
-  puts "len_chromo      = $len_chromo"
+  puts "lpop = $lpop"
+  puts "nums = $nums"
+  puts "lsrc = $lsrc"
   puts ""
 
-  SET $task "len_chromo" $len_chromo
+  SET $task "len_chromo" $lsrc
 
   
-  set pop [de_run_one  $task $s "" $population_size $max_generations $len_chromo $print \
+  set pop [de_run_one  $task $s "" $lpop $nums $lsrc $print \
           $seed_proc $step_proc]
   
 
@@ -4853,19 +4841,19 @@ proc super_de {task seed_proc step_proc args} {
 proc super_ga {task seed_proc step_proc   args} {
 
 
-  set population_size ""
-  set max_generations ""
+  set lpop ""
+  set nums ""
   set len_chromo      ""
 
   # здесь уже нормальные словарные параметы вводим ()
   # 
-  #   -lpop    -> population_size
-  #   -nums    -> max_generations
+  #   -lpop    -> lpop
+  #   -nums    -> nums
   #   -size    -> len_chromo
   #   -verb    -> print
   #   -seed    -> seed
   
-  set print [parse_opts_NEW  $args population_size max_generations len_chromo  200 500 4]
+  set print [parse_opts_NEW  $args lpop nums len_chromo  200 500 4]
 
   #-------------------------------------------
 
@@ -4873,7 +4861,7 @@ proc super_ga {task seed_proc step_proc   args} {
 
   set pop [ga_genesis_main  \
              $task                              {*}[NB                 ] \
-             $population_size		        {*}[NB                 ] \
+             $lpop		        {*}[NB                 ] \
              1			                {*}[NB  num_chromo     ] \
              $len_chromo			{*}[NB  len_chromo     ] \
              $step_proc                         {*}[NB  generation_hook] \
@@ -4901,7 +4889,7 @@ proc super_ga {task seed_proc step_proc   args} {
 
   ga_population_seed $pop $task
   
-  ga_evolution       $task $pop $max_generations  -print $print 	 
+  ga_evolution  $task $pop $nums  -print $print 	 
   
   #puts ""
   return $pop

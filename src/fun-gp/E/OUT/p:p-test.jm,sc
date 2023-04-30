@@ -2,9 +2,9 @@
 Target :   0.750   0.950   0.230   0.710  : fit =  0.000000000000 
 
 
-population_size = 40
-max_generations = 50
-len_chromo      = 4
+lpop = 40
+nums = 50
+lsrc = 4
 
 Strategy DE/best/1/bin ; C = 0.800000 ; F = 0.500000
 
