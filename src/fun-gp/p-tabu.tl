@@ -39,7 +39,7 @@
 #   set a [ent_get_chromosome_ $putative]
 #   set b [ent_get_chromosome_ $tabu]
 
-#   set len  [GET $pop len_chromosomes]
+#   set len  [GET $pop lsrc]
   
 #   for {set j 0} {$j < $len} {incr j} {
 

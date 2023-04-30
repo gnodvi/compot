@@ -555,10 +555,10 @@ proc DE_best_exp {pop i n best tmpentity &name_permutation weighting_factor
 
   USE_REFS
 
-  set len_chromosomes [GET $pop len_chromosomes]
+  set lsrc [GET $pop lsrc]
 
   #_gaul_pick_random_entities   name_permutation $N [GET $pop orig_size] $i
-  _gaul_pick_random_entities   name_permutation $N [GET $pop stable_size] $i
+  _gaul_pick_random_entities   name_permutation $N [GET $pop lpop] $i
   set L   0
 
 
@@ -566,7 +566,7 @@ proc DE_best_exp {pop i n best tmpentity &name_permutation weighting_factor
     
     $calc_proc  $pop $n $best $tmpentity $name_permutation $weighting_factor 
        
-    set n [expr {($n + 1) % $len_chromosomes}]
+    set n [expr {($n + 1) % $lsrc}]
     incr L
 
     set factor [GET [GET $pop de_params] de_crossover_factor]
@@ -575,7 +575,7 @@ proc DE_best_exp {pop i n best tmpentity &name_permutation weighting_factor
  
     if {! $flag} { break; } ;# вообще заканчиваем цикл ! и выходим
     
-    if {! [expr {$L < $len_chromosomes}]}   { break; }
+    if {! [expr {$L < $lsrc}]}   { break; }
   }
   
 
@@ -615,18 +615,18 @@ proc DE_best_1_bin {pop i n best tmpentity &name_permutation weighting_factor} {
   USE_REFS
 
 #  _gaul_pick_random_entities   name_permutation 2 [GET $pop orig_size] $i
-  _gaul_pick_random_entities   name_permutation 2 [GET $pop stable_size] $i
+  _gaul_pick_random_entities   name_permutation 2 [GET $pop lpop] $i
       
 
   calc_tmpentity2  $pop $n $best $tmpentity $name_permutation $weighting_factor 
 
-  set len_chromosomes [GET $pop len_chromosomes]
+  set lsrc [GET $pop lsrc]
   set L   1
 
 
   while (1) {
 
-    if {! [expr {$L < $len_chromosomes}]} { break; }
+    if {! [expr {$L < $lsrc}]} { break; }
 
     set flag [comm_random_boolean]
 
@@ -635,7 +635,7 @@ proc DE_best_1_bin {pop i n best tmpentity &name_permutation weighting_factor} {
     }
     # // а здесь не заканчиваем, но продолжаем!
     
-    set n [expr {($n + 1) % $len_chromosomes}]
+    set n [expr {($n + 1) % $lsrc}]
     incr L
    }
  
@@ -666,21 +666,21 @@ proc DE_best_bin {pop i n best tmpentity  &name_permutation weighting_factor
   USE_REFS
 
 #  _gaul_pick_random_entities   name_permutation $N [GET $pop orig_size] $i
-  _gaul_pick_random_entities   name_permutation $N [GET $pop stable_size] $i
+  _gaul_pick_random_entities   name_permutation $N [GET $pop lpop] $i
   
   $calc_proc  $pop $n $best $tmpentity $name_permutation $weighting_factor 
 
-  set len_chromosomes [GET $pop len_chromosomes]
+  set lsrc [GET $pop lsrc]
 
 
-  for {set L 1} {$L < $len_chromosomes} {incr L} {
+  for {set L 1} {$L < $lsrc} {incr L} {
 
     set flag [comm_random_boolean]
    if {$flag} {
      $calc_proc  $pop $n $best $tmpentity $name_permutation $weighting_factor 
     }
 
-    set n [expr {($n + 1) % $len_chromosomes}]
+    set n [expr {($n + 1) % $lsrc}]
   }
  
   return
@@ -752,13 +752,13 @@ proc DE_rand_2_bin {pop i n best tmpentity  &name_permutation weighting_factor} 
   
 #   calc_tmpentity7 (pop, n, best, tmpentity, permutation, weighting_factor); 
   
-#   for (L=1; L<pop->len_chromosomes; L++)
+#   for (L=1; L<pop->lsrc; L++)
 #   {
 #     if (random_boolean ()) {
 #       calc_tmpentity7 (pop, n, best, tmpentity, permutation, weighting_factor); 
 #     }
 
-#     n = (n+1) % pop->len_chromosomes;
+#     n = (n+1) % pop->lsrc;
 #   }
   
 
@@ -804,13 +804,13 @@ proc DE_randtobest_1_bin {pop i n best tmpentity  &name_permutation weighting_fa
 #                        tmpentity, permutation, weighting_factor);
 
   
-#   for (L=1; L < pop->len_chromosomes; L++)
+#   for (L=1; L < pop->lsrc; L++)
 #   {
 #     if ( random_boolean() )
 #       calc_tmpentity_2bin (pop, n, best, 
 #                            tmpentity, permutation, weighting_factor);
 
-#     n = (n+1)%pop->len_chromosomes;
+#     n = (n+1)%pop->lsrc;
 #   }
 
 # }
@@ -1032,7 +1032,7 @@ proc prepare_permutation {size args} {
 proc pop_eliminate {p} {
 
 
-  set orig_size [GET $p "stable_size"]
+  set orig_size [GET $p "lpop"]
   
   set tmp [GET $p "itemlist"]
 
@@ -1070,7 +1070,7 @@ proc ga_differentialevolution	{pop task max_generations args} {
   
   #   if (!pop->evaluate)       die ("Population's evaluation callback is undefined.");
   #   if (!pop->rank)           die ("Population's ranking callback is undefined.");
-  #   if (pop->stable_size < 6) die ("Population's stable size is too small.  (Must be at least 6)");
+  #   if (pop->lpop < 6) die ("Population's stable size is too small.  (Must be at least 6)");
   #   if ( pop->de_params->crossover_factor < 0.0 ||
   #       pop->de_params->crossover_factor > 1.0 )
   #     die ("Invalid crossover_factor.");
@@ -1085,15 +1085,15 @@ proc ga_differentialevolution	{pop task max_generations args} {
   #  
 
   set size        [get_pop_size $pop]
-  set stable_size [GET $pop stable_size]
+  set lpop [GET $pop lpop]
 
   #puts "size        = $size"
-  #puts "stable_size = $stable_size"
+  #puts "lpop = $lpop"
 
   # вот это что тут за фигня? если популяция не полна, то дополнить новыми членами?
   # 
-  #   if (pop->size < pop->stable_size) {
-  #     gaul_population_fill (pop, pop->stable_size - pop->size);
+  #   if (pop->size < pop->lpop) {
+  #     gaul_population_fill (pop, pop->lpop - pop->size);
   #   }
   
 
@@ -1210,7 +1210,7 @@ proc ga_differentialevolution	{pop task max_generations args} {
     # цикл по каждому элементу I, для его корректировки
     
     #for {set i 0} {$i < [GET $pop orig_size]} {incr i} {}
-    for {set i 0} {$i < [GET $pop stable_size]} {incr i} {
+    for {set i 0} {$i < [GET $pop lpop]} {incr i} {
 
       if {$print} {
         puts ""
@@ -1238,7 +1238,7 @@ proc ga_differentialevolution	{pop task max_generations args} {
       set tmpentity [ga_entity_clone_without_add $pop $oldentity]
 
 
-      set len [GET $pop len_chromosomes]
+      set len [GET $pop lsrc]
       set n [comm_random_int $len] ;# случайный номер гена
 
       #puts ""

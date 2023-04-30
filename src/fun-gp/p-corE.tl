@@ -59,8 +59,8 @@ dict_class_create POP {} {
 
   ;# _это_перечисление_переменных
   
-  stable_size      ""  ;# _требуемый_размер_популяции
-  len_chromosomes  ""  ;# _int_:_Maximum_length_of_each_chromosome
+  lpop      ""  ;# _требуемый_размер_популяции
+  lsrc  ""  ;# _int_:_Maximum_length_of_each_chromosome
   
   ch_form          "%s "  ;# _"%02d"     
   generation_hook  ""  ;# _GAgeneration_hook_generation_hook 
@@ -75,8 +75,8 @@ dict_class_create POP {} {
 
   #-----------------------------------------------
 
-  SET $obj "stable_size"     [dict_parse $args "-lpop"] 
-  SET $obj "len_chromosomes" [dict_parse $args "-lsrc"] 
+  SET $obj "lpop"     [dict_parse $args "-lpop"] 
+  SET $obj "lsrc" [dict_parse $args "-lsrc"] 
 
   # TODO - надо вводить -printchform и по умолчанию % s
   # 
@@ -98,7 +98,7 @@ dict_class_create POP {} {
 #   synopsis:	Allocates and initialises a new population structure,
 # 		and assigns a new population id to it.
 
-#   parameters:	const int stable_size    кол-во переданных в след. поколение.
+#   parameters:	const int lpop    кол-во переданных в след. поколение.
 # 		const int num_chromosome	Num. of chromosomes.
 # 		const int len_chromosome	Size of chromosomes (may be ignored).
 
@@ -357,7 +357,7 @@ proc pop_print {p {out "stdout"}} {
   set best  [GET $p best]
   
   puts $out ""
-  puts $out "STABLE_SIZE = [GET $p stable_size] "
+  puts $out "STABLE_SIZE = [GET $p lpop] "
   #puts $out "SIZE        = [GET $p size] "
   puts $out "SIZE        = [get_pop_size $p] "
   puts $out "BEST        = $best "
@@ -679,14 +679,14 @@ proc pop_initial_fill {pop task  args} {
 
 
   set size        [get_pop_size $pop]
-  set stable_size [GET $pop stable_size]
+  set lpop [GET $pop lpop]
 
   # если реальный размер популяции меньше заявленного, т.е. еще не все (или вообще
   # никто) агенты инициированны
 
-  if {$size < $stable_size} {
+  if {$size < $lpop} {
     
-    gaul_population_fill  $pop $task [expr {$stable_size - $size}] 
+    gaul_population_fill  $pop $task [expr {$lpop - $size}] 
   }
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -719,7 +719,7 @@ proc ga_population_seed {pop task} {
     puts "[procname]  ......... \n"
   }
 
-  return [gaul_population_fill  $pop $task [GET $pop stable_size] ]
+  return [gaul_population_fill  $pop $task [GET $pop lpop] ]
 }
 # //----------------------------------------------------------------------------
 
@@ -824,7 +824,7 @@ proc ga_entity_blank {p this_entity} {
 proc ga_entity_setup {pop} {
 
 
-  set joe [item_create [GET $pop len_chromosomes]]
+  set joe [item_create [GET $pop lsrc]]
 
 
   SET $joe ch_form [GET $pop ch_form]
@@ -1159,15 +1159,15 @@ proc ga_chromosome_double_allocate {pop embryo} {
   #   if ( !(embryo->chromosome = s_malloc (/* pop->num_chromosomes* */sizeof(double *))) )
   #     die("Unable to allocate memory");
   
-  #   if ( !(embryo->CH = s_malloc(/* pop->num_chromosomes* */pop->len_chromosomes*sizeof(double))) )
+  #   if ( !(embryo->CH = s_malloc(/* pop->num_chromosomes* */pop->lsrc*sizeof(double))) )
   #     die("Unable to allocate memory");
   
-  puts "len_chromosomes = [GET $pop len_chromosomes]"
+  puts "lsrc = [GET $pop lsrc]"
 
 
   # /*   for (i=1; i<pop->num_chromosomes; i++) */
   # /*     { */
-  # /*     embryo->chromosome[i] = &(((double *)embryo->chromosome[i-1])[pop->len_chromosomes]); */
+  # /*     embryo->chromosome[i] = &(((double *)embryo->chromosome[i-1])[pop->lsrc]); */
   # /*     } */
 
   return $::true;
@@ -1208,7 +1208,7 @@ proc ga_chromosome_double_allocate {pop embryo} {
 #   set char_max [GET $pop allele_max]
 
 
-#   for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point}  \
+#   for {set point 0} {$point < [GET $pop lsrc]} {incr point}  \
 #   {
 #     set ch [get_random_wordchar $char_min $char_max]
 
@@ -1248,7 +1248,7 @@ proc ga_compare_char_hamming {pop alpha beta} \
   set a [item_get_mainsrc $alpha]
   set b [item_get_mainsrc $beta]
   
-  for {set j 0} {$j < [GET $pop len_chromosomes]} {incr j} \
+  for {set j 0} {$j < [GET $pop lsrc]} {incr j} \
   {
     set aj [lindex $a $j]
     set bj [lindex $b $j]
@@ -1320,7 +1320,7 @@ proc gaul_select_sum_fitness {pop}  {
 
   #for {set i 0} {$i < [GET $pop orig_size]} {incr i} 
 
-  for {set i 0} {$i < [GET $pop stable_size]} {incr i} \
+  for {set i 0} {$i < [GET $pop lpop]} {incr i} \
   {
     # sum += pop->entity_iarray[i]->fitness;
     #set f [$pop get_entity_fitness $i]
@@ -1342,7 +1342,7 @@ proc ga_select_one_randomrank {pop &mother} {
   #   pop->select_state++;
   SET $pop select_state [expr {[GET $pop select_state] + 1}]
   
-  set orig_size    [GET $pop stable_size]
+  set orig_size    [GET $pop lpop]
   set select_state [GET $pop select_state]
 
   if {$orig_size < $select_state} \
@@ -1376,7 +1376,7 @@ proc ga_select_two_randomrank {pop &mother &father} {
   #   pop->select_state++;
   SET $pop select_state [expr {[GET $pop select_state] + 1}]
   
-  set orig_size    [GET $pop  stable_size]
+  set orig_size    [GET $pop  lpop]
   set select_state [GET $pop select_state]
 
   if {$::is_print} {
@@ -1416,7 +1416,7 @@ proc ga_select_one_bestof2 {pop &mother} {
 
   USE_REFS
   
-  set orig_size [GET $pop stable_size]
+  set orig_size [GET $pop lpop]
 
   set mother1 [pop_get_entity_ $pop  [comm_random_int $orig_size]]
   set mother2 [pop_get_entity_ $pop  [comm_random_int $orig_size]]
@@ -1469,7 +1469,7 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   #   }
   
   #set orig_size [GET $pop orig_size]
-  set orig_size [GET $pop stable_size]
+  set orig_size [GET $pop lpop]
   set c_ratio   [GET $pop crossover_ratio] 
 
   set moth_i [comm_random_int $orig_size]
@@ -1654,7 +1654,7 @@ proc ga_select_one_sus {pop &mother}  {
   #   double	sum;			/* Fitness total. */
   
   #set orig_size       [GET $pop orig_size]
-  set orig_size       [GET $pop stable_size]
+  set orig_size       [GET $pop lpop]
   set select_state    [GET $pop select_state]
   set mutation_ratio  [GET $pop mutation_ratio]
 
@@ -1784,7 +1784,7 @@ proc ga_select_two_sus {pop &mother &father}  {
   #   *mother = NULL;
   
   #set orig_size      [GET $pop orig_size]
-  set orig_size       [GET $pop stable_size]
+  set orig_size       [GET $pop lpop]
   set select_state    [GET $pop select_state]
   set crossover_ratio [GET $pop crossover_ratio]
 
@@ -2037,7 +2037,7 @@ proc item_qsort_MIN_to_LEFT {a b} {
 # 		Integer-valued chromsomes.
 #-------------------------------------------------------------------------------
 # population *
-# ga_genesis_integer (const int		population_size,
+# ga_genesis_integer (const int		lpop,
 #                       const int		num_chromo,
 #                       const int		len_chromo,
 #                       GAgeneration_hook	generation_hook,
@@ -2081,7 +2081,7 @@ proc mutate_create {args} {
 #-------------------------------------------------------------------------------
 proc ga_genesis_main {
 			task 
-			population_size      
+			lpop      
 			num_chromo           
 			len_chromo           
 			generation_hook      
@@ -2098,8 +2098,8 @@ proc ga_genesis_main {
 			userdata             
                       } {
 
-  set pop [GAUL new  \
-                -lpop $population_size -lsrc $len_chromo]
+
+  set pop [GAUL new  -lpop $lpop -lsrc $len_chromo]
 
   # /*
   #  * Assign population's user data.
@@ -2177,7 +2177,7 @@ proc ga_singlepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
 
   USE_REFS
 
-  set len_chromo [GET $pop len_chromosomes]
+  set len_chromo [GET $pop lsrc]
 
   # Choose crossover point and perform operation 
   #
@@ -2212,7 +2212,7 @@ proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
 
   USE_REFS
 
-  set len_chromo [GET $pop len_chromosomes]
+  set len_chromo [GET $pop lsrc]
 
   #   /* Choose crossover point and perform operation */
 
@@ -2220,7 +2220,7 @@ proc ga_doublepoint_crossover_integer_chromosome {pop  father_CH  mother_CH
 
   #   do
   #   {
-  #     location2 = random_int (pop->len_chromosomes);
+  #     location2 = random_int (pop->lsrc);
   #   } while (location2 == location1);
   
   while {1} {
@@ -2285,7 +2285,7 @@ proc ga_crossover_integer_singlepoints {pop task  father mother son daughter} {
 proc ga_crossover_char_allele_mixing {pop task  father mother son daughter} \
 {
 
-  for {set j 0} {$j < [GET $pop len_chromosomes]} {incr j} \
+  for {set j 0} {$j < [GET $pop lsrc]} {incr j} \
   {
     if {[comm_random_boolean]} \
     {
@@ -2327,16 +2327,16 @@ proc ga_crossover_char_doublepoints {pop task  father mother son daughter} \
 {
 
   
-  set len_chromo [GET $pop len_chromosomes]
+  set len_chromo [GET $pop lsrc]
 
   #     /* Choose crossover point and perform operation */
-  #     location1 = random_int (pop->len_chromosomes);
+  #     location1 = random_int (pop->lsrc);
 
   set location1 [comm_random_int  $len_chromo]
 
   #     do
   #     {
-  #       location2 = random_int (pop->len_chromosomes);
+  #       location2 = random_int (pop->lsrc);
   #     } while (location2==location1);
 
   while {1} {
@@ -2422,7 +2422,7 @@ proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH
   #   if (!father || !mother || !son || !daughter)
   #     die ("Null pointer to chromosome structure passed.");
   
-  set len_chromo [GET $pop len_chromosomes]
+  set len_chromo [GET $pop lsrc]
 
   # Choose crossover point and perform operation 
 
@@ -2430,7 +2430,7 @@ proc ga_doublepoint_crossover_double_chromosome {pop  father_CH  mother_CH
 
   #   do
   #   {
-  #     location2 = random_int(pop->len_chromosomes);
+  #     location2 = random_int(pop->lsrc);
   #   } while (location2==location1);
   
   while {1} {
@@ -2575,7 +2575,7 @@ proc ga_seed_integer_random {pop task adam}  {
   set amax [GET $pop allele_max_integer]
 
 
-  for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point} \
+  for {set point 0} {$point < [GET $pop lsrc]} {incr point} \
   {
     # ((int *)adam->CH/* chromosome[chromo] */)[point] =
     #   random_int_range(pop->allele_min_integer,pop->allele_max_integer);
@@ -2643,7 +2643,7 @@ proc ga_mutate_integer_singlepoint_drift {pop task  father son} {
 
   item_set_mainsrc $son $chromosome
 
-  #set len_chromo [GET $pop len_chromosomes]
+  #set len_chromo [GET $pop lsrc]
 
   set len_chromo [llength chromosome]
 
@@ -2792,14 +2792,14 @@ proc ga_mutate_double_singlepoint_drift {pop task  father son}  {
   #   /* Checks */
   #   if (!father || !son) die("Null pointer to entity structure passed");
   
-  set len_chromo [GET $pop len_chromosomes]
+  set len_chromo [GET $pop lsrc]
 
   #   /* Select mutation locus. */
   #   /* chromo =  (int) */ random_int(1/* pop->num_chromosomes */);
   comm_random_int 1
 
   #   //chromo = 0; // (int) random_int(1/* pop->num_chromosomes */);
-  #   point  = (int) random_int(pop->len_chromosomes);
+  #   point  = (int) random_int(pop->lsrc);
   set point [comm_random_int  $len_chromo]
 
   #   /*
@@ -2809,7 +2809,7 @@ proc ga_mutate_double_singlepoint_drift {pop task  father son}  {
   #   //for (i=0; i<pop->num_chromosomes; i++)
   #   //{
 
-  #   memcpy(son->CH, father->CH, pop->len_chromosomes*sizeof(double));
+  #   memcpy(son->CH, father->CH, pop->lsrc*sizeof(double));
   #$son set_chromosome [$father get_chromosome]
   #item_set_mainsrc $son [$father get_chromosome]
   item_set_mainsrc $son [item_get_mainsrc $father]
@@ -3246,7 +3246,7 @@ proc gaul_adapt_and_evaluate {pop task} \
     puts ""
   }
 
-  set o [GET $pop stable_size]
+  set o [GET $pop lpop]
   set s [get_pop_size $pop]
     
   #set eval_proc [GET $pop "evaluate"]
@@ -3312,10 +3312,10 @@ proc ga_elitism_parents_die_exept {pop num_parents_survives} \
 {
 
   set  imin  $num_parents_survives  ;# сколько родителей оставить
-  set  imax  [GET $pop stable_size]
+  set  imax  [GET $pop lpop]
   incr imax  -1
 
-  # удаляем группу [num_parents_survives , stable_size - 1]
+  # удаляем группу [num_parents_survives , lpop - 1]
 
   pop_del_entities $pop $imin $imax
 
@@ -3517,7 +3517,7 @@ proc ga_evolution_6 {pop task args} {
   # численность до ее стабильного первоначального размера.
   #
 
-  pop_to_size  $pop [GET $pop stable_size] ;# удаляем лузеров ?
+  pop_to_size  $pop [GET $pop lpop] ;# удаляем лузеров ?
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -3573,9 +3573,9 @@ proc pop_print_step_info {pop task args} {
 # ------------------------------------------------------------------------------
 # основная программа вызова "эволюционной" функции
 # ------------------------------------------------------------------------------
-proc pop_evolution {pop task nums  args} {
+proc pop_evolution {pop task  args} {
 
-  #set nums   [dict_parse $args "-nums"] 
+  set nums   [dict_parse $args "-nums"] 
 
 
   # если какие-то недосчитаны, то посчитать фитнес
@@ -3631,8 +3631,11 @@ proc pop_evolution {pop task nums  args} {
 # //  parameters:
 # //  return:
 # //----------------------------------------------------------------------------
-proc ga_evolution_main {task pop nums args} {
+proc ga_evolution_main {task pop args} {
 
+
+  set nums   [dict_parse $args "-nums"]
+ 
 
   # Do all the generations:
   # 
@@ -3649,7 +3652,7 @@ proc ga_evolution_main {task pop nums args} {
   #------------------------------------------------
   while {1} {
 
-    set ret [pop_evolution  $pop $task $nums {*}$args]
+    set ret [pop_evolution  $pop $task  {*}$args -nums $nums]
     
     if {! $ret} {break;}
 
@@ -3735,7 +3738,7 @@ proc ga_evolution_archipelago {task  num_pops pops nums} {
 
       set pop [lindex $pops $i]
 
-      if {! [pop_evolution  $pop $task $nums -evol "ga_evolution_6"]} {
+      if {! [pop_evolution  $pop $task -evol "ga_evolution_6"  -nums $nums]} {
 	
         set complete TRUE
         break;
@@ -3764,7 +3767,7 @@ proc ga_evolution {task pop nums args} {
   }
 
 
-  set generation [ga_evolution_main  $task $pop $nums {*}$args \
+  set generation [ga_evolution_main  $task $pop {*}$args -nums $nums \
 		    -print $::is_print -evol "ga_evolution_6"]
 
   return $generation
@@ -3803,7 +3806,7 @@ source "p-diff.tl"
 #
 # Описание параметров:
 #
-# population_size : количество особей во всей популяции;
+# lpop : количество особей во всей популяции;
 #               это число приближенно кратно 3.
 # len :         максимальная длина особей в начальной популяции.
 # fitnessfunc : фитнесс-функция (имя Tcl-процедуры).
@@ -4134,17 +4137,13 @@ proc calc_BOT33  {obj args} {
 
   set  pop [GET $obj "pop"]
 
-  set lpop [GET $pop "stable_size"]
-  set lsrc [GET $pop "len_chromosomes"]
+  set lpop [GET $pop "lpop"]
+  set lsrc [GET $pop "lsrc"]
   
 
-  #set itemlist [make_itemlist $task $lpop $lsrc]
+  SET $pop "itemlist" [make_itemlist  $task {*}$args]
   
-  #SET $pop "itemlist" $itemlist
-  SET $pop "itemlist" [make_itemlist  $task $lpop $lsrc]
-  
-  
-  ga_evolution_main  $task $pop  $nums {*}$args -evol "gp_evolution_4"  
+  ga_evolution_main  $task $pop  -nums $nums {*}$args -evol "gp_evolution_4"  
   
   return
 }
@@ -4193,9 +4192,11 @@ proc run_gp_evolution_for_task {
                        args
                      } {
 
+  #puts "args = $args"
+
   set lpop  [dict_parse $args "-lpop" 10]
   set lsrc  [dict_parse $args "-lsrc"  2]
-  set nums  [dict_parse $args "-nums"  2]
+  ###set nums  [dict_parse $args "-nums"  2]
   
   #-------------------------------------
   if {$seed == "@"} {
@@ -4213,10 +4214,9 @@ proc run_gp_evolution_for_task {
 
   # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
   #  
-  SET $pop "itemlist" [make_itemlist  $task $lpop $lsrc]
+  SET $pop "itemlist" [make_itemlist  $task {*}$args]
   
-  
-  ga_evolution_main  $task $pop $nums  {*}$args -evol "gp_evolution_4"  
+  ga_evolution_main  $task $pop  {*}$args -evol "gp_evolution_4"  
   
 
   return
@@ -4393,7 +4393,7 @@ proc maintest_seed_proc {pop task adam} {
 
   set gp_list [GET $task "gp_list"]
 
-  set len     [GET $pop len_chromosomes]
+  set len     [GET $pop lsrc]
 
 
   for {set point 0} {$point < $len} {incr point} {
@@ -4421,12 +4421,11 @@ proc maintest_seed_proc {pop task adam} {
 # ------------------------------------------------------------------------------
 proc pop1_create {args} {
 
-  set len_chromosomes [dict_parse $args "-lsrc"] 
-  set population_size [dict_parse $args "-lpop"] 
+  set lsrc [dict_parse $args "-lsrc"] 
+  set lpop [dict_parse $args "-lpop"] 
 
 
-  set pop [GAUL new  \
-                -lpop $population_size -lsrc $len_chromosomes]
+  set pop [GAUL new  -lpop $lpop -lsrc $lsrc]
 
   
   SET $pop  generation_hook NULL ;# $generation_hook

@@ -91,7 +91,7 @@ proc all5s_seed {pop task entity} \
   set maxint 11
   #set maxint 19
 
-  for {set point 0} {$point < [GET $pop len_chromosomes]} {incr point} \
+  for {set point 0} {$point < [GET $pop lsrc]} {incr point} \
   {
     item_set_chromo_gen $entity  $point [comm_random_int $maxint]
 
@@ -127,15 +127,15 @@ proc all5s_mutate {pop task  father son}  {
   #   if (!father || !son)
   #     die ("Null pointer to entity structure passed");
   
-  set len_chromosomes [GET $pop len_chromosomes]
+  set lsrc [GET $pop lsrc]
 
   #   // Select mutation locus
   #   // 
-  set point [comm_random_int $len_chromosomes]
+  set point [comm_random_int $lsrc]
   
   #   // Copy genome from father
   #   // 
-  #   for (i=0; i<pop->len_chromosomes; i++)
+  #   for (i=0; i<pop->lsrc; i++)
   #     ((int *)son->CH)[i] = ((int *)father->CH)[i];
   
   #set son_CH [$father get_chromosome]

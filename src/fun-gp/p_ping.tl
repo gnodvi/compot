@@ -126,7 +126,7 @@ proc pingpong_score {entity task} {
   
   # pilot
   #  
-  #set len_chromo [GET $pop len_chromosomes] ;# /* 25 */ /* 9 */ 
+  #set len_chromo [GET $pop lsrc] ;# /* 25 */ /* 9 */ 
 
   #puts ""
   #puts "entity = [set $entity]"
@@ -214,7 +214,7 @@ proc pingpong_seed {pop task adam} {
 
   # int	  i, j;   // Team members 
   
-  set len_chromo [GET $pop len_chromosomes] ;# /* 25 */ /* 9 */
+  set len_chromo [GET $pop lsrc] ;# /* 25 */ /* 9 */
   
  
   for {set i 0} {$i < $len_chromo} {incr i} \
@@ -255,14 +255,14 @@ proc pingpong_mutate_swap {pop mother son} {
   #   int	   tmp;	  /* For swapping i and j. */
   
   #   //pilot
-  #   int  len_chromo = pop->len_chromosomes; /* 25 */ /* 9 */
-  set len_chromo [GET $pop len_chromosomes]
+  #   int  len_chromo = pop->lsrc; /* 25 */ /* 9 */
+  set len_chromo [GET $pop lsrc]
   
   #   // Copy chromosomes of parent to offspring. 
   #   // 
   #   memcpy (son->CH,
   #           mother->CH,
-  #           pop->len_chromosomes * sizeof(int));
+  #           pop->lsrc * sizeof(int));
 
   item_set_mainsrc $son [item_get_mainsrc $mother]
 
@@ -307,8 +307,8 @@ proc pingpong_crossover {pop task  mother father dau son} {
 #   int	  i, j;	/* Team members. */
 
 #   //pilot
-#   int  len_chromo = pop->len_chromosomes; /* 25 */ /* 9 */
-  set len_chromo [GET $pop len_chromosomes]
+#   int  len_chromo = pop->lsrc; /* 25 */ /* 9 */
+  set len_chromo [GET $pop lsrc]
   
 
   for {set i 0} {$i < $len_chromo} {incr i} \
@@ -395,13 +395,13 @@ proc pingpong_mutate_shift {pop mother son}  {
   #   int	   tmp;		/* For swapping i and j. */
   
   #   //pilot
-  #   int  len_chromo = pop->len_chromosomes; /* 25 */ /* 9 */
-  set len_chromo [GET $pop len_chromosomes]
+  #   int  len_chromo = pop->lsrc; /* 25 */ /* 9 */
+  set len_chromo [GET $pop lsrc]
   
   #   /* Copy chromosomes of parent to offspring. */
   #   memcpy (son->CH,
   #           mother->CH,
-  #           pop->len_chromosomes * sizeof (int));
+  #           pop->lsrc * sizeof (int));
 
   item_set_mainsrc $son [item_get_mainsrc $mother]
   

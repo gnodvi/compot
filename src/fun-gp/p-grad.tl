@@ -171,7 +171,7 @@ proc make_putative {pop current step_size current_g putative} \
 
   #   int i;
   
-  for {set i 0} {$i < [GET $pop len_chromosomes]} {incr i} \
+  for {set i 0} {$i < [GET $pop lsrc]} {incr i} \
   {
     #  ((double *) putative->CH)[i] = ((double *) current->CH)[i] + 
     #                                step_size * current_g[i];
@@ -219,7 +219,7 @@ proc ga_steepestascent_double {task pop current max_iterations} \
   #   //
   #   // Prepare working entity and gradient array.
   #   //
-  #   if (! (current_g = s_malloc (sizeof(double) * pop->len_chromosomes)))
+  #   if (! (current_g = s_malloc (sizeof(double) * pop->lsrc)))
   #     die ("Unable to allocate memory");
   
   set putative [ga_get_free_entity $pop]
@@ -255,7 +255,7 @@ proc ga_steepestascent_double {task pop current max_iterations} \
   #   // This scales the step size according to the initial gradient so that the
   #   // calculation doesn't blow-up completely.
   #   //
-  #   //  step_size = (pop->len_chromosomes*pop->gradient_params->step_size) / grms;
+  #   //  step_size = (pop->lsrc*pop->gradient_params->step_size) / grms;
   
   set step_size [GET $GR step_size]
   

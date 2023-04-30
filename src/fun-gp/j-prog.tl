@@ -778,9 +778,14 @@ alias  make_rand_prgpop  make_rand_prgpop_unikum
 # }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-proc make_prgpop {task 
-                  population_size len 
-                } {
+proc make_prgpop {task args} {
+
+  #puts "make_prgpop: args = $args"
+
+  # Если забыли задать нужные параметры задачи
+  #
+  set lpop  [dict_parse $args "-lpop" 30]
+  set lsrc  [dict_parse $args "-lsrc" 15]
 
   set gp_list [GET $task gp_list]
 
@@ -792,16 +797,19 @@ proc make_prgpop {task
   #if {$::len_is_constant} {
   #  set minlen $len
   #} else {
+
   set minlen 1
   #}
 
-  set maxlen $len
+  set maxlen $lsrc
+
+  #puts "make_prgpop: maxlen = $maxlen"
+
   #----------------------------------------
   #make_rand_prgpop make_rand_prgpop_unikum
   #set prgpop [$randpop_proc  $task \
   
-  set prgpop [make_rand_prgpop_unikum  $task \
-                $population_size  $minlen $maxlen \
+  set prgpop [make_rand_prgpop_unikum  $task $lpop  $minlen $maxlen \
                 $gp_list]
   
   if {$::is_print} {
@@ -813,7 +821,7 @@ proc make_prgpop {task
     #puts stderr "quotes_proc  = $::quotes_proc"
     puts ""
 
-    puts stderr "population_size = $population_size, minlen = $minlen, maxlen = $maxlen"
+    puts stderr "lpop = $lpop, minlen = $minlen, maxlen = $maxlen"
     puts stderr "gp_list         = $gp_list"
 
     puts ""
@@ -860,18 +868,18 @@ proc make_itemlist_from_prgpop {prgpop} {
   return $itemlist
 }
 #-------------------------------------------------------------------------------
-proc make_itemlist {task 
-                     population_size len 
-                   } {
+proc make_itemlist {task args} {
  
+  #set lpop  [dict_parse $args "-lpop"]
+  #set lsrc  [dict_parse $args "-lsrc" 10]
+
   # делаем стартовую популяцию prg
   # 
-  set prgpop [make_prgpop  $task \
-                $population_size $len]
+  set prgpop [make_prgpop  $task {*}$args]
  
   # а вот здесь уже можно сделать реальные программы с "main" и т.д.
   #
-  set itemlist [make_itemlist_from_prgpop  $prgpop]
+  set itemlist [make_itemlist_from_prgpop   $prgpop]
 
 
   return $itemlist
