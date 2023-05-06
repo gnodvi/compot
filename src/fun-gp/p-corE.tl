@@ -1790,7 +1790,6 @@ proc ga_select_one_sus {pop &mother}  {
   return 0 ;# false
 }
 #-------------------------------------------------------------------------------
-# /**********************************************************************
 #   synopsis:	Stochastic Universal Sampling selection.
 #
 #   		pop->mutation_ratio multiplied by pop->orig_size gives
@@ -1800,23 +1799,15 @@ proc ga_select_one_sus {pop &mother}  {
 # 		large positive values are good.  Negative values will
 # 		severely mess-up the algorithm.
 
-#  **********************************************************************/
 # boolean 
 # ga_select_two_sus (population *pop, entity **mother, entity **father)
-#-------------------------------------------------------------------------------
-#
-#Reference Argument - The caller is expected to pass the name of an existing 
-# variable. An implicit 
-# upvar 1 origname name 
-# is done to make the variable available in the proc scope. 
-# 
 #-------------------------------------------------------------------------------
 # 
 proc ga_select_two_sus {pop &mother &father}  {
 
-  if {$::ISPRINT} {puts stderr ".................................. 005_1_1"}
-
   USE_REFS
+
+  if {$::ISPRINT} {puts stderr ".................................. 005_1_1"}
 
   #   double	sum;			/* Fitness total. */
   #   int	*ordered;		/* Ordered indices. */
@@ -3085,7 +3076,7 @@ proc gaul_crossover {pop task} {
       set mother [lindex $mother_list $i]
       set father [lindex $father_list $i]
   
-      cross_to_dau_and_son $pop $task $mother $father
+      cross_to_dau_and_son  $pop $task $mother $father
 
     }
   }
@@ -3138,7 +3129,7 @@ proc gaul_mutation {pop task} {
     puts ""
   }
   
-  if {$mutation_ratio <= 0.0}  { return }  
+  if {$mutation_ratio <= 0.0}  { return }  ;# не нужна мутация
   
   # здесь обнуляем, т.е. начинаем процедуру выбора (селекции) сначала
   # 
@@ -3211,9 +3202,9 @@ proc adapt_1 {task pop ibeg iend} \
 
   set adapt_proc [GET $pop adapt]
 
-#   puts stderr ""
-#   puts stderr "adapt_1:  adapt_proc = $adapt_proc"
-#   puts stderr ""
+  #   puts stderr ""
+  #   puts stderr "adapt_1:  adapt_proc = $adapt_proc"
+  #   puts stderr ""
 
 
   for {set i $ibeg} {$i < $iend} {incr i} \
@@ -3241,9 +3232,9 @@ proc adapt_2 {task pop ibeg iend} \
 {
 
   set adapt_proc [GET $pop adapt]
-#   puts stderr ""
-#   puts stderr "adapt_2:  adapt_proc = $adapt_proc"
-#   puts stderr ""
+  #   puts stderr ""
+  #   puts stderr "adapt_2:  adapt_proc = $adapt_proc"
+  #   puts stderr ""
 
 
   for {set i $ibeg} {$i < $iend} {incr i} \
@@ -3320,11 +3311,11 @@ proc gaul_adapt_and_evaluate {pop task} \
       }
     
       "GA_SCHEME_BALDWIN_CHILDREN" {
-        adapt_1       $task $pop $o $s
+        adapt_1       $task $pop  $o $s
       }
     
       "GA_SCHEME_LAMARCK_CHILDREN" {
-        adapt_2       $task $pop $o $s
+        adapt_2       $task $pop  $o $s
       }
 
       default {
@@ -3343,6 +3334,10 @@ proc gaul_adapt_and_evaluate {pop task} \
 #-------------------------------------------------------------------------------
 proc pop_del_entities {p imin imax} {
 
+  if {$::is_print > 2} { 
+    puts -nonewline stderr "[procname] : "
+    puts            stderr "imin = $imin, imax = $imax \n"
+  }
 
   set tmp [GET $p itemlist] 
 
@@ -3353,16 +3348,25 @@ proc pop_del_entities {p imin imax} {
   return
 }
 # ------------------------------------------------------------------------------
-proc ga_elitism_parents_die_exept {pop num_parents_survives} \
+proc ga_elitism_parents_die_exept {pop  num_parents_saves} \
 {
 
-  set  imin  $num_parents_survives  ;# сколько родителей оставить
+  set  imin  $num_parents_saves  ;# сколько родителей оставить
+  #
+  # а зачем вообще родителей не глядя убивать, может они с хорошим фитнесом ?!
+
   set  imax  [GET $pop lpop]
   incr imax  -1
 
-  # удаляем группу [num_parents_survives , lpop - 1]
 
-  pop_del_entities $pop $imin $imax
+  if {$::is_print > 2} { 
+    puts -nonewline stderr "[procname] : "
+    puts            stderr "num_parents_saves = $num_parents_saves \n"
+  }
+
+  # удаляем группу [num_parents_saves, lpop - 1]
+
+  pop_del_entities $pop  $imin $imax 
 
 
   if {$::is_print > 2} {
@@ -3409,10 +3413,11 @@ proc gaul_survival {pop} \
 
   set elitism [GET $pop elitism]
 
-  #if {$::is_print > 2} {
-  #  puts "[procname] : (elitism = $elitism)"
-  #  puts ""
-  #}
+
+  if {$::is_print > 2} {
+    puts stderr "[procname] : (elitism = $elitism)"
+    puts stderr ""
+  }
 
   switch -- $elitism {
 
@@ -3423,9 +3428,9 @@ proc gaul_survival {pop} \
     
   }
 
-#     "GA_ELITISM_RESCORE_PARENTS"     {ga_elitism_rescore_parents    $pop}    
-#     "GA_ELITISM_BEST_SET_SURVIVE"    {ga_elitism_best_set_survive   $pop}
-#     "GA_ELITISM_PARETO_SET_SURVIVE"  {ga_elitism_pareto_set_survive $pop}    
+  #     "GA_ELITISM_RESCORE_PARENTS"     {ga_elitism_rescore_parents    $pop}    
+  #     "GA_ELITISM_BEST_SET_SURVIVE"    {ga_elitism_best_set_survive   $pop}
+  #     "GA_ELITISM_PARETO_SET_SURVIVE"  {ga_elitism_pareto_set_survive $pop}    
 
   return
 }
@@ -4261,19 +4266,16 @@ proc maintest_seed_proc {pop task adam} {
 # ------------------------------------------------------------------------------
 proc pop1_create {args} {
 
+
   set lsrc [dict_parse $args "-lsrc"] 
   set lpop [dict_parse $args "-lpop"] 
-
 
   set pop [GAUL new  -lpop $lpop -lsrc $lsrc]
 
   
-  SET $pop  generation_hook NULL ;# $generation_hook
-  
+  SET $pop  generation_hook NULL ;# $generation_hook 
   SET $pop  adapt       NULL ;# $adapt
-  
   SET $pop  mutate      ga_mutate_printable_singlepoint_drift
-
   SET $pop  crossover   ga_crossover_char_allele_mixing
   SET $pop  replace     NULL ;# $replace   ;#
   
@@ -4817,6 +4819,9 @@ proc cyclic_clone_from_leaders {leaders_items new_len} {
 }
 #-------------------------------------------------------------------------------
 # основная эволюционная программа (для GP)
+#
+# r~.tl TEST TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
+# 
 #-------------------------------------------------------------------------------
 proc gp_evolution_4 {pop task args} {
 
@@ -4860,13 +4865,11 @@ proc gp_evolution_4 {pop task args} {
    
   if {$::gp_NEWS} {
 
-    #puts "::gp_NEWS ............................." ;# ??????????????????????????/
-
     # совсем новый механизм: (форк от лучших и затем мутация)
 
     # TODO: клонировать с рефакторингом (::gp_AUTO)
     # 
-    set pop_items [cyclic_clone_from_leaders $leaders_items $len]
+    set pop_items [cyclic_clone_from_leaders  $leaders_items $len]
 
     set pop_items [try_mutate_for_all_items   $pop_items $task $::gp_DEEP]
 
@@ -4907,10 +4910,19 @@ proc gp_evolution_4 {pop task args} {
   return $pop_items
 }
 # ------------------------------------------------------------------------------
+# основная эволюционная программа (для GA)
+#
+# r~.tl TEST TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers ga
+# 
+#-------------------------------------------------------------------------------
 proc ga_evolution_6 {pop task args} {
 
 
-  #-----------------------------------------------------------------
+  if {$::is_print > 2} {
+    puts "\n\n"
+    puts stderr "[procname] : ~~~~ BEGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
+  }
+  
   # 1) Crossover step 
   #  
   gaul_crossover $pop $task ;# выбираются мама и папа и затем скрещиваются 
@@ -4930,7 +4942,7 @@ proc ga_evolution_6 {pop task args} {
   # 3) Apply environmental adaptations, score entities, sort entities, etc.
   #  
  
-  gaul_adapt_and_evaluate $pop $task 
+  ##  gaul_adapt_and_evaluate $pop $task 
   
   if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
@@ -4939,10 +4951,12 @@ proc ga_evolution_6 {pop task args} {
   # 
   # GA_ELITISM_PARENTS_DIE     (FS)
   # GA_ELITISM_PARENTS_SURVIVE (_2_main_ 
-  # 
 
-  gaul_survival $pop ;# удаляем лузеров ?
-    
+  # удаляем лузеров ? ничего подобного! просто удаляем почти всех родителей! зачем?
+  #
+  #gaul_survival $pop 
+   
+ 
   #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
   #-----------------------------------------------------------------
@@ -4957,8 +4971,12 @@ proc ga_evolution_6 {pop task args} {
 
   pop_to_size  $pop [GET $pop lpop] ;# удаляем лузеров ?
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  if {$::is_print > 2} {
+    puts stderr "[procname] : ~~~~ FINAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
+    puts ""
+  }
+  
 
   return
 }

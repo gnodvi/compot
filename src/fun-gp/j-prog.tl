@@ -2422,8 +2422,10 @@ proc gp_joyprg_mutate {task prg mutprob} {
   #set num_genes_for_mutate [expr [llength $prg] - 3 ]
 
   # TODO: привести к общему виду с 
+
   # gaul_mutation {pop task}
   # ga_mutate_printable_singlepoint_drift {pop father son}
+
 
   #set mutate_cmd {}
   set mutate_cmd_new {}
