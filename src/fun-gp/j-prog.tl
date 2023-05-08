@@ -2507,6 +2507,7 @@ proc make_mutant_from_item {item mutprob task} {
     \
     [gp_joyprg_mutate  $task $prg $mutprob]  {}
   
+
   set mutant [item_make $prg_mutant]  ;# цельный агент-мутант
   
   # пока фитнеса нет, только программы
@@ -2549,6 +2550,8 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
 
   #set num_probes 10
 
+  # выполняем циклом попытки сделать мутанта
+  # 
 
   for {set i 0} {$i < $num_probes} {incr i} {
     

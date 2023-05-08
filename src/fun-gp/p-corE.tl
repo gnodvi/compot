@@ -3026,33 +3026,33 @@ proc gaul_crossover {pop task} {
   return
 }
 #-------------------------------------------------------------------------------
-#   synopsis:	Cause a single mutation event in which a single
-# 		allele is cycled.
-#-------------------------------------------------------------------------------
-proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
+proc ga_joyprg_mutate {task prg} {
 
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # 
 
   set gp_list [GET $task "gp_list"]
 
-  set chromosome [item_get_mainsrc $father]
 
-  item_set_mainsrc $son $chromosome ;# ????
-
-
-  set len_chromo [llength $chromosome]
+  set len_chromo [llength $prg]
 
 
   # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
   # 
   set point [comm_random_int  $len_chromo]
   
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #
   # Mutate by tweaking a single allele.
   # 
   # TODO: а почему меням только один ген, этого же мало !! !!!!
 
-  set point_gen_old [item_get_chromo_gen $son  $point] ;# старое значение
+  
+  #set point_gen_old [item_get_chromo_gen   $father $point] 
+
+  set point_gen_old [lindex $prg $point]
 
 
   set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
@@ -3093,16 +3093,45 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
     # -------------------------------------------
   }
 
+  lset prg  $point $point_gen_new ;# новая измененная хромосома
+
+  # 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+  
+  #return [list $prg ""]
+  return $prg 
+}
+#-------------------------------------------------------------------------------
+#   synopsis:	Cause a single mutation event in which a single
+# 		allele is cycled.
+#-------------------------------------------------------------------------------
+proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
+
+
+  # son - отпрыск, туда будем формировать мутанта
+
+  # TODO: привести к общему виду с 
+  # proc gp_joyprg_mutate {task prg mutprob} {}
+
+  set prg [item_get_mainsrc $father]
+
+  set prg [ga_joyprg_mutate $task $prg] ;# смутировали
+
 
   if {$::is_print >= 4} { 
     puts -nonewline stderr "[procname] : "
-    item_print_ch   $son "son ="
+    item_print_ch   $father "father ="
     puts            stderr ", point = $point, old = $point_gen_old, new = $point_gen_new \n"
   }
   
   # print_entit  $mother "mom ="
 
-  item_set_chromo_gen $son  $point $point_gen_new ;# записали новое значение
+  ##lset prg  $point $point_gen_new
+
+  item_set_mainsrc    $son  $prg           ;# старая хромосома
+  #item_set_chromo_gen $son  $point $point_gen_new ;# записали новое значение гена
 
   return
 }
@@ -3199,6 +3228,19 @@ proc gaul_mutation {pop task} {
   #if {$preparelist} {
 
   foreach mother $mother_list {
+
+    # основня процедура мутации -  ga_mutate_printable_singlepoint_drift
+    #
+    # TODO: надо добавить туда сначала 0) 1) а потом и улучшенный 2)  
+    # 
+    # 0) make_mutant_from_item  $parent $mutprob $task
+
+    # 1) сделаем уникального мутанта (c 10-ти поыток) для этого списка
+    # set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
+    #
+    # 2) set item_new [try_mutate_to_best  $deep_mutate $task $item_old $fitn_old]
+
+    #
     mutate_mother_to_dau  $pop $task  $mother $mutate_proc $eval_proc $task   
   }
   #}
