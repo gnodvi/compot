@@ -535,8 +535,8 @@ proc main_ga {len_chromo} {
     #          pingpong_crossover]
   
     foreach {task pop}  [pingpong_genesis  $population_size $len_chromo pingpong_mutate_0_5 \
-			   ga_select_one_randomrank \
-			   ga_select_two_randomrank \
+			   ga_select_one_bestof2  \
+			   ga_select_two_bestof2  \
 			   pingpong_crossover] {}
   
     #     ga_population_set_parameters (
@@ -548,7 +548,7 @@ proc main_ga {len_chromo} {
     #        0.0              	   /* double  migration              */
     #        );
     
-    ga_population_set_parameters                            \
+    ga_population_set_parameters                          \
                                $pop	                  \
                                GA_SCHEME_DARWIN	          \
                                GA_ELITISM_PARENTS_SURVIVE \

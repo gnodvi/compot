@@ -614,8 +614,8 @@ dict_class_create  BOT03 {BOT} {
               NULL                                   \
               $seed_proc                             \
               _3_struggle_adaptation	             \
-              ga_select_one_sus	                     \
-              ga_select_two_sus	                     \
+              ga_select_one_bestof2	                     \
+              ga_select_two_bestof2	                     \
               $mutate  \
               ga_crossover_char_allele_mixing        \
               NULL			             \
@@ -804,8 +804,8 @@ dict_class_create  BOT04 {BOT} {
   SET $pop seedproc    $seed_proc      ;# /* Individual initialisation    */
   
   SET $pop adapt      _3_struggle_adaptation ;# /* Environmental adaptation operator */
-  SET $pop select_one  ga_select_one_sus     ;# /* Mutation selection operator  */
-  SET $pop select_two  ga_select_two_sus     ;# /* Crossover selection operator */
+  SET $pop select_one  ga_select_one_bestof2     ;# /* Mutation selection operator  */
+  SET $pop select_two  ga_select_two_bestof2     ;# /* Crossover selection operator */
   SET $pop mutate     _4_struggle_mutate     ;# /* Mutation operator            */
   SET $pop crossover  _4_struggle_crossover  ;# /* Crossover operator           */
   
@@ -959,8 +959,8 @@ dict_class_create  BOT05 {BOT} {
                 NULL                                  \
                 $seed_proc                            \
                 NULL	                              \
-                ga_select_one_sus	              \
-                ga_select_two_sus	              \
+                ga_select_one_bestof2	              \
+                ga_select_two_bestof2	              \
                 $mutate \
                 ga_crossover_char_allele_mixing       \
                 NULL			              \
@@ -1126,8 +1126,8 @@ dict_class_create  BOT06 {BOT} {
               NULL                                  \
               $seed_proc                            \
               NULL	                            \
-              ga_select_one_sus	                    \
-              ga_select_two_sus	                    \
+              ga_select_one_bestof2	                    \
+              ga_select_two_bestof2	                    \
               $mutate \
               ga_crossover_char_allele_mixing       \
               NULL			            \
@@ -1258,8 +1258,8 @@ proc make_pop_DARWIN {task population_size len_chromo} {
               NULL                                   \
               $seed_proc                             \
               _3_struggle_adaptation	             \
-              ga_select_one_sus	                     \
-              ga_select_two_sus	                     \
+              ga_select_one_bestof2	             \
+              ga_select_two_bestof2	                     \
               $mutate  \
               ga_crossover_char_allele_mixing        \
               NULL			             \

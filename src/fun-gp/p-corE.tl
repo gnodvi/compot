@@ -1307,7 +1307,6 @@ proc ga_compare_char_hamming {pop alpha beta} \
 # //------------------------------------------------------------------------------
 
 
-
 # /**********************************************************************
 #   ga_select.c
 
@@ -1439,7 +1438,7 @@ proc ga_select_two_randomrank {pop &mother &father} {
   if {[comm_random_boolean_prob [GET $pop crossover_ratio]]} \
   {
     set mother [pop_get_entity_ $pop  [comm_random_int $select_state]]
-    set father [pop_get_entity_ $pop              $select_state]
+    set father [pop_get_entity_ $pop                   $select_state]
 
     return 0 ;# false
   } else {
@@ -1451,11 +1450,19 @@ proc ga_select_two_randomrank {pop &mother &father} {
 #   synopsis:	Kind of tournament selection.  Choose two random
 # 		entities, return the best as the selection.  Selection
 # 		stops when
-# 		(population size)*(mutation ratio)=(number selected)
+# 		(population size) * (mutation ratio) = (number selected)
 
 # boolean 
 # ga_select_one_bestof2 (population *pop, entity **mother)
 
+#-------------------------------------------------------------------------------
+# 
+# GENETIC ALGORITHMS. COMPARISON OF METHODS FOR SELECTING
+# PARENTS FOR CROSSING# 
+# Markov Artem Dmitrievich, 2020, 
+# 
+# Tournament selection - the BEST !!!!!!!!!
+# 
 #-------------------------------------------------------------------------------
 proc ga_select_one_bestof2 {pop &mother} {
 
@@ -1463,12 +1470,16 @@ proc ga_select_one_bestof2 {pop &mother} {
   
   set orig_size [GET $pop lpop]
 
+  # выбрали двух случайных особей
+  # 
   set mother1 [pop_get_entity_ $pop  [comm_random_int $orig_size]]
   set mother2 [pop_get_entity_ $pop  [comm_random_int $orig_size]]
   
-  set fit1 [item_get_fitn $mother1]
+  set fit1 [item_get_fitn $mother1] 
   set fit2 [item_get_fitn $mother2]
 
+  # сравним их фитнесы и выберем лучшую особь
+  # 
   if {$fit1 > $fit2} {
 
     set mother $mother1
@@ -1478,14 +1489,20 @@ proc ga_select_one_bestof2 {pop &mother} {
 
   # увеличиваем этот странный счетчик выбора особи из популяции
   # 
-  set select_state [GET $pop select_state]
+  #set select_state [GET $pop select_state]
+  #incr select_state
+  #SET $pop select_state $select_state ;# записали обратно
 
-  incr select_state
-  SET $pop select_state $select_state ;# записали обратно
+  # кол-во особей будем выбирать в соответсвии с коэффициентом мутации
+  # зачем так сложно-то ?
+  #set ret [expr {$select_state > ($orig_size * [GET $pop mutation_ratio])} ]
+  # может надо проще?
+  # 
 
-  set ret [expr {$select_state > ($orig_size * [GET $pop mutation_ratio])} ]
+  #set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
+  #set ret [expr {$select_state > $num_mutate_items } ]
+  #return $ret
 
-  return $ret
 }
 #-------------------------------------------------------------------------------
 #   synopsis:	Kind of tournament selection.  For each parent, choose
@@ -1502,23 +1519,9 @@ proc ga_select_two_bestof2 {pop &mother &father} {
 
   USE_REFS
 
-  #   entity	*challenger;	/* Random competitor. */
-  
-  #   if (!pop) die("Null pointer to population structure passed.");
-  
-  #   if (pop->orig_size < 2)
-  #   {
-  #     *mother = NULL;
-  #     *father = NULL;
-  #     return TRUE;
-  #   }
-  
-  #set orig_size [GET $pop orig_size]
   set orig_size [GET $pop lpop]
-  set c_ratio   [GET $pop crossover_ratio] 
 
   set moth_i [comm_random_int $orig_size]
-  #set mother [$pop get_entity $moth_i]
   set mother [pop_get_entity_ $pop  $moth_i]
 
   set moth_fitness [item_get_fitn $mother]
@@ -1566,7 +1569,6 @@ proc ga_select_two_bestof2 {pop &mother &father} {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if {$::is_print >= 4} {
-  #if {$::is_print} {}
     puts "  ga_select_two_bestof2 :"
     print_entit  $mother "mother = ($moth_i) ="
     print_entit  $father "father = ($fath_i) ="
@@ -1575,22 +1577,26 @@ proc ga_select_two_bestof2 {pop &mother &father} {
 
   #   pop->select_state++;
   #
-  set  s_state [GET $pop select_state]
-  incr s_state
-  SET $pop select_state $s_state
+  #set  s_state [GET $pop select_state]
+  #incr s_state
+  #SET $pop select_state $s_state
 
   # истина, если закончился перебор (селекция пар) ?
   # 
-  set ret [expr {$s_state >   1.0 * $orig_size * $c_ratio} ]
-  
-  if {$::is_print >= 4} {
-  #if {$::is_print} {}
-    puts "  s_state= $s_state  orig_size= $orig_size  c_ratio= $c_ratio   ret = $ret" 
-    puts ""
-  }
 
-  #   return pop->select_state>(pop->orig_size*pop->crossover_ratio);
-  return $ret
+  #set c_ratio   [GET $pop crossover_ratio] 
+  #set ret [expr {$s_state >   1.0 * $orig_size * $c_ratio} ]
+  
+
+  #set num_cross_pairs [expr {($orig_size * [GET $pop crossover_ratio])} ]
+  #set ret [expr {$s_state > $num_cross_pairs } ]
+
+  #if {$::is_print >= 4} {
+  #  puts "  s_state= $s_state  orig_size= $orig_size  c_ratio= $c_ratio   ret = $ret" 
+  #  puts ""
+  #}
+
+  #return $ret
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -2730,78 +2736,6 @@ proc ga_mutate_integer_singlepoint_drift {pop task  father son} {
   return
 }
 #-------------------------------------------------------------------------------
-#   synopsis:	Cause a single mutation event in which a single
-# 		allele is cycled.
-#-------------------------------------------------------------------------------
-proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
-
-
-  set gp_list [GET $task "gp_list"]
-
-  set chromosome [item_get_mainsrc $father]
-
-  item_set_mainsrc $son $chromosome ;# ????
-
-
-  set len_chromo [llength $chromosome]
-
-  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
-  # 
-  set point [comm_random_int  $len_chromo]
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #
-  # Mutate by tweaking a single allele.
-  # 
-  # TODO: а почему меням только один ген, этого же мало !! !!!!
-
-  set point_gen_old [item_get_chromo_gen $son  $point] ;# старое значение
-
-
-  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
-
-  if {$is_digital} {
-    # -------------------------------------------
-
-    # The direction of drift. 
-    # 
-    if {[comm_random_boolean]} {
-      set dir -1
-    } else {
-      set dir  1
-    }
-    
-    set point_gen_new [expr {$point_gen_old + $dir}]  ;# новое  значение
-    # и это реально новое значение всегда
-
-    # -------------------------------------------
-  } else {
-    # -------------------------------------------
-
-    #exit
-
-    if {1} {
-      #set gp_list $::gp_list ;# в список входит и старый ген !
-
-    } else {
-
-      # исключить элемент из списка, чтоб мутация была реальной
-      # 
-      set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
-
-    }
-
-    set point_gen_new [randinstr_MAIN $gp_list]
-
-    # -------------------------------------------
-  }
-
-
-  item_set_chromo_gen $son  $point $point_gen_new ;# записали новое значение
-
-  return
-}
-#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 #   synopsis:	Cause a single mutation event in which a single
 # 		allele is adjusted.  (Unit Gaussian distribution.)
@@ -3043,43 +2977,132 @@ proc gaul_crossover {pop task} {
 
   set mother_list {}
   set father_list {}
-  set preparelist 1
+  #set preparelist 1
 
+  set orig_size [GET $pop lpop]
+  set num 0
+  set num_cross_pairs [expr {($orig_size * [GET $pop crossover_ratio])} ]
+  
   #  Select pairs of entities to mate via crossover.
   #
   while {1} {
 
-    set ret [$select_two_proc $pop  mother father]
+    #set ret [$select_two_proc $pop  mother father] ;# ga_select_two_bestof2
+    $select_two_proc $pop  mother father
+
+    incr num ;# увеличили счетчик
+    set ret [expr {$num > $num_cross_pairs } ]
 
     if {$ret} {break}
 
-    if {$preparelist} {
+    #if {$preparelist} {
 
-      lappend mother_list  $mother
-      lappend father_list  $father
-    } else {
+    lappend mother_list  $mother
+    lappend father_list  $father
+    #} else {
 
-      cross_to_dau_and_son $pop $task $mother $father
-    }
+    #  cross_to_dau_and_son $pop $task $mother $father
+    #}
 
     # перепутанный порядок даже с сишным вариантом!
     # однако
   }
   
 
-  if {$preparelist} {
+  #if {$preparelist} {
 
-    set l [llength $mother_list]
-
-    for {set i 0} {$i < $l} {incr i} {
-
-      set mother [lindex $mother_list $i]
-      set father [lindex $father_list $i]
+  set l [llength $mother_list]
   
-      cross_to_dau_and_son  $pop $task $mother $father
+  for {set i 0} {$i < $l} {incr i} {
+    
+    set mother [lindex $mother_list $i]
+    set father [lindex $father_list $i]
+    
+    cross_to_dau_and_son  $pop $task $mother $father
+    
+  }
+  #}
+
+  return
+}
+#-------------------------------------------------------------------------------
+#   synopsis:	Cause a single mutation event in which a single
+# 		allele is cycled.
+#-------------------------------------------------------------------------------
+proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
+
+
+  set gp_list [GET $task "gp_list"]
+
+  set chromosome [item_get_mainsrc $father]
+
+  item_set_mainsrc $son $chromosome ;# ????
+
+
+  set len_chromo [llength $chromosome]
+
+
+  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
+  # 
+  set point [comm_random_int  $len_chromo]
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #
+  # Mutate by tweaking a single allele.
+  # 
+  # TODO: а почему меням только один ген, этого же мало !! !!!!
+
+  set point_gen_old [item_get_chromo_gen $son  $point] ;# старое значение
+
+
+  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
+
+  if {$is_digital} {
+    # -------------------------------------------
+
+    # The direction of drift. 
+    # 
+    if {[comm_random_boolean]} {
+      set dir -1
+    } else {
+      set dir  1
+    }
+    
+    set point_gen_new [expr {$point_gen_old + $dir}]  ;# новое  значение
+    # и это реально новое значение всегда
+
+    # -------------------------------------------
+  } else {
+    # -------------------------------------------
+
+    #exit
+
+    if {1} {
+      #set gp_list $::gp_list ;# в список входит и старый ген !
+
+    } else {
+
+      # исключить элемент из списка, чтоб мутация была реальной
+      # 
+      set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
 
     }
+
+    set point_gen_new [randinstr_MAIN $gp_list]
+
+    # -------------------------------------------
   }
+
+
+  if {$::is_print >= 4} { 
+    puts -nonewline stderr "[procname] : "
+    item_print_ch   $son "son ="
+    puts            stderr ", point = $point, old = $point_gen_old, new = $point_gen_new \n"
+  }
+  
+  # print_entit  $mother "mom ="
+
+  item_set_chromo_gen $son  $point $point_gen_new ;# записали новое значение
 
   return
 }
@@ -3098,6 +3121,7 @@ proc mutate_mother_to_dau {pop task mother mutate_proc eval_proc task} {
   #
   # например   ga_mutate_printable_singlepoint_drift
   
+
   # здесь бы сразу мутантку посчитать?
   # 
   pop_eval_item  $pop $dau $eval_proc  $task
@@ -3140,34 +3164,44 @@ proc gaul_mutation {pop task} {
   # have a genetic mutation of some type.
  
   set mother_list {}
-  set preparelist 1
+  #set preparelist 1
 
   set mother "" ;# <-------- & для Jim?
-  # 
+  
+
+  set orig_size [GET $pop lpop]
+  set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
+  set num 0 ;# счетчик для кол-ва мутантов
+
   while {1} {
 
-    set ret [$select_one_proc  $pop mother]
+    ##set ret [$select_one_proc  $pop mother]  ;# ga_select_one_bestof2
+    $select_one_proc  $pop mother
+
+    incr num ;# увеличили счетчик
+    set ret [expr {$num > $num_mutate_items } ]
+
     if {$ret} {break}
 
 
-    if {$preparelist} {
-      lappend mother_list $mother
-    } else {
+    #if {$preparelist} {
+    lappend mother_list $mother
+    #} else {
 
-      mutate_mother_to_dau  $pop $task  $mother $mutate_proc $eval_proc $task  
-      #
-      # если сразу мутируем и добавляем в популяцию, то его же в этом цикле
-      # можем выбрать ? это вроде не очень?
-    }
+    #  mutate_mother_to_dau  $pop $task  $mother $mutate_proc $eval_proc $task  
+    #  #
+    #  # если сразу мутируем и добавляем в популяцию, то его же в этом цикле
+    #  # можем выбрать ? это вроде не очень?
+    #}
   }
   
 
-  if {$preparelist} {
+  #if {$preparelist} {
 
-    foreach mother $mother_list {
-      mutate_mother_to_dau  $pop $task  $mother $mutate_proc $eval_proc $task   
-    }
+  foreach mother $mother_list {
+    mutate_mother_to_dau  $pop $task  $mother $mutate_proc $eval_proc $task   
   }
+  #}
 
   return
 }
@@ -4303,8 +4337,8 @@ dict_class_create BOT01 {BOT} {
 
   set pop [pop1_create  {*}$args]
   
-  SET $pop  select_one   "ga_select_one_sus"
-  SET $pop  select_two   "ga_select_two_sus"
+  SET $pop  select_one   "ga_select_one_bestof2" ;# "ga_select_one_sus"
+  SET $pop  select_two   "ga_select_two_bestof2" ;# "ga_select_two_sus"
 
   SET $obj pop $pop
 
@@ -4842,7 +4876,7 @@ proc gp_evolution_4 {pop task args} {
   # выделяем лидеров популяции  (1/3)
 
   
-  set leaders_items [lrange $sorted_items 0 [expr {$l - 1}]]
+  set leaders_items [lrange $sorted_items   0 [expr {$l - 1}]]
   
   #---------------------------------------
 

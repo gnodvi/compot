@@ -701,8 +701,8 @@ proc TEST_xx {args} {
     
     set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task] ;#  -vers $vers 
     
-    SET $pop  select_one   "ga_select_one_sus"
-    SET $pop  select_two   "ga_select_two_sus"
+    #SET $pop  select_one   "ga_select_one_sus"
+    #SET $pop  select_two   "ga_select_two_sus"
     
     
     # только эти функции выбора работают для GP!

@@ -232,8 +232,8 @@ proc _1_main {} \
              NULL               \
              all5s_seed         \
              NULL               \
-             ga_select_one_sus	\
-             ga_select_two_sus	\
+             ga_select_one_bestof2 \
+             ga_select_two_bestof2 \
              all5s_mutate       \
              ga_crossover_integer_singlepoints  \
              NULL               \
@@ -339,8 +339,8 @@ proc _2_main {} \
              NULL               \
              ga_seed_integer_random \
              NULL               \
-             ga_select_one_sus	\
-             ga_select_two_sus	\
+             ga_select_one_bestof2	\
+             ga_select_two_bestof2	\
              ga_mutate_integer_singlepoint_drift \
              ga_crossover_integer_singlepoints   \
              NULL               \
