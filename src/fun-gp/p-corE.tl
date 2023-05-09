@@ -3026,84 +3026,6 @@ proc gaul_crossover {pop task} {
   return
 }
 #-------------------------------------------------------------------------------
-proc ga_joyprg_mutate {task prg} {
-
-
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # 
-
-  set gp_list [GET $task "gp_list"]
-
-
-  set len_chromo [llength $prg]
-
-
-  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
-  # 
-  set point [comm_random_int  $len_chromo]
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #
-  # Mutate by tweaking a single allele.
-  # 
-  # TODO: а почему меням только один ген, этого же мало !! !!!!
-
-  
-  #set point_gen_old [item_get_chromo_gen   $father $point] 
-
-  set point_gen_old [lindex $prg $point]
-
-
-  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
-
-  if {$is_digital} {
-    # -------------------------------------------
-
-    # The direction of drift. 
-    # 
-    if {[comm_random_boolean]} {
-      set dir -1
-    } else {
-      set dir  1
-    }
-    
-    set point_gen_new [expr {$point_gen_old + $dir}]  ;# новое  значение
-    # и это реально новое значение всегда
-
-    # -------------------------------------------
-  } else {
-    # -------------------------------------------
-
-    #exit
-
-    if {1} {
-      #set gp_list $::gp_list ;# в список входит и старый ген !
-
-    } else {
-
-      # исключить элемент из списка, чтоб мутация была реальной
-      # 
-      set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
-
-    }
-
-    set point_gen_new [randinstr_MAIN $gp_list]
-
-    # -------------------------------------------
-  }
-
-  lset prg  $point $point_gen_new ;# новая измененная хромосома
-
-  # 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-  
-  #return [list $prg ""]
-  return $prg 
-}
-#-------------------------------------------------------------------------------
 #   synopsis:	Cause a single mutation event in which a single
 # 		allele is cycled.
 #-------------------------------------------------------------------------------
@@ -3195,13 +3117,15 @@ proc gaul_mutation {pop task} {
   set mother_list {}
   #set preparelist 1
 
-  set mother "" ;# <-------- & для Jim?
-  
+  # ~~~~~ создаем список подлежащих мутации ~~~~~~~~~~~~~~~~~~~~~
+  # 
 
   set orig_size [GET $pop lpop]
   set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
   set num 0 ;# счетчик для кол-ва мутантов
 
+  set mother "" ;# <-------- & для Jim?
+  
   while {1} {
 
     ##set ret [$select_one_proc  $pop mother]  ;# ga_select_one_bestof2
@@ -3225,6 +3149,8 @@ proc gaul_mutation {pop task} {
   }
   
 
+  # ~~~~~ идем по списку и каждого мутируем  ~~~~~~~~~~~~~~~~~~~~~
+  # 
   #if {$preparelist} {
 
   foreach mother $mother_list {
@@ -4951,11 +4877,19 @@ proc gp_evolution_4 {pop task args} {
 
   } else {
     
-    set mutprob [dict_parse  $args "-mutprob" 0.1]
+    set mutprob [dict_parse  $args "-mutprob" 0.5]
+    set orig_size [GET $pop lpop]
 
-    set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов
+    #set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов ??
+    #set m [expr {$len * $mutprob}] ;# num_  
+    set m [expr {int ($orig_size * $mutprob) }] ;# num_  
 
-    set mutated_items  [make_mutated_from_items  $task $sorted_items $m  $mutprob]
+    puts stderr "[procname] : m = $m"
+
+    #set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
+
+
+    set mutated_items  [make_mutated_from_items  $task $sorted_items $m]
     
     #dict_print_real_all_in_list  "[procname]"  $mutated_items
       

@@ -2357,54 +2357,53 @@ proc make_mutate_cmd_new {mutate_cmd_old} {
 #-------------------------------------------------------------------------------
 # а вот теперь выполним команду мутации:  
 #-------------------------------------------------------------------------------
-proc make_mutate_cmd_for_index {&prg prob gp_list  index} {
+#proc make_mutate_cmd_for_index {&prg prob gp_list  index} {}
+proc make_mutate_cmd_for_index {&prg  gp_list  index} {
 
   USE_REFS
 
+  #set r [random_double 1.0] 
+  #set r 0 ;# степень мутации надо учитывать раньше! при формировании списка для мутации !
 
-  set r [random_double 1.0] 
+  #if {$r > $prob} {
 
+  #  set mcmd "not  @ @"  
+  #  #set mcmd "not "  
+  #  #return $mcmd ;# ничего не делаем, уходим ??
 
-  if {$r > $prob} {
+  #} else {
 
-    set mcmd "not  @ @"  
-    #set mcmd "not "  
-    #return $mcmd ;# ничего не делаем, уходим ??
-
+  if {[llength $prg] <= 1} {
+    set mode [lrand "    set add"]
   } else {
-
-
-    if {[llength $prg] <= 1} {
-      set mode [lrand "    set add"]
-    } else {
-      set mode [lrand "del set add"]
-    }
-    
-    # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # 
-    # сначала сформируем команду мутации
-    
-    if {$mode == "del"} {
-      
-      #if {[llength $prg] <= 1} {
-      
-      #  set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
-      #  #set mcmd "not" 
-      #} else {
-      set mcmd "del $index @" ;# удалим gen
-      #set mcmd "del $i" ;# удалим gen
-      #}
-      
-    } else {
-      
-      # выберем из списка (или списков !!!)
-      # 
-      set gen [randinstr_MAIN $gp_list]
-      
-      set mcmd "$mode $index $gen"  ;# set or add 
-    }
-    
+    set mode [lrand "del set add"]
   }
+  
+  # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # 
+  # сначала сформируем команду мутации
+  
+  if {$mode == "del"} {
+    
+    #if {[llength $prg] <= 1} {
+    
+    #  set mcmd "not  @ @"    ;# ничего не делаем, слишком уже короткая программа
+    #  #set mcmd "not" 
+    #} else {
+    set mcmd "del $index @" ;# удалим gen
+    #set mcmd "del $i" ;# удалим gen
+    #}
+    
+  } else {
+    
+    # выберем из списка (или списков !!!)
+    # 
+    set gen [randinstr_MAIN $gp_list]
+    
+    set mcmd "$mode $index $gen"  ;# set or add 
+  }
+  
+  #}
   
   
   set context [get_i_context $prg $index]
@@ -2417,7 +2416,77 @@ proc make_mutate_cmd_for_index {&prg prob gp_list  index} {
 # По заданной программе возвращается мутированная программа
 # 
 #-------------------------------------------------------------------------------
-proc gp_joyprg_mutate {task prg mutprob} {
+proc ga_joyprg_mutate {task prg} {
+
+
+  set gp_list [GET $task "gp_list"]
+
+  set len_chromo [llength $prg]
+
+
+  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
+  # 
+  set point [comm_random_int  $len_chromo]
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #
+  # Mutate by tweaking a single allele.
+  # 
+  # TODO: а почему меням только один ген, этого же мало !! !!!!
+
+  
+  #set point_gen_old [item_get_chromo_gen   $father $point] 
+
+  set point_gen_old [lindex $prg $point]
+
+
+  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
+
+  if {$is_digital} {
+    # -------------------------------------------
+
+    # The direction of drift. 
+    # 
+    if {[comm_random_boolean]} {
+      set dir -1
+    } else {
+      set dir  1
+    }
+    
+    set point_gen_new [expr {$point_gen_old + $dir}]  ;# новое  значение
+    # и это реально новое значение всегда
+
+    # -------------------------------------------
+  } else {
+    # -------------------------------------------
+
+    #exit
+
+    if {1} {
+      #set gp_list $::gp_list ;# в список входит и старый ген !
+
+    } else {
+
+      # исключить элемент из списка, чтоб мутация была реальной
+      # 
+      set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
+
+    }
+
+    set point_gen_new [randinstr_MAIN $gp_list]
+
+    # -------------------------------------------
+  }
+
+  lset prg  $point $point_gen_new ;# новая измененная хромосома
+
+  
+  #return [list $prg ""]
+  return $prg 
+}
+#-------------------------------------------------------------------------------
+#proc gp_joyprg_mutate {task prg mutprob} {}
+proc gp_joyprg_mutate {task prg} {
 
   #set num_genes_for_mutate [expr [llength $prg] - 3 ]
 
@@ -2462,7 +2531,7 @@ proc gp_joyprg_mutate {task prg mutprob} {
 
       set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
       
-      set mutate_cmd_old [make_mutate_cmd_for_index  prg 1.0 $gp_list  $i]
+      set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i]
       set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd_old]
     }
 
@@ -2479,7 +2548,7 @@ proc gp_joyprg_mutate {task prg mutprob} {
     # 
     for {set i 0} {$i < [llength $prg]} {incr i} {
       
-      set mutate_cmd_old [make_mutate_cmd_for_index  prg $mutprob $gp_list  $i]
+      set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i]
       
       #run_mutate_cmd $mutate_cmd_old prg ;# а вот теперь выполним команду мутации:
       #
@@ -2494,7 +2563,7 @@ proc gp_joyprg_mutate {task prg mutprob} {
   return [list $prg $mutate_cmd_new]
 }
 #------g-------------------------------------------------------------------------
-proc make_mutant_from_item {item mutprob task} {
+proc make_mutant_from_item {item task} {
 
   # пока смотрим только отдельный исходник, без возможных библиотек
   # 
@@ -2505,7 +2574,9 @@ proc make_mutant_from_item {item mutprob task} {
 
   foreach {prg_mutant mutate_cmd} \
     \
-    [gp_joyprg_mutate  $task $prg $mutprob]  {}
+    [gp_joyprg_mutate  $task $prg]  {}
+  
+  ##  [gp_joyprg_mutate  $task $prg $mutprob]  {}
   
 
   set mutant [item_make $prg_mutant]  ;# цельный агент-мутант
@@ -2546,7 +2617,7 @@ proc is_this_mutant_unikum {mutant items} {
   return 1
 }
 #-------------------------------------------------------------------------------
-proc make_mutant_unikum {task parent mutprob items num_probes} {
+proc make_mutant_unikum {task parent items num_probes} {
 
   #set num_probes 10
 
@@ -2556,7 +2627,7 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
   for {set i 0} {$i < $num_probes} {incr i} {
     
     foreach {mutant mutate_cmd} \
-      [make_mutant_from_item  $parent $mutprob $task] break
+      [make_mutant_from_item  $parent $task] break
 
     if [is_this_mutant_unikum $mutant $items] {
       break
@@ -2567,7 +2638,7 @@ proc make_mutant_unikum {task parent mutprob items num_probes} {
   #return [list $mutant $mutate_cmd]
 }
 #-------------------------------------------------------------------------------
-proc make_mutated_from_items {task sorted_items m mutprob} {
+proc make_mutated_from_items {task sorted_items m} {
 
   set l_items [llength $sorted_items]
   set mutated {} ;# сформируем список мутантов
@@ -2575,24 +2646,28 @@ proc make_mutated_from_items {task sorted_items m mutprob} {
   
   # случайным выбором от всех?
 
+  #-------------------------
   if {1} {
+  #-------------------------
 
+
+  # приготовим список для мутации (n ?  mutprob ?)
+  # 
   while {1} {
 
-    if {[llength $parents] ==  $m} {break}
+    if {[llength $parents] ==  $m} {break} ;# список уже готов
 
 
     set j [comm_random_int_minmax 0 [- $l_items 1]] 
 
     set parent [lindex $sorted_items $j] ;# родителем взяли случайного из всего списка
   
-    lappend parents $parent
-    
+    lappend parents $parent   
   }
 
   foreach parent $parents {
 
-    set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
+    set mutant [make_mutant_unikum  $task $parent $sorted_items 10]
 
     # добавим мутанта в список
     #
@@ -2615,7 +2690,7 @@ proc make_mutated_from_items {task sorted_items m mutprob} {
 
     # сделаем уникального мутанта (c 10-ти поыток) для этого списка
     # 
-    set mutant [make_mutant_unikum  $task $parent $mutprob $sorted_items 10]
+    set mutant [make_mutant_unikum  $task $parent $sorted_items 10]
 
 
     # добавим мутанта в список
@@ -2623,7 +2698,9 @@ proc make_mutated_from_items {task sorted_items m mutprob} {
     lappend mutated $mutant
   }
 
+  #-------------------------
   }
+  #-------------------------
 
   return $mutated
 }
@@ -2759,7 +2836,7 @@ proc try_mutate_to_best {deep_mutate task  item_start fitn_start} {
 
     foreach {item_new mutate_cmd} \
       \
-      [make_mutant_from_item  $item_old $mutprob $task]  break ;# сделали мутанта 
+      [make_mutant_from_item  $item_old $task]  break ;# сделали мутанта 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
