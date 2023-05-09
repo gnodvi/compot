@@ -2320,7 +2320,6 @@ proc make_mutate_cmd_new {mutate_cmd_old} {
   #set ret {}
   set mutate_cmd_new {}
 
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
   
   set inp [dict get $context -i]
@@ -2416,29 +2415,11 @@ proc make_mutate_cmd_for_index {&prg  gp_list  index} {
 # По заданной программе возвращается мутированная программа
 # 
 #-------------------------------------------------------------------------------
-proc ga_joyprg_mutate {task prg} {
+proc ga_joyprg_mutate_one_gen {prg gp_list point} {
 
-
-  set gp_list [GET $task "gp_list"]
-
-  set len_chromo [llength $prg]
-
-
-  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
-  # 
-  set point [comm_random_int  $len_chromo]
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #
   # Mutate by tweaking a single allele.
-  # 
-  # TODO: а почему меням только один ген, этого же мало !! !!!!
-
   
-  #set point_gen_old [item_get_chromo_gen   $father $point] 
-
   set point_gen_old [lindex $prg $point]
-
 
   set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
 
@@ -2460,18 +2441,13 @@ proc ga_joyprg_mutate {task prg} {
   } else {
     # -------------------------------------------
 
-    #exit
-
-    if {1} {
-      #set gp_list $::gp_list ;# в список входит и старый ген !
-
-    } else {
-
-      # исключить элемент из списка, чтоб мутация была реальной
-      # 
-      set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
-
-    }
+    #if {1} {
+    #  #set gp_list $::gp_list ;# в список входит и старый ген !
+    #} else {
+    #  # исключить элемент из списка, чтоб мутация была реальной
+    #  # 
+    #  set gp_list  [lsearch  -inline -all -not -exact $gp_list $point_gen_old]
+    #}
 
     set point_gen_new [randinstr_MAIN $gp_list]
 
@@ -2485,27 +2461,44 @@ proc ga_joyprg_mutate {task prg} {
   return $prg 
 }
 #-------------------------------------------------------------------------------
+proc ga_joyprg_mutate {task prg} {
+
+
+  set gp_list [GET $task "gp_list"]
+
+  set len_chromo [llength $prg]
+
+
+  # случайно выбираем точку в хромосоме? тогда ее длину и надо же брать?
+  # 
+  set point [comm_random_int  $len_chromo]
+  
+  
+  # TODO: а почему меням только один ген, этого же мало !! !!!!
+  # 
+  set prg [ga_joyprg_mutate_one_gen  $prg $gp_list $point]
+
+  return $prg 
+}
+#-------------------------------------------------------------------------------
 #proc gp_joyprg_mutate {task prg mutprob} {}
 proc gp_joyprg_mutate {task prg} {
-
-  #set num_genes_for_mutate [expr [llength $prg] - 3 ]
 
   # TODO: привести к общему виду с 
 
   # gaul_mutation {pop task}
   # ga_mutate_printable_singlepoint_drift {pop father son}
 
+  set gp_list [GET $task gp_list]
 
-  #set mutate_cmd {}
-  set mutate_cmd_new {}
+
+  #set mutate_cmd_new {}
 
   # 0 - удаляем 
   # 1 - заменяем
   # 2 - добавляем
       
-  set gp_list [GET $task gp_list]
-
-  if {$::gp_NEWS} {
+  #if {$::gp_NEWS} {
 
     # по новому алгоритму - хотим ьенять точечно и семантически осмыслено 
     # 
@@ -2513,54 +2506,52 @@ proc gp_joyprg_mutate {task prg} {
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # ищем мутирующую команду в списке сохраненных
     # 
-    if {$::is_find_in_goods} {
+    #if {$::is_find_in_goods} {
 
-      set mutate_cmd_new [find_in_goods $prg]
+    #  set mutate_cmd_new [find_in_goods $prg]
+    #  set ::is_find_in_goods 0
 
-      set ::is_find_in_goods 0
+    #} else {
+    #  set ::is_find_in_goods 1
+    #}
 
-      #puts stderr "find_in_goods: mutate_cmd_new = $mutate_cmd_new"
-    } else {
-
-      set ::is_find_in_goods 1
-    }
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # если нет, то формируем мутирующую команду случайным образом
     # 
-    if {$mutate_cmd_new == {}} {
+    
+    #if {$mutate_cmd_new == {}} {
 
-      set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
+    #  set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
       
-      set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i]
-      set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd_old]
-    }
+    #  set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i]
+    #  set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd_old]
+    #}
 
-    #set mutate_cmd [run_mutate_cmd $mutate_cmd prg]
-    #
-    #set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd]
-    do_out  prg $mutate_cmd_new
+    #do_out  prg $mutate_cmd_new
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  } else {
+  #} else {
 
-    # о старому алгоритму - мутируем всю программу целиком и хаотично
-    # 
-    for {set i 0} {$i < [llength $prg]} {incr i} {
+  # о старому алгоритму - мутируем всю программу целиком и хаотично
+  # 
+
+  for {set i 0} {$i < [llength $prg]} {incr i} {
+
+    if {1} {
+      set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i] ;# ?????
+      set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
+      do_out  prg $mutate_cmd_new                                      ;# ?????
+    } else {
       
-      set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i]
-      
-      #run_mutate_cmd $mutate_cmd_old prg ;# а вот теперь выполним команду мутации:
-      #
-      set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd_old]
-      
-      #puts stderr "mutate_cmd_new = $mutate_cmd_new"
-      do_out  prg $mutate_cmd_new
+      ga_joyprg_mutate_one_gen  $prg $gp_list $i ;# без добавления генов не работает
     }
   }
 
+  #}
   
-  return [list $prg $mutate_cmd_new]
+  return [list $prg {}]
+  ## return [list $prg $mutate_cmd_new] - пока упростим, без мутирующей команды
 }
 #------g-------------------------------------------------------------------------
 proc make_mutant_from_item {item task} {
@@ -2576,9 +2567,6 @@ proc make_mutant_from_item {item task} {
     \
     [gp_joyprg_mutate  $task $prg]  {}
   
-  ##  [gp_joyprg_mutate  $task $prg $mutprob]  {}
-  
-
   set mutant [item_make $prg_mutant]  ;# цельный агент-мутант
   
   # пока фитнеса нет, только программы
@@ -2864,19 +2852,10 @@ proc try_mutate_to_best {deep_mutate task  item_start fitn_start} {
 
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # да надо бы всех сохранять - это информация и опыт - пригодится!
-
-    #if {$is_progress} {   
-      # все хорошо, сохраняем удачную команду мутации с контекстом
-
-      #set progress_abs [expr {abs ($fitn_new - $fitn_old)}]
-
-      save_good_mutate_cmd  $mutate_cmd $progress_val
-
-      # и выходим ????
-      #return $item_new 
-    #}
+    # все хорошо, сохраняем удачную команду мутации с контекстом
+    
+    #save_good_mutate_cmd  $mutate_cmd $progress_val
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
     lappend history [list $item_new $fitn_new] ;# положили в историю
     #
