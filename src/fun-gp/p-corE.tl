@@ -3042,11 +3042,11 @@ proc ga_mutate_printable_singlepoint_drift {pop task father son}  {
   set prg [ga_joyprg_mutate $task $prg] ;# смутировали
 
 
-  if {$::is_print >= 4} { 
-    puts -nonewline stderr "[procname] : "
-    item_print_ch   $father "father ="
-    puts            stderr ", point = $point, old = $point_gen_old, new = $point_gen_new \n"
-  }
+  #if {$::is_print >= 4} { 
+  #  puts -nonewline stderr "[procname] : "
+  #  item_print_ch   $father "father ="
+  #  puts            stderr ", point = $point, old = $point_gen_old, new = $point_gen_new \n"
+  #}
   
   # print_entit  $mother "mom ="
 
