@@ -4884,7 +4884,7 @@ proc gp_evolution_4 {pop task args} {
     #set m [expr {$len * $mutprob}] ;# num_  
     set m [expr {int ($orig_size * $mutprob) }] ;# num_  
 
-    puts stderr "[procname] : m = $m"
+    #puts stderr "[procname] : m = $m"
 
     #set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
 

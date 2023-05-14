@@ -2340,6 +2340,7 @@ proc make_mutate_cmd_new {mutate_cmd_old} {
 
   # попробуем другим способом (сначала меняем подстроку)
   set j 0 ;# 
+  #set j $i 
   
   switch -- $cmd {
     
@@ -2367,11 +2368,16 @@ proc make_mcmd {prg  gp_list  index} {
 
 
   if {[llength $prg] <= 1} {
-    set mode [lrand "    set add"]
+    # нельзя удалять единственный элемент
+    set cmd_list "    set add"
   } else {
-    set mode [lrand "del set add"]
+    set cmd_list "del set add"
   }
   
+
+  set mode [lrand $cmd_list]
+
+
   # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # 
   # сначала сформируем команду мутации
@@ -2477,31 +2483,19 @@ proc ga_joyprg_mutate {task prg} {
   return $prg 
 }
 #-------------------------------------------------------------------------------
-proc gp_joyprg_mutate_one_gen {prg gp_list i} {
-
-  # надо упростить
-
-  if {0} {
-    set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i] ;# ?????
-    set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
-    set ret [do_out  prg $mutate_cmd_new]
-
-  } else {
-
-   # set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i] ;# ?????
-    set mcmd [make_mcmd  $prg $gp_list $i]
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+proc make_mutate_by_mcmd {prg mcmd} {
 
   set cmd [lindex $mcmd 0]
   set i   [lindex $mcmd 1]
   set gen [lindex $mcmd 2]
 
-  puts ""
-  puts "mcmd = $mcmd"
+  if {$::is_print >= 3} {
+    puts ""
+    puts "[procname] BEG: prg = $prg, mcmd = $mcmd"
+  }
 
   # попробуем другим способом (сначала меняем подстроку)
-  set j 0 ;# 
+  #set j 0 ;# 
 
   set prg_new $prg
 
@@ -2513,20 +2507,38 @@ proc gp_joyprg_mutate_one_gen {prg gp_list i} {
     }  
     "del" {
       ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
-      set prg_new  [lreplace $prg_new $j $j] ;# удаляем
+      set prg_new  [lreplace $prg_new $i $i] ;# удаляем
     }  
     "set" {
-      lset prg_new $j $gen  ;# либо заменяем итем 
+      lset prg_new $i $gen  ;# либо заменяем итем 
     }  
     "add" {
-      set prg_new  [linsert $prg_new $j $gen]  ;# либо добавляем
+      set prg_new  [linsert $prg_new $i $gen]  ;# либо добавляем
     }
   } 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    set ret $prg_new
-  }  
+  if {$::is_print >= 3} {
+    puts "[procname] END: prg_new = $prg_new"
+  }
+
+  return $prg_new
+}
+#-------------------------------------------------------------------------------
+proc gp_joyprg_mutate_one_gen {prg gp_list i} {
+
+  # надо упростить
+
+  #if {0} {
+  #  set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i] ;# ?????
+  #  set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
+  #  set ret [do_out  prg $mutate_cmd_new]
+
+  #} else {
+
+  set mcmd [make_mcmd           $prg $gp_list $i]
+  set ret  [make_mutate_by_mcmd $prg $mcmd]
+  #}  
   
   return $ret;
 }
@@ -2571,7 +2583,7 @@ proc gp_joyprg_mutate {task prg} {
     
     #if {$mutate_cmd_new == {}} {
 
-    #  set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
+    set    i [comm_random_int_minmax  0 [- [llength $prg] 1]]
       
     #  set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i]
     #  set mutate_cmd_new [make_mutate_cmd_new  $mutate_cmd_old]
@@ -2586,17 +2598,26 @@ proc gp_joyprg_mutate {task prg} {
   # gо старому алгоритму - мутируем всю программу целиком и хаотично
   # 
 
-  for {set i 0} {$i < [llength $prg]} {incr i} {
+  #for {set i 0} {$i < [llength $prg]} {incr i} {
+
+    #puts "gp_joyprg_mutate: i = $i, prg = $prg"
 
 
-    set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i] ;# ?????
-    set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
-    do_out  prg $mutate_cmd_new                                      ;# ?????
-    
+    #if {0} {
+    #  set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  $i] ;# ?????
+    #  set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
+
+    #  do_out  prg $mutate_cmd_new                                      ;# ?????
+    #} else {
+      
     #set prg [gp_joyprg_mutate_one_gen  $prg $gp_list $i] 
     
+    set mcmd [make_mcmd           $prg $gp_list $i]
+    set prg  [make_mutate_by_mcmd $prg $mcmd]
+    #}
+    
     #set prg [ga_joyprg_mutate_one_gen  $prg $gp_list $i] ;# без добавления генов не работает
-  }
+  #}
 
   #}
   
@@ -2612,73 +2633,45 @@ proc TEST_make_mutate {} {
 
   set prg_old {dup * +}
 
-  puts "prg_old = $prg_old"
-  puts ""
-
   set gp_list {dup * +}
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  set prg $prg_old
+  #set prg $prg_old
 
-  set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  0]  ;# ?????
-  set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
+#   set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  1]  ;# ?????
+#   set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
 
-  set ret [do_out  prg $mutate_cmd_new]
+#   puts "mutate_cmd_old = $mutate_cmd_old"
+#   puts "mutate_cmd_new = $mutate_cmd_new"
 
-  puts "prg_new = $prg"
-  puts "prg_new = $ret"
+#   set ret [do_out  prg $mutate_cmd_new]
 
-  puts ""
-  puts "mutate_cmd_old = $mutate_cmd_old"
-  puts "mutate_cmd_new = $mutate_cmd_new"
+#   puts ""
+#   puts "do_out: prg_old = $prg_old"
+#   puts "do_out: prg_new = $ret"
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 0]
+  #set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 0]
 
+  #puts ""
+  #puts "prg_old = $prg_old"
+  #puts "prg_new = $prg_new"
+  #return
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #set mcmd    [lindex $mutate_cmd_old  2]
+
+  set mcmd    [make_mcmd           $prg_old $gp_list 1]
+  set prg_new [make_mutate_by_mcmd $prg_old $mcmd]
+
+  puts "prg_old = $prg_old, mcmd = $mcmd"
   puts ""
-  puts "prg_old = $prg_old"
   puts "prg_new = $prg_new"
-  return
-
-
-  #set mcmd [make_mcmd  $prg_old $gp_list 0]
-  set mcmd    [lindex $mutate_cmd_old  2]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  set cmd [lindex $mcmd 0]
-  set i   [lindex $mcmd 1]
-  set gen [lindex $mcmd 2]
-
-  puts ""
-  puts "mcmd = $mcmd"
-
-  # попробуем другим способом (сначала меняем подстроку)
-  set j 0 ;# 
-
-  set prg_new $prg_old
-  
-  switch -- $cmd {
-    
-    "not" {
-      #????????????????
-    }  
-    "del" {
-      ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
-      set prg_new  [lreplace $prg_new $j $j] ;# удаляем
-    }  
-    "set" {
-      lset prg_new $j $gen  ;# либо заменяем итем 
-    }  
-    "add" {
-      set prg_new  [linsert $prg_new $j $gen]  ;# либо добавляем
-    }
-  } 
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  puts "prg_new = $prg_new"
+  #puts "prg_new = $prg_new"
 
   return
 }
