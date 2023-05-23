@@ -2364,31 +2364,31 @@ proc make_mutate_cmd_new {mutate_cmd_old} {
   return [list $index $context $out]  
 }
 #-------------------------------------------------------------------------------
-proc make_mcmd {prg  gp_list  index} {
+proc make_mcmd {prg gp_list index cmd_list} {
 
+
+  # нельзя удалять единственный элемент
 
   if {[llength $prg] <= 1} {
-    # нельзя удалять единственный элемент
-    set cmd_list "    set add"
-  } else {
-    set cmd_list "del set add"
-  }
+    regsub "del" $cmd_list "" cmd_list
+  } 
   
 
-  set mode [lrand $cmd_list]
+  set mode [lrand $cmd_list] ;# взяли случайную команду  из списка
 
 
   # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # 
   # сначала сформируем команду мутации
   
+
   if {$mode == "del"} {
     
     set mcmd "del $index @" ;# удалим gen
     
   } else {
     
-    # выберем из списка (или списков !!!)
+    # выберем из списка (или списков !!!) 
     # 
     set gen [randinstr_MAIN $gp_list]
     
@@ -2400,19 +2400,19 @@ proc make_mcmd {prg  gp_list  index} {
 #-------------------------------------------------------------------------------
 # а вот теперь выполним команду мутации:  
 #-------------------------------------------------------------------------------
-proc make_mutate_cmd_for_index {&prg  gp_list  index} {
+# proc make_mutate_cmd_for_index {&prg  gp_list  index} {
 
-  USE_REFS
+#   USE_REFS
 
-  set mcmd [make_mcmd  $prg $gp_list $index]
+#   set mcmd [make_mcmd  $prg $gp_list $index]
 
   
-  set context [get_i_context $prg $index]
+#   set context [get_i_context $prg $index]
   
-  set mutate_cmd [list $index $context $mcmd]
+#   set mutate_cmd [list $index $context $mcmd]
   
-  return $mutate_cmd 
-}
+#   return $mutate_cmd 
+# }
 #-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа
 # 
@@ -2424,6 +2424,7 @@ proc ga_joyprg_mutate_one_gen {prg gp_list point} {
   set point_gen_old [lindex $prg $point]
 
   set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
+
 
   if {$is_digital} {
     # -------------------------------------------
@@ -2478,12 +2479,15 @@ proc ga_joyprg_mutate {task prg} {
   
   # TODO: а почему меням только один ген, этого же мало !! !!!!
   # 
-  set prg [ga_joyprg_mutate_one_gen  $prg $gp_list $point]
+  set prg  [ga_joyprg_mutate_one_gen  $prg  $gp_list $point]
+
+  #set prg  [gp_joyprg_mutate_one_gen  $prg  $gp_list $point "mut"] 
 
   return $prg 
 }
 #-------------------------------------------------------------------------------
 proc make_mutate_by_mcmd {prg mcmd} {
+
 
   set cmd [lindex $mcmd 0]
   set i   [lindex $mcmd 1]
@@ -2499,23 +2503,57 @@ proc make_mutate_by_mcmd {prg mcmd} {
 
   set prg_new $prg
 
-  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   switch -- $cmd {
     
     "not" {
-      #????????????????
+      #???
     }  
+
     "del" {
       ##set prg  [lremove $prg $i] ;# invalid command name "lremove"
       set prg_new  [lreplace $prg_new $i $i] ;# удаляем
     }  
+
     "set" {
-      lset prg_new $i $gen  ;# либо заменяем итем 
+      set point_gen_new $gen ;## [randinstr_MAIN $gp_list]
+
+      lset prg_new $i $point_gen_new  ;# заменяем итем 
     }  
+
+    "mut" {
+      set point_gen_old [lindex $prg $i]
+      set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
+
+
+      if {$is_digital} {
+        # -------------------------------------------
+        
+        # The direction of drift. 
+        # 
+        if {[comm_random_boolean]} {
+          set dir -1
+        } else {
+          set dir  1
+        }
+        
+        set point_gen_new [expr {$point_gen_old + $dir}]  ;# новое  значение
+        # и это реально новое значение всегда
+        
+        # -------------------------------------------
+      } else {
+        set point_gen_new $gen ;## [randinstr_MAIN $gp_list]
+      }
+
+      lset prg_new $i $point_gen_new  ;# либо заменяем итем 
+    }  
+
     "add" {
       set prg_new  [linsert $prg_new $i $gen]  ;# либо добавляем
     }
+
   } 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
   if {$::is_print >= 3} {
@@ -2525,7 +2563,9 @@ proc make_mutate_by_mcmd {prg mcmd} {
   return $prg_new
 }
 #-------------------------------------------------------------------------------
-proc gp_joyprg_mutate_one_gen {prg gp_list i} {
+proc gp_joyprg_mutate_one_gen {prg gp_list point cmd_list} {
+
+  #set cmd_list "del set add"
 
   # надо упростить
 
@@ -2536,7 +2576,7 @@ proc gp_joyprg_mutate_one_gen {prg gp_list i} {
 
   #} else {
 
-  set mcmd [make_mcmd           $prg $gp_list $i]
+  set mcmd [make_mcmd           $prg $gp_list $point $cmd_list]
   set ret  [make_mutate_by_mcmd $prg $mcmd]
   #}  
   
@@ -2545,6 +2585,8 @@ proc gp_joyprg_mutate_one_gen {prg gp_list i} {
 #-------------------------------------------------------------------------------
 #proc gp_joyprg_mutate {task prg mutprob} {}
 proc gp_joyprg_mutate {task prg} {
+
+  set cmd_list "del set add"
 
   # TODO: привести к общему виду с 
 
@@ -2610,10 +2652,10 @@ proc gp_joyprg_mutate {task prg} {
     #  do_out  prg $mutate_cmd_new                                      ;# ?????
     #} else {
       
-    #set prg [gp_joyprg_mutate_one_gen  $prg $gp_list $i] 
+    set prg [gp_joyprg_mutate_one_gen  $prg $gp_list $i $cmd_list] 
     
-    set mcmd [make_mcmd           $prg $gp_list $i]
-    set prg  [make_mutate_by_mcmd $prg $mcmd]
+    #set mcmd [make_mcmd           $prg $gp_list $i]
+    #set prg  [make_mutate_by_mcmd $prg $mcmd]
     #}
     
     #set prg [ga_joyprg_mutate_one_gen  $prg $gp_list $i] ;# без добавления генов не работает
@@ -2631,47 +2673,34 @@ proc TEST_make_mutate {} {
   puts "................. TEST_make_mutate"
   puts ""
 
-  set prg_old {dup * +}
-
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  set prg_old {dup dup * +}
   set gp_list {dup * +}
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #set prg $prg_old
-
-#   set mutate_cmd_old [make_mutate_cmd_for_index  prg $gp_list  1]  ;# ?????
-#   set mutate_cmd_new [make_mutate_cmd_new        $mutate_cmd_old]  ;# ?????
-
-#   puts "mutate_cmd_old = $mutate_cmd_old"
-#   puts "mutate_cmd_new = $mutate_cmd_new"
-
-#   set ret [do_out  prg $mutate_cmd_new]
-
-#   puts ""
-#   puts "do_out: prg_old = $prg_old"
-#   puts "do_out: prg_new = $ret"
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  #set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 0]
-
-  #puts ""
-  #puts "prg_old = $prg_old"
-  #puts "prg_new = $prg_new"
-  #return
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #set mcmd    [lindex $mutate_cmd_old  2]
-
-  set mcmd    [make_mcmd           $prg_old $gp_list 1]
-  set prg_new [make_mutate_by_mcmd $prg_old $mcmd]
-
-  puts "prg_old = $prg_old, mcmd = $mcmd"
   puts ""
+  puts "prg_old = $prg_old"
+
+  set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 1 "del set add"] 
+
   puts "prg_new = $prg_new"
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  #puts "prg_new = $prg_new"
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  set prg_old {1 1 1 1 1}
+  set gp_list {8 9}
+
+  puts ""
+  puts "prg_old = $prg_old"
+
+  set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 1 "del set add mut"] 
+
+  puts "prg_new = $prg_new"
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   return
 }
