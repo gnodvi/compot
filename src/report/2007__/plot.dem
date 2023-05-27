@@ -1,0 +1,32 @@
+#--------------------------------------------------------------
+
+#set terminal gif size 500, 350                                                  
+set terminal png 
+                                                  
+set output "plot.png"                                                           
+
+#-------------------------------------------------
+#set contour base                                                                
+
+# set xlabel "index I" 
+# set ylabel "index J"  -2
+
+# set zlabel "L_calc, L_true" -2,-1                                                        
+# set output "calc.gif"                                                           
+# splot 'calc.dat' matrix with lines, 'true.dat' matrix with lines                
+                                                                                
+# set zlabel "L_err = L_calc-L_true" 2 
+# set output "erro.gif"                                                           
+# splot 'erro.dat' matrix with lines 
+#-------------------------------------------------
+                                             
+#set title "Распространение возмущения из точки"
+set title "Circules wave from point"
+
+set xlabel "Huigens radius (in cells)" 
+set ylabel "Error (in cells)"
+
+plot  'PLOT.dat' using 1:3  title "MAX_ERR" with lines, \
+      'PLOT.dat' using 1:2  title "MID_ERR" with lines
+
+#--------------------------------------------------------------
