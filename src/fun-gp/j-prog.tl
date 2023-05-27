@@ -141,6 +141,8 @@ proc task_create {args} {
   SET $t ios_final  [llength $ios_BEGIN] ;#  
 
 
+  #SET $t gp_list "MUT"
+
   return $t
 }
 #-------------------------------------------------------------------------------
@@ -2374,7 +2376,11 @@ proc make_mcmd {prg gp_list index cmd_list} {
   } 
   
 
-  set mode [lrand $cmd_list] ;# взяли случайную команду  из списка
+  if {[llength $cmd_list] == 1} {
+    set mode [lindex $cmd_list 0]
+  } else {
+    set mode [lrand  $cmd_list] ;# взяли случайную команду  из списка
+  }
 
 
   # надо делать мутацию ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2382,9 +2388,13 @@ proc make_mcmd {prg gp_list index cmd_list} {
   # сначала сформируем команду мутации
   
 
-  if {$mode == "del"} {
+  if       {$mode == "del"} {
     
     set mcmd "del $index @" ;# удалим gen
+    
+  } elseif {$mode == "mut"} {
+    
+    set mcmd "mut $index @" ;# мутируем gen (может быть и с заменой, но это после)
     
   } else {
     
@@ -2404,9 +2414,7 @@ proc make_mcmd {prg gp_list index cmd_list} {
 
 #   USE_REFS
 
-#   set mcmd [make_mcmd  $prg $gp_list $index]
-
-  
+#   set mcmd [make_mcmd  $prg $gp_list $index] 
 #   set context [get_i_context $prg $index]
   
 #   set mutate_cmd [list $index $context $mcmd]
@@ -2414,17 +2422,18 @@ proc make_mcmd {prg gp_list index cmd_list} {
 #   return $mutate_cmd 
 # }
 #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # По заданной программе возвращается мутированная программа
 # 
 #-------------------------------------------------------------------------------
-proc ga_joyprg_mutate_one_gen {prg gp_list point} {
+proc ga_joyprg_mutate_one_gen {prg  gp_list point} {
 
   # Mutate by tweaking a single allele.
   
   set point_gen_old [lindex $prg $point]
 
-  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
 
+  set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
 
   if {$is_digital} {
     # -------------------------------------------
@@ -2467,6 +2476,7 @@ proc ga_joyprg_mutate_one_gen {prg gp_list point} {
 proc ga_joyprg_mutate {task prg} {
 
 
+  # task_create
   set gp_list [GET $task "gp_list"]
 
   set len_chromo [llength $prg]
@@ -2493,9 +2503,9 @@ proc make_mutate_by_mcmd {prg mcmd} {
   set i   [lindex $mcmd 1]
   set gen [lindex $mcmd 2]
 
-  if {$::is_print >= 3} {
+  if {$::is_print == 4} {
     puts ""
-    puts "[procname] BEG: prg = $prg, mcmd = $mcmd"
+    puts "[procname] BEG: prg_old = $prg, mcmd = $mcmd"
   }
 
   # попробуем другим способом (сначала меняем подстроку)
@@ -2523,8 +2533,8 @@ proc make_mutate_by_mcmd {prg mcmd} {
 
     "mut" {
       set point_gen_old [lindex $prg $i]
-      set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
 
+      set is_digital [expr {[string is integer $point_gen_old] || [string is double $point_gen_old]}]
 
       if {$is_digital} {
         # -------------------------------------------
@@ -2542,7 +2552,8 @@ proc make_mutate_by_mcmd {prg mcmd} {
         
         # -------------------------------------------
       } else {
-        set point_gen_new $gen ;## [randinstr_MAIN $gp_list]
+        #set point_gen_new $gen ;## [randinstr_MAIN $gp_list]
+        set point_gen_new [randinstr_MAIN $gp_list]
       }
 
       lset prg_new $i $point_gen_new  ;# либо заменяем итем 
@@ -2673,7 +2684,6 @@ proc TEST_make_mutate {} {
   puts "................. TEST_make_mutate"
   puts ""
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   set prg_old {dup dup * +}
   set gp_list {dup * +}
 
@@ -2684,32 +2694,31 @@ proc TEST_make_mutate {} {
 
   puts "prg_new = $prg_new"
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
   puts ""
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   set prg_old {1 1 1 1 1}
   set gp_list {8 9}
 
   puts ""
   puts "prg_old = $prg_old"
+  puts ""
 
-  set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 1 "del set add mut"] 
+  set ::is_print 4
 
+  comm_random_seed 2023 
+  set prg_new [ga_joyprg_mutate_one_gen  $prg_old $gp_list 1] 
   puts "prg_new = $prg_new"
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  comm_random_seed 2023 
+  set prg_new [gp_joyprg_mutate_one_gen  $prg_old $gp_list 1 "mut"] 
+  puts "prg_new = $prg_new"
 
   return
 }
 #-------------------------------------------------------------------------------
 # FINAL ......................... GOODS_MUTATE  
 #-------------------------------------------------------------------------------
-
-#------g-------------------------------------------------------------------------
-#------g-------------------------------------------------------------------------
 #------g-------------------------------------------------------------------------
 proc make_mutant_from_item {item task} {
 
