@@ -1,3 +1,9 @@
+# -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
+#
+#-------------------------------------------------------------------------------
+#
+#sudo apt install texlive-metapost
+#
 # ============================================================================#
 #
 # Makefile для проекта <<Создание иллюстраций в MetaPost>>.
@@ -35,7 +41,12 @@ ALL_RESULT = $(G_RESULT) $(H_RESULT) #$(B_RESULT) $(M_RESULT)
 
 #ALL_RESULT = mpgraph.2.eps
  
-all: $(ALL_RESULT)  report.dvi
+all: $(ALL_RESULT)  report.dvi report.pdf
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+report.pdf : report.dvi
+	dvipdfm $^
 
 report.dvi : report.tex
 	$(LATEX) $^ 
@@ -67,7 +78,8 @@ LATEX_FILES = *.aux *.dvi *.glo *.toc
 MPOST_FILES =  mpx*  *.log  *.mpx 
 
 clean:
-	@rm  -f *~ $(ALL_RESULT) $(MPOST_FILES) $(LATEX_FILES) 
+	@rm  -f *~ $(ALL_RESULT) $(MPOST_FILES) $(LATEX_FILES) *.pdf
+
 #	@rm -f $(tmp_file).*
 # ============================================================================#
 
