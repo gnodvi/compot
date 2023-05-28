@@ -1,4 +1,14 @@
 
+hugs.3
+hugs.4
+hugs.5
+hugs.6
+hugs.7
+
+mpgraph.1
+mpgraph.1.eps
+
+
 *.1
 *.2
 *.3
@@ -9,3 +19,14 @@
 *.8
 *.9
 *.eps
+
+*.dvi
+*.aux
+*.glo
+*.log
+*.toc
+
+
+
+
+

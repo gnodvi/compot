@@ -74,14 +74,6 @@ report.dvi : report.tex
 	@echo  ""
 
 # ============================================================================#
-LATEX_FILES = *.aux *.dvi *.glo *.toc 
-MPOST_FILES =  mpx*  *.log  *.mpx 
-
-clean:
-	@rm  -f *~ $(ALL_RESULT) $(MPOST_FILES) $(LATEX_FILES) *.pdf
-
-#	@rm -f $(tmp_file).*
-# ============================================================================#
 
 # выполняется один раз на все картинки
 mpgraph.1: mpgraph.mp 
@@ -220,4 +212,17 @@ save : clean
 	gzip -6 $(ARX_NAME).tar  
 	(cd Archiv; mdat) 
 #	tar --ignore-failed-read -cvf $(ARX_NAME).tar  *.mp *.tex *.dat *.cls *.sty Makefile* 
+
+# ============================================================================#
+
+LATEX_FILES = *.aux  *.dvi  *.glo *.toc 
+MPOST_FILES =  mpx*  *.log  *.mpx 
+
+clean:
+	rm  -f *~ $(ALL_RESULT) $(MPOST_FILES) $(LATEX_FILES) *.pdf
+	rm  -f *.{1..4}
+
+
+#	@rm -f $(tmp_file).*
+
 # ============================================================================#
