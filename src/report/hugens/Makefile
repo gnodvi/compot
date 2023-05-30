@@ -4,6 +4,13 @@
 #
 #sudo apt install texlive-metapost
 #
+
+#(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+#Document Class: article 2018/09/03 v1.4i Standard LaTeX document class
+#(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo))
+
+#! LaTeX Error: File `mathtext.sty' not found.
+
 # ============================================================================#
 #
 # Makefile для проекта <<Создание иллюстраций в MetaPost>>.
@@ -11,17 +18,23 @@
 #
 # ============================================================================#
 
-b_name := bald
-b_figs := 11  12  13  14  24  27  28
-B_RESULT := $(foreach fig,$(b_figs),$(b_name).$(fig).eps)
+#b_name := bald
+#b_figs := 11  12  13  14  24  27  28
+B_RES    := $(foreach fig, 11 12 13 14 24 27 28, bald.$(fig))
+#B_RESULT := $(foreach fig, 11 12 13 14 24 27 28, bald.$(fig).eps)
+B_RESULT := $(addsuffix .eps, ${B_RES})
 
-m_name := pics
-m_figs := 2 3 4 6 9 14 16 23
-M_RESULT := $(foreach fig,$(m_figs),$(m_name).$(fig).eps)
 
-h_name := hugs
-h_figs := 1 2 3 4 5 6 7 8
-H_RESULT := $(foreach fig,$(h_figs),$(h_name).$(fig).eps) 
+M_RES    := $(foreach fig, 2 3 4 6 9 14 16 23, pics.$(fig))
+M_RESULT := $(addsuffix .eps, ${M_RES})
+
+
+#h_name := hugs
+#h_figs := 1 2 3 4 5 6 7 8
+#H_RESULT := $(foreach fig, 1 2 3 4 5 6 7 8, hugs.$(fig).eps) 
+H_RES    := $(foreach fig, 1 2 3 4 5 6 7 8, hugs.$(fig)) 
+H_RESULT := $(addsuffix .eps, ${H_RES})
+
 
 g_name := mpgraph
 g_figs := 1 2 3 4 5 6 7
@@ -37,11 +50,15 @@ DVIPS := dvips
 
 # ============================================================================#
 
-ALL_RESULT = $(G_RESULT) $(H_RESULT) #$(B_RESULT) $(M_RESULT) 
+ALL_RESULT = $(B_RESULT) $(H_RESULT) $(M_RESULT)  ## $(G_RESULT)
 
 #ALL_RESULT = mpgraph.2.eps
- 
-all: $(ALL_RESULT)  report.dvi report.pdf
+#
+all: $(ALL_RESULT)  ## report.dvi ##report.pdf
+
+
+#all: pics.2.eps
+#all: $(H_RESULT)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -53,20 +70,20 @@ report.dvi : report.tex
 
 
 %.eps:  % 
-	@echo  "\documentclass{article}">$(tmp_file).tex
-	@echo  "\usepackage[warn]{mathtext}">>$(tmp_file).tex
-	@echo  "\usepackage[T2A]{fontenc}">>$(tmp_file).tex
-	@echo  "\usepackage[koi8-r]{inputenc}">>$(tmp_file).tex
-	@echo  "\usepackage[english,russian]{babel}">>$(tmp_file).tex
-	@echo  "\usepackage{graphicx}">>$(tmp_file).tex
-	@echo  "\DeclareGraphicsRule{*}{eps}{*}{}">>$(tmp_file).tex
+	@echo  "\documentclass{article}"        > $(tmp_file).tex
+	@echo  "\usepackage[warn]{mathtext}"   >> $(tmp_file).tex
+	@echo  "\usepackage[T2A]{fontenc}"     >> $(tmp_file).tex
+	@echo  "\usepackage[koi8-r]{inputenc}" >> $(tmp_file).tex
+	@echo  "\usepackage[english,russian]{babel}" >> $(tmp_file).tex
+	@echo  "\usepackage{graphicx}"               >> $(tmp_file).tex
+	@echo  "\DeclareGraphicsRule{*}{eps}{*}{}"   >> $(tmp_file).tex
 
 	@echo  '\\nofiles'               >> $(tmp_file).tex
 	@echo  '\\begin{document}'       >> $(tmp_file).tex
 	@echo  '\\thispagestyle{empty}'  >> $(tmp_file).tex
 
-	@echo  "\includegraphics{$(basename $@)}">> $(tmp_file).tex
-	@echo  "\end{document}">> $(tmp_file).tex
+	@echo  "\includegraphics{$(basename $@)}" >> $(tmp_file).tex
+	@echo  '\\end{document}'                  >> $(tmp_file).tex
 
 	$(LATEX) $(tmp_file) 
 	$(DVIPS) -E -o $@ $(tmp_file) 
@@ -220,8 +237,9 @@ MPOST_FILES =  mpx*  *.log  *.mpx
 
 clean:
 	rm  -f *~ $(ALL_RESULT) $(MPOST_FILES) $(LATEX_FILES) *.pdf
-	rm  -f *.{1..4}
+	rm  -f $(M_RES) $(B_RES) $(H_RES) 
 
+#	rm  -f *.{1..44}
 
 #	@rm -f $(tmp_file).*
 

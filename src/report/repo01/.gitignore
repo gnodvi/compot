@@ -9,3 +9,8 @@
 *.8
 *.9
 *.eps
+*.log
+*.aux
+*.dvi
+*.pdf
+
