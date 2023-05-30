@@ -4,13 +4,6 @@
 #
 #sudo apt install texlive-metapost
 #
-
-#(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
-#Document Class: article 2018/09/03 v1.4i Standard LaTeX document class
-#(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo))
-
-#! LaTeX Error: File `mathtext.sty' not found.
-
 # ============================================================================#
 #
 # Makefile для проекта <<Создание иллюстраций в MetaPost>>.
@@ -18,23 +11,14 @@
 #
 # ============================================================================#
 
-#b_name := bald
-#b_figs := 11  12  13  14  24  27  28
 B_RES    := $(foreach fig, 11 12 13 14 24 27 28, bald.$(fig))
-#B_RESULT := $(foreach fig, 11 12 13 14 24 27 28, bald.$(fig).eps)
 B_RESULT := $(addsuffix .eps, ${B_RES})
-
 
 M_RES    := $(foreach fig, 2 3 4 6 9 14 16 23, pics.$(fig))
 M_RESULT := $(addsuffix .eps, ${M_RES})
 
-
-#h_name := hugs
-#h_figs := 1 2 3 4 5 6 7 8
-#H_RESULT := $(foreach fig, 1 2 3 4 5 6 7 8, hugs.$(fig).eps) 
 H_RES    := $(foreach fig, 1 2 3 4 5 6 7 8, hugs.$(fig)) 
 H_RESULT := $(addsuffix .eps, ${H_RES})
-
 
 g_name := mpgraph
 g_figs := 1 2 3 4 5 6 7
@@ -54,16 +38,13 @@ ALL_RESULT = $(B_RESULT) $(H_RESULT) $(M_RESULT)  ## $(G_RESULT)
 
 #ALL_RESULT = mpgraph.2.eps
 #
-all: $(ALL_RESULT)  ## report.dvi ##report.pdf
-
-
-#all: pics.2.eps
-#all: $(H_RESULT)
+all: $(ALL_RESULT) report.pdf
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 report.pdf : report.dvi
-	dvipdfm $^
+	dvipdf $^
+#	dvipdfm $^
 
 report.dvi : report.tex
 	$(LATEX) $^ 
@@ -240,7 +221,6 @@ clean:
 	rm  -f $(M_RES) $(B_RES) $(H_RES) 
 
 #	rm  -f *.{1..44}
-
 #	@rm -f $(tmp_file).*
 
 # ============================================================================#
