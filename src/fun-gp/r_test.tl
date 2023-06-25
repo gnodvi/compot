@@ -189,7 +189,7 @@ proc test_pGP {args} {
 
   #set pop [super_de $task_rev $seed_proc $step_proc  {*}$argv -size 9] ;# !!!!!
 
-  set pop [super_ga $task_rev $seed_proc $step_proc   {*}$argv -size 9] ;# !!!!!
+  set pop [super_ga $task_rev $seed_proc $step_proc   {*}$argv -lsrc 9] ;# !!!!!
 
 
   puts ""
@@ -479,13 +479,13 @@ proc func_prepare_from_input {inp} {
 
     if        {$l == "x"} {
       append out {$x}
-    } elseif  {$l == "plus"} {
+    } elseif  {$l ==  "plus"} {
       append out +
     } elseif  {$l == "minus"} {
       append out -
-    } elseif  {$l == "mult"} {
+    } elseif  {$l ==  "mult"} {
       append out *
-    } elseif  {$l == "pow"} {
+    } elseif  {$l ==   "pow"} {
       append out **
     } else {
       append out $l
@@ -504,13 +504,6 @@ proc TEST_xx {args} {
   puts ""
 
   #------------------------------------------------------
-
-  ## set seed        [dict_parse $argv "-seed"  2013]
-  set seed        [dict_parse $argv "-seed"  @] ;# каждый выхов случаен
-
-  set lpop        [dict_parse $argv "-lpop"  10]   ;# колич-во ботов 
-  set lsrc        [dict_parse $argv "-size"   6]   ;# макс. длина ботов (при начальном старте?)
-  set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
 
   set vers        [dict_parse $argv "-vers"  "gp"] ;# по умолчанию 
 
@@ -590,6 +583,14 @@ proc TEST_xx {args} {
               -gp_list    $gp_list \
              ] 
   
+  ## set seed        [dict_parse $argv "-seed"  2013]
+  set seed        [dict_parse $argv "-seed"  @] ;# каждый выхов случаен
+
+  set lpop        [dict_parse $argv "-lpop"  10]   ;# колич-во ботов 
+  set lsrc        [dict_parse $argv "-lsrc"   6]   ;# макс. длина ботов (при начальном старте?)
+  set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
+
+
   #------------------------------------------------------
   #
   # задаем начальную "случайность"
@@ -607,7 +608,6 @@ proc TEST_xx {args} {
 
   puts "func = $func"
   puts "joyf = $joyf"
-  puts "seed = $seed"
   puts "init = $::INIT"
   puts "list = $gp_list"
 
@@ -686,6 +686,8 @@ proc TEST_xx {args} {
   #
   # запускаем эволюцию GP напрямую, через функцию
 
+  puts "seed = $seed"
+
     run_gp_evolution_for_task $task $seed  \
       -lpop $lpop  -lsrc $lsrc -nums $nums \
 
@@ -696,14 +698,13 @@ proc TEST_xx {args} {
   #------------------------------------------------------
   } 
   if {$vers == "ga"} {
+
     # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
 
-    
     set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task] ;#  -vers $vers 
     
     #SET $pop  select_one   "ga_select_one_sus"
     #SET $pop  select_two   "ga_select_two_sus"
-    
     
     # только эти функции выбора работают для GP!
     # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
@@ -712,7 +713,6 @@ proc TEST_xx {args} {
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"    
          
-
     set args [list -nums $nums   -print 1]
     
     SET $pop  seedproc "maintest_seed_proc" ;# ??
@@ -726,8 +726,7 @@ proc TEST_xx {args} {
     SET $pop "itemlist"   {}
     
     set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
-    
-    
+     
     #------------------------------------------------------
   } 
   
@@ -797,19 +796,14 @@ proc NEXT_01 {args} {
   
   argo_print $argo 
 
-  set seed        [dict_parse $argo "-seed"  @]
-  set lpop        [dict_parse $argo "-lpop" 10]
-  set lsrc        [dict_parse $argo "-size" 10] 
-  set nums        [dict_parse $argo "-nums"  4]
   set ::is_print  [dict_parse $argo "-print" 1] 
   set gp_list     [dict_parse $argo "-list" "p1"] ;#  "p1 nop"  "p1 p3" 
 
   set tclinit     [dict_parse $argo "-tcl"  ""]
-
   eval $tclinit
 
   puts "tclinit = $tclinit"
-  puts "nums = $nums"
+  #puts "nums = $nums"
   puts ""
   #exit
     
@@ -844,11 +838,6 @@ proc NEXT_01 {args} {
 
   set ::sum_target [dict_parse $argo "-target" 20]
 
-  puts "lpop         = $lpop"        ;# колич-во ботов
-  puts "lsrc         = $lsrc"        ;# макс. длина ботов (при начальном старте?)
-  puts "nums         = $nums"        ;# шагов эволюции  
-  puts "gp_list      = $gp_list"     ;#   
-
   puts "::sum_target = $::sum_target" ;# к чему стремимся, что надо получить 
   puts ""
 
@@ -861,6 +850,7 @@ proc NEXT_01 {args} {
               -fit_func  FITPROC_01_NEW  -fit_tobest  "MIN" -fit_target  0  \
               -gp_list     $gp_list]
 
+
 #              -fit_target  $::sum_target \
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -868,7 +858,7 @@ proc NEXT_01 {args} {
   ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
   ##                                            -list,\{,p1,p3,p5,\}
 
-  puts stderr  "nums = $nums !!"
+  #puts stderr  "nums = $nums !!"
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   #set pb [mp_create]
@@ -878,11 +868,21 @@ proc NEXT_01 {args} {
   #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   
+  set seed        [dict_parse $argo "-seed"  @]
+  #set lpop        [dict_parse $argo "-lpop" 10]
+  #set lsrc        [dict_parse $argo "-lsrc"  6] 
+  #set nums        [dict_parse $argo "-nums"  4]
+
+  #puts "lpop         = $lpop"        ;# колич-во ботов
+  #puts "lsrc         = $lsrc"        ;# макс. длина ботов (при начальном старте?)
+  #puts "nums         = $nums"        ;# шагов эволюции  
+
+  puts "gp_list      = $gp_list"     ;#   
+
   run_gp_evolution_for_task    \
       $task                    \
       $seed \
-      -lpop $lpop  -lsrc $lsrc  -nums $nums \
-      {*}$argo                 \
+      {*}$argo  
 
   # -print        $is_print  \
   # -mutprob          0.1    \

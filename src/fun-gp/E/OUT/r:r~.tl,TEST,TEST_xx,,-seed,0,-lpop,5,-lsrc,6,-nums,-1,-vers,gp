@@ -1,0 +1,70 @@
+
+TEST_xx -seed 0 -lpop 5 -lsrc 6 -nums -1 -vers gp
+
+func = $x**2+$x
+joyf = dup dup * +
+init = 0
+list = dup * +
+seed = 0
+
+nums  = 5
+lsrc  = 6
+nums  = -1
+
+
+make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+prgpop = {dup + * * dup} {+ dup dup + + *} {* +} {+ + + * * +} {* +}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
+step 000)  best=  25.000 :   dup + * * dup 
+step 001)  best=  25.000 :   dup + * * dup 
+step 002)  best=  25.000 :   dup + * * dup 
+step 003)  best=  25.000 :   dup + * * dup 
+step 004)  best=  25.000 :   dup + * * dup 
+step 005)  best=  25.000 :   dup + * * dup 
+step 006)  best=  25.000 :   dup + * * dup 
+step 007)  best=  25.000 :   dup + * * dup 
+step 008)  best=  25.000 :   dup + * * dup 
+step 009)  best=  25.000 :   dup + * * dup 
+step 010)  best=  25.000 :   dup + * * dup 
+step 011)  best=  25.000 :   dup + * * dup 
+step 012)  best=  25.000 :   dup + * * dup 
+step 013)  best=  25.000 :   dup + * * dup 
+step 014)  best=   2.828 :   dup dup * * dup 
+step 015)  best=   2.828 :   dup dup * * dup 
+step 016)  best=   2.828 :   dup dup * * dup 
+step 017)  best=   2.828 :   dup dup * * dup 
+step 018)  best=   2.828 :   dup dup * * dup 
+step 019)  best=   2.828 :   dup dup * * dup 
+step 020)  best=   2.828 :   dup dup * * dup 
+step 021)  best=   2.828 :   dup dup * * dup 
+step 022)  best=   2.828 :   dup dup * * dup 
+step 023)  best=   2.828 :   dup dup * * dup 
+step 024)  best=   2.828 :   dup dup * * dup 
+step 025)  best=   2.828 :   dup dup * * dup 
+step 026)  best=   2.828 :   dup dup * * dup 
+step 027)  best=   2.828 :   dup dup * * dup 
+step 028)  best=   2.828 :   dup dup * * dup 
+step 029)  best=   2.828 :   dup dup * * dup 
+step 030)  best=   2.828 :   dup dup * * dup 
+step 031)  best=   2.650 :   dup + 
+step 032)  best=   2.650 :   dup + 
+step 033)  best=   2.650 :   dup + 
+step 034)  best=   2.650 :   dup + 
+step 035)  best=   2.650 :   dup + 
+step 036)  best=   2.650 :   dup + 
+step 037)  best=   2.650 :   dup + 
+step 038)  best=   2.650 :   dup + 
+step 039)  best=   2.650 :   dup + 
+step 040)  best=   2.650 :   dup + 
+step 041)  best=   2.650 :   dup + 
+step 042)  best=   2.650 :   dup + 
+step 043)  best=   2.650 :   dup + 
+step 044)  best=   0.000 :   dup dup * + dup 
+
+====================================================================
+

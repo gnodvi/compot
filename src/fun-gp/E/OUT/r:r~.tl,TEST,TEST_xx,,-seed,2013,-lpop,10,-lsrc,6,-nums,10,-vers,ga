@@ -1,9 +1,8 @@
 
-TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers ga
+TEST_xx -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
 
 func = $x**2+$x
 joyf = dup dup * +
-seed = 2013
 init = 0
 list = dup * +
 step 000)  best=   2.191 :   dup dup dup dup + + 

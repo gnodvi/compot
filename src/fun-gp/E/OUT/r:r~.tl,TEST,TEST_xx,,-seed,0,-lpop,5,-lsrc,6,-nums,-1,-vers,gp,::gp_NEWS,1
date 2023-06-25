@@ -1,0 +1,31 @@
+
+TEST_xx -seed 0 -lpop 5 -lsrc 6 -nums -1 -vers gp ::gp_NEWS 1
+
+func = $x**2+$x
+joyf = dup dup * +
+init = 0
+list = dup * +
+seed = 0
+
+nums  = 5
+lsrc  = 6
+nums  = -1
+
+
+make_prgpop: INIT POPULATION:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+prgpop = {dup + * * dup} {+ dup dup + + *} {* +} {+ + + * * +} {* +}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
+step 000)  best=  25.000 :   dup + * * dup 
+step 001)  best=   2.650 :   dup + dup 
+step 002)  best=   2.650 :   dup dup + * 
+step 003)  best=   2.650 :   dup dup + * 
+step 004)  best=   2.191 :   dup dup + + dup 
+step 005)  best=   0.000 :   dup dup * + 
+
+====================================================================
+

@@ -2940,18 +2940,23 @@ proc cross_to_dau_and_son {pop task mother father} \
 # //  parameters:	population *pop
 # //  return:	none
 # //------------------------------------------------------------------------------
-proc gaul_crossover {pop task} {
+proc gaul_crossover {pop task  } {
   
 
+  set crossover_ratio [GET $pop crossover_ratio]
+
   set select_two_proc [GET $pop select_two]
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if {$::is_print > 2} {
     puts "[procname] : (select_two_proc = $select_two_proc)"
     puts ""
   }
   
-  if {[GET $pop crossover_ratio] <= 0.0}  { 
-    puts "!!!!!!!!!!!!!!!!!!!!"
+  if {$crossover_ratio <= 0.0}  { 
+    ##puts stderr "crossover_ratio <= 0.0  !! !return  !!!"
     return 
   }
   
@@ -2981,14 +2986,14 @@ proc gaul_crossover {pop task} {
 
   set orig_size [GET $pop lpop]
   set num 0
-  set num_cross_pairs [expr {($orig_size * [GET $pop crossover_ratio])} ]
+  set num_cross_pairs [expr {($orig_size * $crossover_ratio)} ]
   
   #  Select pairs of entities to mate via crossover.
   #
   while {1} {
 
     #set ret [$select_two_proc $pop  mother father] ;# ga_select_two_bestof2
-    $select_two_proc $pop  mother father
+    $select_two_proc  $pop  mother father
 
     incr num ;# увеличили счетчик
     set ret [expr {$num > $num_cross_pairs } ]
@@ -3089,10 +3094,13 @@ proc mutate_mother_to_dau {pop task mother mutate_proc eval_proc task} {
 proc gaul_mutation {pop task} {
 
 
+  set mutation_ratio  [GET $pop "mutation_ratio"]
   set select_one_proc [GET $pop select_one] 
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   set mutate_proc     [GET $pop mutate]
   set eval_proc       [GET $task "fit_func"]
-  set mutation_ratio  [GET $pop "mutation_ratio"]
   
   if {$::is_print >= 3} {
     puts "[procname]  : "
@@ -3121,7 +3129,7 @@ proc gaul_mutation {pop task} {
   # 
 
   set orig_size [GET $pop lpop]
-  set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
+  set num_mutate_items [expr {($orig_size * $mutation_ratio)} ]
   set num 0 ;# счетчик для кол-ва мутантов
 
   set mother "" ;# <-------- & для Jim?
@@ -3585,7 +3593,7 @@ proc ga_evolution_archipelago {task  num_pops pops nums} {
 
       set pop [lindex $pops $i]
 
-      if {! [pop_evolution  $pop $task -evol "ga_evolution_6"  -nums $nums]} {
+      if {! [pop_evolution  $pop $task -evol "ga_evolution_func"  -nums $nums]} {
 	
         set complete TRUE
         break;
@@ -3615,7 +3623,7 @@ proc ga_evolution {task pop nums args} {
 
 
   set generation [pop_evolution_main  $task $pop  -nums $nums {*}$args \
-		    -print $::is_print -evol "ga_evolution_6"]
+		    -print $::is_print -evol "ga_evolution_func"]
 
   return $generation
 }
@@ -3990,7 +3998,7 @@ proc calc_BOT33  {obj args} {
 
   SET $pop "itemlist" [make_itemlist  $task {*}$args]
   
-  pop_evolution_main  $task $pop  {*}$args -evol "gp_evolution_4"  
+  pop_evolution_main  $task $pop  {*}$args -evol "gp_evolution_func"  
   
   return
 }
@@ -4032,207 +4040,6 @@ proc make_sortdriver_fromtask {task} {
 
   return $sort_driver
 }
-#-------------------------------------------------------------------------------
-proc run_gp_evolution_for_task {
-                       task
-                       seed     
-                       args
-                     } {
-
-  #puts "args = $args"
-
-  set lpop  [dict_parse $args "-lpop" 10]
-  set lsrc  [dict_parse $args "-lsrc"  2]
-  ###set nums  [dict_parse $args "-nums"  2]
-  
-  #-------------------------------------
-  if {$seed == "@"} {
-
-    set seed [clock seconds]
-  }
-  #puts "[procname] : seed = $seed !!!!!!!!!!!"
-
-  comm_random_seed $seed 
-
-  #-------------------------------------
-
-  set pop [POP new  {*}$args  -printchform  "% s " ]
-
-
-  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
-  #  
-  SET $pop "itemlist" [make_itemlist  $task {*}$args]
-  
-  pop_evolution_main  $task $pop  {*}$args -evol "gp_evolution_4"  
-  
-
-  return
-}
-#-------------------------------------------------------------------------------
-
-#set ::ITEMS_LIST 1
-
-#-------------------------------------------------------------------------------
-proc FITPROC_list_FS {list_calc task} {
-
-
-  #if {$::ITEMS_LIST} {
-  set list_calc  [item_get_mainsrc $list_calc]
-  #}
-
-  set list_true $::target_text  ;# это список
-
-  set len_true [llength $list_true]
-  set len_calc [llength $list_calc]
-
-  set fit 0 ;# начальное значение фитнес 
-
-  # идем циклом по целевому списку? но ведь он может быть как больше так и меньше?
-  # а надо бы идти по максимальному?
-  # 
-
-  if {$len_true > $len_calc} {
-    set len_max $len_true
-  } else {
-    set len_max $len_calc
-  }
-
-
-  for {set i 0} {$i < $len_max} {incr i} {
-    
-    set char_true [lindex $list_true $i]
-    set char_calc [lindex $list_calc $i]
-    
-    # -----------------------------------------------------------
-    if {$char_true != $char_calc} {
-      
-      set is_true_integer [string is integer -strict  $char_true]
-      set is_calc_integer [string is integer -strict  $char_calc]
-      
-      # если для конкретных типов отдельных генов возможна более 
-      # точная метрика, то :
-      
-      if {$is_true_integer && $is_calc_integer} {
-        incr fit [expr {abs ($char_calc - $char_true)}]
-        
-      } else {
-        incr fit ;# а иначе просто увеличиваем на 1
-      }
-      
-    }
-    # -----------------------------------------------------------
-  }
-  
-  # и еще добавляем разницу в длинах
-  # 
-  incr fit [expr {abs ($len_calc - $len_true)}] 
-
-  # т.е. чем больше - тем хуже!  
-  # но если возвращать отрицательное значение
-  
-  set fit [expr - $fit]
-  
-  # и тогда, чем меньше - тем хуже, т.е. чем больше, тем лучше:
-
-  # fit_tobest = MAX 
-  # fit_target = 0
-
-  return $fit
-}
-#-------------------------------------------------------------------------------
-
-# ищем пока простто структуру
-
-# g_stru.tl _gp_test 2013 10 6 10
-#-------------------------------------------------------------------------------
-proc gp_fitness_test {item} {
-
-  set task NULL
-
-  set item [item_make $item]
-
-  puts "item = [item_get_mainsrc $item],  ret = [FITPROC_list_FS  $item $task] "
-
-}
-#-------------------------------------------------------------------------------
-proc _gp_test {} {
-
-  # FINS STRUCT - ищем пока простто структуру
-
-  #set ::target_text "122333444455555"
-
-  set ::target_text "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
-
-  global argc
-
-  #----------------------------------------------------------------
-  if {$argc == 1} {
-
-
-    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
-    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 4"
-    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 4 4"
-    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 0 0"
-    gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
-    gp_fitness_test  "0 0 "
-    gp_fitness_test  "0 "
-    gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
-
-    puts ""
-
-    exit
-
-  #----------------------------------------------------------------
-  } else {
-  #----------------------------------------------------------------
-
-    global argc argv argv0
-    set argv [lrange $argv 1 end]
-
-    set seed   [dict_parse $argv "-seed" 2013]
-    set bnums  [dict_parse $argv "-lpop" 10]
-    set lsrc   [dict_parse $argv "-size"  6] 
-    set steps  [dict_parse $argv "-nums" 10]
-
-  #----------------------------------------------------------------
-  }
-  #----------------------------------------------------------------
-
-  #set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"    
-
-  #set ::randinstr  "randinstr_MAIN"
-  #set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
-
-  set  fitnessfunc  "FITPROC_list_FS"
-
-  puts ""
-  puts "nums   = $bnums"  ;# колич-во ботов
-  puts "lsrc   = $lsrc "  ;# макс. длина ботов (при начальном старте?)
-  puts "steps  = $steps"  ;# шагов эволюции  
-  puts ""
-
-
-  set ::is_print 1
-  set gp_list   "1 2 3 4 5 6 7 8 9" ;#   
-
-    
-  set task [task_create "-fit_func" $fitnessfunc "-fit_tobest" MAX -gp_list $gp_list]
-  
-  run_gp_evolution_for_task \
-    $task \
-    $seed  \
-    -lpop $bnums  -lsrc $lsrc -nums $steps 
-    
-
-  return
-}
-#-------------------------------------------------------------------------------
-# g_stru.tl _gp_test 2013 10 6 10
-
-# g_stru.tl _gp_test 2013   10  6    1  - очень быстрый для проверок
-# g_stru.tl _gp_test 2013   30  6  250
-
-
 #-------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -4609,10 +4416,12 @@ proc parse_opts_NEW {argv
   #global argv
   #set argv [lrange $argv 1 end]
 
-  set lpop [dict_parse $argv  "-lpop"   $def_lpop]
-  set nums [dict_parse $argv  "-nums"   $def_nums]
-  set lsrc      [dict_parse $argv  "-size"   $def_lsrc]
-  set print           [dict_parse $argv  "-verb"   0]
+  set lpop  [dict_parse $argv  "-lpop"   $def_lpop]
+  set nums  [dict_parse $argv  "-nums"   $def_nums]
+  #set lsrc  [dict_parse $argv  "-size"   $def_lsrc]
+  set lsrc  [dict_parse $argv  "-lsrc"   $def_lsrc]
+
+  set print  [dict_parse $argv  "-verb"   0]
 
   set ::is_print $print
 
@@ -4819,14 +4628,68 @@ proc cyclic_clone_from_leaders {leaders_items new_len} {
 
   return $new_items
 }
+# ------------------------------------------------------------------------------
+# основная эволюционная программа (для GA)
+#
+# r~.tl TEST TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers ga
+# 
+#-------------------------------------------------------------------------------
+proc ga_evolution_func {pop task args} {
+
+
+  # 1) Crossover step 
+  #  
+  gaul_crossover $pop $task 
+
+
+  # выбираются мама и папа и затем скрещиваются 
+  # в новых (созданных) членов общества !!
+  
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # 2) Mutation step
+  #  
+
+  gaul_mutation $pop $task ;# муитруем в новых членов общества !!
+  
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # 3) Apply environmental adaptations, score entities, sort entities, etc.
+  #  
+ 
+  ##  gaul_adapt_and_evaluate $pop $task 
+  
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+  #-----------------------------------------------------------------
+  # 4) Survival of the fittest (выживание наиболее приспособленных)
+  # 
+  # GA_ELITISM_PARENTS_DIE     (FS)
+  # GA_ELITISM_PARENTS_SURVIVE (_2_main_ 
+
+  # удаляем лузеров ? ничего подобного! просто удаляем почти всех родителей! зачем?
+  #
+  #gaul_survival $pop 
+   
+ 
+  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
+
+
+  return
+}
 #-------------------------------------------------------------------------------
 # основная эволюционная программа (для GP)
 #
 # r~.tl TEST TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
 # 
 #-------------------------------------------------------------------------------
-proc gp_evolution_4 {pop task args} {
+proc gp_evolution_func {pop task args} {
 
+  #puts stderr ""
+  #puts stderr "args = $args"
+  #puts stderr ""
 
   # предполагается что итемы тут уже отсортированы !!
   # 
@@ -4837,20 +4700,25 @@ proc gp_evolution_4 {pop task args} {
 
   set len [llength $sorted_items]
 
-  set l [expr {$len/2}]     ;# размер лидирующей группы
+  #set lenprob [dict_parse  $args "-lenprob" 0.5]
+  set mutprob [dict_parse  $args "-mutprob" 0.5]
+
+  #set l [expr {int ($len * $lenprob) }] ;#  размер лидирующей группы
+  set l [expr {int ($len * $mutprob) }] ;#  размер лидирующей группы
 
   #---------------------------------------
   # 1)
   # выделяем лидеров популяции  (1/3)
 
   
-  set leaders_items [lrange $sorted_items   0 [expr {$l - 1}]]
+  ##set leaders_items [lrange $sorted_items   0 [expr {$l - 1}]]
+  set leaders_items [lrange $sorted_items   0 [expr { $l - 0 }]]
   
   #---------------------------------------
 
   if {$::is_print >= 2} {
     puts stderr ""
-    puts stderr "gp_evolution_4: len(sorted_items) = $len, l(leaders_items) = $l"
+    puts stderr "gp_evolution_func: len(sorted_items) = $len, l(leaders_items) = $l"
     puts stderr ""
   }
    
@@ -4859,7 +4727,7 @@ proc gp_evolution_4 {pop task args} {
 
   if {$::gp_AUTO} {
 
-    works_on_gp_dict $leaders_items
+    works_on_gp_dict  $leaders_items
   }
 
   #---------------------------------------
@@ -4877,11 +4745,11 @@ proc gp_evolution_4 {pop task args} {
 
   } else {
     
-    set mutprob [dict_parse  $args "-mutprob" 0.5]
     set orig_size [GET $pop lpop]
 
     #set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов ??
-    #set m [expr {$len * $mutprob}] ;# num_  
+    #set m [expr {$len * $mutprob}] ;# num_ 
+ 
     set m [expr {int ($orig_size * $mutprob) }] ;# num_  
 
     #puts stderr "[procname] : m = $m"
@@ -4901,6 +4769,7 @@ proc gp_evolution_4 {pop task args} {
     
     # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]   
     set pop_items   [concat  $leaders_items  $mutated_items]   
+    #set pop_items   [concat  $sorted_items  $mutated_items]   
   }
 
     
@@ -4910,88 +4779,16 @@ proc gp_evolution_4 {pop task args} {
   SET $pop "itemlist" $pop_items
 
 
-  if {$::gp_AUTO} {
-  if {$::is_print >= 2} {
-    #puts ""
-    #puts stderr "  ::gp_dict = [set $::gp_dict]"
-  }
-  }
+  #if {$::gp_AUTO} {
+  #if {$::is_print >= 2} {
+  #  #puts ""
+  #  #puts stderr "  ::gp_dict = [set $::gp_dict]"
+  #}
+  #}
    
   return $pop_items
 }
 # ------------------------------------------------------------------------------
-# основная эволюционная программа (для GA)
-#
-# r~.tl TEST TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers ga
-# 
-#-------------------------------------------------------------------------------
-proc ga_evolution_6 {pop task args} {
-
-
-  if {$::is_print > 2} {
-    puts "\n\n"
-    puts stderr "[procname] : ~~~~ BEGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
-  }
-  
-  # 1) Crossover step 
-  #  
-  gaul_crossover $pop $task ;# выбираются мама и папа и затем скрещиваются 
-                       # в новых (созданных) членов общества !!
-  
-  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # 2) Mutation step
-  #  
-
-  gaul_mutation $pop $task ;# муитруем в новых членов общества !!
-  
-  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # 3) Apply environmental adaptations, score entities, sort entities, etc.
-  #  
- 
-  ##  gaul_adapt_and_evaluate $pop $task 
-  
-  if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # 4) Survival of the fittest (выживание наиболее приспособленных)
-  # 
-  # GA_ELITISM_PARENTS_DIE     (FS)
-  # GA_ELITISM_PARENTS_SURVIVE (_2_main_ 
-
-  # удаляем лузеров ? ничего подобного! просто удаляем почти всех родителей! зачем?
-  #
-  #gaul_survival $pop 
-   
- 
-  #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
-
-  #-----------------------------------------------------------------
-  # 5) сортируем всех челнов популяции по фитнесу
-  #  
-  pop_sorting  $pop $task
-
-  #-----------------------------------------------------------------
-  # 6) Убиваем наименее приспособленных членов популяции, чтобы восстановить 
-  # численность до ее стабильного первоначального размера.
-  #
-
-  pop_to_size  $pop [GET $pop lpop] ;# удаляем лузеров ?
-
-
-  if {$::is_print > 2} {
-    puts stderr "[procname] : ~~~~ FINAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
-    puts ""
-  }
-  
-
-  return
-}
-# ------------------------------------------------------------------------------
-#
 # ------------------------------------------------------------------------------
 # основная программа вызова "эволюционной" функции
 # ------------------------------------------------------------------------------
@@ -5030,10 +4827,59 @@ proc pop_evolution {pop task  args} {
 
   ##puts "evolfunc = $evolfunc"
 
-  $evolfunc  $pop $task {*}$args ;# gp_evolution_4  ga_evolution_6
 
+  if {$::is_print > 2} {
+    puts "\n\n"
+    puts stderr "[procname] : ~~~~ BEGIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
+  }
+  
+
+  if        {$evolfunc == "ga_evolution_func"} {
+
+    ga_evolution_func  $pop $task {*}$args 
+    #gp_evolution_func  $pop $task {*}$args  -mutprob 0.0
+
+  } elseif  {$evolfunc == "gp_evolution_func"} {
+
+    # TODO 
+    ga_evolution_func  $pop $task {*}$args 
+    gp_evolution_func  $pop $task {*}$args 
+
+  } else {
+    puts "ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  }
+  
+
+  if {$::is_print > 2} {
+
+    pop_print $pop "stderr" ; 
+    puts ""
+    puts stderr "[procname] : ~~~~ FINAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
+    puts ""
+  }
+  
+  ##  $evolfunc  $pop $task {*}$args ;# gp_evolution_4  ga_evolution_6
   # ga_evolution_
   # gp_evolution_
+
+  #----------------------------------------------
+
+  #pop_sorting  $pop $task
+
+  #pop_to_size  $pop [GET $pop lpop] ;# удаляем лузеров ?
+
+  #-----------------------------------------------------------------
+  # 5) сортируем всех челнов популяции по фитнесу
+  #  
+  pop_sorting  $pop $task
+
+  #-----------------------------------------------------------------
+  # 6) Убиваем наименее приспособленных членов популяции, чтобы восстановить 
+  # численность до ее стабильного первоначального размера.
+  #
+
+  pop_to_size  $pop [GET $pop lpop] ;# удаляем лузеров ?
+
 
   #----------------------------------------------
   
@@ -5091,5 +4937,203 @@ proc pop_evolution_main {task pop args} {
 }
 ###########################################################################################
 #-------------------------------------------------------------------------------
+proc run_gp_evolution_for_task {
+                       task
+                       seed     
+                       args
+                     } {
+
+  set seed   [dict_parse $args "-seed" 2013]
+  set lpop   [dict_parse $args "-lpop" 10]
+  set lsrc   [dict_parse $args "-lsrc"  6] 
+  set nums   [dict_parse $args "-nums" 10]
+  puts ""
+  puts "nums  = $lpop"  ;# колич-во ботов
+  puts "lsrc  = $lsrc"  ;# макс. длина ботов (при начальном старте?)
+  puts "nums  = $nums"  ;# шагов эволюции  
+  puts ""
+
+  #-------------------------------------
+
+
+  puts stderr "args = $args"
+
+  #set seed  [dict_parse $args "-seed" 2013]
+  #set lpop  [dict_parse $args "-lpop"   10]
+  #set lsrc  [dict_parse $args "-lsrc"    6]
+  ###set nums  [dict_parse $args "-nums"  2]  
+
+  #-------------------------------------
+  if {$seed == "@"} {
+
+    set seed [clock seconds]
+  }
+  #puts "[procname] : seed = $seed !!!!!!!!!!!"
+
+  comm_random_seed $seed 
+
+  #-------------------------------------
+
+  set pop [POP new  {*}$args  -printchform  "% s " ]
+
+
+  # создаем начальную популяцию итемов-программ (формат 11 или 22 ??)
+  #  
+  SET $pop "itemlist" [make_itemlist  $task {*}$args]
+  
+  pop_evolution_main  $task $pop  {*}$args -evol "gp_evolution_func"  
+  
+
+  return
+}
+#-------------------------------------------------------------------------------
+#set ::ITEMS_LIST 1
+#-------------------------------------------------------------------------------
+proc FITPROC_list_FS {list_calc task} {
+
+
+  #if {$::ITEMS_LIST} {
+  set list_calc  [item_get_mainsrc $list_calc]
+  #}
+
+  set list_true $::target_text  ;# это список
+
+  set len_true [llength $list_true]
+  set len_calc [llength $list_calc]
+
+  set fit 0 ;# начальное значение фитнес 
+
+  # идем циклом по целевому списку? но ведь он может быть как больше так и меньше?
+  # а надо бы идти по максимальному?
+  # 
+
+  if {$len_true > $len_calc} {
+    set len_max $len_true
+  } else {
+    set len_max $len_calc
+  }
+
+
+  for {set i 0} {$i < $len_max} {incr i} {
+    
+    set char_true [lindex $list_true $i]
+    set char_calc [lindex $list_calc $i]
+    
+    # -----------------------------------------------------------
+    if {$char_true != $char_calc} {
+      
+      set is_true_integer [string is integer -strict  $char_true]
+      set is_calc_integer [string is integer -strict  $char_calc]
+      
+      # если для конкретных типов отдельных генов возможна более 
+      # точная метрика, то :
+      
+      if {$is_true_integer && $is_calc_integer} {
+        incr fit [expr {abs ($char_calc - $char_true)}]
+        
+      } else {
+        incr fit ;# а иначе просто увеличиваем на 1
+      }
+      
+    }
+    # -----------------------------------------------------------
+  }
+  
+  # и еще добавляем разницу в длинах
+  # 
+  incr fit [expr {abs ($len_calc - $len_true)}] 
+
+  # т.е. чем больше - тем хуже!  
+  # но если возвращать отрицательное значение
+  
+  set fit [expr - $fit]
+  
+  # и тогда, чем меньше - тем хуже, т.е. чем больше, тем лучше:
+
+  # fit_tobest = MAX 
+  # fit_target = 0
+
+  return $fit
+}
+#-------------------------------------------------------------------------------
+# ищем пока простто структуру
+# g_stru.tl _gp_test 2013 10 6 10
+#-------------------------------------------------------------------------------
+proc gp_fitness_test {item} {
+
+  set task NULL
+
+  set item [item_make $item]
+
+  puts "item = [item_get_mainsrc $item],  ret = [FITPROC_list_FS  $item $task] "
+
+}
+#-------------------------------------------------------------------------------
+proc _gp_test {} {
+
+  # FINS STRUCT - ищем пока простто структуру
+  #set ::target_text "122333444455555"
+
+  #set ::target_text "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
+  set ::target_text "1 2 3 4"
+
+  global argc
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if {$argc == 1} {
+
+
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5"
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 5 4"
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 4 4"
+    gp_fitness_test  "1 2 2 3 3 3 4 4 4 4 5 5 5 0 0"
+    gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+    gp_fitness_test  "0 0 "
+    gp_fitness_test  "0 "
+    gp_fitness_test  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+
+    puts ""
+    exit
+
+  } else {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    global argc argv argv0
+    set argv [lrange $argv 1 end]
+
+  }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #set randpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"    
+  #set ::randinstr  "randinstr_MAIN"
+  #set ::len_is_constant 1 ;# g-corB.tl -> make_prgpop : постоянной длины
+
+  set  fitnessfunc  "FITPROC_list_FS"
+
+  set ::is_print 1
+  set gp_list   "1 2 3 4 5 6 7 8 9" ;#   
+
+    
+  set task [task_create "-fit_func" $fitnessfunc "-fit_tobest" MAX -gp_list $gp_list]
+  
+  set seed   [dict_parse $argv "-seed" 2013]
+  dict_parse_GLOBAL "::is_print" $argv
+
+
+  run_gp_evolution_for_task \
+    $task \
+    $seed  {*}$argv
+   
+
+  return
+}
+#-------------------------------------------------------------------------------
+
+# g_stru.tl _gp_test 2013 10 6 10
+# g_stru.tl _gp_test 2013   10  6    1  - очень быстрый для проверок
+# g_stru.tl _gp_test 2013   30  6  250
+
+# g_stru.tl _gp_test  -seed 2013  -lpop 10  -size 6 -nums 10
+
 #-------------------------------------------------------------------------------
 ###########################################################################################

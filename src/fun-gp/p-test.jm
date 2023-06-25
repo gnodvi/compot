@@ -633,7 +633,7 @@ proc main {} {
   global argv
   set argv [lrange $argv 1 end]
 
-  set len_chromo   [dict_parse $argv  "-size" 4]
+  set len_chromo   [dict_parse $argv  "-lsrc" 4]
 
   set tlist [get_targets_list $len_chromo] 
 
@@ -642,6 +642,7 @@ proc main {} {
   puts ""
 
   #-------------------------------------------------------
+
   if     {$mode == "ga"    }   { test_ga      $argv $task     } \
   elseif {$mode == "ga_REV"}   { test_ga      $argv $task_rev } \
   elseif {$mode == "de_full"}  { test_de_all  $argv $task_rev  $::strategy_full_origin } \
