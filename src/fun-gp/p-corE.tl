@@ -3607,27 +3607,6 @@ proc ga_evolution_archipelago {task  num_pops pops nums} {
   
   return $generation
 }
-# //------------------------------------------------------------------------------
-proc ga_evolution {task pop nums args} {
-
-
-  # Score and sort the initial population members.
-  # инициация итемов функцией [GET $pop seedproc] 
-  #  
-  pop_initial_fill  $pop $task 
- 
-  if {$::is_print > 2} {
-    pop_print $pop
-    #puts ""
-  }
-
-
-  set generation [pop_evolution_main  $task $pop  -nums $nums {*}$args \
-		    -print $::is_print -evol "ga_evolution_func"]
-
-  return $generation
-}
-# //------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # g-diff.tl
 #-------------------------------------------------------------------------------
@@ -4684,6 +4663,8 @@ proc ga_evolution_func {pop task args} {
 #
 # r~.tl TEST TEST_xx -seed 2013 -lpop 10 -size 6 -nums 10 -vers gp
 # 
+# r~.tl ANTS ANTS_gp_new -lpop 10 -lsrc 5 -nums 10 -print 3 -pole pole_20a5 
+# 
 #-------------------------------------------------------------------------------
 proc gp_evolution_func {pop task args} {
 
@@ -4700,18 +4681,16 @@ proc gp_evolution_func {pop task args} {
 
   set len [llength $sorted_items]
 
-  #set lenprob [dict_parse  $args "-lenprob" 0.5]
+  set lidprob [dict_parse  $args "-lidprob" 0.5]
   set mutprob [dict_parse  $args "-mutprob" 0.5]
 
-  #set l [expr {int ($len * $lenprob) }] ;#  размер лидирующей группы
-  set l [expr {int ($len * $mutprob) }] ;#  размер лидирующей группы
+  set l [expr {int ($len * $lidprob) }] ;#  размер лидирующей группы
 
   #---------------------------------------
   # 1)
   # выделяем лидеров популяции  (1/3)
 
   
-  ##set leaders_items [lrange $sorted_items   0 [expr {$l - 1}]]
   set leaders_items [lrange $sorted_items   0 [expr { $l - 0 }]]
   
   #---------------------------------------
@@ -4753,9 +4732,7 @@ proc gp_evolution_func {pop task args} {
     set m [expr {int ($orig_size * $mutprob) }] ;# num_  
 
     #puts stderr "[procname] : m = $m"
-
     #set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
-
 
     set mutated_items  [make_mutated_from_items  $task $sorted_items $m]
     
@@ -4767,7 +4744,8 @@ proc gp_evolution_func {pop task args} {
     # создавая популяцию исходников для следующей итерации.
     #
     
-    # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]   
+    # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]  
+ 
     set pop_items   [concat  $leaders_items  $mutated_items]   
     #set pop_items   [concat  $sorted_items  $mutated_items]   
   }
@@ -4935,6 +4913,27 @@ proc pop_evolution_main {task pop args} {
 
   return [GET $pop "generation"]
 }
+# //------------------------------------------------------------------------------
+proc ga_evolution {task pop nums args} {
+
+
+  # Score and sort the initial population members.
+  # инициация итемов функцией [GET $pop seedproc] 
+  #  
+  pop_initial_fill  $pop $task 
+ 
+  if {$::is_print > 2} {
+    pop_print $pop
+    #puts ""
+  }
+
+
+  set generation [pop_evolution_main  $task $pop  -nums $nums {*}$args \
+		    -print $::is_print -evol "ga_evolution_func"]
+
+  return $generation
+}
+# //------------------------------------------------------------------------------
 ###########################################################################################
 #-------------------------------------------------------------------------------
 proc run_gp_evolution_for_task {
@@ -5056,8 +5055,6 @@ proc FITPROC_list_FS {list_calc task} {
   return $fit
 }
 #-------------------------------------------------------------------------------
-# ищем пока простто структуру
-# g_stru.tl _gp_test 2013 10 6 10
 #-------------------------------------------------------------------------------
 proc gp_fitness_test {item} {
 
@@ -5129,11 +5126,17 @@ proc _gp_test {} {
 }
 #-------------------------------------------------------------------------------
 
-# g_stru.tl _gp_test 2013 10 6 10
-# g_stru.tl _gp_test 2013   10  6    1  - очень быстрый для проверок
-# g_stru.tl _gp_test 2013   30  6  250
+# p_stru.tl _gp_test  -seed 2013 -lpop 10 -size 6 -nums -1
 
-# g_stru.tl _gp_test  -seed 2013  -lpop 10  -size 6 -nums 10
+# r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums -1 -vers ga
+# r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -size 6 -nums -1 -vers gp
 
 #-------------------------------------------------------------------------------
+#
+# TODO
+# 
+# - объединить функции в одну, добавив управление через общие вызовы и параметры
+#   (цель - боле универсальный поиск алгоритмов, испольщующий как стандартные
+#   адгоритмы GA + GP, так  новые стековые с перестановками.
+# 
 ###########################################################################################

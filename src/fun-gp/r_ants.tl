@@ -2322,9 +2322,10 @@ proc ANTS_gp_new {} {
   #read_params  individuals len nums
 
   set seed        [dict_parse $argo "-seed"  @]
-  set individuals [dict_parse $argo "-lpop" 10]
-  set len         [dict_parse $argo "-size" 10] 
-  set nums        [dict_parse $argo "-nums"  4]
+#   set lpop        [dict_parse $argo "-lpop" 10]
+#   set lsrc        [dict_parse $argo "-lsrc" 10] 
+#   set nums        [dict_parse $argo "-nums"  4]
+
   set gp_list     [dict_parse $argo "-list" "M R L"] 
   #set gp_list     [dict_parse $argo "-list" "MOVE RIGHT LEFT"] 
   set ::is_print  [dict_parse $argo "-print" 1] 
@@ -2371,8 +2372,8 @@ proc ANTS_gp_new {} {
   run_gp_evolution_for_task \
       $task                        \
       $seed \
-      -lpop $individuals  -lsrc $len  -nums $nums   \
-      -printproc  game_print                \
+      \
+    -printproc  game_print  {*}$argo
 
   # -mutprob          0.1        \
   #     -printproc  game_print 

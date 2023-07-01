@@ -506,8 +506,6 @@ proc TEST_xx {args} {
   #------------------------------------------------------
 
   set vers        [dict_parse $argv "-vers"  "gp"] ;# по умолчанию 
-
-  ##set print       [dict_parse $argv "-print"    1]
   set ::is_print  [dict_parse $argv "-print"    1]  ;# $print
 
   set fit_func    [dict_parse $argv "-fit_func"    "FITPROC_xx"] 
@@ -537,43 +535,14 @@ proc TEST_xx {args} {
   #------------------------------------------------------
   # флажки для новейших алгоритмов
   # 
-  # 
-  #set ::gp_NEWS      [dict_parse $argv "-news"  $::gp_NEWS]
-  #set ::gp_NEWS      [dict_parse $argv "::gp_NEWS"  $::gp_NEWS]
 
   dict_parse_GLOBAL "::gp_NEWS" $argv
   dict_parse_GLOBAL "::gp_AUTO" $argv
-
-  ##set ::gp_DEEP  [dict_parse $argv "-deep"  $::DEEP]
   dict_parse_GLOBAL "::gp_DEEP" $argv
   
-
   ios_init_TEST_xx 
 
-  #set ::randinstr   randinstr_MAIN 
-  #set ::quotes_proc "make_quotes_BE"
-  #set ::quotes_proc "make_quotes_TCL"
-  #set ::quotes_proc  "quotes_proc_NULL" 
-
-  #set rand_prgpop_proc "make_rand_prgpop"
-  
-  #set pb [mp_create]
-  v1_init_all  ;# !!!!!!!!!!! ???
-
-  #if {0} {
-  #  mp_init $pb \
-  #    randinstr    "randinstr_MAIN" \
-  #    quotes_proc  "make_quotes_TCL"
-  #} else {
-  
-  # mp_init $pb \
-  #   randinstr    "randinstr_MAIN" \
-  #   quotes_proc  "quotes_proc_NULL"
-  
-  #}
-
-  #set ::IOS_begin 1
-  #set ::IOS_final 1
+  v1_init_all  ;# !!!!! ???
 
   set task [task_create  \
 	      -ios_begin 1 -ios_final 1 \
@@ -583,9 +552,7 @@ proc TEST_xx {args} {
               -gp_list    $gp_list \
              ] 
   
-  ## set seed        [dict_parse $argv "-seed"  2013]
-  set seed        [dict_parse $argv "-seed"  @] ;# каждый выхов случаен
-
+  set seed        [dict_parse $argv "-seed"   @]   ;# каждый выхов случаен
   set lpop        [dict_parse $argv "-lpop"  10]   ;# колич-во ботов 
   set lsrc        [dict_parse $argv "-lsrc"   6]   ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
@@ -601,7 +568,6 @@ proc TEST_xx {args} {
   }
   
   comm_random_seed $seed 
-
 
   #------------------------------------------------------
   # распечатаем начальные значения
@@ -635,27 +601,16 @@ proc TEST_xx {args} {
                    -gp_list    $gp_list]  
 
 
-
-
     set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task_fs] ;#   -vers $vers 
-
-    #SET $pop  select_one   "ga_select_one_sus"
-    #SET $pop  select_two   "ga_select_two_sus"
-
-    #set pop [GET $obj "pop"]
 
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"
 
-
     set m [dict merge   {-print  1} $argv]
     puts "m = $m"
-
       
     #set args {*}$m
     set args $m
-    
-    ##set pop [GET $obj pop]
     
     SET $pop  seedproc "maintest_seed_proc" ;# ??
     
@@ -667,8 +622,6 @@ proc TEST_xx {args} {
     
     puts stderr ""
     
-    ##set  pop [GET $obj "pop"]
-    # 
     SET $pop "generation" 0
     SET $pop "itemlist"   {}
     
@@ -703,21 +656,13 @@ proc TEST_xx {args} {
 
     set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task] ;#  -vers $vers 
     
-    #SET $pop  select_one   "ga_select_one_sus"
-    #SET $pop  select_two   "ga_select_two_sus"
-    
-    # только эти функции выбора работают для GP!
-    # но вот в этом, наверное и есть ошибка, почему здесь получается хуже мутация
-    # чем в BOT01 для поиска строк
-    
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"    
          
     set args [list -nums $nums   -print 1]
     
     SET $pop  seedproc "maintest_seed_proc" ;# ??
-    
-    
+       
     set max_generations [dict_parse $args "-nums"  10] 
     
     puts stderr ""
@@ -810,14 +755,8 @@ proc NEXT_01 {args} {
   # флажки для новейших алгоритмов
   # 
   # 
-  #set ::gp_NEWS      [dict_parse $argo "-news"  $::gp_NEWS]
-  #set ::gp_NEWS      [dict_parse $argo "::gp_NEWS"  $::gp_NEWS]
-
   dict_parse_GLOBAL "::gp_NEWS" $argo
   dict_parse_GLOBAL "::gp_AUTO" $argo
-
-  #set ::AUTO      [dict_parse $argo "-auto"  $::AUTO]
-  
 
   # TODO 
   # - автоматическое добавление этих параметров и их динамическая корректировка
@@ -827,12 +766,6 @@ proc NEXT_01 {args} {
   ios_add_new  p3  {} {}
   ios_add_new  p5  {} {}
   ios_add_new  m1  {} {}
-
-  #set ::IOS_begin 0
-  #set ::IOS_final 0
-
-  # r~.tl TEST NEXT_01 -seed 2016
-  # r~.tl TEST NEXT_01 -nums -1 -seed @ -target 5 -news 1 -list "p1 p3 m1" -print 2
 
   #------------------------------------------------------
 
@@ -851,31 +784,10 @@ proc NEXT_01 {args} {
               -gp_list     $gp_list]
 
 
-#              -fit_target  $::sum_target \
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  ## l~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5"
-  ## touch l:l~.tl,TEST,NEXT_01,-seed,123,-lpop,10,-size,1,-nums,-1,
-  ##                                            -list,\{,p1,p3,p5,\}
-
-  #puts stderr  "nums = $nums !!"
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  #set pb [mp_create]
   v1_init_all  ;# !!!!!!!!!!! ???
-  #mp_init $pb 
-
-  #set rand_prgpop_proc "make_rand_prgpop" ;# "make_rand_prgpop_unikum"
 
   
   set seed        [dict_parse $argo "-seed"  @]
-  #set lpop        [dict_parse $argo "-lpop" 10]
-  #set lsrc        [dict_parse $argo "-lsrc"  6] 
-  #set nums        [dict_parse $argo "-nums"  4]
-
-  #puts "lpop         = $lpop"        ;# колич-во ботов
-  #puts "lsrc         = $lsrc"        ;# макс. длина ботов (при начальном старте?)
-  #puts "nums         = $nums"        ;# шагов эволюции  
 
   puts "gp_list      = $gp_list"     ;#   
 
@@ -884,27 +796,21 @@ proc NEXT_01 {args} {
       $seed \
       {*}$argo  
 
-  # -print        $is_print  \
-  # -mutprob          0.1    \
-  #     -printproc  0      \
-  
-
-  #puts "!!!!!11"
-  #gp_dict_print 
 
   return
 }
 
 ################################################################################
 
+# r~.tl ANTS ANTS_gp 2012  10 15 2
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # TODO: на простейшей "программы" отладить все механмзмы
 #       SP - статистического программирования
 
 # r~.tl TEST NEXT_01 -seed @ -lpop 5 -size 2 -nums 3 -list "p1 p3 p5" -print 2 -auto 0
 
-
-# r~.tl ANTS ANTS_gp 2012  10 15 2
-# r~.tl TEST TEST_pp 2014
 
 # r~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size 10 -print 2
 # r~.tl TEST NEXT_01 -nums -1 -target 10 -list "p1 p3" -size  2 -print 1 -news 1
