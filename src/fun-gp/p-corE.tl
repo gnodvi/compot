@@ -4114,13 +4114,10 @@ proc calc_BOT01 {obj args} {
   puts stderr ""
   
   set  pop [GET $obj "pop"]
-  # 
+  #
   SET $pop "generation" 0
   SET $pop "itemlist"   {}
   
-  #puts "[procname]: task = [set $task]"
-  # exit
-
   set ret [ga_evolution  $task $pop  $nums  -nums $nums {*}$args]
 
   return $ret

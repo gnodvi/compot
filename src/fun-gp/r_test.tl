@@ -587,9 +587,15 @@ proc TEST_xx {args} {
     #
     # ga_evolution, ищем как обычную строку 
 
-    set gp_list      "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
-    set ::target_text  "nop dup dup nop nop nop nop * nop + nop nop"
-    set lsrc 12
+    #set gp_list   "dup * nop +"  ;# "1 2 3 4 5 6 7 8 9"
+    set gp_list   "1 2 3 4 5 6 7 8 9" ;#   
+
+
+    #set ::target_text  "nop dup dup nop nop nop nop * nop + nop nop"
+    set ::target_text "1 2 3 4"
+    #set lsrc 12
+    set lsrc 4
+
 
     set fitness_func   "FITPROC_list_FS"
     set fit_target     0    
@@ -612,21 +618,15 @@ proc TEST_xx {args} {
     #set args {*}$m
     set args $m
     
+    set task   $task_fs ;# [dict_parse $args "-task"  [GET $obj "task"]] 
+
     SET $pop  seedproc "maintest_seed_proc" ;# ??
-    
-    #------------------
-    
-    set task            $task_fs ;# [dict_parse $args "-task"  [GET $obj "task"]] 
     set max_generations [dict_parse $args "-nums"  10] 
-    ##set vers            [dict_parse $args "-vers"  [GET $obj "vers"]]
     
     puts stderr ""
     
     SET $pop "generation" 0
     SET $pop "itemlist"   {}
-    
-    #puts "[procname]: task = [set $task]"
-    # exit
     
     set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
     
@@ -652,8 +652,6 @@ proc TEST_xx {args} {
   } 
   if {$vers == "ga"} {
 
-    # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
-
     set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task] ;#  -vers $vers 
     
     SET $pop  select_one   "ga_select_one_bestof2"
@@ -661,8 +659,7 @@ proc TEST_xx {args} {
          
     set args [list -nums $nums   -print 1]
     
-    SET $pop  seedproc "maintest_seed_proc" ;# ??
-       
+    SET $pop  seedproc "maintest_seed_proc" ;# ?? 
     set max_generations [dict_parse $args "-nums"  10] 
     
     puts stderr ""
@@ -683,6 +680,8 @@ proc TEST_xx {args} {
 # r~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -print 1 -seed 13 -auto 1
 #
 #-------------------------------------------------------------------------------
+    # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
+
 #-------------------------------------------------------------------------------
 #
 # соревнование-тест (пока с одним участником)

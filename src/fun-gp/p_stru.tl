@@ -986,7 +986,7 @@ dict_class_create  BOT05 {BOT} {
 }
 
 #---------------------------------------------------------
-proc  calc_BOT05 {obj args} {
+proc calc_BOT05 {obj args} {
 
   
   set task            [dict_parse $args "-task" [GET $obj task]] 
@@ -1019,8 +1019,6 @@ proc  final_BOT05 {obj args} {
   }
   
   return [list $num_generations $best_entity $ch_form]
-
-
 }
 #---------------------------------------------------------
 
