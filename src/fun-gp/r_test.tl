@@ -525,8 +525,8 @@ proc TEST_xx {args} {
   }
 
   #------------------------------------------------------
-
-  #set func        [dict_parse $argv "-func"   {x ** 2 + x}]
+  # либо в таком виде
+  #
   set func        [dict_parse $argv "-func"   {x pow 2 plus x}]
   set func [func_prepare_from_input $func] 
 
@@ -634,22 +634,20 @@ proc TEST_xx {args} {
   #------------------------------------------------------
   }
   if {$vers == "gp"} {
-
-  #------------------------------------------------------
-  #
-  # запускаем эволюцию GP напрямую, через функцию
-
-  puts "seed = $seed"
-
-    run_gp_evolution_for_task $task $seed  \
-      -lpop $lpop  -lsrc $lsrc -nums $nums \
-
-
+    #
+    # запускаем эволюцию GP напрямую, через функцию
+    
+    puts "seed = $seed"
+    
+    run_gp_evolution_for_task   $task \
+      -lpop $lpop  -lsrc $lsrc -nums $nums {*}$args
+    
+    
     puts ""
-    puts "===================================================================="
-
-  #------------------------------------------------------
+    puts "=============================================="
+    
   } 
+  #------------------------------------------------------
   if {$vers == "ga"} {
 
     set pop [pop1_create  -lpop $lpop -lsrc $lsrc -task $task] ;#  -vers $vers 
@@ -676,14 +674,6 @@ proc TEST_xx {args} {
 }
 #-------------------------------------------------------------------------------
 #
-# r~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -print 1
-# r~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -print 1 -seed 13 -auto 1
-#
-#-------------------------------------------------------------------------------
-    # r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
-
-#-------------------------------------------------------------------------------
-#
 # соревнование-тест (пока с одним участником)
 
 # О.Г. Монахов, Э.А.Монахова, 2017
@@ -705,11 +695,6 @@ proc TEST_xx {args} {
 #   (.е. это уже начальное понятие типа данных), а также об их эффективном 
 #   вкладе в результат..
 #  
-#  
-
-# упростил пока (сразу заношу в стек X несколько раз (dup dup dup dup dup dup)
-
-# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 -news 1 -list "* +" -print 2 -func 'x ** 3 + x ** 2 + x' 
 
 # Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  * + * + * +
 
@@ -725,8 +710,22 @@ proc TEST_xx {args} {
 
 #-------------------------------------------------------------------------------
 
-# r~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga    
-# r~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
+# можно упростить (сразу занося в стек X несколько раз (dup dup dup dup dup dup)
+# ???
+
+# l~.tl TEST TEST_xx  -seed @ -lpop 20 -size 20 -nums -1 -news 1 -list "* +" -print 2 -func 'x ** 3 + x ** 2 + x' 
+
+#-------------------------------------------------------------------------------
+
+# r~.tl TEST TEST_xx  -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers ga
+# r~.tl TEST TEST_xx  -seed 1    -lpop 20 -size 6 -nums -1 -vers ga  
+  
+#-------------------------------------------------------------------------------
+
+# r~.tl TEST TEST_xx -nums -1 -news 1 -func 'x pow 3 plus x' -print 1
+# r~.tl TEST TEST_xx -nums  5 -news 1 -func 'x pow 3 plus x' -print 1 -seed 13 -auto 1
+
+# r~.tl TEST TEST_xx     -seed 1 -lpop 20 -size 6 -nums -1 -vers gp    
   
 # OUT:
 # r~.tl TEST TEST_xx  -seed    0 -lpop  5 -size 6 -nums -1 -vers gp -print 2 
@@ -785,14 +784,12 @@ proc NEXT_01 {args} {
 
   v1_init_all  ;# !!!!!!!!!!! ???
 
-  
   set seed        [dict_parse $argo "-seed"  @]
 
   puts "gp_list      = $gp_list"     ;#   
 
   run_gp_evolution_for_task    \
       $task                    \
-      $seed \
       {*}$argo  
 
 

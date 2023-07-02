@@ -4826,7 +4826,6 @@ proc pop_evolution {pop task  args} {
   
 
   if {$::is_print > 2} {
-
     pop_print $pop "stderr" ; 
     puts ""
     puts stderr "[procname] : ~~~~ FINAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ !!!!!!!!!! \n"
@@ -4934,12 +4933,13 @@ proc ga_evolution {task pop nums args} {
 ###########################################################################################
 #-------------------------------------------------------------------------------
 proc run_gp_evolution_for_task {
-                       task
-                       seed     
+                       task     
                        args
                      } {
 
-  set seed   [dict_parse $args "-seed" 2013]
+  #set seed   [dict_parse $args "-seed" 2013]
+  set seed   [dict_parse $args "-seed" @]
+
   set lpop   [dict_parse $args "-lpop" 10]
   set lsrc   [dict_parse $args "-lsrc"  6] 
   set nums   [dict_parse $args "-nums" 10]
@@ -5116,7 +5116,7 @@ proc _gp_test {} {
 
   run_gp_evolution_for_task \
     $task \
-    $seed  {*}$argv
+    {*}$argv
    
 
   return
