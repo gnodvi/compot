@@ -400,6 +400,10 @@ proc FITPROC_xx {prog task args} {
       # но пока просто даим не слишком большой штраф, в пределах дельта-ошибок
       
       incr fitness 25 ;# 10 50 150
+
+      #if {$len != 0} {
+      #  incr fitness $len
+      #}
       #
       # может сразу выходить из цикла по точкам, они же все такие будут?
       break
@@ -696,7 +700,7 @@ proc TEST_xx {args} {
 #   вкладе в результат..
 #  
 
-# Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  * + * + * +
+# Test1:  x ** 4 + x ** 3 + x ** 2 + x       =  dup dup dup dup dup  * + * + * +
 
 #         sin ( x ** 2 + x      )            =  * + sin      
 #         sin ( x ** 2 + x ** 2 )            =  + * sin      

@@ -2944,27 +2944,37 @@ proc gaul_crossover {pop task  } {
   
 
   set crossover_ratio [GET $pop crossover_ratio]
-
   set select_two_proc [GET $pop select_two]
+  set eval_proc       [GET $task "fit_func"]
+  set crossover_proc  [GET $pop crossover] ;# !!
+  
+ if {$::is_print >= 3} {
 
-
+   puts "[procname]  : "
+   puts ""
+   puts "  select_two_proc = $select_two_proc"
+   puts "  crossover_proc  = $crossover_proc"  
+   puts "  eval_proc       = $eval_proc"
+   puts "  crossover_ratio = $crossover_ratio"
+   puts ""
+ }
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  if {$::is_print > 2} {
-    puts "[procname] : (select_two_proc = $select_two_proc)"
-    puts ""
-  }
+  #if {$::is_print > 2} {
+  #  puts "[procname] : (select_two_proc = $select_two_proc)"
+  #  puts ""
+  #}
   
   if {$crossover_ratio <= 0.0}  { 
-    ##puts stderr "crossover_ratio <= 0.0  !! !return  !!!"
+    puts "crossover_ratio <= 0.0  !! !return  !!!"
     return 
   }
   
   # здесь обнуляем, т.е. начинаем процедуру выбора (селекции) сначала
   # 
   SET $pop  select_state 0
-  
-  set eval_proc [GET $task "fit_func"]
   
   #set crossover_proc [GET $pop crossover] ;# 
   #
@@ -3097,8 +3107,6 @@ proc gaul_mutation {pop task} {
   set mutation_ratio  [GET $pop "mutation_ratio"]
   set select_one_proc [GET $pop select_one] 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
   set mutate_proc     [GET $pop mutate]
   set eval_proc       [GET $task "fit_func"]
   
@@ -3112,6 +3120,8 @@ proc gaul_mutation {pop task} {
     puts ""
   }
   
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   if {$mutation_ratio <= 0.0}  { return }  ;# не нужна мутация
   
   # здесь обнуляем, т.е. начинаем процедуру выбора (селекции) сначала
@@ -4816,14 +4826,36 @@ proc pop_evolution {pop task  args} {
 
   } elseif  {$evolfunc == "gp_evolution_func"} {
 
-    # TODO 
-    ga_evolution_func  $pop $task {*}$args 
+    if {0} {
+      # TODO 
+      #ga_evolution_func  $pop $task {*}$args 
+      
+      SET $pop  select_one   "ga_select_one_bestof2"
+      SET $pop  select_two   "ga_select_two_bestof2"
+      SET $pop  seedproc     "maintest_seed_proc"
+      SET $pop  crossover    "ga_crossover_char_allele_mixing"
+      
+      SET $pop  crossover_ratio 0.5
+
+      # Score and sort the initial population members.
+      # инициация итемов функцией [GET $pop seedproc] 
+      #  
+      #pop_initial_fill  $pop $task 
+
+      gaul_crossover $pop $task 
+      gaul_mutation  $pop $task 
+    }
+    
+    
     gp_evolution_func  $pop $task {*}$args 
 
   } else {
     puts "ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   }
   
+
+  #pop_calc_fitness_nov  $pop $task
+
 
   if {$::is_print > 2} {
     pop_print $pop "stderr" ; 
