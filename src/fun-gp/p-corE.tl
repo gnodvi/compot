@@ -868,11 +868,13 @@ proc ga_entity_blank {p this_entity} {
 #-------------------------------------------------------------------------------
 proc ga_entity_setup {pop} {
 
+  set lsrc  [GET $pop lsrc]
+  set form  [GET $pop ch_form] 
 
-  set joe [item_create [GET $pop lsrc]]
 
+  set joe [item_create $lsrc]
 
-  SET $joe ch_form [GET $pop ch_form]
+  SET $joe "ch_form" $form
 
   item_set_fitn $joe $::GA_NOT_FIT
 
@@ -2919,8 +2921,8 @@ proc cross_to_dau_and_son {pop task mother father} \
   
   # здесь бы сразу деток посчитать?
   # 
-  pop_eval_item  $pop $dau $eval_proc $task
-  pop_eval_item  $pop $son $eval_proc $task 
+  pop_eval_item  NULL $dau $eval_proc $task
+  pop_eval_item  NULL $son $eval_proc $task 
   
   if {$::is_print >= 4} {
     
@@ -3853,12 +3855,14 @@ proc add_offspring {&offsprings offspring l} {
 
   USE_REFS
 
-  lappend offsprings $offspring ;# добавили отпрыска
+  ##lappend offsprings $offspring ;# добавили отпрыска
 
   if {[llength $offsprings] == $l} {
 
     return 0 ;# если привысили лимит - выходим ? может перед проверять?
   } 
+
+  lappend offsprings $offspring ;# добавили отпрыска
 
   return 1
 }
@@ -3872,6 +3876,8 @@ proc make_offsprings_from_items {sorted_items l} \
   
   while 1 {
     
+    if {[llength $offsprings] == $l} break
+
     set parent0  [get_rand_offspring  $sorted_items $l]
     set parent1  [get_rand_offspring  $sorted_items $l]
 
@@ -3889,6 +3895,8 @@ proc make_offsprings_from_items {sorted_items l} \
 
     # добавляем отпрысков и смотрим превышение лимита = l:
     # TODO: не добавлять, если уже такоей есть 
+
+    ##puts stderr "parent0_src = $parent0_src, parent1_src = $parent1_src, l = $l"
 
     if {! [add_offspring  offsprings $s0  $l]} break
     if {! [add_offspring  offsprings $s1  $l]} break
@@ -4686,18 +4694,24 @@ proc gp_evolution_func {pop task args} {
   # это слишком простой вариант, нужно сначала добавлять, потом
   #            пересчитывать и потом уже убивать слабых ?
 
-  set len [llength $sorted_items]
+  set len       [llength $sorted_items]
+  set orig_size [GET $pop lpop]
+
 
   set lidprob [dict_parse  $args "-lidprob" 0.5]
   set mutprob [dict_parse  $args "-mutprob" 0.5]
+  set offprob [dict_parse  $args "-offprob" 0.0]
 
-  set l [expr {int ($len * $lidprob) }] ;#  размер лидирующей группы
+  set l [expr {int ($len * $lidprob) }] ;#  размер лидирующей группы 
+  set o [expr {int ($len * $offprob) }] ;;# сгенерим столько же отпрысков от лидеров
+  #set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов ??
+  #set m [expr {$len * $mutprob}] ;# num_ 
+  set m [expr {int ($orig_size * $mutprob) }] ;# num_  
 
   #---------------------------------------
   # 1)
   # выделяем лидеров популяции  (1/3)
 
-  
   set leaders_items [lrange $sorted_items   0 [expr { $l - 0 }]]
   
   #---------------------------------------
@@ -4705,6 +4719,9 @@ proc gp_evolution_func {pop task args} {
   if {$::is_print >= 2} {
     puts stderr ""
     puts stderr "gp_evolution_func: len(sorted_items) = $len, l(leaders_items) = $l"
+    puts stderr "  lidprob = $lidprob, l = $l"
+    puts stderr "  mutprob = $mutprob, m = $m"
+    puts stderr "  offprob = $offprob, o = $o"
     puts stderr ""
   }
    
@@ -4716,6 +4733,25 @@ proc gp_evolution_func {pop task args} {
     works_on_gp_dict  $leaders_items
   }
 
+  #---------------------------------------
+  # 2) CROSSOVER
+  # генерируем другую 1/3  популяции отпрысками от случайных лидеров
+ 
+  set offsprings_items {}
+  
+
+  if {$::gp_NEWS} {
+
+    set o 0 ;# не будем кроссовить !!
+    set offsprings_items {}
+
+  } else {
+
+    #set o 0 ;### $l ;# сгенерим столько же отпрысков от лидеров
+    set offsprings_items  [make_offsprings_from_items  $sorted_items $o]
+    #set offsprings_items {}
+  }
+ 
   #---------------------------------------
   # 3) MUTATION
    
@@ -4731,13 +4767,6 @@ proc gp_evolution_func {pop task args} {
 
   } else {
     
-    set orig_size [GET $pop lpop]
-
-    #set m [expr {$len - $l}]  ;# сделаем сколько-то мутантов ??
-    #set m [expr {$len * $mutprob}] ;# num_ 
- 
-    set m [expr {int ($orig_size * $mutprob) }] ;# num_  
-
     #puts stderr "[procname] : m = $m"
     #set num_mutate_items [expr {($orig_size * [GET $pop mutation_ratio])} ]
 
@@ -4751,9 +4780,9 @@ proc gp_evolution_func {pop task args} {
     # создавая популяцию исходников для следующей итерации.
     #
     
-    # set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]  
+    set pop_items   [concat $leaders_items   $offsprings_items   $mutated_items]  
  
-    set pop_items   [concat  $leaders_items  $mutated_items]   
+    #set pop_items   [concat  $leaders_items  $mutated_items]   
     #set pop_items   [concat  $sorted_items  $mutated_items]   
   }
 
