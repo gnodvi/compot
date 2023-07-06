@@ -40,7 +40,9 @@ set ::DBL_MIN -999999999999999999
 #set ::GA_MIN_FITNESS  $::DBL_MAX
 
 #set ::GA_MIN_FITNESS  -9999 
-set ::GA_NOT_FIT   "NOT-FIT"
+#set ::GA_NOT_FIT   "NOT-FIT"
+set ::GA_NOT_FIT   "NOT"
+
 ;#  - почему-то ошибка на  g_ping.tl _sa  1 1 1
 #                                неверная инициация?  @@@@@@@
 #set ::GA_MIN_FITNESS  ABCD 
@@ -3152,33 +3154,34 @@ proc item_print_fitness {item i} {
 
   puts -nonewline [format "  %3d) " $i]
   
-  #set src   [item_get_main_src   $item] 
-  #set fitn  [item_get_fitn       $item] 
+  set src   [item_get_main_src   $item] 
+  set fitn  [item_get_fitn       $item] 
 
   # а если фитнес уже есть, зачем его вычилять ????????
   # 
   
   if {$::is_fitn_first} {
 
-    set src   [item_get_main_src   $item] 
-    set fitn  [item_get_fitn       $item] 
-    
-    #puts [format "  fitn = % 5s :   %s" $fitn $src]
-    puts [format "  fitn = % 8.3f :   %s" $fitn $src]
+    # TODO - isdigit isfloat 
+    #
+    set is_digital [expr {[string is integer $fitn] || [string is double $fitn]}]
+
+    ##if {$fitn == "NOT-FIT"} {}
+    if {! $is_digital} {
+      puts [format "  fitn = % 8s :   %s" $fitn $src]
+    } else {
+      puts [format "  fitn = % 8.3f :   %s" $fitn $src]
+    }
     
   } else {
-    
-    set src   [item_get_main_src   $item] 
-    set fitn  [item_get_fitn       $item] 
     
     puts -nonewline [format "  %s     " $src]
     flush stdout               ;# все данные должны быть выведены
     
     puts [format "fitn = %s" $fitn]
   }
-  #
-  # item_print  $item
   
+
   return
 }
 #-------------------------------------------------------------------------------
@@ -3226,26 +3229,38 @@ proc test_joy_savestack {} {
 
   v1_init_all  ;# !!!!!!!!!!! ???
 
-  #---------------------------------------------------
-
   set ::error_print1 1
   set ::error_print2 1
   set ::error_print3 1
   
   set ::error_saverestore 1
   
+  #---------------------------------------------------
+
   #set proga "+ + + dup *"
   set proga "+ dup * + + "
+  set val 3
   
+  puts ""
+  puts "proga = $proga, val = $val"
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+
   v0_set_stack_null 
-  set result [v1_get_result_from_one_arg $proga  3]
+
+  set result [v1_get_result_from_one_arg $proga  $val]
   
   
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   puts ""
   puts "result = $result"
   puts "joy_ST = $::joy_ST"
   puts ""
-  
+ 
+ 
+  return
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

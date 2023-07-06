@@ -266,12 +266,10 @@ proc getresult_prog_val {prog val} {
     push $val 
     push $val 
     push $val 
-    push $val 
-    push $val 
-    push $val 
   }
 
-  # выполняем программку
+  # выполняем программку (TODO - надо вылавливать ошибки!)
+  # j-prog:  test_joy_savestack
   # 
   run_v1_prog $prog
 
@@ -279,7 +277,10 @@ proc getresult_prog_val {prog val} {
   # 
   set result [pop]
 
-
+  # можно бы попробовать гибкую реакци. на "неверные" операторы программы, т.е.
+  # не вываливаться сразу в ошибку, а продолжать выпонять остальные операторы !
+  #
+ 
   return $result
 }
 #-------------------------------------------------------------------------------
@@ -297,116 +298,42 @@ proc FITPROC_xx {prog task args} {
 
   set x_list [get_x_list  0 2  10]
 
-  #puts "x_list = $x_list"
-  #exit
-
-  # ???? 
-  # 
   #set func [GET $task "func"]
   set joyf [GET $task "joyf"] ;# наверное удобне в консоли задавать строку на JOY
 
   # начинаем в цикле подсчет фитнеса --------------------------
 
-  #set is_print 0
-
-  if {0} {
-    puts stderr ""
-    puts stderr "-------------------------------------------------------------------"
-    puts stderr ""
-    #puts stderr "FITPROC_xx: prg    = $src"
-    puts stderr "FITPROC_xx: x_list = $x_list"
-    #puts stderr "FITPROC_xx: func   = $func"
-    puts stderr "FITPROC_xx: joyf   = $joyf"
-    puts stderr ""
-  }
-
-  set fitness 0
-
+  set fitness   0
   set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
-
 
 
   foreach x $x_list {
 
     #---------------------------------------------------------------
 
-    if {0} {
-      set real [expr $func] ;# рельное значение для функции в этой точке
-    } else {
-      #run_v1_src  $joyf     ;# выполнить исходник ??
-      set real [v1_get_result_from_one_arg  $joyf $x]
-    }
+    set real [v1_get_result_from_one_arg  $joyf $x]
 
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # обнудим стек, выполним программку и возьмем результат (верхний эдемент стека)
-    # 
-    #set calc [getresult_prog_val  $prog $x] ;# посчитанное
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-    v0_set_stack_null ;# и не более того !!!!
-    
-    # кладем одно значение в стек
-    # 
-    push $x 
-    
-    if {$::INIT} {
-      push $x 
-      push $x 
-      push $x 
-      push $x 
-      push $x 
-    }
-    
-    # выполняем программку
-    # 
-    run_v1_prog $prog
-
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # забираем одно значение из стека
-    # 
-    set calc [pop]
-
-
-    #---------------------------------------------------------------
+    set calc [getresult_prog_val $prog $x]
 
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
-
-    #puts stderr "::joy_ST = $::joy_ST,  len = $len"
-    #puts "calc = $calc"
-
-    #set delta_sum 0 ;# будем суммировать отклонения в точках или их квадраты
 
     if {$is_print} {
       puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
     }
+
     #---------------------------------------------------------------
-    #
 
     if {$calc eq {}}  {
 
       if {$is_print} {
         puts stderr "FITPROC_xx: x = $x, calc eq {} , ERROR operator??"
       }
+
       # ошибка программы (на первом ошибочном операторе) !!
-      # 
-      # можно бы попробовать гибкую реакци. на "неверные" операторы программы, т.е.
-      # не вываливаться сразу в ошибку, а продолжать выпонять остальные операторы !
-      #
       # но пока просто даим не слишком большой штраф, в пределах дельта-ошибок
       
       incr fitness 25 ;# 10 50 150
-
-      #if {$len != 0} {
-      #  incr fitness $len
-      #}
-      #
-      # может сразу выходить из цикла по точкам, они же все такие будут?
-      break
+      break ;# сразу выходить из цикла по точкам
 
     } elseif {![string is integer $calc] && ![string is double $calc]} {
 
@@ -416,20 +343,9 @@ proc FITPROC_xx {prog task args} {
       puts "FITPROC_xx: NOT DIGITAL ???? !!!"
       exit
 
-      incr fitness 50 ;# при каждой ошибке добавляем дельту
-      # 
-      # может сразу выходить из цикла по точкам, они же все такие будут?
-      break
-
     } else {
 
-      #set delta [expr {abs($o-$calc)}] ;# 
       set delta [expr {( $real - $calc ) ** 2 } ] ;# !! может корень из суммы квадратов?
-
-      #if {$delta > 1000} {
-      #  # anti overflow ???
-      #  set delta 1000
-      #}
 
       set delta_sum [+ $delta_sum $delta]
 
@@ -439,17 +355,19 @@ proc FITPROC_xx {prog task args} {
 
       #set fitness [+ $fitness $delta]
     }
+
     #---------------------------------------------------------------
 
-  }
+  } ;# while
+
     
-  #set fitness [+ $fitness $delta_sum]
   set fitness [expr {$fitness + sqrt ($delta_sum)}]
+
 
   # 1) TODO
   # длину учитывать ? но тогда генетич. разнообразие ухудшается?
   #
-  set len [calc_len_prog $prog]
+  #set len [calc_len_prog $prog]
 
   #set fitness [+ $fitness [* 0.01 $len]]
 
@@ -458,7 +376,6 @@ proc FITPROC_xx {prog task args} {
   # нам не нужны лишние результаты в стеке ? тоже ухудшает? лучше потом преобразовать?
   #
   #incr fitness $len
-
 
   #puts stderr "FITPROC_xx, prg = $src, fitness = $fitness"
 
@@ -473,31 +390,31 @@ proc FITPROC_xx {prog task args} {
 
 # }
 #-------------------------------------------------------------------------------
-proc func_prepare_from_input {inp} {
+# proc func_prepare_from_input {inp} {
 
-  set lis [split $inp]
+#   set lis [split $inp]
 
-  set out {}
+#   set out {}
 
-  foreach l $lis {
+#   foreach l $lis {
 
-    if        {$l == "x"} {
-      append out {$x}
-    } elseif  {$l ==  "plus"} {
-      append out +
-    } elseif  {$l == "minus"} {
-      append out -
-    } elseif  {$l ==  "mult"} {
-      append out *
-    } elseif  {$l ==   "pow"} {
-      append out **
-    } else {
-      append out $l
-    }
-  } 
+#     if        {$l == "x"} {
+#       append out {$x}
+#     } elseif  {$l ==  "plus"} {
+#       append out +
+#     } elseif  {$l == "minus"} {
+#       append out -
+#     } elseif  {$l ==  "mult"} {
+#       append out *
+#     } elseif  {$l ==   "pow"} {
+#       append out **
+#     } else {
+#       append out $l
+#     }
+#   } 
 
-  return $out
-}
+#   return $out
+# }
 #-------------------------------------------------------------------------------
 proc TEST_xx {args} {
 
@@ -518,10 +435,10 @@ proc TEST_xx {args} {
   #------------------------------------------------------
 
   set ::INIT  [dict_parse $argv "-init"   0] 
-
-  ;# 0 - не делаем специально начальеую инициацию
-  ;# 1 - кладем сразу начальное значение x в стек несколько раз с запасом dup dup dup
-
+  #
+  # 0 - не делаем специально начальеую инициацию
+  # 1 - кладем сразу начальное значение x в стек несколько раз с запасом dup dup dup
+  # 
   if {$::INIT} {
     set gp_list     [dict_parse $argv "-list"   "* nop +"]
   } else {
@@ -531,8 +448,8 @@ proc TEST_xx {args} {
   #------------------------------------------------------
   # либо в таком виде
   #
-  set func        [dict_parse $argv "-func"   {x pow 2 plus x}]
-  set func [func_prepare_from_input $func] 
+  #set func        [dict_parse $argv "-func"   {x pow 2 plus x}]
+  #set func [func_prepare_from_input $func] 
 
   set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
 
@@ -551,7 +468,7 @@ proc TEST_xx {args} {
   set task [task_create  \
 	      -ios_begin 1 -ios_final 1 \
               -fit_func $fit_func  -fit_tobest $fit_tobest \
-              -func  $func \
+              \
               -joyf  $joyf \
               -gp_list    $gp_list \
              ] 
@@ -576,7 +493,7 @@ proc TEST_xx {args} {
   #------------------------------------------------------
   # распечатаем начальные значения
 
-  puts "func = $func"
+  #puts "func = $func"
   puts "joyf = $joyf"
   puts "init = $::INIT"
   puts "list = $gp_list"

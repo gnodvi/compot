@@ -1,7 +1,6 @@
 
 TEST_xx -seed 2013 -lpop 10 -lsrc 6 -nums 10 -vers gp
 
-func = $x**2+$x
 joyf = dup dup * +
 init = 0
 list = dup * +
