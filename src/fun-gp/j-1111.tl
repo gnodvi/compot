@@ -87,6 +87,7 @@ proc prefix_work {a} {
   if {$pref == $::pref_quote} {
     
     if {$next == " "} {
+
       ;; # это одиночный символ квотирования в начале группы, наверное
       ;; # пока ничего не делаем ?
       #puts stderr "next eq spzce !!!!!"
@@ -128,7 +129,7 @@ proc prefix_work {a} {
 
     set ::$name [pop]
 
-    return "continue"  
+    return 1 ;#  "continue"  
   }  
   
   #-------------------------------------------------------------
@@ -146,7 +147,7 @@ proc prefix_work {a} {
     #push [set ::$name]
     push $var
 
-    return "continue"  
+    return 1 ;#  "continue"  
   } 
 
   #}   
@@ -221,7 +222,9 @@ proc r_one {a} {
   #-------------------------------------------------------------
 
   if [prefix_work $a] {
-    return "continue"
+
+    #return "continue"
+    return 
   }
 
   #-------------------------------------------------------------
@@ -256,7 +259,8 @@ proc r_one {a} {
     # TODO отслеживать глуибну рекурсии, чтобы при аварии откатываться
     # на начало рекурсии ??
     
-    return "continue"
+    #return "continue"
+    return
   } 
   
   # 3) теперь смотрим в TCL-процедурах (лучше сделать через tcl-команду ?)
@@ -273,32 +277,55 @@ proc r_one {a} {
   }
   
 
-  return ""
+  ##return ""
+  return 
+}
+#-------------------------------------------------------------------------------
+proc r_begin {} {
+
+  set ::rr_level  0
+  set ::rr_index -1
+  set ::rr_is_reterror 0
+
+  set ::ST_save ""
+
+  #set ::joy_ST {}    ;# ???????????
+
 }
 #-------------------------------------------------------------------------------
 #
 # глобальные переменные рекурсивнго выполнения команд
 
-set ::error_saverestore 0
+set ::rr_is_restore 0
 
-set ::error_print1 0
-set ::error_print2 0
-set ::error_print3 0
+set ::rr_errorprint 0
 
-set ::r_one_level 0
+r_begin ;# начальная инициализация перед рекурсивным выполнением
 
-set ::ST_save ""
-
+#-------------------------------------------------------------------------------
+# процедура рекурсивно вызывается из r_one
+# 
 #-------------------------------------------------------------------------------
 proc r args {
   
 
   # ~~~~~ идем списком по элементам команды ~~~~~~~~~~~~~~~~~
   # 
+
+  # пока упрощенно следим только по верхнему уровню
+  #if {$::rr_level == 0} {
+  #  set ::rr_index 0
+  #}
+
   foreach a $args {
 
-    if {$::error_print3} {
-      puts stderr [format "r: stack = %25s  |  a = %25s | %10s " $::joy_ST $a $::ST_save]
+    if {$::rr_level == 0} {
+      incr ::rr_index +1
+    }
+
+    if {$::rr_errorprint} {
+      puts stderr [format "r: S = %26s  |  a = %26s | %10s, level = %d, ::rr_index = %d  " \
+                     $::joy_ST $a $::ST_save $::rr_level $::rr_index]
     }
 
     # перед попыткой выполнить оператор, сохраним стек, чтобы
@@ -310,60 +337,70 @@ proc r args {
     # рекурсия  при вызове r_one -> r
     #
     
-    if {$::r_one_level == 0} {
+    if {$::rr_level == 0} {
       set ::ST_save $::joy_ST
     }
     
-    incr ::r_one_level +1
+    incr ::rr_level +1
     
     #-------------------------------------------------
     if {[catch {set ret [r_one $a]} err]} {
     #-------------------------------------------------
       
-      # перехвачена ошибка при выполнении опреатора $a
+      # перехвачена ошибка при выполнении опреатора $a, но это может быть вложенный оператор
+      # - надо к этому моменту иметь "адрес" этого оператора во вложениях программы!
+      # - но для начала можно упрощенно считать - только номер оператора верхнего уровня..
       
-      if {$::error_print2} {
-        puts "r_error_print2: r: err = $err, ST = $::joy_ST, ST_save = $::ST_save"
-        puts ""
+      if {$::rr_errorprint} {
+        puts stderr ""
+        puts stderr "r_one: ret = $ret, err = $err"
+        puts stderr ".......ST = $::joy_ST, ST_save = $::ST_save, a = $a"
+        puts stderr ""
       }
       
-      if {$::error_saverestore} {
+      if {$::rr_is_restore} {
         set ::joy_ST $::ST_save ;# ??
+
+      } else {
+
+        # TODO: при получении ошибки сразу вываливаться из цикла 
+        #        с сохранением полной информации об ошибке:
+        # - ошибочный оператор.
+        # - точная координата ошибки, с учетом вложенности (список).
+        # - содержимое стека на момент ошибки.
+        # - код ошибки с расшифровокой (коментарием)
+
+        set ::rr_is_reterror 1
       }
       
-      incr ::r_one_level -1 ;# 
+      incr ::rr_level -1 ;# 
       
-      # TODO: при получении ошибки сразу вываливаться из цикла 
-      #        с сохранением полной информации об ошибке:
-      # - ошибочный оператор.
-      # - точная координата ошибки, с учетом вложенности (список).
-      # - содержимое стека на момент ошибки.
-      # - код ошибки с расшифровокой (коментарием)
-
     #-------------------------------------------------
     } else {
     #-------------------------------------------------
       
       # все прошло нормально, без ошибок
-      #puts "all ok, ret = $ret, r_one_level = $::r_one_level"
+      #puts "all ok, ret = $ret, r_one_level = $::rr_level"
       
-      incr ::r_one_level -1
+      incr ::rr_level -1
       
-      if {$ret == "continue"} {continue}  
+      #if {$ret == "continue"} {continue} ;# ???????
           
-      #incr ::r_one_level -1
+      #incr ::rr_level -1
       
     #-------------------------------------------------
     }
     #-------------------------------------------------
     
+    if {$::rr_is_reterror == 1} {break}
     
   } ;# foreach a $args 
+
   # конец цикла по элементам команды
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-  #if {$::error_print3} {
+  #if {$::rr_errorprint} {
   #  puts stderr [format "r: stack = %25s  |  " $::joy_ST]
   #}
 
@@ -372,6 +409,8 @@ proc r args {
 }
 #-------------------------------------------------------------------------------
 proc run_v1_src {prg} {
+
+  set err_index -1
 
   # prg - программа явным списком
 
@@ -382,9 +421,16 @@ proc run_v1_src {prg} {
     puts ""
   }
 
+  r_begin
 
   r {*}$prg ;# раскроим список и выполним последовательность команд
 
+  if {$::rr_is_reterror == 1} {
+    #puts "run_v1_src: ERROR, ::rr_index = $::rr_index"
+    set err_index $::rr_index
+  }
+
+  return $err_index
 }
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -520,6 +566,12 @@ proc v1_init_all_operators {} {
     eval [pop]
     
   }
+  #--------------------------------------------------------------
+
+  v0_: .       {puts "[pop] "}                 tcl
+  v0_: .s      {puts  $::joy_ST}               tcl 
+  v0_: c       {set ::joy_ST {}; r_begin}               tcl ;# clear stack  r_begin ??
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # можно бы сделать и обычной tcl-процедурой, т.е. не регистрировать 
   # в ::instructios, ведь все равно map через .... tcl вызываем !
@@ -583,12 +635,6 @@ proc v1_init_all_operators {} {
   }  tcl  
 
   #--------------------------------------------------------------
-
-  #v0_: .       {pn "[pop] "}                  tcl
-  v0_: .       {puts "[pop] "}                 tcl
-  v0_: .s      {puts  $::joy_ST}               tcl
-  
-  #--------------------------------------------------------------
   # вот, это команды !!!! 
   # 
   #v0_: '       {push [scan [pop] %c]}         tcl  ;# char -> int
@@ -602,7 +648,6 @@ proc v1_init_all_operators {} {
   v0_: and     {2op &&}                       tcl
   v0_: at      1 - swap {push [lindex [pop] [pop]]} tcl
 
-  v0_: c       {set ::joy_ST {}}              tcl ;# clear stack
   v0_: choice  {choice [pop] [pop] [pop]}     tcl
   v0_: cleave  {cleave [pop] [pop] [pop]}     tcl
   v0_: cons    {push [linsert [pop] 0 [pop]]} tcl
@@ -1276,50 +1321,6 @@ proc TEST_sort {} {
 
 }
 #-------------------------------------------------------------------------------
-proc TEST_vars {} {
-
-  puts ""
-  puts "TEST_vars ..."
-  puts ""
-  
-  v1_init_all 
-  
-  #-------------------------------------------------
-
-  set ::tv 42
-  
-  puts "tv = $::tv"
-
-  r c  ~tv $ 1 + dup ~::tv set  ;# 43
-  
-  puts "tv = $::tv"
-
-  r c   tv $ 1 + dup  tv set   ;# 44 -  т.е. можно и без скобок вполне,
-                                  # главное чтобы под эти именем для переменной
-                                  # не оказалось команды?  
-  puts "tv = $::tv"
-
-  # не очень понял, зачем я дублирую dup ?? лишнее
-
-  r c   tv $  1 +   ::tv set
-
-  puts "tv = $::tv"
-
-
-  #-------------------------------------
-
-  puts ""
-  puts "-------------------------------"
-  puts ""
-
-  r c  10 20  =bb =aa  @bb .
-
-  puts "::aa = $::aa"
-  puts "::bb = $::bb"
-
-
-}
-#-------------------------------------------------------------------------------
 proc TEST_solv_qroots_old {} {
 
   # :: solveq ( a b c -- x )
@@ -1354,7 +1355,7 @@ proc TEST_solv {} {
   
   #set ::NEWFORMAT 1
 
-  TEST_vars 
+  #TEST_vars 
 
   puts ""
   puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -1630,7 +1631,6 @@ proc run_v1_prog {prog} {
     # это была ссылка на словарь
 
     set prog [set $prog] ;# сам словарь
-
   } 
 
   # получим  "исходник" главной программы
@@ -1641,11 +1641,11 @@ proc run_v1_prog {prog} {
   biblio_push $prog ;# запихнуть "локальную библиотеку" в стек библиотек
                        # (в данном случае - это сама программа)
 
-  run_v1_src $src     ;# выполнить исходник
+  set err_index [run_v1_src $src]     ;# выполнить исходник
 
   biblio_pop        ;# убрать библиотеку из стека  
 
-  return 
+  return $err_index
 }
 #-------------------------------------------------------------------------------
 proc calc_len_prog {prog} {
@@ -1915,17 +1915,131 @@ proc TEST_1111 {} {
   #r c  3 ^
   biblio_print
 
-  set ::error_print1 1
-  set ::error_print2 1
-  set ::error_print3 1
+  set ::rr_errorprint 1
 
   run_v1_src  {progtest1}
 
 }
 #-------------------------------------------------------------------------------
+proc v1_get_result_from_one_arg {prg_11 val} {
+
+  # кладем одно значение в стек
+  # 
+  push $val 
+
+  # выполняем программку
+  # 
+  #run_v1_src_or_prog $prg_11 ;### $prog_11
+
+  run_v1_src $prg_11
+  #r {*}$prg ;# раскроим список и выполним последовательность команд
+
+  # забираем одно значение из стека
+  # 
+  set result [pop]
+
+
+  return $result
+}
+#-------------------------------------------------------------------------------
+proc test_joy_savestack {} {
+
+
+  v1_init_all  ;# !!!!!!!!!!! ???
+
+  # флажки отладочной печати
+  set ::rr_errorprint 1
+  
+  # set ::rr_is_restore 1 ;# пропускаем ошибочный оператор
+  
+
+  #set proga "+ + + dup *"
+  #set proga "+ dup * + + "
+
+  set proga "11 12 + + +"
+
+  set val 3
+  
+  puts ""
+  puts "proga = $proga, val = $val"
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+
+  v0_set_stack_null 
+
+  set result [v1_get_result_from_one_arg $proga  $val]
+  
+  
+  puts ""
+  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+  puts "result = $result"
+  puts "joy_ST = $::joy_ST"
+  puts ""
+ 
+ 
+  return
+}
+#-------------------------------------------------------------------------------
+proc TEST_vars {} {
+
+  puts ""
+  puts "TEST_vars ..."
+  puts ""
+  
+  v1_init_all 
+  
+  #-------------------------------------
+
+
+  set ::tv 42
+  
+  puts "tv = $::tv"
+
+  r c  ~tv $ 1 + dup ~::tv set  ;# 43
+  
+  puts "tv = $::tv"
+
+  r c   tv $ 1 + dup  tv set   ;# 44 -  т.е. можно и без скобок вполне,
+                                  # главное чтобы под эти именем для переменной
+                                  # не оказалось команды?  
+  puts "tv = $::tv"
+
+  # не очень понял, зачем я дублирую dup ?? лишнее
+
+  r c   tv $  1 +   ::tv set
+
+  puts "tv = $::tv"
+
+  puts ""
+  puts "-------------------------------"
+  puts ""
+
+  # 
+  # флажки отладочной печати
+  set ::rr_errorprint 1
+
+  r c  10 20  =bb =aa  @bb .
+
+  puts "::aa = $::aa"
+  puts "::bb = $::bb"
+
+  # r_error_print2: err = invalid bareword "continue"
+  # in expression "continue";
+  # should be "$continue" or "{continue}" or "continue(...)" or ...
+  #                 ST = 10, ST_save = , a = =bb
+  
+  set ::rr_errorprint 0
+
+  return
+}
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #
 # r~.tl TEST test_joy_savestack
 # j~.tl 1111 TEST_1111
+# j~.tl 1111 TEST_vars
 #
 ################################################################################
 

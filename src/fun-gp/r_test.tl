@@ -271,7 +271,10 @@ proc getresult_prog_val {prog val} {
   # выполняем программку (TODO - надо вылавливать ошибки!)
   # j-prog:  test_joy_savestack
   # 
-  run_v1_prog $prog
+  # -1 - ошибки нет, 0, 1, .. - индекс ошибочного оператора
+
+  set err_index [run_v1_prog $prog]
+
 
   # забираем одно значение из стека
   # 
@@ -309,11 +312,12 @@ proc FITPROC_xx {prog task args} {
 
   foreach x $x_list {
 
-    #---------------------------------------------------------------
+    #----------------------------------------------------------
 
-    set real [v1_get_result_from_one_arg  $joyf $x]
+    set real [v1_get_result_from_one_arg  $joyf $x] ;# посчитаем истинное значение по функции 
 
-    set calc [getresult_prog_val $prog $x]
+    set calc [getresult_prog_val          $prog $x] ;# по найденному варианту
+
 
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
 
@@ -321,7 +325,7 @@ proc FITPROC_xx {prog task args} {
       puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
     }
 
-    #---------------------------------------------------------------
+    #-----------------------------------------------------------
 
     if {$calc eq {}}  {
 
@@ -356,7 +360,7 @@ proc FITPROC_xx {prog task args} {
       #set fitness [+ $fitness $delta]
     }
 
-    #---------------------------------------------------------------
+    #------------------------------------------------------------
 
   } ;# while
 
