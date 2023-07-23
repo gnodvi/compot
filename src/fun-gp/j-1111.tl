@@ -408,9 +408,20 @@ proc r args {
   set ::joy_ST  ;# ?? возвращаем стек ??
 }
 #-------------------------------------------------------------------------------
-proc run_v1_src {prg} {
+proc get_rr_is_reterror {} {
 
-  set err_index -1
+
+  if {$::rr_is_reterror == 1} {
+    #puts "run_v1_src: ERROR, ::rr_index = $::rr_index"
+    set err_index $::rr_index
+  } else {
+    set err_index -1
+  }
+
+  return $err_index
+}
+#-------------------------------------------------------------------------------
+proc run_v1_src {prg} {
 
   # prg - программа явным списком
 
@@ -425,10 +436,7 @@ proc run_v1_src {prg} {
 
   r {*}$prg ;# раскроим список и выполним последовательность команд
 
-  if {$::rr_is_reterror == 1} {
-    #puts "run_v1_src: ERROR, ::rr_index = $::rr_index"
-    set err_index $::rr_index
-  }
+  set err_index [get_rr_is_reterror]
 
   return $err_index
 }

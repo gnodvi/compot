@@ -273,8 +273,18 @@ proc getresult_prog_val {prog val} {
   # 
   # -1 - ошибки нет, 0, 1, .. - индекс ошибочного оператора
 
-  set err_index [run_v1_prog $prog]
+  set err_index [run_v1_prog $prog] ;# по любому надо выполнить
 
+  #if {$::rr_is_reterror == 1} {
+  #  set err_index__ $::rr_index
+  #} else {
+  #  set err_index__ -1
+  #}
+  
+  #puts "err_index = $err_index, err_index__ = $err_index__"
+  #set err_index $err_index__ ;# забрали индекс ршибочного оператора здесь
+
+  set err_index [get_rr_is_reterror]
 
   # забираем одно значение из стека
   # 
@@ -284,7 +294,7 @@ proc getresult_prog_val {prog val} {
   # не вываливаться сразу в ошибку, а продолжать выпонять остальные операторы !
   #
  
-  return $result
+  return [list $result $err_index]
 }
 #-------------------------------------------------------------------------------
 #
@@ -298,6 +308,8 @@ proc getresult_prog_val {prog val} {
 proc FITPROC_xx {prog task args} {
 
   set is_print [dict_parse $args "-is_print"   0]
+
+  #puts stderr "args = $args, is_print = $is_print, ::is_print = $::is_print"
 
   set x_list [get_x_list  0 2  10]
 
@@ -316,18 +328,22 @@ proc FITPROC_xx {prog task args} {
 
     set real [v1_get_result_from_one_arg  $joyf $x] ;# посчитаем истинное значение по функции 
 
-    set calc [getresult_prog_val          $prog $x] ;# по найденному варианту
+    #set calc [getresult_prog_val          $prog $x] ;# по найденному варианту
+    #
+    foreach {calc err} [getresult_prog_val $prog $x] break
 
 
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
 
-    if {$is_print} {
-      puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
+    if {$::is_print >= 2} {
+      #puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
+      puts stderr [format "err = %2d,  x = %5.2f,  calc = | %s |"  $err $x $calc]
     }
 
     #-----------------------------------------------------------
 
-    if {$calc eq {}}  {
+    #if {$calc eq {}}  {}
+    if {$err != -1}  {
 
       if {$is_print} {
         puts stderr "FITPROC_xx: x = $x, calc eq {} , ERROR operator??"
@@ -336,7 +352,12 @@ proc FITPROC_xx {prog task args} {
       # ошибка программы (на первом ошибочном операторе) !!
       # но пока просто даим не слишком большой штраф, в пределах дельта-ошибок
       
-      incr fitness 25 ;# 10 50 150
+      #incr fitness 25 ;# 10 50 150
+      incr fitness 900 ;# 10 50 150
+
+      incr fitness -$err ;# немного скорректируем, т.е. чем дальше о начала проги ошилка
+      # тем лучше фитнес (меньше)
+
       break ;# сразу выходить из цикла по точкам
 
     } elseif {![string is integer $calc] && ![string is double $calc]} {
@@ -382,6 +403,9 @@ proc FITPROC_xx {prog task args} {
   #incr fitness $len
 
   #puts stderr "FITPROC_xx, prg = $src, fitness = $fitness"
+
+  # 3) нужно вернуть признак, что была ошибка и где (для возможной корректировки)
+  #
 
   return $fitness
 }
@@ -725,6 +749,7 @@ proc NEXT_01 {args} {
 
 # r~.tl ANTS ANTS_gp 2012  10 15 2
 
+# r~.tl TEST TEST_xx  -seed 1 -lpop  5 -size 6 -nums 0 -print 2
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # TODO: на простейшей "программы" отладить все механмзмы

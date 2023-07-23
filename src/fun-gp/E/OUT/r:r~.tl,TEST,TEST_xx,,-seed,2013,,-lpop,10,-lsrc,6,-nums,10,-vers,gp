@@ -28,8 +28,8 @@ step 005)  best=   2.650 :   dup + dup
 step 006)  best=   2.650 :   dup + dup 
 step 007)  best=   2.650 :   dup + dup 
 step 008)  best=   2.650 :   dup + dup 
-step 009)  best=   2.191 :   dup dup + + 
-step 010)  best=   2.191 :   dup dup + + 
+step 009)  best=   2.650 :   dup + dup 
+step 010)  best=   2.650 :   dup + dup 
 
 ==============================================
 

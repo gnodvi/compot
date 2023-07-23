@@ -541,12 +541,11 @@ proc pop_calc_fitness_nov {pop task} \
   set itemlist    [GET $pop  "itemlist"] 
 
   itemlist_calc_fitness_nov  $itemlist $task
+
   return
 
   # set fitnessfunc [GET $task "fit_func"]
- 
   # foreach item $itemlist {
-
   #   item_calc_fitness_nov  $item $fitnessfunc  $task
   # }
 
@@ -4595,10 +4594,11 @@ proc gp_evol {pop task args} {
 
   if {$::is_print >= 2} {
     puts stderr ""
-    puts stderr "[procname]: len(sorted_items) = $len, l(leaders_items) = $l"
-    puts stderr "  lidprob = $lidprob, l = $l"
-    puts stderr "  mutprob = $mutprob, m = $m"
-    puts stderr "  offprob = $offprob, o = $o"
+    puts stderr "[procname]: len = $len, l = $l --------------------- BEGIN ------"
+    puts stderr ""
+    puts stderr "lidprob = $lidprob, l = $l"
+    puts stderr "mutprob = $mutprob, m = $m"
+    puts stderr "offprob = $offprob, o = $o"
     puts stderr ""
   }
    
@@ -4676,6 +4676,11 @@ proc gp_evol {pop task args} {
   #  #puts stderr "  ::gp_dict = [set $::gp_dict]"
   #}
   #}
+  if {$::is_print >= 2} {
+    #puts stderr ""
+    puts stderr "[procname]: ------------------------------------ FINAL ------"
+    puts stderr ""
+  }
    
   return $pop_items
 }
@@ -4834,9 +4839,18 @@ proc pop_evolution {pop task  args} {
       return false
     }
   
+  #----------------------------------------------
+  # ga_evol  gp_evol  pop_calc_fitness_nov ??
+
   set evolfunc  [dict_parse $args "-evol"  "NOTEVOLFUNC"]
 
   $evolfunc $pop $task {*}$args
+ 
+  if {$::is_print >= 2} {
+    puts stderr "\n   pop_evolution  ...................... \n"
+    gp_pop_all_print $pop
+  }
+
 
   #----------------------------------------------
   #  
@@ -4874,6 +4888,8 @@ proc pop_evolution {pop task  args} {
   #     puts "ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   #   }
   #----------------------------------------------
+
+  ###  !! pop_calc_fitness_nov  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
 
   # 5) сортируем всех челнов популяции по фитнесу
   #  
