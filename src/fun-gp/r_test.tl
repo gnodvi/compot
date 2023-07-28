@@ -253,7 +253,6 @@ set ::INIT 0
 #-------------------------------------------------------------------------------
 proc getresult_prog_val {prog val} {
 
-
   v0_set_stack_null ;# и не более того !!!!
   
   # кладем одно значение в стек
@@ -302,8 +301,6 @@ proc getresult_prog_val {prog val} {
 # Лучшая програма :  "DUP *"
 # Лучший фитнес == 2 (нет ошибок для любых входов, длина проги == 2).
 #
-# r~.tl TEST TEST_xx  -seed 1 -lpop 20 -size 6 -nums -1 -vers ga
-# 
 #-------------------------------------------------------------------------------
 proc FITPROC_xx {prog task args} {
 
@@ -335,9 +332,18 @@ proc FITPROC_xx {prog task args} {
 
     set len [llength $::joy_ST] ;# сколько еще осталось в стеке значений ??
 
-    if {$::is_print >= 2} {
-      #puts stderr "x = $x, calc = |$calc|, ::joy_ST = |$::joy_ST|"
-      puts stderr [format "err = %2d,  x = %5.2f,  calc = | %s |"  $err $x $calc]
+    if {$::is_print >= 3} {
+      #set src [prog_get_prg_src $prog "main"]
+      set src [v1_get_main_src $prog]
+
+      #set src "sfsffdfddfdfdf" 
+
+      puts -nonewline stderr [format "[procname]: %20s : err= %2d,  x= %5.2f,  calc= | %s |"  \
+                                $src $err $x $calc]
+      if {$err != -1} {
+        puts -nonewline stderr " .....  ERROR operator N $err"
+      }
+      puts stderr ""
     }
 
     #-----------------------------------------------------------
@@ -345,9 +351,9 @@ proc FITPROC_xx {prog task args} {
     #if {$calc eq {}}  {}
     if {$err != -1}  {
 
-      if {$is_print} {
-        puts stderr "FITPROC_xx: x = $x, calc eq {} , ERROR operator??"
-      }
+      #if {$::is_print >= 3} {
+      #  puts stderr "[procname]:  ERROR operator??"
+      #}
 
       # ошибка программы (на первом ошибочном операторе) !!
       # но пока просто даим не слишком большой штраф, в пределах дельта-ошибок
@@ -365,7 +371,7 @@ proc FITPROC_xx {prog task args} {
       # здесь может быть просто списко или символ-строка, а не число!
       # но пока кроме числе и {ошибки} в стеке ничего не предвидится
       #
-      puts "FITPROC_xx: NOT DIGITAL ???? !!!"
+      puts "[procname]: NOT DIGITAL ???? !!!"
       exit
 
     } else {
@@ -375,7 +381,7 @@ proc FITPROC_xx {prog task args} {
       set delta_sum [+ $delta_sum $delta]
 
       if {$is_print} {
-        puts stderr "FITPROC_xx: x = $x, real = $real, calc = $calc, delta = $delta, delat_sum = $delta_sum"
+        puts stderr "[procname]:  x = $x, real = $real, calc = $calc, delta = $delta, delat_sum = $delta_sum"
       }
 
       #set fitness [+ $fitness $delta]
@@ -383,7 +389,8 @@ proc FITPROC_xx {prog task args} {
 
     #------------------------------------------------------------
 
-  } ;# while
+  } ;# конец цикла по тестовым кейсм !!!
+
 
     
   set fitness [expr {$fitness + sqrt ($delta_sum)}]
@@ -406,6 +413,10 @@ proc FITPROC_xx {prog task args} {
 
   # 3) нужно вернуть признак, что была ошибка и где (для возможной корректировки)
   #
+
+  if {$::is_print >= 3} {
+    puts stderr ""
+  }
 
   return $fitness
 }
@@ -452,8 +463,6 @@ proc TEST_xx {args} {
   puts "TEST_xx $args"
   puts ""
 
-  #------------------------------------------------------
-
   set vers        [dict_parse $argv "-vers"  "gp"] ;# по умолчанию 
   set ::is_print  [dict_parse $argv "-print"    1]  ;# $print
 
@@ -481,14 +490,14 @@ proc TEST_xx {args} {
 
   set joyf        [dict_parse $argv "-joyf"   {dup dup * +}]
 
-  #------------------------------------------------------
   # флажки для новейших алгоритмов
   # 
-
   dict_parse_GLOBAL "::gp_NEWS" $argv
   dict_parse_GLOBAL "::gp_AUTO" $argv
   dict_parse_GLOBAL "::gp_DEEP" $argv
   
+  #------------------------------------------------------
+
   ios_init_TEST_xx 
 
   v1_init_all  ;# !!!!! ???
@@ -497,15 +506,21 @@ proc TEST_xx {args} {
 	      -ios_begin 1 -ios_final 1 \
               -fit_func $fit_func  -fit_tobest $fit_tobest \
               \
-              -joyf  $joyf \
-              -gp_list    $gp_list \
+              -joyf  $joyf -gp_list $gp_list \
              ] 
+  #------------------------------------------------------
   
-  set seed        [dict_parse $argv "-seed"   @]   ;# каждый выхов случаен
+  set seed        [dict_parse $argv "-seed"   @]   ;# каждый вызов случаен
   set lpop        [dict_parse $argv "-lpop"  10]   ;# колич-во ботов 
   set lsrc        [dict_parse $argv "-lsrc"   6]   ;# макс. длина ботов (при начальном старте?)
   set nums        [dict_parse $argv "-nums"  10]   ;# шагов эволюции 
 
+  # распечатаем начальные значения
+
+  #puts "func = $func"
+  puts "joyf = $joyf"
+  puts "init = $::INIT"
+  puts "list = $gp_list"
 
   #------------------------------------------------------
   #
@@ -517,14 +532,6 @@ proc TEST_xx {args} {
   }
   
   comm_random_seed $seed 
-
-  #------------------------------------------------------
-  # распечатаем начальные значения
-
-  #puts "func = $func"
-  puts "joyf = $joyf"
-  puts "init = $::INIT"
-  puts "list = $gp_list"
 
   #------------------------------------------------------
 
@@ -767,4 +774,10 @@ proc NEXT_01 {args} {
 
 # r~.tl TEST NEXT_01 -seed @ -lpop 10 -size 1 -nums -1 -list "p1 p3 p5" -auto 1
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# r~.tl TEST TEST_xx  -joyf 'dup dup dup * * +' -lpop 20 -size 6 -nums -1 -vers gp -list '* + dup' -offprob 0.1 -print 3 
+
+# r~.tl TEST TEST_xx  -joyf 'dup dup dup * * +' -lpop 20 -size 6 -nums -1 -vers ga -print 2
+# 
 ###########################################################################################

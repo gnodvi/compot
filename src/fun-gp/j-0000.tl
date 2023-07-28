@@ -162,6 +162,10 @@ proc v0_find_joyprog {instr} {
 #-------------------------------------------------------------------------------
 proc prog_get_prg_src {prog prg_name} {
 
+  #if [is_GLOBAL_DICT $prog] { 
+  #   # это была ссылка на словарь
+  #  set prog [set $prog] ;# сам словарь
+  #} 
   
   return [dict get $prog  $prg_name "src"] 
 }

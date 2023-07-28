@@ -1631,19 +1631,33 @@ proc TEST_00_to_11 {} {
   # а может нужны все же ссылки на тексты? или ссылки на подпрограммы ???
 
 #-------------------------------------------------------------------------------
-proc run_v1_prog {prog} {
+proc v1_get_main_src {prog} {
 
-
-  if [is_GLOBAL_DICT $prog]  { 
-
+  if [is_GLOBAL_DICT $prog] { 
     # это была ссылка на словарь
-
     set prog [set $prog] ;# сам словарь
   } 
 
   # получим  "исходник" главной программы
   # 
   set src [prog_get_prg_src $prog "main"]
+
+  return $src;
+}
+#-------------------------------------------------------------------------------
+proc run_v1_prog {prog} {
+
+
+  #if [is_GLOBAL_DICT $prog] { 
+  #  # это была ссылка на словарь
+  #  set prog [set $prog] ;# сам словарь
+  #} 
+
+  # получим  "исходник" главной программы
+  # 
+  #set src [prog_get_prg_src $prog "main"]
+
+  set src [v1_get_main_src $prog]
 
 
   biblio_push $prog ;# запихнуть "локальную библиотеку" в стек библиотек

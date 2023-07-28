@@ -2802,11 +2802,10 @@ proc pop_entities_swap {pop  id1 id2} \
   return
 }
 # ------------------------------------------------------------------------------
-proc cross_to_dau_and_son {pop task mother father} \
+proc cross_to_dau_and_son {pop task  mother father} \
 {
 
   set crossover_proc [GET $pop crossover] ;# !!
-  set eval_proc      [GET $task "fit_func"]
 
 
   set son [ga_get_free_entity  $pop] ;# создали новых !!!
@@ -2814,21 +2813,26 @@ proc cross_to_dau_and_son {pop task mother father} \
   
   $crossover_proc $pop $task  $mother $father  $dau $son
   
-  # здесь бы сразу деток посчитать?
-  # 
-  pop_eval_item  NULL $dau $eval_proc $task
-  pop_eval_item  NULL $son $eval_proc $task 
-  
+
   if {$::is_print >= 4} {
     
-    print_entit  $mother "mom ="
-    print_entit  $father "dad ="
+    puts stderr "[procname] .. crossover_proc= $crossover_proc \n"
+
+    print_entit  $mother "mother = "
+    print_entit  $father "father = "
     
-    print_entit  $dau    "dau ="
-    print_entit  $son    "son ="       
+    print_entit  $dau    "   dau = "
+    print_entit  $son    "   son = "       
     
     puts ""
   }
+  
+  # здесь бы сразу деток посчитать?
+  # 
+  set eval_proc      [GET $task "fit_func"]
+
+  pop_eval_item  NULL $dau $eval_proc $task
+  pop_eval_item  NULL $son $eval_proc $task 
   
   return
 }
@@ -2844,30 +2848,6 @@ proc gaul_crossover {pop task  } {
   set select_two_proc [GET $pop select_two]
   set eval_proc       [GET $task "fit_func"]
   set crossover_proc  [GET $pop crossover] ;# !!
-  
- if {$::is_print >= 3} {
-
-   puts "[procname]  : "
-   puts ""
-   puts "  select_two_proc = $select_two_proc"
-   puts "  crossover_proc  = $crossover_proc"  
-   puts "  eval_proc       = $eval_proc"
-   puts "  crossover_ratio = $crossover_ratio"
-   puts ""
- }
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  #if {$::is_print > 2} {
-  #  puts "[procname] : (select_two_proc = $select_two_proc)"
-  #  puts ""
-  #}
-  
-  if {$crossover_ratio <= 0.0}  { 
-    puts "crossover_ratio <= 0.0  !! !return  !!!"
-    return 
-  }
   
   # здесь обнуляем, т.е. начинаем процедуру выбора (селекции) сначала
   # 
@@ -2893,9 +2873,27 @@ proc gaul_crossover {pop task  } {
 
   set orig_size [GET $pop lpop]
   set num 0
-  set num_cross_pairs [expr {($orig_size * $crossover_ratio)} ]
+  set num_cross_pairs [expr {int ($orig_size * $crossover_ratio)} ]
   
-  #  Select pairs of entities to mate via crossover.
+
+ if {$::is_print >= 3} {
+
+   puts "[procname]  : "
+   puts ""
+   puts "  select_two_proc = $select_two_proc"
+   puts "  crossover_proc  = $crossover_proc"  
+   puts "  eval_proc       = $eval_proc"
+   puts "  crossover_ratio = $crossover_ratio"
+   puts "  num_cross_pairs = $num_cross_pairs"
+   puts ""
+ }  
+  if {$crossover_ratio <= 0.0}  { 
+    puts "crossover_ratio <= 0.0  !! !return  !!!"
+    return 
+  }
+  
+
+  # готовим пары для скрещивания
   #
   while {1} {
 
@@ -2907,22 +2905,12 @@ proc gaul_crossover {pop task  } {
 
     if {$ret} {break}
 
-    #if {$preparelist} {
-
     lappend mother_list  $mother
     lappend father_list  $father
-    #} else {
-
-    #  cross_to_dau_and_son $pop $task $mother $father
-    #}
-
-    # перепутанный порядок даже с сишным вариантом!
-    # однако
   }
   
-
-  #if {$preparelist} {
-
+  # и затем 
+  # 
   set l [llength $mother_list]
   
   for {set i 0} {$i < $l} {incr i} {
@@ -2930,10 +2918,8 @@ proc gaul_crossover {pop task  } {
     set mother [lindex $mother_list $i]
     set father [lindex $father_list $i]
     
-    cross_to_dau_and_son  $pop $task $mother $father
-    
+    cross_to_dau_and_son  $pop $task $mother $father 
   }
-  #}
 
   return
 }
@@ -4546,7 +4532,6 @@ proc ga_evol {pop task args} {
  
   #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
-
   return
 }
 #-------------------------------------------------------------------------------
@@ -4808,22 +4793,28 @@ proc pop_evolution {pop task  args} {
 
   # если какие-то недосчитаны, то посчитать фитнес
   # 
+  if {$::is_print >= 2} {
+    puts stderr "\n   pop_calc_fitness_nov ............. \n"
+  }
+
   pop_calc_fitness_nov  $pop $task
 
   if {$::is_print >= 2} {
-    puts stderr "\n   pop_calc_fitness_nov ............. \n"
     gp_pop_all_print $pop
   }
+  #-----------------------------------------------------------------
 
   # сортируем всех челнов популяции по фитнесу
   #  
+  if {$::is_print >= 2} {
+    puts stderr "\n   pop_sorting ...................... \n"
+  }
+
   pop_sorting  $pop $task
 
   if {$::is_print >= 2} {
-    puts stderr "\n   pop_sorting ...................... \n"
     gp_pop_all_print $pop
   }
-
   #----------------------------------------------
 
   # кое-что напечатаем
@@ -4840,17 +4831,17 @@ proc pop_evolution {pop task  args} {
     }
   
   #----------------------------------------------
-  # ga_evol  gp_evol  pop_calc_fitness_nov ??
+
+  if {$::is_print >= 2} {
+    puts stderr "\n   pop_evolution  ...................... \n"
+  }
 
   set evolfunc  [dict_parse $args "-evol"  "NOTEVOLFUNC"]
-
   $evolfunc $pop $task {*}$args
  
   if {$::is_print >= 2} {
-    puts stderr "\n   pop_evolution  ...................... \n"
     gp_pop_all_print $pop
   }
-
 
   #----------------------------------------------
   #  
