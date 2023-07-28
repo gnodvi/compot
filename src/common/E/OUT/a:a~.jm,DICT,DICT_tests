@@ -21,7 +21,7 @@ ppp = a h c i
 
 ---------------------------------
 
-run_builtin_func: OK !!
+run_builtin_func: OK !!, b = rem rem_proc  + plus_proc
 
 
 TEST_dict_err: OK !!

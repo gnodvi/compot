@@ -2841,7 +2841,7 @@ proc cross_to_dau_and_son {pop task  mother father} \
 # //  parameters:	population *pop
 # //  return:	none
 # //------------------------------------------------------------------------------
-proc gaul_crossover {pop task  } {
+proc gaul_crossover {pop task args} {
   
 
   set crossover_ratio [GET $pop crossover_ratio]
@@ -2984,7 +2984,7 @@ proc mutate_mother_to_dau {pop task mother mutate_proc eval_proc task} {
   
 }
 # ------------------------------------------------------------------------------
-proc gaul_mutation {pop task} {
+proc gaul_mutation {pop task args} {
 
 
   set mutation_ratio  [GET $pop "mutation_ratio"]
@@ -2993,16 +2993,22 @@ proc gaul_mutation {pop task} {
   set mutate_proc     [GET $pop mutate]
   set eval_proc       [GET $task "fit_func"]
   
-  if {$::is_print >= 3} {
-    puts "[procname]  : "
-    puts ""
-    puts "  select_one_proc = $select_one_proc"
-    puts "  mutate_proc     = $mutate_proc"  
-    puts "  eval_proc       = $eval_proc"
-    puts "  mutation_ratio  = $mutation_ratio"
-    puts ""
-  }
-  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #
+  # попробуем корректировку 
+
+  #puts stderr ""
+  #puts stderr "args = $args"
+  set mutation_ratio [dict_parse $args "-mutratio" $mutation_ratio]
+  ## mutprob
+  #set mutprob [dict_parse  $args "-mutprob" 0.5]
+  #set mutprob [dict_parse  $args "-nums" 0.5]  ;# -> dict exist !!??? jimtcl ????
+  #/home/pilot/MGENA/github/compot/src/common/a-dict.tl:2098: Error: missing value to go with key
+
+  #puts "mutation_ratio = $mutation_ratio"
+  #puts ""   SOLBER:   $args -> {*}$args
+
+  #exit
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if {$mutation_ratio <= 0.0}  { return }  ;# не нужна мутация
@@ -3022,11 +3028,23 @@ proc gaul_mutation {pop task} {
   # 
 
   set orig_size [GET $pop lpop]
-  set num_mutate_items [expr {($orig_size * $mutation_ratio)} ]
+  set num_mutate_items [expr {int ($orig_size * $mutation_ratio)} ]
   set num 0 ;# счетчик для кол-ва мутантов
 
   set mother "" ;# <-------- & для Jim?
   
+  if {$::is_print >= 3} {
+    puts "[procname]  : "
+    puts ""
+    puts "  select_one_proc = $select_one_proc"
+    puts "  mutate_proc     = $mutate_proc"  
+    puts "  eval_proc       = $eval_proc"
+    puts "  mutation_ratio  = $mutation_ratio"
+    puts "  num_mutate_items= $num_mutate_items"
+    puts ""
+  }
+  
+
   while {1} {
 
     ##set ret [$select_one_proc  $pop mother]  ;# ga_select_one_bestof2
@@ -4492,10 +4510,12 @@ proc cyclic_clone_from_leaders {leaders_items new_len} {
 #-------------------------------------------------------------------------------
 proc ga_evol {pop task args} {
 
+  
+  #puts stderr "args = $args"; exit
 
   # 1) Crossover step 
   #  
-  gaul_crossover $pop $task 
+  gaul_crossover $pop $task {*}$args
 
 
   # выбираются мама и папа и затем скрещиваются 
@@ -4507,7 +4527,7 @@ proc ga_evol {pop task args} {
   # 2) Mutation step
   #  
 
-  gaul_mutation $pop $task ;# муитруем в новых членов общества !!
+  gaul_mutation $pop $task {*}$args  ;# муитруем в новых членов общества !!
   
   #if {$::is_print > 2} {pop_print $pop "stderr" ; puts ""}
 
@@ -4831,20 +4851,23 @@ proc pop_evolution {pop task  args} {
     }
   
   #----------------------------------------------
+  # EVOLUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   if {$::is_print >= 2} {
     puts stderr "\n   pop_evolution  ...................... \n"
   }
 
   set evolfunc  [dict_parse $args "-evol"  "NOTEVOLFUNC"]
+
+  #puts stderr "args = $args"; exit
+
   $evolfunc $pop $task {*}$args
  
   if {$::is_print >= 2} {
     gp_pop_all_print $pop
   }
 
-  #----------------------------------------------
-  #  
+  # ga_evol 
   #   if        {$evolfunc == "ga_evolution_func"} {
   
   #     ga_evolution_func  $pop $task {*}$args 
@@ -4911,12 +4934,10 @@ proc pop_evolution {pop task  args} {
 # //----------------------------------------------------------------------------
 proc pop_evolution_main {task pop args} {
 
-
   # Do all the generations:
   # 
   # Stop when (a) max_generations reached, or
   #           (b) "pop->generation_hook" returns FALSE.  
-
  
   SET $pop "generation" 0
 
@@ -4974,6 +4995,7 @@ proc ga_evolution {task pop nums args} {
     #puts ""
   }
 
+  ##set nums [dict_parse $args "-nums" 10]
 
   set generation [pop_evolution_main  $task $pop  -nums $nums {*}$args \
 		    -print $::is_print -evol "ga_evol"]

@@ -922,11 +922,12 @@ proc TEST_dict_plus {} {
 
     puts "run_builtin_func: DON'T exist:  b = $b"    
   } else {
-    puts "run_builtin_func: OK !!"
+    puts "run_builtin_func: OK !!, b = $b"
   }
  
   puts ""
 
+  return
 }
 #-------------------------------------------------------------------------------
 proc TEST_dict_err {} {
@@ -2088,14 +2089,16 @@ proc DICT_save {} {
 #-------------------------------------------------------------------------------
 proc dict_parse {d key {defaultval NULL}} {
 
-  #if {0} {
-  #  puts stderr ""
-  #  puts stderr "dict_parse :   d = $d  "
-  #  puts stderr "           : key = $key. defaultval = $defaultval"
-  #  puts stderr ""
-  #}
+  if {0} {
+    puts stderr ""
+    puts stderr "dict_parse :   d = $d  "
+    puts stderr "           : key = $key. defaultval = $defaultval"
+    puts stderr ""
+  }
 
-  if [dict exists     $d $key] {
+  # dict exists - нет для jimtcl ???
+  # 
+  if [dict exists    $d $key] {
 
     return [dict get $d $key]
 
@@ -2104,7 +2107,6 @@ proc dict_parse {d key {defaultval NULL}} {
     if {$defaultval == "NULL"} {
       
       # а зачем так себя ограничивать, ошибку выдавать?
-
       #puts stderr "d = $d"
       #puts stderr ""
       #ERROR "dict_parse, key = $key"

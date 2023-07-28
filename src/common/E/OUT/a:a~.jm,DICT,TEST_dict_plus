@@ -1,0 +1,3 @@
+
+run_builtin_func: OK !!, b = rem rem_proc  + plus_proc
+

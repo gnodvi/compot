@@ -577,14 +577,14 @@ proc TEST_xx {args} {
     set task   $task_fs ;# [dict_parse $args "-task"  [GET $obj "task"]] 
 
     SET $pop  seedproc "maintest_seed_proc" ;# ??
-    set max_generations [dict_parse $args "-nums"  10] 
+    #set max_generations [dict_parse $args "-nums"  10] 
     
     puts stderr ""
     
     SET $pop "generation" 0
     SET $pop "itemlist"   {}
     
-    set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
+    set ret [ga_evolution  $task $pop  $nums  {*}$args]
     
     
   #------------------------------------------------------
@@ -611,17 +611,21 @@ proc TEST_xx {args} {
     SET $pop  select_one   "ga_select_one_bestof2"
     SET $pop  select_two   "ga_select_two_bestof2"    
          
-    set args [list -nums $nums   -print 1]
+    #set args [list  -nums $nums  -print 1]
     
     SET $pop  seedproc "maintest_seed_proc" ;# ?? 
-    set max_generations [dict_parse $args "-nums"  10] 
+    #set max_generations [dict_parse $args "-nums"  10] 
+    #set max_generations $nums
     
     puts stderr ""
     
     SET $pop "generation" 0
     SET $pop "itemlist"   {}
     
-    set ret [ga_evolution  $task $pop  $max_generations  {*}$args]
+    #puts stderr "args = $args"; exit
+
+    #set ret [ga_evolution  $task $pop  $nums -nums $nums  -print 1 {*}$args]
+    set ret [ga_evolution  $task $pop  $nums   {*}$args]
      
     #------------------------------------------------------
   } 
@@ -780,4 +784,9 @@ proc NEXT_01 {args} {
 
 # r~.tl TEST TEST_xx  -joyf 'dup dup dup * * +' -lpop 20 -size 6 -nums -1 -vers ga -print 2
 # 
+#
+# mutation_ratio crossover_ratio
+# mutprob 
+# r~.tl TEST TEST_xx  -joyf 'dup dup dup * * +' -lpop 10 -size 6 -nums -1 -vers ga -print 2 -mutratio 0.6
+#
 ###########################################################################################

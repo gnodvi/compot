@@ -560,7 +560,7 @@ proc main_ga {len_chromo} {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #
-    ga_evolution  $task $pop $max_generations  -print $print  
+    ga_evolution  $task $pop  $max_generations   -print $print  
     #
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
