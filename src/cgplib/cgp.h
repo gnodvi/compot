@@ -287,62 +287,66 @@ DLL_EXPORT void printParameters(struct parameters *params);
 
 //------------------------------------------------------------------------------
 /*
-	Function: addNodeFunction
+Function: addNodeFunction
 
-	Adds pre-defined node function(s) to the set of functions stored by a <parameters> structure. These are the node functions available when using <runCGP>, <repeatCGP> and <mutateChromosome>.
+Adds pre-defined node function(s) to the set of functions stored by a <parameters> 
+structure. These are the node functions available when using <runCGP>, <repeatCGP> 
+and <mutateChromosome>.
 
-	If one function name is given that function is added to the function set. If multiple node function names are given then each must be separated by a ','.
+If one function name is given that function is added to the function set. 
+If multiple node function names are given then each must be separated by a ','.
 
-	If a node function name is given which is not recognised, a warning is given and that function is not added to the function set.
+If a node function name is given which is not recognised, a warning is given and 
+that function is not added to the function set.
 
-	Parameters:
-		params - pointer to <parameters> structure
-		functionNames - the name(s) of the function(s) to be added to the function set
+Parameters:
+   params - pointer to <parameters> structure
+   functionNames - the name(s) of the function(s) to be added to the function set
 
-	Node Functions:
+Node Functions:
 
-		mathematical operations
+   mathematical operations
 
-		- add 		- 	summation over all inputs.
-		- sub		-	subtracts all but the first input from the first input
-		- mul		-	multiplies all of the inputs
-		- div		-	divides the first input by the second and then the third etc
-		- abs		-	the absolute of the first input
-		- sqrt		- 	the square root of the first input
-		- sq		-	the square of the first input
-		- cube		- 	the cube of the first input
-		- pow		-	the first input raised to the power of the second input
-		- exp 		- 	the exponential of the first input
-		- sin		- 	the sine of the first input
-		- cos 		-	the cosine of the first input
-		- tan		-	the tangent of the first input
+   - add       - summation over all inputs.
+   - sub       - subtracts all but the first input from the first input
+   - mul       - multiplies all of the inputs
+   - div       - divides the first input by the second and then the third etc
+   - abs       - the absolute of the first input
+   - sqrt      - the square root of the first input
+   - sq	       - the square of the first input
+   - cube      - the cube of the first input
+   - pow       - the first input raised to the power of the second input
+   - exp       - the exponential of the first input
+   - sin       - the sine of the first input
+   - cos       - the cosine of the first input
+   - tan       - the tangent of the first input
 
-		logic gates
+   logic gates
 
-		- and		-	returns '1' if all inputs are '1', else '0'
-		- nand		-	returns '0' if all inputs are '1', else, '1'
-		- or		-	returns '0' if all inputs are '0', else, '1'
-		- nor		-	returns '1' if all inputs are '0', else, '0'
-		- xor		-	returns '1' if only one of the inputs is '1', else, '0'
-		- xnor		-	returns '0' if only one of the inputs is '1', else, '1'
-		- not		-	returns '1' if first input is '0', else '1'
-
-
-		neuron transfer/activation functions
-
-		- sig		- 	the logistic sigmoid of the weighted sum of inputs. Output range [0,1]
-		- gauss		-	the Gaussian of the weighted sum of inputs. Output range [0,1]
-		- step		-	the heaviside step function of the weighted sum of inputs. Output range [0,1]
-		- softsign	-	the softsign of the weighted sum of inputs. Output range [-1,1]
-		- tanh		-	the hyperbolic tangent of the weighted sum of inputs. Output range [-1,1]
+   - and       - returns '1' if all inputs are '1', else '0'
+   - nand      - returns '0' if all inputs are '1', else, '1'
+   - or	       - returns '0' if all inputs are '0', else, '1'
+   - nor       - returns '1' if all inputs are '0', else, '0'
+   - xor       - returns '1' if only one of the inputs is '1', else, '0'
+   - xnor      - returns '0' if only one of the inputs is '1', else, '1'
+   - not       - returns '1' if first input is '0', else '1'
 
 
-		Other
-		- rand		- 	produces a different random number in the range [-1,1] each time it is called
-		- pi		-	produces the constant pi
-		- 1			- 	produces the constant one
-		- 0			- 	produces the constant zero
-		- wire		-	acts as a simple wire mapping the input to the output
+   neuron transfer/activation functions
+
+   - sig       - the logistic sigmoid of the weighted sum of inputs. Output range [0,1]
+   - gauss     - the Gaussian of the weighted sum of inputs. Output range [0,1]
+   - step      - the heaviside step function of the weighted sum of inputs. Output range [0,1]
+   - softsign  - the softsign of the weighted sum of inputs. Output range [-1,1]
+   - tanh      - the hyperbolic tangent of the weighted sum of inputs. Output range [-1,1]
+
+
+   Other
+   - rand	- 	produces a different random number in the range [-1,1] each time it is called
+   - pi		-	produces the constant pi
+   - 1			- 	produces the constant one
+   - 0			- 	produces the constant zero
+   - wire		-	acts as a simple wire mapping the input to the output
 
 
 	Example:

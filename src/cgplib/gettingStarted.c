@@ -39,14 +39,13 @@
 void
 get_options_CGP (int argc, char **argv,
  
-                 char  *p_buf, 
-                 
-                 int *seed,
-                 int *data,
-                 int *update, 
+                 char   *p_buf,   // strcpy (p_buf, optarg);               
+                 int    *seed,    // *seed = atoi (optarg); 
+                 int    *data,
+                 int    *update,  // updateFrequency
                  double *fitness, 
-                 int *nums, 
-                 int *verbose 
+                 int    *nums, 
+                 int    *verbose 
                  )
 {
   char c;
@@ -64,27 +63,27 @@ get_options_CGP (int argc, char **argv,
     switch (c) {
 
     case 't': // 
-      if (p_buf) strcpy (p_buf, optarg); 
+      if (p_buf)   strcpy (p_buf, optarg); 
       break;
 
     case 's': 
-      if (seed)      *seed = atoi (optarg); 
+      if (seed)    *seed = atoi (optarg); 
      break;
 
     case 'd': 
-      if (data)      *data = atoi (optarg); 
+      if (data)    *data = atoi (optarg); 
       break;
 
     case 'u': 
-      if (update)    *update= atoi (optarg); 
+      if (update)  *update= atoi (optarg); 
       break;
 
     case 'f': 
-      if (fitness)   *fitness = atof (optarg); 
+      if (fitness) *fitness = atof (optarg); 
       break;
 
     case 'n': 
-      if (nums)      *nums = atoi (optarg); 
+      if (nums)    *nums = atoi (optarg); 
       break;
 
     case 'v':     // verbose - многословный
@@ -105,8 +104,12 @@ get_options_CGP (int argc, char **argv,
 double symbolicEq2 (double x) {
 
   //return pow(x,6) - 2*pow(x,4) + pow(x,2);
-  //return pow(x,2);
-  return pow(x,2) + x;
+  //return pow (x, 2);
+  //return (x * x);
+
+  return (x * x * x  +  x * x  +  x);
+
+  //return pow (x, 2) + x;
 
 }
 //------------------------------------------------------------------------------
@@ -133,8 +136,7 @@ int test_gettingStarted (int argc, char **argv) {
   int updateFrequency  = 500 /* 50 */ ;
   
   int seed = 2021;
-
-  int d = 1;
+  int d = 1; // номер теста
 
   //---------------------------------
 
@@ -148,8 +150,6 @@ int test_gettingStarted (int argc, char **argv) {
                    &verbose 
                    );
 
-  //---------------------------------
-
   params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
   
   //printf ("seed = %d \n", seed);
@@ -161,11 +161,11 @@ int test_gettingStarted (int argc, char **argv) {
 
   //---------------------------------
 
-  addNodeFunction    (params, "add,sub,mul,div,sin");
+  //addNodeFunction    (params, "add,sub,mul,div,sin");
   setTargetFitness   (params, targetFitness);  
-  setUpdateFrequency (params, updateFrequency);
+  setUpdateFrequency (params, updateFrequency); // через сколько печатать?
   
-  printParameters (params);
+  //printParameters (params);
   
   //---------------------------------
   struct dataSet *data;
@@ -174,45 +174,67 @@ int test_gettingStarted (int argc, char **argv) {
   switch (d) {
 
   case 1:
+    addNodeFunction    (params, "add,sub,mul,div,sin");
     // Note: you may need to check this path such that it is relative to your executable 
     // 
     file = "./dataSets/symbolic.data";
     break;
 
   case 2:
+    addNodeFunction    (params, "add,sub,mul,div,sin");
     data = make_data_function (symbolicEq2);
 
     file = "out_data.fun";
+
+    saveDataSet(data, file);
+    freeDataSet(data);
+
+    break;
+
+  case 3:
+    addNodeFunction    (params, "add,sub,mul,div,sin");
+    data = make_data_function (symbolicEq3);
+
+    file = "out_data.fun";
+
     saveDataSet(data, file);
     freeDataSet(data);
     break;
 
-  case 3:
-    data = make_data_function (symbolicEq3);
+  case 9:
+    //addNodeFunction    (params, "add, sub, mul, div, sin");
+    addNodeFunction    (params, "add, mul");
+
+    data = make_data_function (symbolicEq2);
 
     file = "out_data.fun";
+
     saveDataSet(data, file);
     freeDataSet(data);
+
     break;
 
   default:
     Error ("");
   }
 
-  trainingData = initialiseDataSetFromFile (file);
-  
   //---------------------------------
 
-  chromo = runCGP (params, trainingData, numGens);
+  printParameters (params);
+  
+  trainingData = initialiseDataSetFromFile (file);
+  
+  chromo = runCGP (params, trainingData, numGens); // запускаем 
   
   //---------------------------------
 
   printChromosome (chromo, 0);
   // printChromosome (chromo, 1); // weights not used in this tests! only networks? 
   
+  //---------------------------------
+
   saveChromosomeDot  (chromo, 0, "out_graf.dot");
   saveChromosomeLatex(chromo, 0, "out_math.tex");
-
 
   freeDataSet    (trainingData);
   freeChromosome (chromo);
@@ -242,4 +264,7 @@ int main (int argc, char **argv) {
 //------------------------------------------------------------------------------
 // gettingStarted -t gettingStarted -s0 -d2 -u10
 // gettingStarted -t gettingStarted -s0 -d2 -u1 -n10 -v
+
+// gettingStarted -d9 -v -u1
+
 //------------------------------------------------------------------------------

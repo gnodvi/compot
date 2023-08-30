@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------------------
 
 # GCC complier 
-CC=gcc
+CC = LANG=C gcc -fno-diagnostics-color
 
 # GCC complier options
 # -pedantic		Issue all the warnings demanded by strict ISO C

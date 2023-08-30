@@ -3,6 +3,13 @@
 *.csv
 *.data
 *.chromo
+*.pdf
+*.log
+*.dvi
+*.aux
+*.fun
+*.pdf
+
 
 averageBehaviour
 createDataSet
