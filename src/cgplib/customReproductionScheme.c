@@ -1,5 +1,4 @@
 // -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
-
 //------------------------------------------------------------------------------
 /*
 	This file is part of CGP-Library
@@ -18,31 +17,38 @@
     You should have received a copy of the GNU Lesser General Public License
     along with CGP-Library.  If not, see <http://www.gnu.org/licenses/>.
 */
+//------------------------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "cgp.h"
 
-void mutateEveryParent(struct parameters *params, struct chromosome **parents, struct chromosome **children, int numParents, int numChildren){
+//------------------------------------------------------------------------------
+void mutateEveryParent (struct parameters *params, struct chromosome **parents, 
+                        struct chromosome **children, int numParents, int numChildren){
 	
-	int i;
-	int selectedParent;
+  int i;
+  int selectedParent;
 
-	/* for each child */
-	for(i=0; i< numChildren; i++){
+  /* for each child */
+  for(i=0; i< numChildren; i++){
 
-		selectedParent = i % numParents;
+    selectedParent = i % numParents;
 
-		/* set child as clone of selected parent */
-		copyChromosome(children[i], parents[selectedParent]);
+    /* set child as clone of selected parent */
+    copyChromosome(children[i], parents[selectedParent]);
 
-		/* mutate newly cloned child */
-		mutateChromosome(params, children[i]);
-	}	
+    /* mutate newly cloned child */
+    mutateChromosome(params, children[i]);
+  }
+
+  return;
 }
+//------------------------------------------------------------------------------
+int test_customReproductionScheme (int argc, char **argv) {
 
-int main(void){
+	
 	
   struct parameters *params = NULL;
   struct dataSet *trainingData = NULL;
@@ -66,26 +72,46 @@ int main(void){
   setRandomNumberSeed (2021);
   //---------------------------------
 	
-	addNodeFunction(params, "add,sub,mul,div,sin");
+  addNodeFunction(params, "add,sub,mul,div,sin");
 	
-	setTargetFitness(params, targetFitness);
+  setTargetFitness(params, targetFitness);
 
-    setUpdateFrequency(params, updateFrequency); 
+  setUpdateFrequency(params, updateFrequency); 
 	
-	setCustomReproductionScheme(params, mutateEveryParent, "mutateEveryParent");
+  setCustomReproductionScheme(params, mutateEveryParent, "mutateEveryParent");
 	
-	setMu(params, mu);
-	setLambda(params, lambda);
+  setMu(params, mu);
+  setLambda(params, lambda);
 	
-	trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
 	
-	chromo = runCGP(params, trainingData, numGens);
+  chromo = runCGP(params, trainingData, numGens);
 	
-	freeChromosome(chromo);
-	freeDataSet(trainingData);
-	freeParameters(params);
+  freeChromosome(chromo);
+  freeDataSet(trainingData);
+  freeParameters(params);
 	
-	return 0;
+  return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
 
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "customReproductionScheme");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "customReproductionScheme")) ret = test_customReproductionScheme (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 

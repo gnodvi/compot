@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------------------------
 /*
-	This file is part of CGP-Library
-	Copyright (c) Andrew James Turner 2014 (andrew.turner@york.ac.uk)
+    This file is part of CGP-Library
+    Copyright (c) Andrew James Turner 2014 (andrew.turner@york.ac.uk)
 
     CGP-Library is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -21,11 +21,16 @@
 //------------------------------------------------------------------------------
 
 #include <stdio.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
-int main (void) {
+//int main (void) {
+//------------------------------------------------------------------------------
+int test_averageBehaviour (int argc, char **argv) {
+
 
   struct parameters *params = NULL;
   struct dataSet *trainingData = NULL;
@@ -80,4 +85,24 @@ int main (void) {
 
   return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "averageBehaviour");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "averageBehaviour")) ret = test_averageBehaviour (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

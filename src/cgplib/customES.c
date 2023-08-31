@@ -1,5 +1,4 @@
 // -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
-
 //------------------------------------------------------------------------------
 /*
 	This file is part of CGP-Library
@@ -18,10 +17,13 @@
     You should have received a copy of the GNU Lesser General Public License
     along with CGP-Library.  If not, see <http://www.gnu.org/licenses/>.
 */
+//------------------------------------------------------------------------------
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"  
 
 #define POPULATIONSIZE 5
@@ -30,7 +32,9 @@
 #define NUMOUTPUTS 1
 #define ARITY 2
 
-int main(void){
+//------------------------------------------------------------------------------
+int test_customES (int argc, char **argv) {
+
 	
   int i, gen;
 	
@@ -42,74 +46,95 @@ int main(void){
   double targetFitness = 0;
   int maxGens = 10000;
 				
-  params = initialiseParameters(NUMINPUTS, NUMNODES, NUMOUTPUTS, ARITY);
+  params = initialiseParameters (NUMINPUTS, NUMNODES, NUMOUTPUTS, ARITY);
   
   //---------------------------------
   setRandomNumberSeed (2021);
   //---------------------------------
 	
-	addNodeFunction(params, "or,nor,and,nand");
-	/*setTargetFitness(params, targetFitness);*/
-	setMutationType(params, "probabilistic");
-	setMutationRate(params, 0.08);
+  addNodeFunction(params, "or,nor,and,nand");
+  /*setTargetFitness(params, targetFitness);*/
+  setMutationType(params, "probabilistic");
+  setMutationRate(params, 0.08);
 	
-	trainingData = initialiseDataSetFromFile("./dataSets/parity3bit.data");
+  trainingData = initialiseDataSetFromFile("./dataSets/parity3bit.data");
 	
-	for(i=0; i<POPULATIONSIZE; i++){
-		population[i] = initialiseChromosome(params);
-	}
+  for(i=0; i<POPULATIONSIZE; i++){
+    population[i] = initialiseChromosome(params);
+  }
 	
-	fittestChromosome = initialiseChromosome(params);
+  fittestChromosome = initialiseChromosome(params);
 	
-	/* for the number of allowed generations*/
-	for(gen=0; gen<maxGens; gen++){
+  /* for the number of allowed generations*/
+  for(gen=0; gen<maxGens; gen++){
 		
-		/* set the fitnesses of the population of chromosomes*/
-		for(i=0; i<POPULATIONSIZE; i++){
-			setChromosomeFitness(params, population[i], trainingData);
-		}
+    /* set the fitnesses of the population of chromosomes*/
+    for(i=0; i<POPULATIONSIZE; i++){
+      setChromosomeFitness(params, population[i], trainingData);
+    }
 		
-		/* copy over the last chromosome to fittestChromosome*/
-		copyChromosome(fittestChromosome, population[POPULATIONSIZE - 1]);
+    /* copy over the last chromosome to fittestChromosome*/
+    copyChromosome(fittestChromosome, population[POPULATIONSIZE - 1]);
 		
-		/* for all chromosomes except the last*/
-		for(i=0; i<POPULATIONSIZE-1; i++){
+    /* for all chromosomes except the last*/
+    for(i=0; i<POPULATIONSIZE-1; i++){
 			
-			/* copy ith chromosome to fittestChromosome if fitter*/
-			if(getChromosomeFitness(population[i]) < getChromosomeFitness(fittestChromosome)){
-				copyChromosome(fittestChromosome, population[i]);
-			}
-		}
+      /* copy ith chromosome to fittestChromosome if fitter*/
+      if(getChromosomeFitness(population[i]) < getChromosomeFitness(fittestChromosome)){
+        copyChromosome(fittestChromosome, population[i]);
+      }
+    }
 				
-		/* termination condition*/
-		if(getChromosomeFitness(fittestChromosome) <= targetFitness){
-			break;
-		}
+    /* termination condition*/
+    if(getChromosomeFitness(fittestChromosome) <= targetFitness){
+      break;
+    }
 				
-		/* set the first member of the population to be the fittest chromosome*/
-		copyChromosome(population[0], fittestChromosome);
+    /* set the first member of the population to be the fittest chromosome*/
+    copyChromosome (population[0], fittestChromosome);
 		
-		/* set remaining member of the population to be mutations of the
-		 fittest chromosome*/
-		for(i=1; i<POPULATIONSIZE; i++){
+    /* set remaining member of the population to be mutations of the
+      fittest chromosome*/
+    for(i=1; i<POPULATIONSIZE; i++){
 			
-			copyChromosome(population[i], fittestChromosome);
-			mutateChromosome(params, population[i]);
-		}
-	}
+      copyChromosome (population[i], fittestChromosome);
+      mutateChromosome (params, population[i]);
+    }
+  }
 	
-	printf("gen\tfitness\n");
-	printf("%d\t%f\n", gen, getChromosomeFitness(fittestChromosome));
+  printf("gen\tfitness\n");
+  printf("%d\t%f\n", gen, getChromosomeFitness (fittestChromosome));
 	
 	
 	
-	for(i=0; i<POPULATIONSIZE; i++){
-		freeChromosome(population[i]);
-	}
+  for(i=0; i<POPULATIONSIZE; i++){
+    freeChromosome (population[i]);
+  }
 	
-	freeChromosome(fittestChromosome);
-	freeDataSet(trainingData);
-	freeParameters(params);
+  freeChromosome (fittestChromosome);
+  freeDataSet (trainingData);
+  freeParameters (params);
 	
-	return 0;
+  return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "customES");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "customES")) ret = test_customES (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------

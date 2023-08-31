@@ -101,6 +101,21 @@ struct dataSet *make_data_function (YT_MAKEFUNC makefunc);
 extern int verbose;
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void
+get_options_CGP (int argc, char **argv,
+ 
+                 char   *p_buf,   // strcpy (p_buf, optarg);               
+                 int    *seed,    // *seed = atoi (optarg); 
+                 int    *data,
+                 int    *update,  // updateFrequency
+                 double *fitness, 
+                 int    *nums, 
+                 int    *verbose 
+                 );
+
+//------------------------------------------------------------------------------
 
 #endif /* __COMMON_H__ */
 //------------------------------------------------------------------------------

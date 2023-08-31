@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------------------
 
 # GCC complier 
-CC = LANG=C gcc -fno-diagnostics-color
+CC = LANG=C gcc -fno-diagnostics-color -Wstringop-truncation 
 
 # GCC complier options
 # -pedantic		Issue all the warnings demanded by strict ISO C
@@ -20,7 +20,7 @@ CFLAGS= -Wall -O3 -fopenmp -lm
 
 #-------------------------------------------------------------------------------
 
-PROGS = gettingStarted createDataSet manipulatingChromosomes customNodeFunction \
+PROGS = alltests createDataSet manipulatingChromosomes customNodeFunction \
 	customFitnessFunction customSelectionScheme customReproductionScheme \
 	averageBehaviour neuroEvolution customES visualization \
 	\
@@ -49,7 +49,7 @@ so: $(S)/cgp.c
 #-------------------------------------------------------------------------------
 
 
-gettingStarted: $(M)/gettingStarted.c $(CGP)
+alltests: alltests.c $(CGP)
 	$(CC) -o $@ $^ $(CFLAGS)  
 
 createDataSet: $(M)/createDataSet.c $(CGP)

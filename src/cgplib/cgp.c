@@ -44,6 +44,10 @@
 #define REPRODUCTIONSCHEMENAMELENGTH 21
 
 //------------------------------------------------------------------------------
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
+//------------------------------------------------------------------------------
 /*
   Structure definitions
 */
@@ -344,8 +348,18 @@ DLL_EXPORT void addNodeFunction (struct parameters *params, char const *function
   char *pch;
   char functionNamesAsArray[FUNCTIONNAMELENGTH * FUNCTIONSETSIZE];
 
-  /* make a local copy of the function names*/
+  //~~~~~~~~~~~~~~~~~~~~~
+  //  make a local copy of the function names
+  //#pragma GCC diagnostic push
+  //#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
+  // This line is extremely important, it handles string truncation ??
+  // functionNamesAsArray [FUNCTIONNAMELENGTH * FUNCTIONSETSIZE - 1] = '\0';
+
   strncpy (functionNamesAsArray, functionNames, FUNCTIONNAMELENGTH * FUNCTIONSETSIZE);
+
+  //#pragma GCC diagnostic pop
+  //~~~~~~~~~~~~~~~~~~~~~
 
   /* get the first function name */
   pch = strtok(functionNamesAsArray, ", ");
@@ -4431,5 +4445,8 @@ static int randInt(int n) {
   return x % n;
 }
 //------------------------------------------------------------------------------
+
+#pragma GCC diagnostic pop
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

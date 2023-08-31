@@ -18,7 +18,9 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 double hypotenuse(const int numInputs, const double *inputs, const double *connectionWeights){
@@ -37,27 +39,49 @@ double hypotenuse(const int numInputs, const double *inputs, const double *conne
 }
 
 
-int main(void){
+//------------------------------------------------------------------------------
+int test_customNodeFunction (int argc, char **argv) {
 
-	struct parameters *params = NULL;
+  struct parameters *params = NULL;
 
-	int numInputs = 2;
-	int numNodes = 10;
-	int numOutputs = 1;
-	int arity = 3;
+  int numInputs = 2;
+  int numNodes = 10;
+  int numOutputs = 1;
+  int arity = 3;
 
-	params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
 
-	addNodeFunction(params, "add,sub");
+  addNodeFunction(params, "add,sub");
 
-	addCustomNodeFunction(params, hypotenuse, "hypt", -1);
+  addCustomNodeFunction(params, hypotenuse, "hypt", -1);
 
-	printParameters(params);
+  printParameters(params);
 
-	freeParameters(params);
+  freeParameters(params);
 
-	return 0;
+  return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "customNodeFunction");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "customNodeFunction")) ret = test_customNodeFunction (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
 

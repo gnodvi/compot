@@ -22,65 +22,85 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 
+//------------------------------------------------------------------------------
 double meanSquareError(struct parameters *params, struct chromosome *chromo, struct dataSet *data){
 
-	int i,j;
-	double squareError = 0;
+  int i,j;
+  double squareError = 0;
 
-	if(getNumChromosomeInputs(chromo) !=getNumDataSetInputs(data)){
-		printf("Error: the number of chromosome inputs must match the number of inputs specified in the dataSet.\n");
-		printf("Terminating.\n");
-		exit(0);
-	}
+  if (getNumChromosomeInputs(chromo) !=getNumDataSetInputs(data)){
+    printf ("Error: the number of chromosome inputs must match the number of inputs specified in the dataSet.\n");
+    printf ("Terminating.\n");
+    exit (0);
+  }
 
-	if(getNumChromosomeOutputs(chromo) != getNumDataSetOutputs(data)){
-		printf("Error: the number of chromosome outputs must match the number of outputs specified in the dataSet.\n");
-		printf("Terminating.\n");
-		exit(0);
-	}
+  if (getNumChromosomeOutputs(chromo) != getNumDataSetOutputs(data)) {
 
-	for(i=0; i<getNumDataSetSamples(data); i++){
+    printf ("Error: the number of chromosome outputs must match the number of outputs specified in the dataSet.\n");
+    printf ("Terminating.\n");
+    exit (0);
+  }
 
-		executeChromosome(chromo, getDataSetSampleInputs(data, i));
+  for (i=0; i<getNumDataSetSamples(data); i++) {
 
-		for(j=0; j<getNumChromosomeOutputs(chromo); j++){
+    executeChromosome (chromo, getDataSetSampleInputs(data, i));
 
-			squareError += pow(getDataSetSampleOutput(data,i,j) - getChromosomeOutput(chromo,j), 2);
-		}
-	}
+    for (j=0; j<getNumChromosomeOutputs(chromo); j++){
 
-	return squareError / (getNumDataSetSamples(data) * getNumDataSetOutputs(data));
+      squareError += pow (getDataSetSampleOutput(data,i,j) - getChromosomeOutput (chromo,j), 2);
+    }
+  }
+
+
+  return squareError / (getNumDataSetSamples(data) * getNumDataSetOutputs(data));
 }
+//------------------------------------------------------------------------------
+int test_customFitnessFunction (int argc, char **argv) {
 
+  struct parameters *params = NULL;
 
-int main(void){
+  int numInputs = 1;
+  int numNodes = 20;
+  int numOutputs = 1;
+  int arity = 2;
 
-	struct parameters *params = NULL;
+  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
 
-	int numInputs = 1;
-	int numNodes = 20;
-	int numOutputs = 1;
-	int arity = 2;
+  setCustomFitnessFunction(params, meanSquareError, "MSE");
 
-	params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  printParameters(params);
 
-	setCustomFitnessFunction(params, meanSquareError, "MSE");
+  freeParameters(params);
 
-	printParameters(params);
-
-	freeParameters(params);
-
-	return 0;
+  return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
 
+  int  ret = 0;
+  char buf[80];
 
+  strcpy (buf, "customFitnessFunction");
 
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
 
-
+  if      (! strcmp (buf, "customFitnessFunction")) ret = test_customFitnessFunction (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
 
