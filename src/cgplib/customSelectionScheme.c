@@ -22,11 +22,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
-void tournament(struct parameters *params, struct chromosome **parents, 
+void tournament (struct parameters *params, struct chromosome **parents, 
                 struct chromosome **candidateChromos, int numParents, int numCandidateChromos){
 
   int i;
@@ -51,7 +53,7 @@ void tournament(struct parameters *params, struct chromosome **parents,
 
 }
 //------------------------------------------------------------------------------
-int main(void){
+int test_customSelectionScheme (int argc, char **argv){
 	
   struct parameters *params = NULL;
   struct dataSet *trainingData = NULL;
@@ -89,6 +91,25 @@ int main(void){
   freeParameters(params);
   
   return 0;
+}
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "customSelectionScheme");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "customSelectionScheme")) ret = test_customSelectionScheme (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

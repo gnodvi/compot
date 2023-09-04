@@ -21,8 +21,11 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
+
 
 #define POPULATIONSIZE 5
 #define NUMINPUTS 1
@@ -30,7 +33,8 @@
 #define NUMOUTPUTS 1
 #define ARITY 2
 
-int main(void) {
+//------------------------------------------------------------------------------
+int test_manipulatingChromosomes (int argc, char **argv) {
 
   struct parameters *params = NULL;
   struct chromosome *chromoA = NULL;
@@ -46,43 +50,64 @@ int main(void) {
   setRandomNumberSeed (2021);
   //---------------------------------
 
-	addNodeFunction(params, "add,sub,mul,sq,cube,sin");
+  addNodeFunction(params, "add,sub,mul,sq,cube,sin");
 
-	trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
 
-	chromoA = initialiseChromosome(params);
-	chromoB = initialiseChromosome(params);
+  chromoA = initialiseChromosome(params);
+  chromoB = initialiseChromosome(params);
 
-	setChromosomeFitness(params, chromoA, trainingData);
+  setChromosomeFitness(params, chromoA, trainingData);
 
-	mutateChromosome(params, chromoA);
+  mutateChromosome(params, chromoA);
 
-	copyChromosome(chromoB, chromoA);
+  copyChromosome(chromoB, chromoA);
 
-	removeInactiveNodes(chromoB);
+  removeInactiveNodes(chromoB);
 
-	printf("chromoA with inactive nodes.\n");
-	printChromosome(chromoA, 0);
+  printf("chromoA with inactive nodes.\n");
+  printChromosome(chromoA, 0);
 
-	printf("chromoB without inactive nodes.\n");
-	printChromosome(chromoB, 0);
+  printf("chromoB without inactive nodes.\n");
+  printChromosome(chromoB, 0);
 
-	saveChromosome(chromoB, "chromoB.chromo");
+  saveChromosome(chromoB, "chromoB.chromo");
 
-	chromoC = initialiseChromosomeFromFile("chromoB.chromo");
+  chromoC = initialiseChromosomeFromFile("chromoB.chromo");
 
-	testInputs[0] = 3;
+  testInputs[0] = 3;
 
-	executeChromosome(chromoC, testInputs);
+  executeChromosome(chromoC, testInputs);
 
-	printf("Applied input: %f\n", testInputs[0]);
-	printf("Generated output: %f\n", getChromosomeOutput(chromoC, 0));
+  printf("Applied input: %f\n", testInputs[0]);
+  printf("Generated output: %f\n", getChromosomeOutput(chromoC, 0));
 
-	freeChromosome(chromoA);
-	freeChromosome(chromoB);
-	freeChromosome(chromoC);
-	freeDataSet(trainingData);
-	freeParameters(params);
+  freeChromosome(chromoA);
+  freeChromosome(chromoB);
+  freeChromosome(chromoC);
+  freeDataSet(trainingData);
+  freeParameters(params);
 
-	return 0;
+  return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "manipulatingChromosomes");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "manipulatingChromosomes")) ret = test_manipulatingChromosomes (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------

@@ -21,7 +21,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
@@ -55,6 +57,7 @@ int test_customReproductionScheme (int argc, char **argv) {
   struct chromosome *chromo = NULL;
 	
   int numInputs = 1;
+
   int numNodes = 50;
   int numOutputs = 1;
   int arity = 2;
