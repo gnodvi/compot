@@ -23,44 +23,8 @@
 #include "common.h"
 #include "cgp.h"
 
-double hypotenuse(const int numInputs, const double *inputs, const double *connectionWeights){
-
-	int i;
-	double sumOfSqrs = 0;
-	double hypt;
-
-	for(i=0; i<numInputs; i++){
-		sumOfSqrs += pow(inputs[i], 2);
-	}
-
-	hypt = sqrt(sumOfSqrs);
-
-	return hypt;
-}
-
-
 //------------------------------------------------------------------------------
-int test_customNodeFunction (int argc, char **argv) {
-
-  struct parameters *params = NULL;
-
-  int numInputs = 2;
-  int numNodes = 10;
-  int numOutputs = 1;
-  int arity = 3;
-
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
-
-  addNodeFunction(params, "add,sub");
-
-  addCustomNodeFunction(params, hypotenuse, "hypt", -1);
-
-  printParameters(params);
-
-  freeParameters(params);
-
-  return 0;
-}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 int main (int argc, char **argv) {
 
@@ -73,10 +37,10 @@ int main (int argc, char **argv) {
                    buf,   
                    NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if      (! strcmp (buf, "customNodeFunction")) ret = test_customNodeFunction (argc, argv);
-  else {  
-    printf ("\nERROR option -t = %s \n\n", buf);
-  }
+/*   if      (! strcmp (buf, "customNodeFunction")) ret = test_customNodeFunction (argc, argv); */
+/*   else {   */
+/*     printf ("\nERROR option -t = %s \n\n", buf); */
+/*   } */
   
   return (ret);
 }

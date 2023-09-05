@@ -20,11 +20,13 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
-int main (void){
+int test_recurrentConnections (int argc, char **argv) {
 
   struct parameters *params = NULL;
   struct dataSet *trainingData = NULL;
@@ -67,4 +69,24 @@ int main (void){
 
   return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "recurrentConnections");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "recurrentConnections")) ret = test_recurrentConnections (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

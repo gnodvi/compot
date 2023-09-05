@@ -27,64 +27,6 @@
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
-//int main (void) {
-//------------------------------------------------------------------------------
-int test_averageBehaviour (int argc, char **argv) {
-
-
-  struct parameters *params = NULL;
-  struct dataSet *trainingData = NULL;
-  struct results *rels = NULL;
-  struct chromosome *chromo = NULL;
-  
-  int numInputs = 1;
-  int numNodes = 15;
-  int numOutputs = 1;
-  int nodeArity = 2;
-  
-  int numGens = 10000;
-  int numRuns = 10;
-  
-  double targetFitness = 0.1;
-  int updateFrequency = 500;
-  
-  double averageFitness;
-  
-  params = initialiseParameters(numInputs, numNodes, numOutputs, nodeArity);
-  
-  //---------------------------------
-  setRandomNumberSeed (2021);
-  //---------------------------------
-
-  addNodeFunction(params, "add,sub,mul,div,sin");
-
-  setTargetFitness(params, targetFitness);
-
-  setUpdateFrequency(params, updateFrequency);
-
-  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
-
-  rels = repeatCGP(params, trainingData, numGens, numRuns);
-
-  averageFitness = getAverageFitness(rels);
-
-  printf("The average chromosome fitness is: %f\n", averageFitness);
-
-  chromo = getChromosome(rels, 4);
-
-  printf("The best chromosome found on run 4:\n");
-
-  printChromosome(chromo, 0);
-
-  saveResults(rels, "results.csv");
-
-  freeDataSet(trainingData);
-  freeChromosome(chromo);
-  freeResults(rels);
-  freeParameters(params);
-
-  return 0;
-}
 //------------------------------------------------------------------------------
 int main (int argc, char **argv) {
 
@@ -97,10 +39,10 @@ int main (int argc, char **argv) {
                    buf,   
                    NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if      (! strcmp (buf, "averageBehaviour")) ret = test_averageBehaviour (argc, argv);
-  else {  
-    printf ("\nERROR option -t = %s \n\n", buf);
-  }
+/*   if      (! strcmp (buf, "averageBehaviour")) ret = test_averageBehaviour (argc, argv); */
+/*   else {   */
+/*     printf ("\nERROR option -t = %s \n\n", buf); */
+/*   } */
   
   return (ret);
 }

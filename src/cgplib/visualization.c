@@ -20,11 +20,13 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
-int main (void) {
+int test_visualization (int argc, char **argv) {
 
   struct parameters *params = NULL;
   struct chromosome *chromo = NULL;
@@ -53,4 +55,24 @@ int main (void) {
   
   return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "visualization");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "visualization")) ret = test_visualization (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

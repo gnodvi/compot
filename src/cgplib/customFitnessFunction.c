@@ -29,57 +29,7 @@
 
 
 //------------------------------------------------------------------------------
-double meanSquareError(struct parameters *params, struct chromosome *chromo, struct dataSet *data){
-
-  int i,j;
-  double squareError = 0;
-
-  if (getNumChromosomeInputs(chromo) !=getNumDataSetInputs(data)){
-    printf ("Error: the number of chromosome inputs must match the number of inputs specified in the dataSet.\n");
-    printf ("Terminating.\n");
-    exit (0);
-  }
-
-  if (getNumChromosomeOutputs(chromo) != getNumDataSetOutputs(data)) {
-
-    printf ("Error: the number of chromosome outputs must match the number of outputs specified in the dataSet.\n");
-    printf ("Terminating.\n");
-    exit (0);
-  }
-
-  for (i=0; i<getNumDataSetSamples(data); i++) {
-
-    executeChromosome (chromo, getDataSetSampleInputs(data, i));
-
-    for (j=0; j<getNumChromosomeOutputs(chromo); j++){
-
-      squareError += pow (getDataSetSampleOutput(data,i,j) - getChromosomeOutput (chromo,j), 2);
-    }
-  }
-
-
-  return squareError / (getNumDataSetSamples(data) * getNumDataSetOutputs(data));
-}
 //------------------------------------------------------------------------------
-int test_customFitnessFunction (int argc, char **argv) {
-
-  struct parameters *params = NULL;
-
-  int numInputs = 1;
-  int numNodes = 20;
-  int numOutputs = 1;
-  int arity = 2;
-
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
-
-  setCustomFitnessFunction(params, meanSquareError, "MSE");
-
-  printParameters(params);
-
-  freeParameters(params);
-
-  return 0;
-}
 //------------------------------------------------------------------------------
 int main (int argc, char **argv) {
 
@@ -92,10 +42,10 @@ int main (int argc, char **argv) {
                    buf,   
                    NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if      (! strcmp (buf, "customFitnessFunction")) ret = test_customFitnessFunction (argc, argv);
-  else {  
-    printf ("\nERROR option -t = %s \n\n", buf);
-  }
+/*   if      (! strcmp (buf, "customFitnessFunction")) ret = test_customFitnessFunction (argc, argv); */
+/*   else {   */
+/*     printf ("\nERROR option -t = %s \n\n", buf); */
+/*   } */
   
   return (ret);
 }

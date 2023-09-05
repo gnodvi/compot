@@ -21,7 +21,9 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
@@ -42,7 +44,7 @@ double fitnessFunction
   return 10;
 }
 //------------------------------------------------------------------------------
-int main (void) {
+int test_multipleThreads (int argc, char **argv) {
 
   time_t timeStart, timeEnd;
   double singleThreadTime, multipleThreadTime;
@@ -95,5 +97,26 @@ int main (void) {
 
   return 0;
 }
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "multipleThreads");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "manipulatingChromosomes")) ret = test_multipleThreads (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

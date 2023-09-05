@@ -27,75 +27,7 @@
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
-void mutateEveryParent (struct parameters *params, struct chromosome **parents, 
-                        struct chromosome **children, int numParents, int numChildren){
-	
-  int i;
-  int selectedParent;
-
-  /* for each child */
-  for(i=0; i< numChildren; i++){
-
-    selectedParent = i % numParents;
-
-    /* set child as clone of selected parent */
-    copyChromosome(children[i], parents[selectedParent]);
-
-    /* mutate newly cloned child */
-    mutateChromosome(params, children[i]);
-  }
-
-  return;
-}
 //------------------------------------------------------------------------------
-int test_customReproductionScheme (int argc, char **argv) {
-
-	
-	
-  struct parameters *params = NULL;
-  struct dataSet *trainingData = NULL;
-  struct chromosome *chromo = NULL;
-	
-  int numInputs = 1;
-
-  int numNodes = 50;
-  int numOutputs = 1;
-  int arity = 2;
-	
-  int mu = 4;
-  int lambda = 8;
-	
-  double targetFitness = 0.1;
-  int updateFrequency = 1000;
-  int numGens = 10000;
-	
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
-  
-  //---------------------------------
-  setRandomNumberSeed (2021);
-  //---------------------------------
-	
-  addNodeFunction(params, "add,sub,mul,div,sin");
-	
-  setTargetFitness(params, targetFitness);
-
-  setUpdateFrequency(params, updateFrequency); 
-	
-  setCustomReproductionScheme(params, mutateEveryParent, "mutateEveryParent");
-	
-  setMu(params, mu);
-  setLambda(params, lambda);
-	
-  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
-	
-  chromo = runCGP(params, trainingData, numGens);
-	
-  freeChromosome(chromo);
-  freeDataSet(trainingData);
-  freeParameters(params);
-	
-  return 0;
-}
 //------------------------------------------------------------------------------
 int main (int argc, char **argv) {
 
@@ -108,10 +40,10 @@ int main (int argc, char **argv) {
                    buf,   
                    NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if      (! strcmp (buf, "customReproductionScheme")) ret = test_customReproductionScheme (argc, argv);
-  else {  
-    printf ("\nERROR option -t = %s \n\n", buf);
-  }
+/*   if      (! strcmp (buf, "customReproductionScheme")) ret = test_customReproductionScheme (argc, argv); */
+/*   else {   */
+/*     printf ("\nERROR option -t = %s \n\n", buf); */
+/*   } */
   
   return (ret);
 }

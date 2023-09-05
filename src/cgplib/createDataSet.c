@@ -27,26 +27,6 @@
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-/*
-  Returns   x^6 - 2x^4 + x^2
-*/
-double symbolicEq1 (double x){
-
-	return pow(x,6) - 2*pow(x,4) + pow(x,2);
-}
-//------------------------------------------------------------------------------
-int test_createDataSet (int argc, char **argv) {
-
-  //YT_MAKEFUNC makefunc = symbolicEq1;
-
-  struct dataSet *data = make_data_function (symbolicEq1);
-
-  saveDataSet(data, "symbolic.data");
-
-  freeDataSet(data);
-
-  return 0;
-}
 //------------------------------------------------------------------------------
 int main (int argc, char **argv) {
 
@@ -59,10 +39,10 @@ int main (int argc, char **argv) {
                    buf,   
                    NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if      (! strcmp (buf, "createDataSet")) ret = test_createDataSet (argc, argv);
-  else {  
-    printf ("\nERROR option -t = %s \n\n", buf);
-  }
+/*   if      (! strcmp (buf, "createDataSet")) ret = test_createDataSet (argc, argv); */
+/*   else {   */
+/*     printf ("\nERROR option -t = %s \n\n", buf); */
+/*   } */
   
   return (ret);
 }

@@ -21,7 +21,9 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
+#include "common.h"
 #include "cgp.h"
 
 //------------------------------------------------------------------------------
@@ -47,7 +49,7 @@ double sinWave(struct parameters *params, struct chromosome *chromo, struct data
   return error;
 }
 //------------------------------------------------------------------------------
-int main (void) {
+int test_neuroEvolution (int argc, char **argv) {
 
   struct parameters *params = NULL;
   struct chromosome *chromo = NULL;
@@ -85,6 +87,25 @@ int main (void) {
   freeParameters(params);
   
   return 0;
+}
+//------------------------------------------------------------------------------
+int main (int argc, char **argv) {
+
+  int  ret = 0;
+  char buf[80];
+
+  strcpy (buf, "neuroEvolution");
+
+  get_options_CGP (argc, argv,  
+                   buf,   
+                   NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if      (! strcmp (buf, "neuroEvolution")) ret = test_neuroEvolution (argc, argv);
+  else {  
+    printf ("\nERROR option -t = %s \n\n", buf);
+  }
+  
+  return (ret);
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
