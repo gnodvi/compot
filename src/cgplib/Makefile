@@ -20,11 +20,14 @@ CFLAGS= -Wall -O3 -fopenmp -lm
 
 #-------------------------------------------------------------------------------
 
-PROGS = alltests createDataSet manipulatingChromosomes customNodeFunction \
-	customFitnessFunction customSelectionScheme customReproductionScheme \
-	averageBehaviour neuroEvolution customES visualization \
-	\
-	multipleThreads recurrentConnections
+PROGS = alltests 
+
+#\
+#	createDataSet manipulatingChromosomes customNodeFunction \
+#	customFitnessFunction customSelectionScheme customReproductionScheme \
+#	averageBehaviour neuroEvolution customES visualization \
+#	\
+#	multipleThreads recurrentConnections
 
 S = .
 M = .
@@ -52,44 +55,46 @@ so: $(S)/cgp.c
 alltests: alltests.c $(CGP)
 	$(CC) -o $@ $^ $(CFLAGS)  
 
-createDataSet: $(M)/createDataSet.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#-------------------------------------------------------------------------------
 
-manipulatingChromosomes: $(M)/manipulatingChromosomes.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#createDataSet: $(M)/createDataSet.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-customNodeFunction: $(M)/customNodeFunction.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS) 
+#manipulatingChromosomes: $(M)/manipulatingChromosomes.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-customFitnessFunction: $(M)/customFitnessFunction.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#customNodeFunction: $(M)/customNodeFunction.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS) 
 
-customSelectionScheme: $(M)/customSelectionScheme.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#customFitnessFunction: $(M)/customFitnessFunction.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-customReproductionScheme:  $(M)/customReproductionScheme.c  $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#customSelectionScheme: $(M)/customSelectionScheme.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-averageBehaviour: $(M)/averageBehaviour.c $(CGP) 
-	$(CC) -o $@ $^ $(CFLAGS)
+#customReproductionScheme:  $(M)/customReproductionScheme.c  $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-neuroEvolution: $(M)/neuroEvolution.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#averageBehaviour: $(M)/averageBehaviour.c $(CGP) 
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-recurrentConnections: $(M)/recurrentConnections.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#neuroEvolution: $(M)/neuroEvolution.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-customES: $(M)/customES.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#recurrentConnections: $(M)/recurrentConnections.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-visualization: $(M)/visualization.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#customES: $(M)/customES.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-printChromoEqu: $(M)/printChromoEqu.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#visualization: $(M)/visualization.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
-multipleThreads: $(M)/multipleThreads.c $(CGP)
-	$(CC) -o $@ $^ $(CFLAGS)
+#printChromoEqu: $(M)/printChromoEqu.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
+
+#multipleThreads: $(M)/multipleThreads.c $(CGP)
+#	$(CC) -o $@ $^ $(CFLAGS)
 
 
 #-------------------------------------------------------------------------------
