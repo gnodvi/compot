@@ -10,6 +10,7 @@
 *.fun
 *.pdf
 
+alltests
 
 averageBehaviour
 createDataSet
