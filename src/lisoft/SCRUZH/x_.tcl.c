@@ -157,7 +157,9 @@ Demo_Init (Tcl_Interp *interp)
 
   //aigo_init_proc ();
 
-  interp->result = "Demo lib was successfully loaded";
+  // interp->result = "Demo lib was successfully loaded";
+  // 'Tcl_Interp' has no member named 'result'
+  
   return TCL_OK;
 }
 //------------------------------------------------------------------------------

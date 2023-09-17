@@ -1,5 +1,8 @@
 # =============================================================================# 
 #                               M A K E F I L E
+
+include ./Make.mak
+
 # =============================================================================# 
 
 #GCC_o64   = gcc -D_OPT64
@@ -126,8 +129,17 @@ $(X_GAME_O) : $(X_GAME_C) $(X_GAME_N)
 $(X_HASH_O) : $(X_HASH_C) $(X_HASH_N)
 	$(CC) $(FLAGS) -o $@ -c $(X_HASH_C) 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 $(X__TCL_O): $(X__TCL_C) $(XO-SRC) $(X__TCL_N)
-	gcc $(FLAGS) -shared -fpic  -o $@ $(X__TCL_C) $(XO-SRC) -ltcl $(GLIB_ALLS)
+#	gcc $(FLAGS) -shared -fpic  -o $@ $(X__TCL_C) $(XO-SRC) -ltcl $(GLIB_ALLS)
+	gcc $(FLAGS) -shared -fpic  -o $@ $(X__TCL_C) $(XO-SRC) $(TCL_INCS) $(TCL_LIBS) $(GLIB_ALLS)
+
+$(X__TCL_O): $(X__TCL_C) $(XO-SRC) $(X__TCL_N)
+#	gcc $(FLAGS) -shared -fpic  -o $@ $(X__TCL_C) $(XO-SRC) -ltcl $(GLIB_ALLS)
+	gcc $(FLAGS) -shared -fpic  -o $@ $(X__TCL_C) $(XO-SRC) $(TCL_INCS) $(TCL_LIBS) $(GLIB_ALLS)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 X-OBJS = $(A_COMM_O) $(B_FIND_O) $(B_TREE_O) $(X_COMM_O) $(X_WORK_O) $(X_GAME_O) $(X_HASH_O)
 

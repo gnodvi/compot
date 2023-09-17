@@ -1167,8 +1167,9 @@ void printFunctions (struct functionSet *funcSet)
 {
 
   fprintf (stderr, "numFunctions = %d; ", funcSet->numFunctions);
-  
-  for (int f = 0; f < funcSet->numFunctions; f++) {
+  int f;
+
+  for (f = 0; f < funcSet->numFunctions; f++) {
 
   fprintf (stderr, "%s (%d), ", funcSet->functionNames[f], funcSet->maxNumInputs[f]);
   }
