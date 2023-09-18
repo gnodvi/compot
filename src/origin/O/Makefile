@@ -2,7 +2,7 @@
 #
 #-------------------------------------------------------------------------------
 
-include ./Make.mak
+include ../Make.mak
 
 #----------------------------------------------
 
@@ -48,8 +48,8 @@ IGRAPH_LIBS = `pkg-config   --libs igraph`
 
 #------------------------------------------------------------------
 
-PROGS =  f_test e_test T/e_tcl.so  T/e_jim.so T/e-0000.so  \
-	T/e-1111-notplot.o T/e-1111-gnuplot.o  ## d_test
+PROGS =  d_test  ##f_test e_test T/e_tcl.so  T/e_jim.so T/e-0000.so  \
+	##T/e-1111-notplot.o T/e-1111-gnuplot.o 
 
 all:  
 #	(cd IGRAPH; make)
@@ -124,11 +124,11 @@ T/e_init.o: e_init.c e-0000.h
 
 # ============================================================================#
 
-#S_INCS = $(XINC) $(GINC) $(GNUPLOTI_INC) $(GSL_INC) 
-#S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
+S_INCS = $(XINC) $(GINC) $(GNUPLOTI_INC) $(GSL_INC) 
+S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
 
-#d_test : d_test.c                                                               
-#	$(CC) -o $@ $^ $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm            
+d_test : d_test.c                                                               
+	$(CC) -o $@ $^ $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm            
 
 #--------------------------------------------
 
