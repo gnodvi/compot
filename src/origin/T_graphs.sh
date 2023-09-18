@@ -26,6 +26,10 @@ puts ""
 #
 # mv E/OUT/e:e_i__.jm,TEST E/OUT/ERR
 
+run_numer_tests  c . E/OUT 
+
+puts ""
+
 run_numer_tests  e . E/OUT 
 
 puts ""

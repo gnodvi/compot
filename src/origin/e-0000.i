@@ -4,7 +4,7 @@
 
 %inline %{
 
-#include "e-0000.h"
+#include "c-0000.h"
 
 extern void  Error (const char *string);
 extern int   Rand123 (double p1, double p2, double p3); 
