@@ -1,0 +1,12 @@
+set multiplot 
+
+set size 1.0,0.50 
+set origin 0.0,0.50 
+plot 'out1.txt' title 'Nodes' with lines
+
+set size 1.0,0.50 
+set origin 0.0,0.00 
+plot 'out2.txt' title 'One_Edges' with lines, 'out4.txt' title 'Edges' with lines
+
+set nomultiplot 
+

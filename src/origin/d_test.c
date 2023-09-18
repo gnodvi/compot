@@ -2072,66 +2072,67 @@ dao_main_loop (int argc, char *argv[])
 {
   int    cur_node, new_node, u;
   BOOL   ret;
-	static GRAF *graf_new=NULL;
-	int    what_do;
+  static GRAF *graf_new=NULL;
+  int    what_do;
   int    nn, i, num_doing;
   GRAF  *graf;
   double mutaciq;
-	YT_PLOT *plot;
+  YT_PLOT *plot;
 
-	static ZT_OUT out[MAX_OUT] = {
-		{1, "Nodes"    ,  TRUE,  NULL},
-		//{2, "All_Edges",  TRUE,  NULL},
-		{2, "One_Edges",  TRUE,  NULL},
-		{2, "Two_Edges",  TRUE,  NULL},
-		{0, NULL,0,NULL}
-	};
-	ZT_OUT *p_out = &out[0];
+  static ZT_OUT out[MAX_OUT] = {
+    {1, "Nodes"    ,  TRUE,  NULL},
+    //{2, "All_Edges",  TRUE,  NULL},
+    {2, "One_Edges",  TRUE,  NULL},
+    {2, "Two_Edges",  TRUE,  NULL},
+    {0, NULL,0,NULL}
+  };
+  ZT_OUT *p_out = &out[0];
 
-	//-------------------------
-	nn        =10;
-	num_doing =200;
+  //-------------------------
+  nn        =10;
+  num_doing =200;
 
   graf = GrafCreate (nn);
   //GrafInit1 (graf, 50/*edge_all*/, 80/*edge_two*/);
   //GrafCheck (graf);
   YRAND_S;
 
-	graf_new = GrafCreate (graf->nn);
-	//-------------------------
+  graf_new = GrafCreate (graf->nn);
+  //-------------------------
 	
-	// пошаговые итерации
+  // пошаговые итерации
   plot = GrafCalcOut (1, NULL, p_out, num_doing);
-  for (i=0; i < num_doing; i++) {
+
+  for (i = 0; i < num_doing; i++) {
 
     GrafCalcOut (2, graf, p_out, num_doing);		
-		/* подготовить новый граф из текущего */
-		GrafCopy (graf, graf_new);
+    /* подготовить новый граф из текущего */
+    GrafCopy (graf, graf_new);
 		
-		// если ничего нет, то нужно зародить
-		if (GrafGetNumNodes (graf) == 0) dao_bestday (graf_new);
+    // если ничего нет, то нужно зародить
+    if (GrafGetNumNodes (graf) == 0) dao_bestday (graf_new);
 
-		/* главный цикл по всем узлам графа */
-		for (u = 0; u < graf->nn; u++) {
-			if (NODE (graf, u) == NOT) continue;
+    /* главный цикл по всем узлам графа */
+    for (u = 0; u < graf->nn; u++) {
+      if (NODE (graf, u) == NOT) continue;
 			
-			cur_node = u;
-			what_do = dao_what_do (graf_new, cur_node);
+      cur_node = u;
+      what_do = dao_what_do (graf_new, cur_node);
 			
-			if      (what_do == 1) dao_addnode (graf, graf_new, cur_node); 
-			else if (what_do == 3) dao_delnode (graf_new, cur_node); 
-		}
+      if      (what_do == 1) dao_addnode (graf, graf_new, cur_node); 
+      else if (what_do == 3) dao_delnode (graf_new, cur_node); 
+    }
 		
-		/* проверка корректности узлов и связей */
-		GrafCheck (graf_new);
+    /* проверка корректности узлов и связей */
+    GrafCheck (graf_new);
 
-		/* сделать новый граф текущим */
-		graf = graf_new;		
+    /* сделать новый граф текущим */
+    graf = graf_new;		
   }
   GrafCalcOut (3, NULL, p_out, num_doing);
 	
 	
-	argc++; argv++;
+  argc++; argv++;
   return 1;
 }
 //******************************************************************************
@@ -2141,19 +2142,19 @@ dao_main_loop (int argc, char *argv[])
 int
 main (int argc, char *argv[])
 {
-	YT_PLOT *plot;
+  YT_PLOT *plot;
  
-	//------------------------
-	// plot = make_plot_test (100, 0, 2*YPI);
-	// plot_print (plot, FALSE, TRUE);
-	// return;  
-	//------------------------
+  //------------------------
+  // plot = make_plot_test (100, 0, 2*YPI);
+  // plot_print (plot, FALSE, TRUE);
+  // return;  
+  //------------------------
 
-	if (0) main_graf_test (argc, argv);
-	if (0) more_graf_test (4);
-	if (0) main_graf_m0 (argc, argv);
+  if (0) main_graf_test (argc, argv);
+  if (0) more_graf_test (4);
+  if (0) main_graf_m0 (argc, argv);
 
-	if (1) dao_main_loop (argc, argv);
+  if (1) dao_main_loop (argc, argv);
 
   return 1;
 }

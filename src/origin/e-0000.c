@@ -201,8 +201,8 @@ Do_Open_Close (ZT_OUT *p_out, int mod, int xnum,
                  BOOL is_win, BOOL is_gnu)
 {
 
-  //BOOL is_win = TRUE; 
-  //BOOL is_gnu = TRUE;
+  /* BOOL */ is_win = TRUE; 
+  /* BOOL */ is_gnu = TRUE;
 
   //int xnum = 2000;
   static YT_PLOT *plot;
@@ -211,6 +211,9 @@ Do_Open_Close (ZT_OUT *p_out, int mod, int xnum,
   ZT_OUT *p_out_tmp;
   
   if (mod == 1) {
+
+    printf ("Do_Open_Close ............ mod = 1 \n");
+
     max_numw = -10;
     for (p_out_tmp=p_out; p_out_tmp->numw != 0; p_out_tmp++) {
       if (!(p_out_tmp->val)) continue;
@@ -241,16 +244,18 @@ Do_Open_Close (ZT_OUT *p_out, int mod, int xnum,
   }
   
   if (mod == 3) {
+
+    printf ("Do_Open_Close ............ mod = 3 \n");
     plot->xnum = step;
 
     //if (is_win || is_gnu) {
-      plot_print (plot, is_win, is_gnu);
-      //} else {
-
-      //printf ("......................... \n");
-      //printf ("......................... \n");
-
-      //}
+    plot_print (plot, is_win, is_gnu);
+    //} else {
+    
+    //printf ("......................... \n");
+    //printf ("......................... \n");
+    
+    //}
   } 
   
   return;
@@ -535,6 +540,7 @@ plot_step (void *ptr, BOOL is_win, BOOL is_gnu, int mode)
 /*-----------------------------------------------------------------------------*/
 #endif  // #ifdef _GNUPLOT
 
+#ifdef _0
 /*---------------------------------plot_print----------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -569,6 +575,7 @@ plot_print (YT_PLOT *plot, BOOL is_win, BOOL is_gnu)
       else if (buff[0] ==  ' ') ti_incr = -ti_incr;
       else if (buff[0] ==  'q') goto end;
       else continue;
+
       if (ti > plot->tnul) ti = plot->tnul;
       if (ti < 0)    ti = 0;
       break;
@@ -584,6 +591,8 @@ end:
   
   return;
 }
+#endif
+
 /*-----------------------------------win_sgr-----------------------------------*/
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
@@ -1986,7 +1995,8 @@ dao_loop0 (/* int argc, char *argv[] */int is_win, int is_gnu)
 
 
 
-  printf ("is_gnu = %d \n", is_gnu);
+  printf ("dao_loop0: is_gnu = %d \n", is_gnu);
+  printf ("\n");
 
   //typedef struct {
   //	int     numw;

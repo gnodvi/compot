@@ -1,0 +1,4 @@
+
+set terminal gif size 450, 300 
+set output "plot.gif"
+

@@ -26,7 +26,7 @@ FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
 GCC  = LANG=C  gcc -g
 
-GNUPLOTI_DIR = P
+GNUPLOTI_DIR = PLOTER
 GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
 GNUPLOTI_LIB =   $(GNUPLOTI_DIR)/T/p_gnup.o
 
@@ -48,7 +48,8 @@ IGRAPH_LIBS = `pkg-config   --libs igraph`
 
 #------------------------------------------------------------------
 
-PROGS =  f_test e_test T/e_tcl.so  T/e_jim.so T/e-0000.so d_test 
+PROGS =  f_test e_test T/e_tcl.so  T/e_jim.so T/e-0000.so d_test \
+	T/e-1111-notplot.o T/e-1111-gnuplot.o 
 
 all:  
 #	(cd IGRAPH; make)
@@ -64,11 +65,12 @@ test:
 
 #-------------------------------------------------------------------------------
 
-T/e-0000.so: T/e-0000.o T/e-0000_wrap.o
+T/e-0000.so: T/e-0000.o T/e-0000_wrap.o   T/e-1111-notplot.o
 	gcc -shared  -o $@ $^
 
 T/e-0000.o: e-0000.c e-0000.h
-	gcc -c -fpic -I. -o $@  e-0000.c       -I/usr/include/tcl8.6
+	gcc -c -fpic -I. -o $@  e-0000.c  -I/usr/include/tcl8.6
+
 
 T/e-0000_wrap.o: T/e-0000_wrap.c
 	gcc -c -fpic -I.  -o $@ $<  -I/usr/include/tcl8.6
@@ -77,9 +79,16 @@ T/e-0000_wrap.c: e-0000.i
 	swig -tcl8  -o $@ e-0000.i
 
 
-#------------------------------------------------------------------
 
-e_test :  e_test.c T/e-0000.o                                    
+T/e-1111-notplot.o: e-1111.c e-1111.h
+	gcc -c -fpic -I. -o $@  e-1111.c   -I/usr/include/tcl8.6
+
+T/e-1111-gnuplot.o: e-1111.c e-1111.h
+	gcc -c -fpic -I. -D_GNUPLOT -o $@  e-1111.c   -I/usr/include/tcl8.6 $(GNUPLOTI_INC) $(GNUPLOTI_LIB)
+
+
+
+e_test :  e_test.c T/e-0000.o   T/e-1111-gnuplot.o                                 
 	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
 
 #T/e-0000.o : e-0000.c e-0000.h                                  
@@ -107,7 +116,7 @@ T/e_jim.so:  $(SRC) $(DEP)
 
 #-------------------------------------------------------------------------------
 
-T/e_tcl.so: T/e_init.o T/e-0000.o ##$(GNUPLOTI_LIB)
+T/e_tcl.so: T/e_init.o T/e-0000.o T/e-1111-notplot.o ##$(GNUPLOTI_LIB)
 	gcc  -shared -o $@ $^ $(TCL_STUB_LIB_SPEC_clean)
 
 T/e_init.o: e_init.c e-0000.h

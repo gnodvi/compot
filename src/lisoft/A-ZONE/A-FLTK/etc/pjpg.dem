@@ -1,4 +1,0 @@
-
-set terminal jpeg size 450, 300 
-set output "plot.jpg"
-

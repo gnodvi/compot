@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   while ((c = getopt_long (argc, argv, "uha:p:i:n:o:vt:",
                       long_options, &option_index)) != -1) { 
 
-    //fprintf (stderr, "get_options: optind = %d   c = %c \n", optind, c);
+    fprintf (stderr, "get_options: optind = %d   c = %c \n", optind, c);
 
     switch (c) {
 
@@ -90,7 +90,7 @@ main (int argc, char *argv[])
       if (! strcmp (name, "gnu"))   is_gnu  = 1;
 
       if (! strcmp (name, "loop0")) daoloop = dao_loop0;
-      if (! strcmp (name, "loop1")) daoloop = dao_loop1;
+      if (! strcmp (name, "loop1")) daoloop = dao_loop1; // old d_test
 
       break;
       

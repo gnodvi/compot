@@ -1,0 +1,10 @@
+
+etc/*.txt
+etc/*.log
+kernel
+tester
+demons
+demops
+*.eps
+
+
