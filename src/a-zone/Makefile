@@ -1,7 +1,16 @@
 # -*-   mode: makefile ; coding: koi8   -*- ------------------------------------
 #
 #-------------------------------------------------------------------------------
-# ============================================================================#
+# TODO..
+#  
+#  
+# dia ....  YDrawLine -> YMETA, YPOST, YREAL: YPaintLine: (FLTK, API_W, else
+#  
+#  
+# ybo ....  YDrawLine:  Y_UNIX else
+#  
+#  
+# yma ....  YDrawLine:  Y_UNIX else
 #  
 #  
 # ============================================================================#
@@ -127,9 +136,12 @@ PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #d
 PROGS_misc = scloth 
 #PROGS_fltk =fltk-testps fltk-demons
 
-PROGS_boids = ybo-dialog ybo-yboids yma-ymagic  \
-	ybo-yboids-yma-new ybo-yboids-yma-old  \
-	ybo-dialog-yma-new ybo-dialog-yma-old
+PROGS_boids =  \
+	ybo-yboids-yma-new  \
+	yma-ymagic    \
+        ybo-dialog ybo-yboids  ybo-yboids-yma-old \
+	ybo-dialog-yma-new ybo-dialog-yma-old 
+####        dia-yboids 
 
 
 PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
@@ -242,7 +254,8 @@ ybo-dialog : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o
 ybo-yboids : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
 	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ybo-dialog-yma-old : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DDIALOG       $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
@@ -256,6 +269,17 @@ ybo-yboids-yma-old: ybo-dialog.c yma-kernel.h T/yma-kernel.o
 
 ybo-yboids-yma-new: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# попробуем
+# 
+#dia-yboids : ybo-dialog.c dia-kernel.h $(Y_OPEN_O) 
+#	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) $(Y_OPEN_O) $(X_LIBS) $(UNIX_LIBS)  
+
+#dia-yboids: ybo-dialog.c dia-kernel.h $(Y_OPEN_O) 
+#	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS)  $(UNIX_LIBS)  
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -288,12 +312,12 @@ dao-tester : dao-tester.c
 	$(CC) -o dao-tester dao-tester.c $(S_INCS) $(XLIB) $(GNUPLOTI_LIB) $(GSL_LIB)  -lm                                     
 #------------------------------------------------------------- 
 
-solver : sol-solver.c sol-kernel.o                                                              
-	$(CC) -o solver  sol-solver.c sol-kernel.o $(GAZ_INCS) $(GAZ_LIBS) -lm        
+#solver : sol-solver.c sol-kernel.o                                                              
+#	$(CC) -o solver  sol-solver.c sol-kernel.o $(GAZ_INCS) $(GAZ_LIBS) -lm        
 
 
-sol-kernel.o : sol-kernel.c sol-kernel.h                                                               
-	$(CC) -o sol-kernel.o -c sol-kernel.c  $(GAZ_INCS)                                   
+#sol-kernel.o : sol-kernel.c sol-kernel.h                                                               
+#	$(CC) -o sol-kernel.o -c sol-kernel.c  $(GAZ_INCS)                                   
 
 # ============================================================================#
 
