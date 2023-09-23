@@ -78,7 +78,15 @@
  
 /***************************************************************************/ 
  
- 
+int    blk,wht; 
+
+YT_BOOL yquit_flag;  
+int quit_ret; 
+//YT_BOOL bigwindow; 
+
+///..............................
+
+
 #define PH   (WND->ch_i<=MAX_CHILD ? &WND->ch[WND->ch_i++] : (int*)NULL) 
  
 YT_KERN *kern; 
@@ -805,6 +813,8 @@ YInitKERN ()
   YInitDisplay(); 
   YSetColors (YCOLORED); 
  
+  yquit_flag = FALSE;  
+ 
   return; 
 } 
 /*------------------------------------YSetDialog--------------------------------*/ 
@@ -1268,10 +1278,27 @@ YInitDisplay ()
   KERN_S->cmap   = DefaultColormap (DPY, KERN_S->screen); 
   Y_WDISPLAY = DisplayWidth  (DPY, KERN_S->screen); 
   Y_HDISPLAY = DisplayHeight (DPY, KERN_S->screen); 
+
+  blk   = BlackPixel(/* dpy,scr */ DPY, KERN_S->screen); 
+  wht   = WhitePixel(/* dpy,scr */ DPY, KERN_S->screen); 
+
 #endif 
  
   return; 
 } 
+/*----------------------------------YQuit-----------------------------------*/ 
+void 
+YQuit () 
+{ 
+	 
+  yquit_flag = TRUE;  
+
+#ifdef Y_UNIX  
+#else  
+  //PostQuitMessage(0);  
+#endif 
+ 
+}  
 /*--------------------------------KerReadSystem-----------------------------*/ 
 YT_BOOL 
 KerReadSystem (YT_SVMSG *pMsg) 
@@ -2056,7 +2083,7 @@ YWndOpen (int id, int x, int y, int w, int h, YT_COLOR color)
  
   if (KERN_S->wndgroup_flag) { 
     if (KERN_S->wndgroup_last == ID_NULL)  KERN_S->wndgroup_first = id; 
-    else                               WINI(id)->id_goto  = KERN_S->wndgroup_last; 
+    else                                   WINI(id)->id_goto  = KERN_S->wndgroup_last; 
     KERN_S->wndgroup_last = id; 
   } else 
     WINI(id)->id_goto = ID_NULL; 

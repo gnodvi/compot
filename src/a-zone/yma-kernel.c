@@ -1219,7 +1219,7 @@ void
 YWinBegPaint (int id)   
 {   
 #ifdef Y_UNIX   
-	drawable = (Drawable)(BIGI(id)->hwnd);   
+  drawable = (Drawable)(BIGI(id)->hwnd);   
   /* YModeType (TRUE, YDRAW); */
 #else /*-------------------------*/    
   drawable = GetDC ((HWND)(BIGI(id)->hwnd));  

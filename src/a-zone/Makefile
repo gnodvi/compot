@@ -3,15 +3,11 @@
 #-------------------------------------------------------------------------------
 # TODO..
 #  
-#  
 # dia ....  YDrawLine -> YMETA, YPOST, YREAL: YPaintLine: (FLTK, API_W, else
-#  
 #  
 # ybo ....  YDrawLine:  Y_UNIX else
 #  
-#  
 # yma ....  YDrawLine:  Y_UNIX else
-#  
 #  
 # ============================================================================#
 
@@ -137,11 +133,12 @@ PROGS_misc = scloth
 #PROGS_fltk =fltk-testps fltk-demons
 
 PROGS_boids =  \
-	ybo-yboids-yma-new  \
-	yma-ymagic    \
-        ybo-dialog ybo-yboids  ybo-yboids-yma-old \
-	ybo-dialog-yma-new ybo-dialog-yma-old 
-####        dia-yboids 
+	\
+	ymagic-yma \
+        yboids-ybo-1 yboids-ybo-2  yboids-yma-3 yboids-yma-4 \
+	 yboids-yma-2 \
+	yboids-dia
+####        dia-yboids yboids-yma-1
 
 
 PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
@@ -248,42 +245,41 @@ T/ybo-kernel.o: ybo-kernel.c ybo-kernel.h
 	$(CC) -o $@ -c -DY_$(SYST) $<  $(UNIX_INCS)  
 
 
-ybo-dialog : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
-	$(CC) -o $@ -DDIALOG $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
+yboids-ybo-1 : yboids.c ybo-kernel.h T/ybo-kernel.o  
+	$(CC) -o $@ -DDIALOG -D_YBO $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
-ybo-yboids : ybo-dialog.c ybo-kernel.h T/ybo-kernel.o  
-	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
+yboids-ybo-2 : yboids.c ybo-kernel.h T/ybo-kernel.o  
+	$(CC) -o $@ -DYBOIDS -D_YBO $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ybo-dialog-yma-old : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
-	$(CC) -o $@ -DDIALOG       $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
-
-ybo-dialog-yma-new : ybo-dialog.c yma-kernel.h T/yma-kernel.o  
-	$(CC) -o $@ -DDIALOG -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+#yboids-yma-1: yboids.c yma-kernel.h T/yma-kernel.o  
+#	$(CC) -o $@ -DDIALOG -D_YBO $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)
 
 
-ybo-yboids-yma-old: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
-	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+yboids-yma-2: yboids.c yma-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DDIALOG -D_YMA $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
-ybo-yboids-yma-new: ybo-dialog.c yma-kernel.h T/yma-kernel.o  
-	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+yboids-yma-3: yboids.c yma-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DYBOIDS -D_YMA $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
+yboids-yma-4: yboids.c yma-kernel.h T/yma-kernel.o  
+	$(CC) -o $@ -DYBOIDS -D_YMA $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # попробуем
 # 
-#dia-yboids : ybo-dialog.c dia-kernel.h $(Y_OPEN_O) 
-#	$(CC) -o $@ -DYBOIDS $< $(UNIX_INCS) $(Y_OPEN_O) $(X_LIBS) $(UNIX_LIBS)  
-
-#dia-yboids: ybo-dialog.c dia-kernel.h $(Y_OPEN_O) 
-#	$(CC) -o $@ -DYBOIDS -D_NEW $< $(UNIX_INCS) $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS)  $(UNIX_LIBS)  
+yboids-dia: yboids.c dia-kernel.h $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O) 
+	$(CC) -o $@ -DYBOIDS -D_DIA $< $(UNIX_INCS) $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O) \
+	 $(X_LIBS) $(UNIX_LIBS)  
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-yma-ymagic : yma-ymagic.c yma-kernel.h T/yma-kernel.o 
+ymagic-yma : ymagic.c yma-kernel.h T/yma-kernel.o 
 	$(CC) -o $@ $<  $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
 
 T/yma-kernel.o: yma-kernel.c yma-kernel.h 

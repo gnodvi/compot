@@ -1155,7 +1155,7 @@ main_proc (PFUNC_VAR)
 }
 /*-------------------------------MAIN-----------------------------------*/
 long
-  MAIN (PFUNC_VAR)
+MAIN (PFUNC_VAR)
 {
 
   switch (message) {

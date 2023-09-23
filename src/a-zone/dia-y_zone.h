@@ -118,9 +118,24 @@ enum keys_open_y {
   YLMOUSEDOUBLE, YLRMOUSEDRAG,
   YKEYBOARD,
   
+  YM_PAINT, YM_CREATE, ///......................./............
+
   YLEVEL0_END 
 };
 
+
+typedef struct { 
+	short x, y; 
+} YPoint; 
+ 
+extern int      quit_ret; 
+extern YT_BOOL yquit_flag; 
+extern int blk, wht; 
+
+#define  YRETURN {return (quit_ret);}
+#define  YQUIT (yquit_flag) 
+ 
+  ///.........................................................
 
 #define  ID_NULL   20000 
 #define  LP(val) (long)&(val)

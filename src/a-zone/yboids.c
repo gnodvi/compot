@@ -42,12 +42,18 @@
    
 //#include  "kernel.h"
 
-#ifdef _NEW
-#include  "yma-kernel.h"
-#else
+#ifdef _DIA
+#include  "dia-kernel.h"
+#endif
+ 
+#ifdef _YBO
 #include  "ybo-kernel.h"
 #endif
  
+#ifdef _YMA
+#include  "yma-kernel.h"
+#endif
+
 /*===========================================================================*/
                                                                                  
 void   
@@ -555,11 +561,18 @@ MAIN (int argc, char *argv[])
 #include <math.h> 
 //#include <unistd.h>                                                             
  
-//#include "ybo-kernel.h" 
-       
-#ifdef _NEW
+//#include "ybo-kernel.h"        
+//#ifdef _NEW
+
+#ifdef _DIA
+#include  "dia-kernel.h"
+#endif
+ 
+#ifdef _YMA
 #include  "yma-kernel.h"
-#else
+#endif
+
+#ifdef _YBO
 #include  "ybo-kernel.h"
 #endif
 
@@ -632,6 +645,9 @@ Vec boid_perceive_center (Boid boid, Vec real_cent, int numboids);
 Vec boid_av_vel (Boid boid, Vec real_avgvel, int numboids); 
 Vec boid_chill_out (Boid boid, Boid boids[], int numboids); 
  
+//~~~~~~~~~~~~~~~~~~
+#ifdef _DIA
+#else
 /*-------------------------------------------------------------------*/ 
 void  
 setup_colormap (void) 
@@ -666,8 +682,14 @@ draw_boid (Boid boid)
 	 
   /* YDrawRectF (0,0, 300,300, blk);     */  
  
-  //YFillPolygon (boid->shadow, new_darkgray);  
+  //YFillPolygon (boid->shadow, new_darkgray); 
+
+  //#ifdef _YMA 
   YDrawPolyF (boid->shadow, 3, new_darkgray);  
+  //#endif
+  //#ifdef _DIA 
+    //YDrawPolyF (3, boid->shadow, new_darkgray);  
+  //#endif
 	 
   lx1 = lwing[0].x = boid->X; 
   lx2 = lwing[1].x = boid->tail_lX; 
@@ -711,6 +733,8 @@ draw_boid (Boid boid)
   } 
 	 
 }    
+//~~~~~~~~~~~~~~~~~~
+#endif
 /*------------------------------------------------------------------*/ 
 //#define max(a,b) ((a>b)?a:b) 
  
@@ -1074,14 +1098,15 @@ Vec boid_chill_out(Boid boid, Boid boids[], int numboids)
   Vec chill, bigchill; 
   int i; 
 	 
-  chill = zero_vec(); 
+  chill    = zero_vec(); 
   bigchill = zero_vec(); 
 	 
   for(i=0; i<numboids; i++) { 
+
     if(boids[i] != boid) { 
       if(vec_rdist(boid->pos, boids[i]->pos) <= 100) { 
 	vec_diff(boid->pos, boids[i]->pos, chill); 
-	vec_add(bigchill, chill); 
+	vec_add (bigchill, chill); 
       } 
     } 
   } 
@@ -1090,24 +1115,39 @@ Vec boid_chill_out(Boid boid, Boid boids[], int numboids)
 	 
   return bigchill; 
 } 
-/*-----------------------------main_proc--------------------------*/  
-long  
-main_proc (PFUNC_VAR)  
-{  
-  
-  switch (message) {  
-  case YM_PAINT: 
-    break; 
-  case YRMOUSEUP: 
-  case YDESTROY: 
-    YQuit (); 
-    break; 
-  default: ;;;;  
-  }  
-  
-  RETURN_TRUE;  
-}  
+// ------------------------------------------------------------------------------  
+#ifdef _DIA
 
+
+/*------------------------------YWinBegPaint-----------------------------*/   
+void    
+YWinBegPaint (int id)   
+{  
+ 
+#ifdef Y_UNIX   
+  //drawable = (Drawable)(BIGI(id)->hwnd);   
+  /* YModeType (TRUE, YDRAW); */
+#else /*-------------------------*/    
+  //drawable = GetDC ((HWND)(BIGI(id)->hwnd));  
+  /* YModeType (TRUE, YDRAW); */
+#endif   
+
+}   
+// ------------------------------------------------------------------------------  
+void RunBoids (int id, int width, int height, int numboids) 
+{
+
+
+  YWinBegPaint (id);   
+
+  //int map = YWinMapGet (id);   
+  //YWinMapSet (map); 
+
+  //  YDrawRectF (150, 150, 50,50, wht);
+
+}
+// ------------------------------------------------------------------------------  
+#else
 // ------------------------------------------------------------------------------  
 void RunBoids (int id, int width, int height, int numboids) 
 {
@@ -1146,7 +1186,8 @@ void RunBoids (int id, int width, int height, int numboids)
     YWinMapPut (id, map);   
 
     vec_clear (center); 
-    vec_clear (avg_velocity); 
+    vec_clear (avg_velocity);
+ 
     for (i = 0; i < numboids; i++) { 
       vec_add (center, boids[i]->pos); 
       vec_add (avg_velocity, boids[i]->vel); 
@@ -1158,8 +1199,9 @@ void RunBoids (int id, int width, int height, int numboids)
       if(boids[i]->onscreen) { 
 	/* YBeginPaint (freshmap, YPIX);  */
 	/* draw_boid (boids[i], freshmap);  */
-
-	draw_boid(boids[i]); 
+        //#ifdef _YMA
+	draw_boid (boids[i]);
+        //#endif 
       } 
     } 
     YWinEndPaint (id);  
@@ -1172,6 +1214,95 @@ void RunBoids (int id, int width, int height, int numboids)
 
   return;
 }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#ifdef _DIA
+
+long
+boids_proc (PFUNC_VAR)       
+{        
+
+  switch (message) {       
+  case YOPEN: 
+  case YDRAW:       
+    printf("YOPEN ____: %d %d %d %d  \n", 0,0, WND->w,WND->h);
+
+    YPaintRectF (30,30, WND->w-60,WND->h-60, YColor("blue"));
+    YPaintLine  (30,30, WND->w-60,WND->h-60, YColor("white"));
+
+    YDrawRectF (100, 100, 200,200, blk);
+    //
+    //YDrawRectF (150, 150, 50,50, wht);
+
+    break;        
+  case YCLOSE:       
+    /* YWndClean (id);  */       
+    break; 
+  default: ;;;;
+  }       
+  
+  RETURN_TRUE; 
+}
+
+#else
+/*-----------------------------main_proc--------------------------*/  
+long  
+main_proc (PFUNC_VAR)  
+{  
+  
+  switch (message) {  
+  case YM_PAINT: 
+    break; 
+  case YRMOUSEUP: 
+  case YDESTROY: 
+    YQuit (); 
+    break; 
+  default: ;;;;  
+  }  
+  
+  RETURN_TRUE;  
+}  
+
+//-----------------------------------------------------------------------
+#endif
+
+#ifdef _DIA
+/*-------------------------------MAIN-----------------------------------*/
+long
+MAIN (PFUNC_VAR)
+{
+
+  //int id; // главного окна ?
+  int width  = /* XSCR (0.4) */ 600;  
+  int height = /* YSCR (0.4) */ 400;
+
+  switch (message) {
+  case YCREATE:
+    /* YInitDRAW (); */
+    YInitWIND (); 
+
+    //YBigWindow (NULL, studio_proc, "Y-Studio", 0,0, 640,480, 0,0,0,0, CLR_DEF);     
+  
+    YBigWindow (&id, boids_proc, "Yboids", /* SC_DEF, SC_DEF, width, height, */ 0,0, 640,480, 
+                0,0,0,0, YColor ("aqua"));
+
+    break; 
+  }
+
+  // непосредственно рисем птичек -------------------------------
+  // id - главное окно
+
+  RunBoids (id, width, height, 30); 
+
+  // непосредственно рисем птичек -------------------------------
+
+  id++;
+  RETURN_TRUE;
+}
+//----------------------------------------------------------------------
+#else  
 /*-----------------------------------------------------------------*/ 
 int 
 MAIN (int argc, char **argv) 
@@ -1187,7 +1318,7 @@ MAIN (int argc, char **argv)
   int id; // главного окна ?
     
   /*-------------------------------------------*/
-  
+  /*-------------------------------------------*/
   YRAND_S;
  
   YInit ();    
@@ -1196,12 +1327,17 @@ MAIN (int argc, char **argv)
   width  = XSCR(0.4);  
   height = YSCR(0.4);
   
-#ifdef _NEW
+  //#ifdef _NEW
+
+#ifdef _YMA
   YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0,
   	//YColorRGB (AQUA)
   	YColor ("aqua")
   	);
-#else
+  //#else
+#endif
+
+#ifdef _YBO
   YBig     (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);
 #endif
  
@@ -1211,10 +1347,12 @@ MAIN (int argc, char **argv)
   RunBoids (id, width, height, 30); 
 
   // непосредственно рисем птичек -------------------------------
-
 	  
   YRETURN;  
 } 
-/***************************************************************************/
+//-----------------------------------------------------------------------
+#endif // _DIA 
 
-#endif 
+/***************************************************************************/
+#endif // YBOIDS
+
