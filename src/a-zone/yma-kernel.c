@@ -694,8 +694,8 @@ YFlush ()
 { 
 #ifdef Y_UNIX 
 	 
-	XClearWindow (dpy, drawable); 
-	XFlush (dpy); 
+  XClearWindow (dpy, drawable); 
+  XFlush (dpy); 
 	  
 #else /*-------------------------*/  
  
@@ -957,7 +957,7 @@ YBeginPaint (long d, int type)
 {   
 #ifdef Y_UNIX   
    
-	drawable = (Drawable) d;   
+  drawable = (Drawable) d;   
    
 #else /*-------------------------*/    
   
@@ -1027,7 +1027,7 @@ YImageSet (long img)
     drawable = old_drawable;   
   } 
 #else  
-	static HDC old_drawable; 
+  static HDC old_drawable; 
  
   if (img) { 
     old_drawable = drawable; 
@@ -1191,11 +1191,11 @@ YWndDestroy (int id)
 {  
 
 #ifdef Y_UNIX 
-	XDestroyWindow (dpy, (Window)(BIGI(id)->hwnd));
+  XDestroyWindow (dpy, (Window)(BIGI(id)->hwnd));
 	/* YDelWindow (id); */
 #else
-	DestroyWindow ((HWND)(BIGI(id)->hwnd));
-	/* YDelWindow (id); */
+  DestroyWindow ((HWND)(BIGI(id)->hwnd));
+  /* YDelWindow (id); */
 #endif
 
 }
@@ -1203,7 +1203,7 @@ YWndDestroy (int id)
 int
 YHwndToId (long hwnd)
 {
-	int i;
+  int i;
 
   for (i = 0; i < BIGWND_NUM; i++) {
     if (bigwnds[i] == NULL) continue;

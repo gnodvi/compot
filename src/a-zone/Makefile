@@ -135,8 +135,8 @@ PROGS_misc = scloth
 PROGS_boids =  \
 	\
 	ymagic-yma \
-        yboids-ybo-1 yboids-ybo-2  yboids-yma-3 yboids-yma-4 \
-	 yboids-yma-2 \
+        yboids-dialog-ybo yboids-ybo  yboids-yma-3 yboids-yma-4 \
+	 yboids-dialog-yma \
 	yboids-dia
 ####        dia-yboids yboids-yma-1
 
@@ -245,21 +245,19 @@ T/ybo-kernel.o: ybo-kernel.c ybo-kernel.h
 	$(CC) -o $@ -c -DY_$(SYST) $<  $(UNIX_INCS)  
 
 
-yboids-ybo-1 : yboids.c ybo-kernel.h T/ybo-kernel.o  
+yboids-dialog-ybo : yboids.c ybo-kernel.h T/ybo-kernel.o  
 	$(CC) -o $@ -DDIALOG -D_YBO $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
-yboids-ybo-2 : yboids.c ybo-kernel.h T/ybo-kernel.o  
+
+yboids-ybo : yboids.c ybo-kernel.h T/ybo-kernel.o  
 	$(CC) -o $@ -DYBOIDS -D_YBO $< $(UNIX_INCS) T/ybo-kernel.o $(UNIX_LIBS)  
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#yboids-yma-1: yboids.c yma-kernel.h T/yma-kernel.o  
-#	$(CC) -o $@ -DDIALOG -D_YBO $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)
-
-
-yboids-yma-2: yboids.c yma-kernel.h T/yma-kernel.o  
+yboids-dialog-yma: yboids.c yma-kernel.h T/yma-kernel.o  
 	$(CC) -o $@ -DDIALOG -D_YMA $< $(UNIX_INCS) T/yma-kernel.o $(UNIX_LIBS)  
+
 
 
 yboids-yma-3: yboids.c yma-kernel.h T/yma-kernel.o  

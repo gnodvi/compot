@@ -279,14 +279,18 @@ typedef struct {
 } YT_COLER; 
  
 typedef struct { 
+
 #if defined(API_W) 
+
 #else  
+Drawable  drawable;  
   Display *dpy; 
   int      screen; 
   Colormap cmap; 
   XFontStruct *font_struct; 
   Font         font; 
 #endif 
+
   YT_COLER   globcoller[SIZE_COLER]; 
   YT_BIGWND *bigwnds[BIGWND_NUM]; 
   int        bigw_cur; 
@@ -1253,6 +1257,7 @@ YInitDisplay ()
 { 
  
 #if defined(API_W) 
+
   static WNDCLASS wc; 
  
   wc.style = 0; 
@@ -1272,7 +1277,9 @@ YInitDisplay ()
  
   Y_WDISPLAY = 800; 
   Y_HDISPLAY = 600; 
+
 #else  
+
   DPY = XOpenDisplay (NULL); 
   SCR = DefaultScreen (DPY); 
   KERN_S->cmap   = DefaultColormap (DPY, KERN_S->screen); 
@@ -1286,6 +1293,38 @@ YInitDisplay ()
  
   return; 
 } 
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/*------------------------------YWinBegPaint-----------------------------*/   
+void    
+YWinBegPaint (int id)   
+{  
+ 
+#ifdef Y_UNIX   
+  //drawable = (Drawable)(BIGI(id)->hwnd);   
+  /* YModeType (TRUE, YDRAW); */
+
+  drawable = (Drawable) (/* BIGI(id)->hwnd */ id);   
+
+#else /*-------------------------*/    
+  //drawable = GetDC ((HWND)(BIGI(id)->hwnd));  
+  /* YModeType (TRUE, YDRAW); */
+#endif   
+
+}   
+/*------------------------------YWinEndPaint-----------------------------*/  
+void   
+YWinEndPaint (int id)  
+{
+  
+#ifdef Y_UNIX  
+  /* YModeType (FALSE, YDRAW);  */
+#else /*-------------------------*/    
+  /* YModeType (FALSE, YDRAW); */ 
+  //ReleaseDC (((HWND)(BIGI(id)->hwnd)), drawable); 
+#endif
+  
+}  
 /*----------------------------------YQuit-----------------------------------*/ 
 void 
 YQuit () 
@@ -1299,6 +1338,8 @@ YQuit ()
 #endif 
  
 }  
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
 /*--------------------------------KerReadSystem-----------------------------*/ 
 YT_BOOL 
 KerReadSystem (YT_SVMSG *pMsg) 

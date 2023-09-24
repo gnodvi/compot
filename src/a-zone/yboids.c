@@ -522,14 +522,16 @@ MAIN (int argc, char *argv[])
   /* 	h = 450;  */
   /* printf ("w=%d h=%d \n", w, h); */
 
-#ifdef _NEW
-  YBig_new (&id, main_proc, "Hello, Y_ZONE from Big_new !!", SC_DEF, SC_DEF, w, h,  
-            0,0,0,0,
-            /* YColorRGB (AQUA) */ YColor ("aqua"));
-#else
+#ifdef _YBO
   YBig     (&id, main_proc, "Hello, Y_ZONE from Big_old !!", SC_DEF, SC_DEF, w, h);
 #endif
    
+#ifdef _YMA
+  YBig_new (&id, main_proc, "Hello, Y_ZONE from Big_new !!", SC_DEF, SC_DEF, w, h,  
+            0,0,0,0,
+            /* YColorRGB (AQUA) */ YColor ("aqua"));
+#endif
+
   // ------------------------------------------
   // 
 
@@ -542,7 +544,7 @@ MAIN (int argc, char *argv[])
 }  
 /***************************************************************************/
 
-#endif 
+#endif // YDIALOG 
 #ifdef YBOIDS
 
 /*-----------------------------------------------------------------------*/ 
@@ -568,12 +570,12 @@ MAIN (int argc, char *argv[])
 #include  "dia-kernel.h"
 #endif
  
-#ifdef _YMA
-#include  "yma-kernel.h"
-#endif
-
 #ifdef _YBO
 #include  "ybo-kernel.h"
+#endif
+
+#ifdef _YMA
+#include  "yma-kernel.h"
 #endif
 
 /*-----------------------------------------------------------------------*/ 
@@ -687,6 +689,7 @@ draw_boid (Boid boid)
   //#ifdef _YMA 
   YDrawPolyF (boid->shadow, 3, new_darkgray);  
   //#endif
+
   //#ifdef _DIA 
     //YDrawPolyF (3, boid->shadow, new_darkgray);  
   //#endif
@@ -1119,31 +1122,11 @@ Vec boid_chill_out(Boid boid, Boid boids[], int numboids)
 #ifdef _DIA
 
 
-/*------------------------------YWinBegPaint-----------------------------*/   
-void    
-YWinBegPaint (int id)   
-{  
- 
-#ifdef Y_UNIX   
-  //drawable = (Drawable)(BIGI(id)->hwnd);   
-  /* YModeType (TRUE, YDRAW); */
-#else /*-------------------------*/    
-  //drawable = GetDC ((HWND)(BIGI(id)->hwnd));  
-  /* YModeType (TRUE, YDRAW); */
-#endif   
-
-}   
 // ------------------------------------------------------------------------------  
 void RunBoids (int id, int width, int height, int numboids) 
 {
 
 
-  YWinBegPaint (id);   
-
-  //int map = YWinMapGet (id);   
-  //YWinMapSet (map); 
-
-  //  YDrawRectF (150, 150, 50,50, wht);
 
 }
 // ------------------------------------------------------------------------------  
@@ -1234,7 +1217,8 @@ boids_proc (PFUNC_VAR)
 
     YDrawRectF (100, 100, 200,200, blk);
     //
-    //YDrawRectF (150, 150, 50,50, wht);
+    YDrawRectF (150, 150, 50,50, YColor ("yellow"));
+    printf ("boids_proc: id = %d ............... \n", id);
 
     break;        
   case YCLOSE:       
@@ -1280,6 +1264,7 @@ MAIN (PFUNC_VAR)
 
   switch (message) {
   case YCREATE:
+
     /* YInitDRAW (); */
     YInitWIND (); 
 
@@ -1291,11 +1276,16 @@ MAIN (PFUNC_VAR)
     break; 
   }
 
+
+  YWinBegPaint (/* id */ 2);   
+  // int map = YWinMapGet (id);   
+  // YWinMapSet (map); 
+  YDrawRectF (150, 150, 50,50, wht);
+
+
   // непосредственно рисем птичек -------------------------------
   // id - главное окно
-
-  RunBoids (id, width, height, 30); 
-
+  //RunBoids (id, width, height, 30); 
   // непосредственно рисем птичек -------------------------------
 
   id++;
@@ -1327,20 +1317,14 @@ MAIN (int argc, char **argv)
   width  = XSCR(0.4);  
   height = YSCR(0.4);
   
-  //#ifdef _NEW
-
-#ifdef _YMA
-  YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0,
-  	//YColorRGB (AQUA)
-  	YColor ("aqua")
-  	);
-  //#else
-#endif
-
 #ifdef _YBO
   YBig     (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);
 #endif
  
+#ifdef _YMA
+  YBig_new (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0, YColor ("aqua"));
+#endif
+
   // непосредственно рисем птичек -------------------------------
   // id - главное окно
 
