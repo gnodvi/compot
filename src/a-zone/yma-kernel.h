@@ -120,7 +120,7 @@ void    YQuit (void);
 long    YSend (int id, int message, Mes mes1, Mes mes2, long mes3, long mes4) ; 
 long    YGoto (int message, Mes mes1, Mes mes2, long mes3, long mes4); 
  
-YT_BOOL YBig_new (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);   
+YT_BOOL YBig_yma/* new */ (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);   
 YT_BOOL YWnd (int *, YT_PFUNC, char *wname, Int, Int, Int, Int, long, long, long, long, YT_COLOR);
   
 void    YWndDestroy (int id);   
@@ -314,6 +314,7 @@ void  YModeType (YT_BOOL flag, int type);
 
 void    YModePaint (YT_BOOL flag); 
 YT_BOOL YWin (int *pid, YT_PFUNC proc, char *wname, int x, int y, int w, int h);   
+
 YT_BOOL YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h);   
 
 /****************************************************************************/   

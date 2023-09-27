@@ -974,6 +974,8 @@ void
 YEndPaint (long d, int type)  
 {  
 #ifdef Y_UNIX  
+
+  // XFlush
   
 #else /*-------------------------*/    
   
@@ -1106,14 +1108,14 @@ YPauseSoft (int num)
 void 
 YPauseHard (int num) 
 { 
-	int i, j; 
+  int i, j; 
  
-	for (i=0; i<num; i++)  
-	for (j=0; j<num; j++) {  
+  for (i=0; i<num; i++)  
+  for (j=0; j<num; j++) {  
     ;;; 
-	} 
+  } 
  
-	return; 
+  return; 
 } 
 /*-----------------------------------YGoto-----------------------------------*/ 
 long 
@@ -1428,7 +1430,7 @@ YBig (int *pid, YT_PFUNC proc, char *wname, SC x, SC y, SC w, SC h)
 } 
 /*--------------------------------YBig_new------------------------*/   
 YT_BOOL   
-YBig_new (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h, 
+YBig_yma/* new */ (int *pid, YT_PFUNC proc, char *wname, Int x, Int y, Int w, Int h, 
           long w_long1, long w_long2, long w_long3, long w_long4, 
           YT_COLOR color)   
 {  
@@ -1957,11 +1959,12 @@ YInit ()
 /*************************************************************************/  
 #ifdef Y_UNIX  
 /*************************************************************************/  
+/*-------------------------------main--------------------------------------*/ 
 int  
 main (int argc, char *argv[])  
 {   
  
-  return (MAIN(argc, argv)); 
+  return (MAIN (argc, argv)); 
  
 }  
 #else 
@@ -1972,7 +1975,7 @@ main (int argc, char *argv[])
 // ======================================================================= 
 //#pragma argsused 
 int PASCAL 
-WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine,   
+WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine,   
 		int nCmdShow)                                     
 { 
   int     argc, i;   

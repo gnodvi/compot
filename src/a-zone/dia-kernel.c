@@ -127,13 +127,17 @@ typedef struct {
 #endif 
  
 #define CLIP_SIZE  20 
+
 typedef struct { 
+
 #if defined(API_W) 
 #else  
+
   GC      gc; 
-  Window  win; 
+  Window  win;    // это частный случай, лучше использовать  Drawable = Pixmap or Window
   Region  region; 
   Region  regs[CLIP_SIZE]; 
+
 #endif 
   int     regs_i; 
   int     layout; 
@@ -141,7 +145,9 @@ typedef struct {
   YT_PFUNC main_proc; 
 	/*   int     id_dialog; */ 
   int     screen_w, screen_h; 
+
 } YT_BIGWND; 
+
  
 #if defined(API_W) 
 static struct { 
@@ -283,8 +289,8 @@ typedef struct {
 #if defined(API_W) 
 
 #else  
-Drawable  drawable;  
-  Display *dpy; 
+  Drawable  drawable;  // Pixmap or Window
+  Display  *dpy; 
   int      screen; 
   Colormap cmap; 
   XFontStruct *font_struct; 
@@ -696,13 +702,54 @@ YDirChange (char *new_dir)
   return (done); 
 } 
 /******************************************************************************/ 
+#ifndef _MAIN_NEW
+/*------------------------------YMain_sys---------------------------------*/ 
+long 
+YMain_sys (int argc, char *argv[]) 
+{ 
+ 
+  /* YInitCEXT (); */ 
+  YInitKERN (); 
+ 
+  printf ("YMain_sys ...................................... 111 \n");
+
+  CALL (MAIN, 0,0, YCREATE, 0, argc, (long)argv, 0);  
+ 
+  printf ("YMain_sys ...................................... 222 \n");
+
+  while (1) { 
+    if (!YCheckEvents ()) 
+      break; 
+  } 
+ 
+  printf ("YMain_sys ...................................... 333 \n");
+
+  CALL (MAIN, 0,0, YFINAL, 0, 0, 0, 0);  
+ 
+  return (KERN_S->main_ret); 
+} 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#endif
 /*-------------------------------main--------------------------------------*/ 
 int 
 main (int argc, char *argv[]) 
 { 
  
+#ifdef _MAIN_NEW
+  return (MAIN_new (argc, argv)); 
+#else
   YMain_sys (argc, argv); 
   return (0); 
+#endif
+ 
+} 
+/*---------------------------------YExit--------------------------------------*/ 
+void 
+YExit (long main_ret) 
+{ 
+ 
+  KERN_S->main_ret = main_ret; 
+  KERN_S->main_loop = FALSE; 
  
 } 
 /*--------------------------------WinMain----------------------------------*/ 
@@ -829,25 +876,6 @@ YSetDialog (YT_PFUNC dial)
   KERN_S->dialog_proc = dial; 
  
 } 
-/*------------------------------YMain_sys---------------------------------*/ 
-long 
-YMain_sys (int argc, char *argv[]) 
-{ 
- 
-  /* YInitCEXT (); */ 
-  YInitKERN (); 
- 
-  CALL (MAIN, 0,0, YCREATE, 0, argc, (long)argv, 0);  
- 
-  while (1) { 
-    if (!YCheckEvents ()) 
-      break; 
-  } 
- 
-  CALL (MAIN, 0,0, YFINAL, 0, 0, 0, 0);  
- 
-  return (KERN_S->main_ret); 
-} 
 /*------------------------------YSetTimer--------------------------------*/ 
 void 
 YSetTimer (int id, long delta) 
@@ -948,15 +976,6 @@ YPost (int id, int message, int mes1, int mes2, long mes3, long mes4)
   int from = Y_IDLAST; 
  
   return (YPostFrom (id, from, message, mes1, mes2, mes3, mes4)); 
- 
-} 
-/*---------------------------------YExit--------------------------------------*/ 
-void 
-YExit (long main_ret) 
-{ 
- 
-  KERN_S->main_ret = main_ret; 
-  KERN_S->main_loop = FALSE; 
  
 } 
 /*---------------------------------YCheckProcess------------------------------*/ 
@@ -1241,7 +1260,7 @@ YGet_SCR ()
 } 
 /*------------------------------YGet_WIN------------------------------------*/ 
 long 
-YGet_WIN () 
+YGet_WIN ()  // Drawable
 { 
  
 #if defined(API_W) 
@@ -1294,6 +1313,35 @@ YInitDisplay ()
   return; 
 } 
 /*--------------------------------------------------------------------------*/
+void    
+DrawableSaveRestore (int is_save, int is_restore)   
+{  
+
+  static Display *display;
+  static Drawable d;
+  static GC       gc;
+
+  //WINI(id)->bigw_i = KERN_S->bigw_cur; 
+  //WNDI(id)->ywin   = (long)SV->win; 
+
+  if (is_save) {
+    display = DPY; 
+    d       = SV->win; 
+    gc      = SV->gc;
+    printf ("DrawableSaveRestore: is_save:    bigw_cur = %d \n", KERN_S->bigw_cur);
+  }
+
+  if (is_restore) {
+    DPY     = display; 
+    SV->win = d; 
+    SV->gc  = gc;
+    printf ("DrawableSaveRestore: is_restore: bigw_cur = %d \n", KERN_S->bigw_cur);
+  }
+
+  // YPaintRectF
+
+  return;
+}
 /*--------------------------------------------------------------------------*/
 /*------------------------------YWinBegPaint-----------------------------*/   
 void    
@@ -1304,7 +1352,21 @@ YWinBegPaint (int id)
   //drawable = (Drawable)(BIGI(id)->hwnd);   
   /* YModeType (TRUE, YDRAW); */
 
-  drawable = (Drawable) (/* BIGI(id)->hwnd */ id);   
+  //drawable = (Drawable) (/* BIGI(id)->hwnd */ id); 
+
+  //#define  SV  (KERN_S->bigwnds[KERN_S->bigw_cur]) 
+  // XFillRectangle (DPY, SV->win, SV->gc, x, y, w, h); 
+
+  //DPY     = 158119056; 
+  //SV->win = 109051905; 
+  //SV->gc  = 158176264;
+  //SV->win = id; 
+
+  //WINI(id)->bigw_i = KERN_S->bigw_cur; 
+  //WNDI(id)->ywin = (long)SV->win; 
+  SV->win = WNDI(id)->ywin; 
+
+  //YGet_WIN
 
 #else /*-------------------------*/    
   //drawable = GetDC ((HWND)(BIGI(id)->hwnd));  
@@ -1352,6 +1414,7 @@ KerReadSystem (YT_SVMSG *pMsg)
 		/* YSetCliping (FALSE, 0, 0, 0, 0); */	/*!!?? htob ne obrezalis' Y-oko[ki ,
 																			 a esli nado ?????????? */ 
     return(FALSE); 
+
 #elif defined(API_W) 
   MSG     msg; 
   svw.pMsg = pMsg; 
@@ -1361,6 +1424,7 @@ KerReadSystem (YT_SVMSG *pMsg)
     return (svw.is_readsystem); 
   } 
   return (FALSE); 
+
 #else /* ----------------------------- */ 
   char    buffer[5]; 
   int     action; 
@@ -1368,7 +1432,7 @@ KerReadSystem (YT_SVMSG *pMsg)
   XRectangle rect; 
   XEvent  event; 
   int     i; 
-	long    ywin;
+  long    ywin;
  
   if (!XCheckMaskEvent (DPY, 
 			ExposureMask | KeyPressMask | ButtonPressMask | 
@@ -1378,17 +1442,19 @@ KerReadSystem (YT_SVMSG *pMsg)
  
   for (i = 0; i < BIGWND_NUM; i++) { 
     KERN_S->bigw_cur = i; 
-    if (SV->win == event.xany.window) 
+    if (SV->win == event.xany.window) // Drawable
       break; 
   } 
+
   if (i == BIGWND_NUM)  YERROR ("BIGWND_NUM");
 
-	ywin = (long)event.xany.window;
-	/* printf ("event.xany.window=%d \n", ywin); */
-	KERN_S->ywin = ywin;
+  ywin = (long)event.xany.window;
+  /* printf ("event.xany.window=%d \n", ywin); */
+  KERN_S->ywin = ywin;
  
  
   switch (event.type) { 
+
   case KeyPress: 
     pMsg->message = YKEYBOARD; 
     pMsg->id = YGetFocus (); 
@@ -1436,21 +1502,21 @@ KerReadSystem (YT_SVMSG *pMsg)
       XUnionRectWithRegion (&rect, SV->region, SV->region); 
  
       if (event.xexpose.count == 0) { 
-				XSetRegion (DPY, SV->gc, SV->region); 
+        XSetRegion (DPY, SV->gc, SV->region); 
         /* KerClipAdd(SV->region); */ 
  
-				XGetWindowAttributes (DPY, SV->win, &w_a); 
-				W_SCREEN = w_a.width; 
-				H_SCREEN = w_a.height; 
+        XGetWindowAttributes (DPY, SV->win, &w_a); 
+        W_SCREEN = w_a.width; 
+        H_SCREEN = w_a.height; 
 				
-				/* YRedrawAllNew (); */ 
-				YRedrawAll (); 
+        /* YRedrawAllNew (); */ 
+        YRedrawAll (); 
         /* KerClipDel(); */ 
 				
-				XDestroyRegion (SV->region); 
-				SV->region = XCreateRegion (); 
+        XDestroyRegion (SV->region); 
+        SV->region = XCreateRegion (); 
 				
-				YSetCliping (FALSE, 0, 0, 0, 0);	/*!!?? */ 
+        YSetCliping (FALSE, 0, 0, 0, 0);	/*!!?? */ 
       } 
     } 
     return (FALSE); 
@@ -1526,6 +1592,8 @@ YBigWindow (int *pid, YT_PFUNC proc, char *name, int x, int y, int w, int h,
   static YT_BOOL first = TRUE; 
   int from = ID_NULL; 
  
+  //YDrawRectF (250, 350, 50,50, YColor ("green"));
+
   if (first)  first = FALSE; 
   else { 
     fprintf (stderr, "Sorry, YBigWindow() is under construction !! \n"); 
@@ -1570,6 +1638,7 @@ YBigWindow (int *pid, YT_PFUNC proc, char *name, int x, int y, int w, int h,
  
   YWnd (&ID_MAIN, SV->main_proc, "", 0,0, W_SCREEN,H_SCREEN,  
 	w_long1, w_long2, w_long3, w_long4, color); 
+
   WNDI(ID_MAIN)->parent = ID_NULL; 
 
   pid++; x++; y++; 
@@ -1587,26 +1656,26 @@ KerCreateWindow (char *wname, int w, int h)
 
   fltkwin->end();
   fltkwin->show();
-	fltkwin->make_current(); 
+  fltkwin->make_current(); 
 
   SV->region = XCreateRegion (); 
-#if defined(API_W) 
-	/* extern HINSTANCE fl_display; */
-	svw.hWnd = fl_window;
-	svw.hdc  = fl_gc;
-/* 	COLORREF fl_RGB(); */
-/* 	HPEN fl_pen(); */
-/* 	HBRUSH fl_brush(); */
-#else
-	DPY    = fl_display;
-	SV->win= fl_window;
-	SV->gc = fl_gc;
-	SCR = fl_screen;
+  #if defined(API_W) 
+  /* extern HINSTANCE fl_display; */
+  svw.hWnd = fl_window;
+  svw.hdc  = fl_gc;
+  /* 	COLORREF fl_RGB(); */
+  /* 	HPEN fl_pen(); */
+  /* 	HBRUSH fl_brush(); */
+  #else
+  DPY    = fl_display;
+  SV->win= fl_window;
+  SV->gc = fl_gc;
+  SCR = fl_screen;
   KERN_S->cmap = fl_colormap; 
   /* extern XVisualInfo *fl_visual; */
-#endif
+  #endif
 
-#elif defined(API_W) 
+  #elif defined(API_W) 
   svw.hWnd = CreateWindow ("y_class", wname, WS_OVERLAPPEDWINDOW, 
 			   5, 5, W_SCREEN + 20, H_SCREEN + 50, 
 			   NULL, NULL, svw.hInstance, NULL); 
@@ -1619,7 +1688,7 @@ KerCreateWindow (char *wname, int w, int h)
  
   ShowWindow (svw.hWnd, svw.nCmdShow); 
  
-#else
+  #else
   XSetWindowAttributes attributes; 
  
   attributes.backing_store = Always; 
@@ -1637,7 +1706,7 @@ KerCreateWindow (char *wname, int w, int h)
 		ButtonPressMask | ButtonReleaseMask | ButtonMotionMask 
 		| PointerMotionHintMask); 
  
-#endif 
+  #endif 
 } 
 /*--------------------------------YColor----------------------------------------*/ 
 YT_COLOR YColor(char *name) 
@@ -2055,13 +2124,12 @@ YWnd (int *pid, YT_PFUNC proc, char *name, int x, int y, int w, int h,
   if (pid == NULL) 
     YERROR ("Too many CHILD !"); 
  
-/*   if (!YGet("second_draw")) { */ 
   if (!SECOND_DRAW) { 
     YWndCreate (pid, proc, name, w_long1, w_long2, w_long3, w_long4); 
     YWndOpen (*pid, x,y, w,h, color); 
+
   } else { 
     YWndOpen (*pid, x,y, w,h, color); 
-    /* YSend (*pid, YDRAW, 0, 0, 0, 0); */  /*????*/ 
   } 
  
   return; 
@@ -2133,15 +2201,13 @@ YWndOpen (int id, int x, int y, int w, int h, YT_COLOR color)
   WNDI(id)->ch_i = 0;  /*??*/ 
  
   WINI(id)->bigw_i = KERN_S->bigw_cur; 
-  WNDI(id)->ywin = (long)SV->win; 
+  WNDI(id)->ywin   = (long)SV->win; 
  
   WNDI(id)->parent = Y_IDLAST; 
-  /* WINI(id)->opened = TRUE; */ 
   WNDI(id)->opened = TRUE; 
-  WNDI(id)->numer = ++KERN->numer; /*  OUTD(9999); */ 
+  WNDI(id)->numer  = ++KERN->numer; /*  OUTD(9999); */ 
   
   if (color == CLR_DEF) { 
-    /* id_wl_proc = (int)YGet("wl_proc"); */ 
     id_wl_proc = Y_WLPROC; 
     if  (id_wl_proc == ID_NULL)  color = YColor ("white"); 
     else                         color = (YT_COLOR) YSend (id_wl_proc, YKEYWORD1, id,0,0,0); 
@@ -2670,6 +2736,7 @@ FSetColor (YT_COLOR color)
 void 
 YPaintRectF (int x, int y, int w, int h, YT_COLOR f_color) 
 { 
+
   CALCXY (x, y); 
   CALCWH (w, h);
 
@@ -2688,10 +2755,17 @@ YPaintRectF (int x, int y, int w, int h, YT_COLOR f_color)
   if (!SelectObject (svw.hdc, svw.hbrOld))  YERROR ("YPaintRectF-3"); 
   if (!DeleteObject (svw.hbr))              YERROR ("YPaintRectF-4"); 
 #else  
+
   XSetForeground (DPY, SV->gc, f_color); 
   XFillRectangle (DPY, SV->win, SV->gc, x, y, w, h); 
+
+  //WINI(id)->bigw_i = KERN_S->bigw_cur; 
+  //WNDI(id)->ywin   = (long)SV->win; 
+  //fprintf (stderr, "YPaintRectF: DPY= %ld, SV->win= %ld, SV->gc= %ld, KERN_S->bigw_cur=  %ld, xywh = %d %d %d %d  \n", DPY, SV->win, SV->gc, KERN_S->bigw_cur, x, y, w, h);
+
   XFlush (DPY); 
 #endif 
+
 } 
 /*-----------------------------YPaintString--------------------------------*/ 
 void 
@@ -3046,6 +3120,19 @@ YIdGoto ()
  
   return (WIN->id_goto); 
  
+} 
+/*---------------------------YFlush--------------------------------*/ 
+void 
+YFlush () 
+{ 
+  //#ifdef Y_UNIX 
+	 
+  XClearWindow (DPY, /* drawable */SV->win); 
+  XFlush (DPY); 
+	  
+  //#else /*-------------------------*/  
+ 
+  //#endif 
 } 
 /*-----------------------------YImageFree-----------------------------------*/ 
 void 
@@ -3758,6 +3845,7 @@ YDrawString (char *text, int x, int y, YT_COLOR color)
 void 
 YDrawRectF (int x, int y, int w, int h, YT_COLOR f_color) 
 { 
+
   switch (DRAW_MODE) { 
   case YMETA: 
     YMetaAdd (YRECTF, NULL, x, y, w, h, f_color, 0, 0, NULL); 

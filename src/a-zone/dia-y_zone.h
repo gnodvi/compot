@@ -152,6 +152,7 @@ typedef unsigned long YT_COLOR;
 #define  RETURN_TRUE { from++; mes1++; mes2++; mes3++; mes4++; return(TRUE); }
 #define  CALL(proc, id,from,message,mes1,mes2,mes3,mes4) ((*(proc))(id,from,message,mes1,mes2,mes3,mes4))
 
+void     YInitKERN (); 
 long     MAIN  (PFUNC_PAR);
 YT_BOOL  YMainParse (int argc, char **argv); 
 
@@ -190,6 +191,9 @@ void     YKillProcess (void);
 long     YGet_DPY (void);
 long     YGet_SCR (void);
 long     YGet_WIN (void);
+void    
+  DrawableSaveRestore (int is_save, int is_restore);   
+
 void     YExit (long);
 
 void     YCheckSystem (void);
@@ -221,8 +225,8 @@ typedef struct {
   int       int1,    int2,    int3,    int4;
   long      w_long1, w_long2, w_long3, w_long4;
   /* ------ */
-	long      fltk_o;
-	long      ywin;
+  long      fltk_o;
+  long      ywin;
 } YT_WINDOW;
 
 #define  WINI_X_MULT(id) ((WNDI((id)))->x_mult)

@@ -787,7 +787,7 @@ MAIN (int argc, char **argv)
  
   YInit ();    
  
-  YBig_new (&h_main, main_proc, "Laboratory of Elementary Magic Particles", 
+  YBig_yma/* new */ (&h_main, main_proc, "Laboratory of Elementary Magic Particles", 
 	SC_DEF, SC_DEF, width, height, 0,0,0,0, YColor("aqua")); 
  
   for( ; ; ) { 

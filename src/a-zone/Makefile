@@ -91,7 +91,8 @@ SYST = UNIX
 
 OBJ_DIR = T
 
-Y_OPEN_O = $(OBJ_DIR)/y_open.o
+Y_OPEN_O     = $(OBJ_DIR)/y_open.o
+Y_OPEN_O_NEW = $(OBJ_DIR)/y_open_new.o
 Y_MORE_O = $(OBJ_DIR)/y_more.o
 Y_WIND_O = $(OBJ_DIR)/y_wind.o
 Y_ALGO_O = $(OBJ_DIR)/y_algo.o
@@ -125,7 +126,11 @@ Y_FLTK_MORE_O = $(OBJ_DIR)/y_fltk_more.o
 Y_FLTK_WIND_O = $(OBJ_DIR)/y_fltk_wind.o
 
 
-PROGS_DIAL  = dia-demo-1 dia-demo-2 dia-demo-3 dia-sgames dia-songer dia-svisor dia-studio 
+PROGS_DIAL  = dia-demo-1 dia-demo-1-new \
+	      dia-demo-2 \
+	      dia-demo-3 \
+	      dia-sgames dia-songer dia-svisor dia-studio $(Y_OPEN_O_NEW)
+
 PROGS_DIAL += $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)   dia-fltk-1 #dia-fltk-2
 
 #PROGS_misc = solver dao-tester scloth 
@@ -136,8 +141,8 @@ PROGS_boids =  \
 	\
 	ymagic-yma \
         yboids-dialog-ybo yboids-ybo  yboids-yma-3 yboids-yma-4 \
-	 yboids-dialog-yma \
-	yboids-dia
+        yboids-dialog-yma \
+	yboids-dia yboids-dia-new
 ####        dia-yboids yboids-yma-1
 
 
@@ -155,19 +160,45 @@ LIBS_make:
 # =============================================================================
 
 $(Y_OPEN_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $(Y_OPEN_O) -c -DD_OPEN dia-kernel.c  
+	 $(CC) $(M_OPTS) -o $@ -c -DD_OPEN $< 
+
+$(Y_OPEN_O_NEW) : dia-kernel.c dia-y_zone.h  
+	 $(CC) $(M_OPTS) -o $@ -c -DD_OPEN -D_MAIN_NEW $< 
+
+
 $(Y_MORE_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $(Y_MORE_O) -c -DD_MORE dia-kernel.c
+	 $(CC) $(M_OPTS) -o $@ -c -DD_MORE $< 
+
 $(Y_WIND_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $(Y_WIND_O) -c -DD_WIND dia-kernel.c
+	 $(CC) $(M_OPTS) -o $@ -c -DD_WIND $< 
 
 $(Y_ALGO_O) : dia-algols.c dia-y_zone.h 
-	 $(CC) $(M_OPTS) -o $(Y_ALGO_O) -c -DD_ALGO dia-algols.c
+	 $(CC) $(M_OPTS) -o $@ -c -DD_ALGO $< 
+
 
 $(Y_LIBS): $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)   
 	 ar -cr dia-y_zone.a  $(Y_OPEN_O) $(Y_MORE_O)  $(Y_WIND_O) 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+dia-demo-1 : dia-demons.c $(Y_OPEN_O)  
+	$(CC) $(M_OPTS) -o $@ -DD_DIAL_1 $^ $(X_LIBS) 
+
+dia-demo-1-new : dia-demons.c $(Y_OPEN_O_NEW)  
+	$(CC) $(M_OPTS) -o $@ -DD_DIAL_1 -D_MAIN_NEW $^ $(X_LIBS) 
+
+
+dia-demo-2 : dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)  
+	$(CC) $(M_OPTS) -o $@  -DD_DIAL_2 $^ $(X_LIBS) 
+
+dia-demo-3 : dia-algols.c $(Y_LIBS) $(Y_ALGO_O)  
+	$(CC) $(M_OPTS) -o $@  -DD_DIAL_3 $^   $(X_LIBS) 
+
+
+dia-sgames : dia-algols.c $(Y_LIBS) $(Y_ALGO_O) 
+	$(CC) $(M_OPTS) -o $@  -DD_SGAMES dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS)   
+
+# -----------------------------------------------------------
 
 $(Y_FLTK_OPEN_O) : dia-kernel.c dia-y_zone.h  
 	 $(CPP) $(M_OPTS) $(FLTK_INCS) -o $@ -c -DD_OPEN -DFLTK dia-kernel.c 
@@ -190,21 +221,6 @@ dia-fltk-1 : dia-demons.c $(Y_FLTK_OPEN_O) $(Y_FLTK_MORE_O) $(Y_FLTK_WIND_O)
 #dia-fltk-2 : dia-demons.c  
 #	$(CPP) $(APP) $(FLAGS)  $(M_OPTS) -DFLTK -DD_FLTK_TEST2 $(FLTK_INCS) \
 #	$^ $(X_LIBS) $(FLTK_LIBS) $(UNIX_LIBS) -o $@
-
-# -----------------------------------------------------------
-
-dia-demo-1 : dia-demons.c $(Y_OPEN_O)  
-	$(CC) $(M_OPTS) -o dia-demo-1 -DD_DIAL_1  dia-demons.c $(Y_OPEN_O) $(X_LIBS) 
-
-dia-demo-2 : dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O)  
-	$(CC) $(M_OPTS) -o dia-demo-2 -DD_DIAL_2  dia-demons.c $(Y_OPEN_O) $(Y_MORE_O) $(Y_WIND_O) $(X_LIBS) 
-
-dia-demo-3 : dia-algols.c $(Y_LIBS) $(Y_ALGO_O)  
-	$(CC) $(M_OPTS) -o dia-demo-3 -DD_DIAL_3  dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS) 
-
-
-dia-sgames : $(Y_LIBS) $(Y_ALGO_O) dia-algols.c
-	$(CC) $(M_OPTS) -o dia-sgames -DD_SGAMES dia-algols.c $(Y_LIBS) $(Y_ALGO_O) $(X_LIBS)   
 
 # -----------------------------------------------------------
 
@@ -274,6 +290,9 @@ yboids-yma-4: yboids.c yma-kernel.h T/yma-kernel.o
 yboids-dia: yboids.c dia-kernel.h $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O) 
 	$(CC) -o $@ -DYBOIDS -D_DIA $< $(UNIX_INCS) $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O) \
 	 $(X_LIBS) $(UNIX_LIBS)  
+
+yboids-dia-new : yboids.c  $(Y_OPEN_O_NEW)  
+	$(CC) $(M_OPTS) -o $@ -DYBOIDS -D_DIA -D_MAIN_NEW $^ $(X_LIBS) 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
