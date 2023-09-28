@@ -868,6 +868,79 @@ YInitKERN ()
  
   return; 
 } 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/*--------------------------------YWinMapGet--------------------------------*/
+long
+YWinMapGet (int id)
+{
+
+#ifdef Y_UNIX  
+  /*   long win = BIGI(id)->hwnd; */
+  /* 	return (YCreatePixmap (win)); */
+  // return (YCreatePixmap (id));
+#else  
+  /* 	return (YImageGet (0, 0, w_glob-1, h_glob-1)); */
+  //return (YImageGet (0, 0, YWinW(id)-1, YWinH(id)-1));
+#endif 
+
+  return 0;
+}
+/*--------------------------------YWinMapPut--------------------------------*/
+void
+YWinMapPut (int id, long map)
+{
+
+#ifdef Y_UNIX  
+  /* 	YPixToWin (map, win);  */
+  //YPixToWin (map, id); 
+#else  
+  //YImagePut (0, 0, map);
+#endif 
+
+  return;
+}
+/*--------------------------------YWinMapSet--------------------------------*/
+void
+YWinMapSet (long map)
+{
+
+#ifdef Y_UNIX  
+  //YImageSet (map);
+#else  
+  //YImageSet (map);
+#endif 
+
+  return;
+}
+/*-----------------------------YColorRGB---------------------------------*/  
+YT_COLOR  
+YColorRGB (int red, int green, int blue)  
+{  
+
+#ifdef Y_UNIX 
+  XColor  cell;  
+  
+  cell.red = red << 8;  
+  cell.green = green << 8;  
+  cell.blue = blue << 8;  
+ 
+  if (!(XAllocColor (/* dpy, cmap, */ DPY, KERN_S->cmap, &cell)))  
+    printf ("Error : KisaSetColor \n");  
+  
+  return (cell.pixel);  
+#else /*-------------------------*/  
+ 
+//  return (PALETTERGB (red, green, blue));  
+  return (RGB (red,green,blue));  
+ 
+#endif
+ 
+}  
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /*------------------------------------YSetDialog--------------------------------*/ 
 void   
 YSetDialog (YT_PFUNC dial) 
@@ -1364,7 +1437,7 @@ YWinBegPaint (int id)
 
   //WINI(id)->bigw_i = KERN_S->bigw_cur; 
   //WNDI(id)->ywin = (long)SV->win; 
-  SV->win = WNDI(id)->ywin; 
+  //SV->win = WNDI(id)->ywin; 
 
   //YGet_WIN
 
@@ -1400,6 +1473,19 @@ YQuit ()
 #endif 
  
 }  
+/*----------------------------------YPauseHard-------------------------------*/ 
+void 
+YPauseHard (int num) 
+{ 
+  int i, j; 
+ 
+  for (i=0; i<num; i++)  
+  for (j=0; j<num; j++) {  
+    ;;; 
+  } 
+ 
+  return; 
+} 
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------------KerReadSystem-----------------------------*/ 

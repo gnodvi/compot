@@ -765,7 +765,7 @@ YCreatePixmap (int id)
   SC h = YWinH (id); 
  
   /* 	pix = XCreatePixmap(dpy, window, w_glob, h_glob, depth);  */
-  pix = XCreatePixmap(dpy, window, w, h, depth); 
+  pix = XCreatePixmap(dpy, window, w, h, depth); // creates a pixmap
  
   return ((long)pix); 
  
@@ -800,7 +800,7 @@ YCopyPixmaps (long from, long to, SC w, SC h)
 #ifdef Y_UNIX  
   
   /* 	XCopyArea(dpy, from, to, gc, 0, 0, w_glob, h_glob, 0, 0);   */
-  XCopyArea(dpy, from, to, gc, 0, 0, w, h, 0, 0);  
+  XCopyArea (dpy, from, to, gc, 0, 0, w, h, 0, 0);  
   
 #else /*-------------------------*/    
 #endif  
@@ -1028,9 +1028,9 @@ YPauseHard (int num)
   int i, j; 
  
   for (i=0; i<num; i++)  
-    for (j=0; j<num; j++) {  
-      ;;; 
-    } 
+  for (j=0; j<num; j++) {  
+    ;;; 
+  } 
  
   return; 
 } 
@@ -1472,8 +1472,10 @@ YInitDisplay ()
   root  = DefaultRootWindow(dpy); 
   depth = DefaultDepth(dpy,scr); 
   vis   = DefaultVisual(dpy,scr); 
-  blk   = BlackPixel(dpy,scr); 
-  wht   = WhitePixel(dpy,scr); 
+
+  blk   = BlackPixel (dpy,scr); 
+  wht   = WhitePixel (dpy,scr); 
+
   cmap  = DefaultColormap (dpy, scr);  
   gc    = XCreateGC (dpy,root,(unsigned long)0,&gcvals); 
  

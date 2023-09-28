@@ -135,6 +135,9 @@ extern int blk, wht;
 #define  YRETURN {return (quit_ret);}
 #define  YQUIT (yquit_flag) 
  
+void 
+  YPauseHard (int num); 
+
   ///.........................................................
 
 #define  ID_NULL   20000 
@@ -188,11 +191,33 @@ void     YKillTimer (void);
 void     YSetProcess (int, int);
 void     YKillProcess (void);   
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
 long     YGet_DPY (void);
 long     YGet_SCR (void);
 long     YGet_WIN (void);
 void    
-  DrawableSaveRestore (int is_save, int is_restore);   
+DrawableSaveRestore (int is_save, int is_restore); 
+
+#define  BLACK    0,0,0  
+#define  WHITE    255,255,255  
+#define  GRAY     128,128,128  
+#define  MAROON   128,0,0  
+#define  RED      255,0,0  
+#define  PURPLE   128,0,128  
+#define  FUCHSIA  255,0,255  
+#define  GREEN    0,128,0  
+#define  LIME     0,255,0  
+#define  OLIVE    128,128,0  
+#define  YELLOW   255,255,0  
+#define  NAVY     0,0,128  
+#define  BLUE     0,0,255  
+#define  TEAL     0,128,128  
+#define  AQUA     0,255,255  
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
 void     YExit (long);
 

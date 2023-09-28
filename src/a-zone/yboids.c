@@ -1,5 +1,7 @@
 // -*-  mode: c    ; coding: koi8   -*- ----------------------------------------
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #ifdef DIALOG
 
 /****************************************************************************    
@@ -74,7 +76,7 @@ push1_proc (PFUNC_VAR)
     
   case YM_CREATE: 
   case YM_PAINT:  
-		YDrawRectF (0, 0, YWinW(id), YWinH(id), YColorRGB(GRAY));           
+    YDrawRectF (0, 0, YWinW(id), YWinH(id), YColorRGB(GRAY));           
     break;  
   case YLMOUSEUP:  
     YSend (YWinP(id), YPUSH, 0,0,0,0); 
@@ -93,7 +95,7 @@ new_proc (PFUNC_VAR)
   switch (message) {   
   case YM_CREATE:  
   case YM_PAINT:   
-    YDrawRectF (0, 0, YWinW(id), YWinH(id), YColorRGB(YELLOW));            
+    YDrawRectF (0, 0, YWinW(id), YWinH(id), YColorRGB (YELLOW));            
     /* YWin (&id_push, push_proc, "Push", 30, 30, 70, 25); */     
     break;   
   case YLMOUSEDOWN:  
@@ -455,6 +457,7 @@ void RunFictBoids (int id)
   YWinBegPaint (id);    
 
   int map = YWinMapGet (id);  
+
   YWinMapSet (map);
   
   draw_background (id);
@@ -648,8 +651,8 @@ Vec boid_av_vel (Boid boid, Vec real_avgvel, int numboids);
 Vec boid_chill_out (Boid boid, Boid boids[], int numboids); 
  
 //~~~~~~~~~~~~~~~~~~
-#ifdef _DIA
-#else
+//#ifdef _DIA
+//#else
 /*-------------------------------------------------------------------*/ 
 void  
 setup_colormap (void) 
@@ -686,13 +689,11 @@ draw_boid (Boid boid)
  
   //YFillPolygon (boid->shadow, new_darkgray); 
 
-  //#ifdef _YMA 
+#ifdef _DIA 
+  //YDrawPolyF (3, boid->shadow, new_darkgray); 
+#else 
   YDrawPolyF (boid->shadow, 3, new_darkgray);  
-  //#endif
-
-  //#ifdef _DIA 
-    //YDrawPolyF (3, boid->shadow, new_darkgray);  
-  //#endif
+#endif
 	 
   lx1 = lwing[0].x = boid->X; 
   lx2 = lwing[1].x = boid->tail_lX; 
@@ -737,7 +738,7 @@ draw_boid (Boid boid)
 	 
 }    
 //~~~~~~~~~~~~~~~~~~
-#endif
+//#endif
 /*------------------------------------------------------------------*/ 
 //#define max(a,b) ((a>b)?a:b) 
  
@@ -1119,33 +1120,48 @@ Vec boid_chill_out(Boid boid, Boid boids[], int numboids)
   return bigchill; 
 } 
 // ------------------------------------------------------------------------------  
-#ifdef _DIA
+//#ifdef _DIA
 
 // ------------------------------------------------------------------------------  
-void RunBoids (int id, int width, int height, int numboids) 
-{
+//void RunBoids (int id, int width, int height, int numboids) 
+//{
 
-
-
-}
+//}
 // ------------------------------------------------------------------------------  
-#else
+//#else
 // ------------------------------------------------------------------------------  
 void RunBoids (int id,  int width, int height, int numboids) 
 {
 
-  YWinBegPaint (id);   
+  int is_real_boids = 1;
+  int is_pixiling   = 0;
+  int map;
 
-  int map = YWinMapGet (id);   
-  YWinMapSet (map); 
+  YWinBegPaint (id); // drawable = (Drawable)(BIGI(id)->hwnd);   
+                     // YModePaint (TRUE);
 
-  YDrawRectF (0,0, width,height, blk);
+  if (is_pixiling) {
+    map = YWinMapGet (id);   // YCreatePixmap(id)
+ 
+    YWinMapSet (map);  // set pixmap as drawable:  old_drawable = drawable; drawable = img;
+  } 
+  
 
-  YWinMapSet (0); 
-  YWinEndPaint (id); 
+  if (is_real_boids) {
+    YDrawRectF (0,0, width,height, blk);
+  } else {
+    YDrawRectF (0,   0, width,height, YColorRGB (YELLOW));
+    YDrawRectF (50, 50, 50,50,        YColorRGB (GREEN));
+  }
+
+  //#ifndef _DIA
+
+  if (is_pixiling) {
+    YWinMapSet (0); // restore to back drawable: drawable = old_drawable;   ???
+    //YWinEndPaint (id); 
+  }
 
   /* freshmap   = YCreatePixmap(id);  */
- 
   
   Boid *boids = (Boid *) calloc (numboids, sizeof(_Boid)); 
 
@@ -1159,17 +1175,31 @@ void RunBoids (int id,  int width, int height, int numboids)
   center = zero_vec(); 
   avg_velocity = zero_vec(); 
     
-  /* YSetWindowPixmap (id, freshmap);  */
+  if (is_pixiling) {
+    /* YSetWindowPixmap (id, freshmap);  */
+    YWinMapPut (id, map);  // запишем нарисованную картинку в окошко
+  }
  
+  //#ifndef _DIA
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   for( ; ; ) {  
+
     if (YQUIT) break;
  
-    if (1) {
-
       /* YCopyPixmaps (background, freshmap, width, height);  */
-      YWinBegPaint (id);    
-      YWinMapPut (id, map);   
+
+    if (is_pixiling) {
+      //#ifdef _YBO
+      //inBegPaint (id);  
+      //#endif  
+      YWinMapPut (id, map);  // запишем нарисованную картинку в окошко
+      // XCopyArea (dpy, pix, win, gc, 0, 0, YWinW(id), YWinH(id), 0, 0); 
+    } else {
+      YDrawRectF (0,0, width,height, blk);
+    }
+      
+    if (is_real_boids) {
       
       vec_clear (center); 
       vec_clear (avg_velocity);
@@ -1183,6 +1213,7 @@ void RunBoids (int id,  int width, int height, int numboids)
         boid_move (boids[i], boids, numboids, center, avg_velocity, width, height); 
         
         if(boids[i]->onscreen) { 
+          
           /* YBeginPaint (freshmap, YPIX);  */
           /* draw_boid (boids[i], freshmap);  */
           //#ifdef _YMA
@@ -1191,22 +1222,26 @@ void RunBoids (int id,  int width, int height, int numboids)
         } 
       } 
       
-      YWinEndPaint (id); 
-      
-    } 
+    } else {
+      //YDrawRectF (200, 50, 100,50, /* YColor ("green") */ wht);
+    }
     
+    //#ifdef _YBO
+    // YWinEndPaint (id); 
+    //#endif
     
     YFlush (); 
     YCheckEvents (); 
-
+    
     YPauseHard (3000); 
   } 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+  //#endif
+  
   return;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#endif
+//#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #ifdef _DIA
@@ -1265,23 +1300,12 @@ boids_proc_new (PFUNC_VAR)
   
   RETURN_TRUE; 
 }
-/*----------------------------------YPauseHard-------------------------------*/ 
-void 
-YPauseHard (int num) 
-{ 
-  int i, j; 
- 
-  for (i=0; i<num; i++)  
-  for (j=0; j<num; j++) {  
-    ;;; 
-  } 
- 
-  return; 
-} 
 /*---------------------------------MAIN----------------------------------------*/
 int 
 MAIN_new (int argc, char **argv) 
 {
+
+  int id;
 
   printf ("MAIN_new ...................... \n");
   //YMain_sys (argc, argv); 
@@ -1292,16 +1316,21 @@ MAIN_new (int argc, char **argv)
   YInitKERN (); 
  
   //CALL (MAIN, 0,0, YCREATE, 0, argc, (long)argv, 0);  
-  YBigWindow (NULL, boids_proc_new, "Yboids", /* SC_DEF, SC_DEF, width, height, */ 0,0, 640,480, 
+  YBigWindow (&id, boids_proc_new, "Yboids", /* SC_DEF, SC_DEF, width, height, */ 0,0, 640,480, 
               0,0,0,0,  CLR_DEF);
  
-  YPaintRectF (100,100, 50,50, YColor("red"));        
+  YPaintRectF (100,100, 50,50, YColor("red"));  // рисует, но потом закрашивает фоном      
+
+  //printf ("DRAW_MODE = %d \n", DRAW_MODE);
 
   while (1) { 
 
     YPaintRectF (200,200, 50,50, YColor("green"));        
 
-    //YFlush (); 
+
+    RunBoids (id, 640,480, 30); 
+
+    YFlush (); 
     //YCheckEvents (); 
 
     YPauseHard (3000); 

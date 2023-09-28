@@ -54,6 +54,7 @@ Font         font;
 /* Region    reg;   */
  
 #else /****************************************/ 
+
 #define API_W 1 
  
 #define STRICT 

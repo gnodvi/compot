@@ -14,6 +14,13 @@
 YDIR_ROOT = .
 include ./Make.mak
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Y_UNIX
+
+SYST = UNIX 
+#SYST = WIND 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 # =============================================================================
 
 M_OPTS = $($(SYS)_OPTS) $(YZONE_OPTS)
@@ -76,7 +83,7 @@ UNIX_LIBS = -L/usr/X11R6/lib  -lX11 -lm #-lXext
 
 OPTIM = -fno-exceptions -Wall
 CCC   = gcc -O2
-CPP   = LANG=C c++ -O2
+CPP   = LANG=C c++ -O2 -DY_$(SYST) 
 
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
@@ -85,9 +92,6 @@ GLIB = -L$(XDIR)/lib -lglut -lGLU -lGL -lm
 
 S_INCS = $(XINC) $(GINC) $(GNUPLOTI_INC) $(GSL_INC) 
 S_LIBS = $(XLIB) $(GLIB) $(GNUPLOTI_LIB) $(GSL_LIB) 
-
-SYST = UNIX 
-#SYST = WIND 
 
 OBJ_DIR = T
 
@@ -160,10 +164,10 @@ LIBS_make:
 # =============================================================================
 
 $(Y_OPEN_O) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $@ -c -DD_OPEN $< 
+	 $(CC) $(M_OPTS) -o $@ -c -DD_OPEN -DY_$(SYST) $< 
 
 $(Y_OPEN_O_NEW) : dia-kernel.c dia-y_zone.h  
-	 $(CC) $(M_OPTS) -o $@ -c -DD_OPEN -D_MAIN_NEW $< 
+	 $(CC) $(M_OPTS) -o $@ -c -DD_OPEN -D_MAIN_NEW -DY_$(SYST) $< 
 
 
 $(Y_MORE_O) : dia-kernel.c dia-y_zone.h  
@@ -291,7 +295,7 @@ yboids-dia: yboids.c dia-kernel.h $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O)
 	$(CC) -o $@ -DYBOIDS -D_DIA $< $(UNIX_INCS) $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O) \
 	 $(X_LIBS) $(UNIX_LIBS)  
 
-yboids-dia-new : yboids.c  $(Y_OPEN_O_NEW)  
+yboids-dia-new : yboids.c  $(Y_OPEN_O_NEW) $(Y_MORE_O) 
 	$(CC) $(M_OPTS) -o $@ -DYBOIDS -D_DIA -D_MAIN_NEW $^ $(X_LIBS) 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
