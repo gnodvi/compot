@@ -216,6 +216,12 @@ DrawableSaveRestore (int is_save, int is_restore);
 #define  TEAL     0,128,128  
 #define  AQUA     0,255,255  
 
+YT_COLOR  YColorRGB (int red, int green, int blue); 
+void      YWinBegPaint (int id);   
+long      YWinMapGet (int id);
+void      YWinMapPut (int id, long map);
+void      YWinMapSet (long map);
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 

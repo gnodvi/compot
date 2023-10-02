@@ -681,7 +681,13 @@ YTimeGet ()
   struct timeval tp; 
   struct timezone tz; 
   gettimeofday (&tp, &tz); 
-  return (tp.tv_sec * 100 + tp.tv_usec / 10000); 
+
+  //struct timeval {
+  //  long tv_sec;  /* seconds since 1/1/1970    */
+  //  long tv_usec; /* microseconds since tv_sec */
+  //};
+
+  return (tp.tv_sec * 100 + tp.tv_usec / 10000); // сотые доли секунды !!!!
 #endif 
 } 
 /*-----------------------------------YBeep----------------------------------*/ 
@@ -988,6 +994,7 @@ read_timer (YT_SVMSG *pMsg)
   pMsg->from = ID_NULL; 
   pMsg->message = YTIMER; 
   pMsg->mes3 = 0l; 
+
   return (TRUE); 
 } 
 /*--------------------------------read_queue----------------------------*/ 
@@ -3932,7 +3939,10 @@ void
 YDrawRectF (int x, int y, int w, int h, YT_COLOR f_color) 
 { 
 
+  printf ("YDrawRectF: DRAW_MODE = %d \n", DRAW_MODE);
+
   switch (DRAW_MODE) { 
+
   case YMETA: 
     YMetaAdd (YRECTF, NULL, x, y, w, h, f_color, 0, 0, NULL); 
     break; 

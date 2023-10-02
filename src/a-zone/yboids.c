@@ -592,8 +592,9 @@ YT_COLOR new_outlines[32];
  
 typedef struct { 
    double x, y, z; 
-} _Vec, *Vec; 
+} _Vec, *Vec; // это уже указатель !!
  
+
 Vec  zero_vec (void); 
 Vec  new_vec (double X, double Y, double Z); 
 Vec  vec_copy (Vec v1); 
@@ -690,7 +691,7 @@ draw_boid (Boid boid)
   //YFillPolygon (boid->shadow, new_darkgray); 
 
 #ifdef _DIA 
-  //YDrawPolyF (3, boid->shadow, new_darkgray); 
+  YDrawPolyF (3, boid->shadow, new_darkgray); 
 #else 
   YDrawPolyF (boid->shadow, 3, new_darkgray);  
 #endif
@@ -748,8 +749,9 @@ Vec zero_vec(void)
 { 
   Vec vec; 
 	 
-  vec = (Vec)malloc(sizeof(_Vec)); 
+  vec = (Vec) malloc(sizeof(_Vec)); 
   vec->x = vec->y = vec->z = 0; 
+
   return vec; 
 } 
 /*------------------------------------------------------------------*/ 
@@ -1120,22 +1122,15 @@ Vec boid_chill_out(Boid boid, Boid boids[], int numboids)
   return bigchill; 
 } 
 // ------------------------------------------------------------------------------  
-//#ifdef _DIA
-
 // ------------------------------------------------------------------------------  
-//void RunBoids (int id, int width, int height, int numboids) 
-//{
-
-//}
-// ------------------------------------------------------------------------------  
-//#else
-// ------------------------------------------------------------------------------  
-void RunBoids (int id,  int width, int height, int numboids) 
+void RunBoids_Begin (int is_pixiling, 
+                     int id,  int width, int height, int numboids,
+                     int *out_map, Boid **out_boids) 
 {
 
   int is_real_boids = 1;
-  int is_pixiling   = 0;
-  int map;
+  //int is_pixiling   = 0;
+  int map = 0;
 
   YWinBegPaint (id); // drawable = (Drawable)(BIGI(id)->hwnd);   
                      // YModePaint (TRUE);
@@ -1154,14 +1149,10 @@ void RunBoids (int id,  int width, int height, int numboids)
     YDrawRectF (50, 50, 50,50,        YColorRGB (GREEN));
   }
 
-  //#ifndef _DIA
-
   if (is_pixiling) {
     YWinMapSet (0); // restore to back drawable: drawable = old_drawable;   ???
     //YWinEndPaint (id); 
   }
-
-  /* freshmap   = YCreatePixmap(id);  */
   
   Boid *boids = (Boid *) calloc (numboids, sizeof(_Boid)); 
 
@@ -1170,67 +1161,109 @@ void RunBoids (int id,  int width, int height, int numboids)
     boids[i] = new_boid (width, height); 
   } 
 
+  
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  *out_map   = map;
+  *out_boids = boids;
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  return;
+}
+// ------------------------------------------------------------------------------  
+void RunBoids_OneStep (int is_pixiling, 
+                       int id,  int width, int height, int numboids,
+                       int map, int is_real_boids,
+                       Vec center, Vec avg_velocity, Boid *boids) 
+{
+  int  i;
+
+  printf ("RunBoids_OneStep ............ \n");
+  /* YCopyPixmaps (background, freshmap, width, height);  */
+
+
+  if (is_pixiling) {
+    //#ifdef _YBO
+    //inBegPaint (id);  
+    //#endif  
+    YWinMapPut (id, map);  // запишем нарисованную картинку в окошко
+    // XCopyArea (dpy, pix, win, gc, 0, 0, YWinW(id), YWinH(id), 0, 0); 
+  } else {
+
+    //#ifdef _DIA
+    //YPaintRectF(0, 0, width,height, blk); 
+    printf ("RunBoids_OneStep : YDrawRectF \n");
+    YDrawRectF (0, 0, width,height, blk);
+    //#else
+      //YDrawRectF (0, 0, width,height, blk);
+    //#endif
+
+  }
+      
+  if (is_real_boids) {
+      
+    vec_clear (center); 
+    vec_clear (avg_velocity);
+      
+    for (i = 0; i < numboids; i++) { 
+      vec_add (center, boids[i]->pos); 
+      vec_add (avg_velocity, boids[i]->vel); 
+    } 
+      
+    for (i = 0; i < numboids; i++) { 
+      boid_move (boids[i], boids, numboids, center, avg_velocity, width, height); 
+        
+      if(boids[i]->onscreen) { 
+          
+        /* YBeginPaint (freshmap, YPIX);  */
+        /* draw_boid (boids[i], freshmap);  */
+        //#ifdef _YMA
+        draw_boid (boids[i]);
+        //#endif 
+      } 
+    } 
+      
+  } else {
+    //YDrawRectF (200, 50, 100,50, /* YColor ("green") */ wht);
+  }
+    
+  //#ifdef _YBO
+  // YWinEndPaint (id); 
+  //#endif
+
+  return;
+}
+// ------------------------------------------------------------------------------  
+void RunBoids (int is_pixiling, 
+               int id,  int width, int height, int numboids) 
+{
+
+  int is_real_boids = 1;
+  int map;
+  Boid *boids;
+
   Vec center, avg_velocity; 
 
-  center = zero_vec(); 
+  center       = zero_vec(); 
   avg_velocity = zero_vec(); 
     
-  if (is_pixiling) {
-    /* YSetWindowPixmap (id, freshmap);  */
-    YWinMapPut (id, map);  // запишем нарисованную картинку в окошко
-  }
- 
-  //#ifndef _DIA
+  RunBoids_Begin (is_pixiling, 
+                     id,  width, height, numboids,
+                     &map, &boids);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   for( ; ; ) {  
 
     if (YQUIT) break;
  
-      /* YCopyPixmaps (background, freshmap, width, height);  */
-
-    if (is_pixiling) {
-      //#ifdef _YBO
-      //inBegPaint (id);  
-      //#endif  
-      YWinMapPut (id, map);  // запишем нарисованную картинку в окошко
-      // XCopyArea (dpy, pix, win, gc, 0, 0, YWinW(id), YWinH(id), 0, 0); 
-    } else {
-      YDrawRectF (0,0, width,height, blk);
-    }
-      
-    if (is_real_boids) {
-      
-      vec_clear (center); 
-      vec_clear (avg_velocity);
-      
-      for (i = 0; i < numboids; i++) { 
-        vec_add (center, boids[i]->pos); 
-        vec_add (avg_velocity, boids[i]->vel); 
-      } 
-      
-      for (i = 0; i < numboids; i++) { 
-        boid_move (boids[i], boids, numboids, center, avg_velocity, width, height); 
-        
-        if(boids[i]->onscreen) { 
-          
-          /* YBeginPaint (freshmap, YPIX);  */
-          /* draw_boid (boids[i], freshmap);  */
-          //#ifdef _YMA
-          draw_boid (boids[i]);
-          //#endif 
-        } 
-      } 
-      
-    } else {
-      //YDrawRectF (200, 50, 100,50, /* YColor ("green") */ wht);
-    }
-    
-    //#ifdef _YBO
-    // YWinEndPaint (id); 
-    //#endif
+    RunBoids_OneStep (is_pixiling, 
+                      id, width, height, numboids,
+                      map, is_real_boids,
+                      center, avg_velocity, boids); 
     
     YFlush (); 
+
     YCheckEvents (); 
     
     YPauseHard (3000); 
@@ -1241,8 +1274,6 @@ void RunBoids (int id,  int width, int height, int numboids)
   return;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//#endif
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #ifdef _DIA
 
@@ -1279,18 +1310,64 @@ boids_proc_new (PFUNC_VAR)
 {        
   static int hExit, hCurPage=ID_NULL, hPage1, hPage2, hPage3, hPage4, hTest = ID_NULL;
   static YT_COLOR col1, col2, col3, col4;
+  //static int tim = ID_NULL; // таймер
 
   enum local_keys {
     DRAW_MESS = YKEY_LOCALS
   };
 
-  switch (message) {       
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  static int is_pixiling  ;
+  static int is_real_boids;
+  static int  map = 0;
+  static Boid *boids;
+  static int width ;
+  static int height;
+  static int numboids = 30;
+  
+  static Vec center, avg_velocity; 
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  switch (message) { 
+      
   case YCREATE: 
-    break;        
+    /* tim =  */YSetTimer (id, 100); // сотые секунды!
+
+    is_pixiling   = 0;
+    is_real_boids = 1;
+    width  = WND->w;
+    height = WND->h;
+
+    center       = zero_vec(); 
+    avg_velocity = zero_vec(); 
+    
+    RunBoids_Begin (is_pixiling, 
+                    id,  width, height, numboids,
+                    &map, &boids);
+    break;   
+   
   case YOPEN: 
   case YDRAW:       
     YPaintRectF (0,0, WND->w,WND->h, YColor("yellow"));        
     break;        
+
+  case YTIMER:
+    printf ("boids_proc_new: .... YTIMER \n");
+
+    //YPaintRectF (0,0, WND->w,WND->h, YColor("yellow"));        
+
+    RunBoids_OneStep (is_pixiling, 
+                      id, /* width */ WND->w, /* height */ WND->h, numboids,
+                      map, is_real_boids,
+                      center, avg_velocity, boids); 
+
+    //YFlush (); 
+    //YCheckEvents ();  
+    //YPauseHard (3000); 
+
+    break;
   case YCLOSE:       
     YWndClean (id);        
     break; 
@@ -1308,46 +1385,37 @@ MAIN_new (int argc, char **argv)
   int id;
 
   printf ("MAIN_new ...................... \n");
-  //YMain_sys (argc, argv); 
 
-
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-  /* YInitCEXT (); */ 
   YInitKERN (); 
+  YInitMORE (); 
  
-  //CALL (MAIN, 0,0, YCREATE, 0, argc, (long)argv, 0);  
   YBigWindow (&id, boids_proc_new, "Yboids", /* SC_DEF, SC_DEF, width, height, */ 0,0, 640,480, 
               0,0,0,0,  CLR_DEF);
  
-  YPaintRectF (100,100, 50,50, YColor("red"));  // рисует, но потом закрашивает фоном      
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // будем едлать честное окно через таймер
 
-  //printf ("DRAW_MODE = %d \n", DRAW_MODE);
+  //YPaintRectF (100,100, 50,50, YColor("red"));  // рисует, но потом закрашивает фоном      
 
   while (1) { 
+    //
+    //YPaintRectF (200,200, 50,50, YColor("green"));        
+    // RunBoids (0, id, 640,480, 30); 
 
-    YPaintRectF (200,200, 50,50, YColor("green"));        
-
-
-    RunBoids (id, 640,480, 30); 
-
-    YFlush (); 
-    //YCheckEvents (); 
-
-    YPauseHard (3000); 
+    //YFlush (); 
+    //YPauseHard (3000); 
 
     if (!YCheckEvents ()) 
       break; 
   } 
  
-  //CALL (MAIN, 0,0, YFINAL, 0, 0, 0, 0);   
-  //return (KERN_S->main_ret); 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
 
 
   return (0); 
 }
 //------------------------------------------------------------------------------
-#else
+#else // #ifndef _MAIN_NEW
 /*-------------------------------MAIN-----------------------------------*/
 long
 boids_proc (PFUNC_VAR)       
@@ -1413,6 +1481,7 @@ MAIN (PFUNC_VAR)
 
     /* YInitDRAW (); */
     YInitWIND (); 
+    
 
     //YBigWindow (NULL, studio_proc, "Y-Studio", 0,0, 640,480, 0,0,0,0, CLR_DEF);     
 
@@ -1441,7 +1510,7 @@ MAIN (PFUNC_VAR)
 
   // непосредственно рисем птичек -------------------------------
   // id - главное окно
-  //RunBoids (id, width, height, 30); 
+  //RunBoids (0, id, width, height, 30); 
   // непосредственно рисем птичек -------------------------------
 
   id++;
@@ -1450,7 +1519,7 @@ MAIN (PFUNC_VAR)
 //------------------------------------------------------------------------------
 #endif // _MAIN_NEW
 //----------------------------------------------------------------------
-#else  
+#else  // #ifndef _DIA
 /*-----------------------------------------------------------------*/ 
 int 
 MAIN (int argc, char **argv) 
@@ -1477,19 +1546,15 @@ MAIN (int argc, char **argv)
   
 #ifdef _YBO
   YBig     (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);
+  RunBoids (1, id, width, height, 30); // непосредственно рисем птичек, id - главное окно
 #endif
  
 #ifdef _YMA
   YBig_yma (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height, 0,0,0,0, YColor ("aqua"));
+  RunBoids (0, id, width, height, 30); // непосредственно рисем птичек, id - главное окно
 #endif
 
-  // непосредственно рисем птичек -------------------------------
-  // id - главное окно
 
-  RunBoids (id, width, height, 30); 
-
-  // непосредственно рисем птичек -------------------------------
-	  
   YRETURN;  
 } 
 //-----------------------------------------------------------------------

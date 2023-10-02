@@ -38,8 +38,8 @@ Y_LIBS = dia-y_zone.a
 
 #-Wformat=
 
-
-CC = LANG=C gcc -g -Wno-format
+#CC = LANG=C gcc -g -Wno-format
+CC = LANG=C gcc -g -Wno-format  -fno-diagnostics-color -Wstringop-truncation
 
 #CC = c++ 
 #CC = pgCC 
@@ -83,7 +83,8 @@ UNIX_LIBS = -L/usr/X11R6/lib  -lX11 -lm #-lXext
 
 OPTIM = -fno-exceptions -Wall
 CCC   = gcc -O2
-CPP   = LANG=C c++ -O2 -DY_$(SYST) 
+##CPP   = LANG=C c++ -O2 -DY_$(SYST) 
+CPP   = LANG=C c++ -fno-diagnostics-color -Wstringop-truncation  -O2  -DY_$(SYST) 
 
 FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
