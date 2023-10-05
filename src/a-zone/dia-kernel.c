@@ -1382,8 +1382,12 @@ YInitDisplay ()
   DPY = XOpenDisplay (NULL); 
   SCR = DefaultScreen (DPY); 
   KERN_S->cmap   = DefaultColormap (DPY, KERN_S->screen); 
+
   Y_WDISPLAY = DisplayWidth  (DPY, KERN_S->screen); 
   Y_HDISPLAY = DisplayHeight (DPY, KERN_S->screen); 
+
+  //wdisplay_pix = Y_WDISPLAY /* DisplayWidth (dpy, scr) */;  
+  //hdisplay_pix = Y_HDISPLAY /* DisplayHeight (dpy, scr) */;  
 
   blk   = BlackPixel(/* dpy,scr */ DPY, KERN_S->screen); 
   wht   = WhitePixel(/* dpy,scr */ DPY, KERN_S->screen); 
@@ -4229,6 +4233,8 @@ YDrawPolyF (int num, int *points, YT_COLOR fcolor)
 { 
   int i, x, y; 
  
+  printf ("YDrawPolyF .......................  \n");
+
   switch (DRAW_MODE) { 
   case YMETA: 
     YMetaAdd (YPOLYF, (void*)points, num, 0, 0, 0, fcolor, 0, 0, NULL); 
@@ -4290,6 +4296,8 @@ YDrawTriF (int x1, int y1, int x2, int y2, int x3, int y3, YT_COLOR fcolor)
   ls[4] = x3;  ls[5] = y3; 
   YDrawPolyF (3, ls, fcolor); 
  
+  // free ???
+  
   return; 
 } 
 /*--------------------------------YDrawTriB---------------------------------*/ 

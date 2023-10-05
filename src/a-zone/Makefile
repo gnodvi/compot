@@ -147,7 +147,7 @@ PROGS_boids =  \
 	ymagic-yma \
         yboids-dialog-ybo yboids-ybo  yboids-yma-3 yboids-yma-4 \
         yboids-dialog-yma \
-	yboids-dia yboids-dia-new
+	yboids-dia yboids-dia-new ######## ymagic-dia
 ####        dia-yboids yboids-yma-1
 
 
@@ -298,6 +298,10 @@ yboids-dia: yboids.c dia-kernel.h $(Y_OPEN_O) $(Y_WIND_O) $(Y_MORE_O)
 
 yboids-dia-new : yboids.c  $(Y_OPEN_O_NEW) $(Y_MORE_O) 
 	$(CC) $(M_OPTS) -o $@ -DYBOIDS -D_DIA -D_MAIN_NEW $^ $(X_LIBS) 
+
+
+ymagic-dia : ymagic.c $(Y_OPEN_O_NEW) $(Y_MORE_O) 
+	$(CC) -o $@ $(UNIX_INCS) -D_DIA $^ $(X_LIBS)   
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

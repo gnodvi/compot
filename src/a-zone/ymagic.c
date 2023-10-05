@@ -762,6 +762,46 @@ main_proc (PFUNC_VAR)
   
   RETURN_TRUE;  
 } 
+/*-----------------------------------------------------------------------*/
+#ifdef _DIA
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+int 
+MAIN_new (int argc, char **argv) 
+{   
+  int i; 
+
+  h_main = h_left = h_right = h_top = h_middle = ID_NULL;
+  hWinlist = ID_NULL;
+
+  ww = 320;
+  left_w = ww;
+  left_h = ww+20;
+  middle_h = 70;
+  top_h = 220; 
+  width  = 2*ww + 15;  
+  height = top_h+middle_h+left_h+20;
+
+  numboids = 30; 
+  is_boids = TRUE;
+  is_drops = FALSE;
+  /* 	 mashtab = 100; */
+  mashtab = ww;
+ 
+  YInit ();    
+ 
+  YBig_yma/* new */ (&h_main, main_proc, "Laboratory of Elementary Magic Particles", 
+	SC_DEF, SC_DEF, width, height, 0,0,0,0, YColor("aqua")); 
+ 
+  for( ; ; ) { 
+    if (YQUIT) break;
+
+    YCheckEvents (); 
+  } 
+	  
+  YRETURN;  
+} 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+#endif
 /*-----------------------------------------------------------------------*/ 
 int 
 MAIN (int argc, char **argv) 

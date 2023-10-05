@@ -521,9 +521,9 @@ MAIN (int argc, char *argv[])
   
   w = XSCR (0.4); 
   h = YSCR (0.4); 
-  /* 	w = 550;  */
-  /* 	h = 450;  */
-  /* printf ("w=%d h=%d \n", w, h); */
+  /* 	w = 550; 512  */
+  /* 	h = 450; 288  */
+  printf ("w=%d h=%d \n", w, h);
 
 #ifdef _YBO
   YBig     (&id, main_proc, "Hello, Y_ZONE from Big_old !!", SC_DEF, SC_DEF, w, h);
@@ -631,6 +631,7 @@ double vec_rdist(Vec vec1, Vec vec2);
 typedef struct { 
    Vec pos, vel; 
    int X,Y; 
+
    int tail_lX, tail_lY, tail_rX, tail_rY, tail_X, tail_Y; 
    /* XPoint shadow[4]; */ 
    YPoint shadow[4]; 
@@ -639,6 +640,7 @@ typedef struct {
    int upstroke; /* boolean */ 
    int perching; /* boolean */ 
    int perch_timer; 
+
 } _Boid, *Boid; 
  
 Boid new_boid (int W, int H); 
@@ -687,11 +689,14 @@ draw_boid (Boid boid)
   YT_COLOR fcolor; 
 	 
   /* YDrawRectF (0,0, 300,300, blk);     */  
+  //printf ("draw_boid ...............  \n");
  
   //YFillPolygon (boid->shadow, new_darkgray); 
 
 #ifdef _DIA 
-  YDrawPolyF (3, boid->shadow, new_darkgray); 
+  //YDrawPolyF (3, boid->shadow, new_darkgray); 
+  YDrawCircB (boid->X, boid->Y, 10, YColor ("yellow"));
+  return;
 #else 
   YDrawPolyF (boid->shadow, 3, new_darkgray);  
 #endif
@@ -714,8 +719,8 @@ draw_boid (Boid boid)
  
   outline_index = ((int)boid->pos->z) >> 10; 
 	 
-  /* if moving right => lwing behind rwing */ 
-  if(boid->vel->x > 0) { 
+  
+  if(boid->vel->x > 0) {  /* if moving right => lwing behind rwing */
  
     if (boid->tail_lY < boid->Y)  fcolor = new_yellow; 
     else                          fcolor = new_blue; 
@@ -736,7 +741,8 @@ draw_boid (Boid boid)
     YDrawTriFB (lx1, ly1, lx2, ly2, lx3, ly3, fcolor, new_outlines[outline_index]); 
  
   } 
-	 
+
+  return;
 }    
 //~~~~~~~~~~~~~~~~~~
 //#endif
@@ -886,23 +892,26 @@ new_boid(int W, int H)
   double px,py,pz; 
   double vx,vy,vz; 
 	 
-  boid=(Boid)malloc(sizeof(_Boid)); 
+  boid = (Boid) malloc (sizeof(_Boid)); 
 	 
-  px=(double)(rrand((W<<4)) - (W<<3)); 
-  py=(double)(rrand((H<<4)) - (H<<3)); 
-  pz=(double)(rrand(2000) + 2000); 
+  px = (double) (rrand ((W<<4)) - (W<<3)); 
+  py = (double) (rrand ((H<<4)) - (H<<3)); 
+  pz = (double) (rrand (2000) + 2000); 
 	 
-  boid->pos=new_vec(px,py,pz); 
+  boid->pos = new_vec (px,py,pz); 
 	 
-  vx=(double)(rrand(51) - 25); 
-  vy=(double)(rrand(51) - 25); 
-  vz=(double)(rrand(51) - 25); 
+  printf ("new_boid: px= %3d, py= %3d, pz= %3d \n", px, py, pz);
+
+  vx = (double) (rrand(51) - 25); 
+  vy = (double) (rrand(51) - 25); 
+  vz = (double) (rrand(51) - 25); 
+
 	 
-  boid->vel=new_vec(vx,vy,vz); 
+  boid->vel = new_vec (vx,vy,vz); 
 	 
-  boid->wing_level=(int)(rrand(200)-100); 
+  boid->wing_level = (int)(rrand(200)-100); 
 	 
-  boid_perspective(boid, W, H); 
+  boid_perspective (boid, W, H); 
 	 
   return boid; 
 } 
@@ -916,25 +925,26 @@ boid_perspective (Boid boid, int W, int H)
   double tail_lx, tail_lz, tail_rx, tail_rz; 
   double tailx, tailz; 
 	 
-  tail=vec_copy(boid->vel); 
-  tail_end=vec_copy(boid->vel); 
+  tail     = vec_copy(boid->vel); 
+  tail_end = vec_copy(boid->vel); 
 	 
   if(boid->pos->z <= 0) { 
     boid->onscreen = 0; 
   } else { 
     zf = W/(double)2.5; 
-    zfactor=((double)boid->pos->z)/zf; 
+    zfactor = ((double)boid->pos->z) / zf; 
 		 
-    boid->X = (W>>1) + (int)(boid->pos->x/zfactor); 
-    boid->Y = (H>>1) + (int)(boid->pos->y/zfactor); 
+    boid->X = (W>>1) + (int) (boid->pos->x / zfactor); 
+    boid->Y = (H>>1) + (int) (boid->pos->y / zfactor); 
 		 
     boid->shadow[0].x = boid->X; 
     boid->shadow[0].y = (H>>1) + (int)(1000/zfactor); 
 		 
-    vec_setmag(tail_end, 40); 
-    vec_diff(boid->pos, tail_end, tail_end); 
+    vec_setmag (tail_end, 40); 
+    vec_diff (boid->pos, tail_end, tail_end); 
 		 
-    zfactor=((double)tail_end->z)/zf; 
+    zfactor = ((double)tail_end->z)/zf; 
+
     boid->tail_X = (W>>1) + (int)(tail_end->x/zfactor); 
     boid->tail_Y = (H>>1) + (int)(tail_end->y/zfactor); 
     boid->shadow[2].x = boid->tail_X; 
@@ -967,16 +977,16 @@ boid_perspective (Boid boid, int W, int H)
     boid->shadow[3].y = (H>>1) + (int)(1000/zfactor);  
 		 
 		 
-    boid->onscreen = boid_isonscreen(boid,W,H); 
+    boid->onscreen = boid_isonscreen (boid, W, H); 
   } 
 	 
-  free(tail); 
-  free(tail_end); 
+  free (tail); 
+  free (tail_end); 
 } 
 /*-----------------------------------------------------------------*/ 
-int boid_isonscreen(Boid boid, int W, int H) 
+int boid_isonscreen (Boid boid, int W, int H) 
 { 
-  return (boid->X>=0 && boid->X<W && boid->Y>=0 && boid->Y<H); 
+  return (boid->X>=0 && boid->X<W  &&  boid->Y>=0 && boid->Y<H); 
 } 
 /*-----------------------------------------------------------------*/ 
 /* 
@@ -1081,8 +1091,9 @@ Vec boid_perceive_center(Boid boid, Vec real_cent, int numboids)
   Vec perc_cent; 
     
   perc_cent = zero_vec(); 
-  vec_diff(real_cent, boid->pos, perc_cent); 
-  vec_sdiv(perc_cent, (double)(numboids-1)); 
+
+  vec_diff (real_cent, boid->pos, perc_cent); 
+  vec_sdiv (perc_cent, (double)(numboids-1)); 
 	 
   return perc_cent; 
 } 
@@ -1121,16 +1132,44 @@ Vec boid_chill_out(Boid boid, Boid boids[], int numboids)
 	 
   return bigchill; 
 } 
+// ------------------------------------------------------------------------------ 
+void boid_print (Boid boid) {
+
+  // Vec pos, vel; 
+  // int X,Y; 
+
+  printf ("onscreenc= %d, X= %3d, Y= %3d, pos.x= %3d ", 
+          boid->onscreen, boid->X, boid->Y, boid->pos->x);
+
+  return;
+}
+// ------------------------------------------------------------------------------ 
+void boids_print (Boid *boids, int numboids) {
+
+  int  i;
+
+  printf ("boids_print: numboids = %d \n", numboids);
+
+  for (i = 0; i < numboids; i++) { 
+    printf ("  boid %2d : ", i);
+    boid_print (boids[i]); 
+    printf ("\n");
+  } 
+
+  return;
+}
 // ------------------------------------------------------------------------------  
-// ------------------------------------------------------------------------------  
-void RunBoids_Begin (int is_pixiling, 
+Boid* 
+RunBoids_Begin (int is_pixiling, 
                      int id,  int width, int height, int numboids,
-                     int *out_map, Boid **out_boids) 
+                     int *out_map) 
 {
 
   int is_real_boids = 1;
   //int is_pixiling   = 0;
   int map = 0;
+
+  printf ("RunBoids_Begin: width= %3d, height= %3d \n", width, height);
 
   YWinBegPaint (id); // drawable = (Drawable)(BIGI(id)->hwnd);   
                      // YModePaint (TRUE);
@@ -1160,16 +1199,15 @@ void RunBoids_Begin (int is_pixiling,
   for (i = 0; i < numboids; i++) { 
     boids[i] = new_boid (width, height); 
   } 
-
   
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  *out_map   = map;
-  *out_boids = boids;
+  *out_map   = map;   // записали наружу
+  //*out_boids = boids;
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  return;
+  return (boids);
 }
 // ------------------------------------------------------------------------------  
 void RunBoids_OneStep (int is_pixiling, 
@@ -1179,9 +1217,11 @@ void RunBoids_OneStep (int is_pixiling,
 {
   int  i;
 
-  printf ("RunBoids_OneStep ............ \n");
+  printf ("RunBoids_OneStep ... is_real_boids = %d, numboids = %d \n", 
+          is_real_boids, numboids);
   /* YCopyPixmaps (background, freshmap, width, height);  */
 
+  //boids_print (boids, numboids);
 
   if (is_pixiling) {
     //#ifdef _YBO
@@ -1213,10 +1253,11 @@ void RunBoids_OneStep (int is_pixiling,
       
     for (i = 0; i < numboids; i++) { 
       boid_move (boids[i], boids, numboids, center, avg_velocity, width, height); 
-        
-      if(boids[i]->onscreen) { 
+      
+      //printf ("boid: i= %2d, boids[i]->onscreen = %d \n", i, boids[i]->onscreen);
+      if (boids[i]->onscreen) { 
           
-        /* YBeginPaint (freshmap, YPIX);  */
+        /* YBeginPaint (freshmap, YPIX);    */
         /* draw_boid (boids[i], freshmap);  */
         //#ifdef _YMA
         draw_boid (boids[i]);
@@ -1248,9 +1289,11 @@ void RunBoids (int is_pixiling,
   center       = zero_vec(); 
   avg_velocity = zero_vec(); 
     
-  RunBoids_Begin (is_pixiling, 
+  boids = RunBoids_Begin (is_pixiling, 
                      id,  width, height, numboids,
-                     &map, &boids);
+                     &map);
+
+  boids_print (boids, numboids);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   for( ; ; ) {  
@@ -1324,7 +1367,7 @@ boids_proc_new (PFUNC_VAR)
   static Boid *boids;
   static int width ;
   static int height;
-  static int numboids = 30;
+  static int numboids = /* 10 */ 30;
   
   static Vec center, avg_velocity; 
   
@@ -1333,7 +1376,11 @@ boids_proc_new (PFUNC_VAR)
   switch (message) { 
       
   case YCREATE: 
-    /* tim =  */YSetTimer (id, 100); // сотые секунды!
+    break;   
+   
+  case YOPEN: 
+
+    /* tim =  */YSetTimer (id, 10); // сотые секунды!
 
     is_pixiling   = 0;
     is_real_boids = 1;
@@ -1343,12 +1390,15 @@ boids_proc_new (PFUNC_VAR)
     center       = zero_vec(); 
     avg_velocity = zero_vec(); 
     
-    RunBoids_Begin (is_pixiling, 
+    printf ("\n\n");
+
+    boids = RunBoids_Begin (is_pixiling, 
                     id,  width, height, numboids,
-                    &map, &boids);
-    break;   
-   
-  case YOPEN: 
+                    &map);
+
+    boids_print (boids, numboids);
+    printf ("\n\n");
+
   case YDRAW:       
     YPaintRectF (0,0, WND->w,WND->h, YColor("yellow"));        
     break;        
@@ -1383,13 +1433,19 @@ MAIN_new (int argc, char **argv)
 {
 
   int id;
+  //int width  = XSCR (0.4);  
+  //int height = YSCR (0.4);
+  int width  = 512; // 640 
+  int height = 288; // 480 
+
+  
 
   printf ("MAIN_new ...................... \n");
 
   YInitKERN (); 
   YInitMORE (); 
  
-  YBigWindow (&id, boids_proc_new, "Yboids", /* SC_DEF, SC_DEF, width, height, */ 0,0, 640,480, 
+  YBigWindow (&id, boids_proc_new, "Yboids", /* SC_DEF */ 0, /* SC_DEF */ 0, width, height, 
               0,0,0,0,  CLR_DEF);
  
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1541,8 +1597,8 @@ MAIN (int argc, char **argv)
   YInit ();    
   setup_colormap (); 
  
-  width  = XSCR(0.4);  
-  height = YSCR(0.4);
+  width  = XSCR (0.4);  
+  height = YSCR (0.4);
   
 #ifdef _YBO
   YBig     (&id, main_proc, "Yboids", SC_DEF, SC_DEF, width, height);

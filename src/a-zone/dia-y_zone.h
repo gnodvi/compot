@@ -222,6 +222,16 @@ long      YWinMapGet (int id);
 void      YWinMapPut (int id, long map);
 void      YWinMapSet (long map);
 
+typedef int Int; 
+typedef long Mes; 
+extern Int    wdisplay_pix, hdisplay_pix;  
+
+  // #define  XSCR(p) ((Int)((p)*wdisplay_pix)) 
+  // #define  YSCR(p) ((Int)((p)*hdisplay_pix))
+#define  XSCR(p) ((Int)((p) * Y_WDISPLAY)) 
+#define  YSCR(p) ((Int)((p) * Y_HDISPLAY))
+ 
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
 
