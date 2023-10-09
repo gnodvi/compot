@@ -44,9 +44,6 @@ main (int argc, char *argv[])
   int is_win = 0;
   int is_gnu = 0;
 
-  //---------------------------------------------
-
-
   optind = 1; // чтобы бы повторном (вложенном вызове) начать с начала 
 
   static struct option long_options[] = {
@@ -66,22 +63,26 @@ main (int argc, char *argv[])
   // перебираем все параметры:
   // (в QNX эти параметры должны идти первыми)
 
-  DAO_LOOP daoloop = dao_loop0;
+  DAO_LOOP daoloop = dao_loop0; // по умолчанию запускаем 
   char c;
   const char *name;
 
+  // смотрим циклом все опции программы
+  // 
   while ((c = getopt_long (argc, argv, "uha:p:i:n:o:vt:",
                       long_options, &option_index)) != -1) { 
 
     fprintf (stderr, "get_options: optind = %d   c = %c \n", optind, c);
-
+    
     switch (c) {
-
+      
+      //---------------------------------------------
     case 0: // обработка длинных опций
-
+      
       name = long_options[option_index].name;
-
+      
       printf ("option %s", name);
+
       if (optarg)
         printf (" with arg %s", optarg);
       printf ("\n");
@@ -109,6 +110,15 @@ main (int argc, char *argv[])
   }
 
 
+  printf ("\n");
+  printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
+
+  printf ("test_num = %d \n", test_num);
+  printf ("name     = %s \n", name);
+
+  printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
+  printf ("\n");
+
   YT_PLOT *plot;
   
   switch (test_num) {
@@ -132,8 +142,7 @@ main (int argc, char *argv[])
     test_00 (4);
     break;
 
-
-    //case 3:
+//case 3:
     //dao_loop0 (/* argc, argv */is_win, is_gnu);
     //break;
 
