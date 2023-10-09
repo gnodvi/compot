@@ -155,13 +155,13 @@ PROGS = $(A_TEST_B) $(B_TEST_B) $(X_BABY_B) $(X_TEST_B) $(X__TCL_O)
 all : _AIGO12 $(PROGS) 
 
 _AIGO12:
-	(cd AIGO12; make)
+#	(cd AIGO12; make)
 
 # =============================================================================#
 
 clean :
 	rm -f  T/*.o T/*.a $(PROGS) 
-	(cd AIGO12; make clean)
+#	(cd AIGO12; make clean)
 
 # ------------------------------------------------------------------------------
 

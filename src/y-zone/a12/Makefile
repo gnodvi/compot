@@ -16,7 +16,8 @@ ifdef UNIX_LINUX
   #APP = -mwindows 
 
   #FDIR_ROOT = ../../../../fltk-s
-  FDIR_ROOT = ../../FLTK-S
+  #FDIR_ROOT = ../../FLTK-S
+  FDIR_ROOT = ../FLTK-S
 
   FLTK_INCS = -I$(FDIR_ROOT)/include
   FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)

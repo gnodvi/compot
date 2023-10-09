@@ -153,14 +153,18 @@ PROGS_boids =  \
 
 PROGS = $(PROGS_boids) $(PROGS_DIAL) $(PROGS_misc) ## $(PROGS_fltk)
 
-all: LIBS_make $(PROGS)  
+all: _AIGO12 LIBS_make $(PROGS)  
 
 LIBS_make:
 #	(cd ../ploter; make)
-	(cd A-FLTK;    make)
+#	(cd A-FLTK;    make)
 #	(cd AIGO12;    make)
 #	(cd SCRUZH;    make)
-	(cd Y-ZONE;    make)
+#	(cd Y-ZONE;    make)
+
+# =============================================================================
+_AIGO12:
+#	(cd AIGO12; make)
 
 # =============================================================================
 
@@ -347,10 +351,11 @@ clean :
 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
 	rm -f *.a T/*.a
 #	(cd ../ploter; make clean)
-	(cd A-FLTK;    make clean)
+#	(cd A-FLTK;    make clean)
 #	(cd AIGO12;    make clean)
 #	(cd SCRUZH; 	rm -f *.exe *.obj $(OBJ_DIR)/*.obj $(OBJ_DIR)/*.o *.lib *.o *.so $(PROGS)
-	(cd Y-ZONE;    make clean)
+#	(cd Y-ZONE;    make clean)
+#	(cd AIGO12; make clean)
 
 #------------------------------------------------------------- 
 

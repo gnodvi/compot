@@ -1,6 +1,6 @@
 #
 #-------------------------------------------------------------------------------
-# A T A R I G O 
+# A T A R I G O (AIGO12, ver. 1.2)
 
  (c) 2004-2020, gnodvi meranov, gnodvimeranov@mail.ru
 
