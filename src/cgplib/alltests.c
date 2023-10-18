@@ -110,7 +110,7 @@ int test_createDataSet (int argc, char **argv) {
 
   //YT_MAKEFUNC makefunc = symbolicEq1;
 
-  struct dataSet *data = make_data_function (symbolicEq1);
+  struct dataSet *data = make_data_function (symbolicEq1, 101, -5.0, +5.0);
 
   saveDataSet(data, "symbolic.data");
 
@@ -724,7 +724,39 @@ int test_customES (int argc, char **argv) {
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+// Test functions for Monahov articles
+//
+
+double MonahovTest1 (double x){
+
+  return (pow (x,4) + pow (x,3) + pow (x,2) + x); // x^4 + x^3 + x^2 + x
+}
+
+double MonahovTest2 (double x) {
+
+  return (sin (pow (x,4) + pow (x,2)));  // sin (x^2 + x^4)
+}
+
+double MonahovTest3 (double x) {
+
+  //return (sin (exp (sin (exp (sin (x))))) );  
+  return ( exp (sin (x)) );  
+}
+
+double MonahovTest4 (double x) {
+
+  return ( sin(pow (x,3)) + exp(x));  
+}
+
+
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//
+double SimpleFunc (double x){
+
+  return pow (x,2);
+
+}
 //------------------------------------------------------------------------------
 //
 double symbolicEq2 (double x) {
@@ -748,7 +780,6 @@ double symbolicEq2 (double x) {
   // (7):	add	 3  0 
   // (8):	sub	 6  5 
   // (9):	add	 3  2 *
-
 
   //return pow (x, 2) + x;
 
@@ -788,7 +819,7 @@ int test_gettingStarted (int argc, char **argv) {
                    &updateFrequency,  
                    &targetFitness,  
                    &numGens,  
-                   &verbose 
+                   &verbose   // -v
                    );
 
   params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
@@ -823,7 +854,7 @@ int test_gettingStarted (int argc, char **argv) {
 
   case 2:
     addNodeFunction    (params, "add,sub,mul,div,sin");
-    data = make_data_function (symbolicEq2);
+    data = make_data_function (symbolicEq2, 101, -5.0, +5.0);
 
     file = "out_data.fun";
 
@@ -834,7 +865,7 @@ int test_gettingStarted (int argc, char **argv) {
 
   case 3:
     addNodeFunction    (params, "add,sub,mul,div,sin");
-    data = make_data_function (symbolicEq3);
+    data = make_data_function (symbolicEq3, 101, -5.0, +5.0);
 
     file = "out_data.fun";
 
@@ -844,12 +875,18 @@ int test_gettingStarted (int argc, char **argv) {
 
   case 9:
     addNodeFunction    (params, "add, sub, mul, div, sin");
-    //addNodeFunction    (params, "add, mul");
 
-    data = make_data_function (symbolicEq2);
+    double x_min = -5.0 /* 0.0 */;
+    double x_max = +5.0 /* 2.0 */;
+    int nums = 21 /*101*/;
+
+    //data = make_data_function (SimpleFunc, nums, x_min, x_max);
+    //data = make_data_function (MonahovTest1, nums, x_min, x_max); // x^4 + x^3 + x^2 + x
+    //data = make_data_function (MonahovTest2, nums, x_min, x_max); // sin (x^2 + x^4)
+    //data = make_data_function (MonahovTest3, nums, x_min, x_max);   // sin exp sin exp sin
+   data = make_data_function (MonahovTest4, nums, x_min, x_max);   
 
     file = "out_data.fun";
-
     saveDataSet(data, file);
     freeDataSet(data);
 
@@ -896,19 +933,19 @@ int main (int argc, char **argv) {
                    buf,   
                    NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if      (! strcmp (buf, "gettingStarted"))        ret = test_gettingStarted   (argc, argv);
-  else if (! strcmp (buf, "averageBehaviour"))      ret = test_averageBehaviour (argc, argv);
-  else if (! strcmp (buf, "createDataSet"))         ret = test_createDataSet    (argc, argv);
-  else if (! strcmp (buf, "customFitnessFunction")) ret = test_customFitnessFunction (argc, argv);
-  else if (! strcmp (buf, "customNodeFunction"))    ret = test_customNodeFunction (argc, argv);
-  else if (! strcmp (buf, "customReproductionScheme")) ret = test_customReproductionScheme (argc, argv);
-  else if (! strcmp (buf, "customSelectionScheme"))    ret = test_customSelectionScheme (argc, argv);
+  if      (! strcmp (buf, "gettingStarted"))           ret = test_gettingStarted          (argc, argv);
+  else if (! strcmp (buf, "averageBehaviour"))         ret = test_averageBehaviour        (argc, argv);
+  else if (! strcmp (buf, "createDataSet"))            ret = test_createDataSet           (argc, argv);
+  else if (! strcmp (buf, "customFitnessFunction"))    ret = test_customFitnessFunction   (argc, argv);
+  else if (! strcmp (buf, "customNodeFunction"))       ret = test_customNodeFunction      (argc, argv);
+  else if (! strcmp (buf, "customReproductionScheme")) ret = test_customReproductionScheme(argc, argv);
+  else if (! strcmp (buf, "customSelectionScheme"))    ret = test_customSelectionScheme   (argc, argv);
   else if (! strcmp (buf, "manipulatingChromosomes"))  ret = test_manipulatingChromosomes (argc, argv);
-  else if (! strcmp (buf, "manipulatingChromosomes"))  ret = test_multipleThreads (argc, argv);
-  else if (! strcmp (buf, "neuroEvolution")) ret = test_neuroEvolution (argc, argv);
-  else if (! strcmp (buf, "recurrentConnections")) ret = test_recurrentConnections (argc, argv);
-  else if (! strcmp (buf, "visualization")) ret = test_visualization (argc, argv);
-  else if (! strcmp (buf, "customES"))      ret = test_customES (argc, argv);
+  else if (! strcmp (buf, "manipulatingChromosomes"))  ret = test_multipleThreads         (argc, argv);
+  else if (! strcmp (buf, "neuroEvolution"))           ret = test_neuroEvolution          (argc, argv);
+  else if (! strcmp (buf, "recurrentConnections"))     ret = test_recurrentConnections    (argc, argv);
+  else if (! strcmp (buf, "visualization"))            ret = test_visualization           (argc, argv);
+  else if (! strcmp (buf, "customES"))                 ret = test_customES                (argc, argv);
   else {  
     printf ("\nERROR option -t = %s \n\n", buf);
   }
@@ -919,6 +956,6 @@ int main (int argc, char **argv) {
 // gettingStarted -t gettingStarted -s0 -d2 -u10
 // gettingStarted -t gettingStarted -s0 -d2 -u1 -n10 -v
 
-// alltests -t gettingStarted -d9 -v -u1
+// alltests -t gettingStarted -d9 -v -u1   // печатать много на каждом шаге 
 
 //------------------------------------------------------------------------------

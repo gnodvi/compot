@@ -263,11 +263,17 @@ timer_hor (YT_TIMER *t)
 /******************************************************************************/
 /******************************************************************************/
 //------------------------------------------------------------------------------
-struct dataSet *make_data_function (YT_MAKEFUNC makefunc) 
+struct dataSet *make_data_function (YT_MAKEFUNC makefunc, 
+                                    int nums, 
+                                    double x_min, double x_max) 
 {
 
   int i;
   struct dataSet *data = NULL;
+
+  if (nums >= NUMSAMPLES) {
+    // ERROR
+  }
 
   double inputs [NUMSAMPLES][NUMINPUTS];
   double outputs[NUMSAMPLES][NUMOUTPUTS];
@@ -275,9 +281,20 @@ struct dataSet *make_data_function (YT_MAKEFUNC makefunc)
   double inputTemp;
   double outputTemp;
 
-  for(i=0; i<NUMSAMPLES; i++){
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // нужно более гибко задавть границы интервала и кол-во точек
 
-    inputTemp  = (i * (INPUTRANGE/(NUMSAMPLES-1))) - INPUTRANGE/2;
+  double interval = /* INPUTRANGE */ x_max - x_min;
+
+  //double x_min = - interval / 2;
+  double step  =   interval / (/* NUMSAMPLES */nums - 1);
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  for (i = 0; i < /* NUMSAMPLES */nums /* 101 */; i++) {
+
+    inputTemp  = (i * step) + x_min/* - INPUTRANGE/2 */;
+
     //outputTemp = symbolicEq1 (inputTemp);
     outputTemp = makefunc (inputTemp);
 
@@ -285,7 +302,8 @@ struct dataSet *make_data_function (YT_MAKEFUNC makefunc)
     outputs[i][0] = outputTemp;
   }
 
-  data = initialiseDataSetFromArrays (NUMINPUTS, NUMOUTPUTS, NUMSAMPLES, 
+
+  data = initialiseDataSetFromArrays (NUMINPUTS, NUMOUTPUTS, /* NUMSAMPLES */ nums, 
                                      inputs[0], outputs[0]);
 
   return (data);

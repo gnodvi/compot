@@ -92,11 +92,11 @@ typedef  double (*YT_MAKEFUNC) (double);
 
 #define NUMINPUTS    1
 #define NUMOUTPUTS   1
-#define NUMSAMPLES 101
 
+#define NUMSAMPLES 101
 #define INPUTRANGE 10.0
 
-struct dataSet *make_data_function (YT_MAKEFUNC makefunc); 
+struct dataSet *make_data_function (YT_MAKEFUNC makefunc, int nums, double x_min, double x_max); 
 
 extern int verbose;
 
