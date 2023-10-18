@@ -3550,7 +3550,6 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
     }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
     // select the parents from the candidateChromos
     // 
     params->selectionScheme (params, parentChromos, candidateChromos, params->mu, numCandidateChromos);
