@@ -68,7 +68,7 @@ int main (void)
   igraph_vector_int_sort (&v2);  
 
   igraph_write_graph_edgelist (&g, stdout); // напечатаем ребра графа
-  igraph_write_graph_dot (&g, stdout); 
+  igraph_write_graph_dot      (&g, stdout); 
 
   printf ("\n");
   igraph_write_graph_graphml (&g, stdout,

@@ -30,8 +30,9 @@ GCC  = LANG=C  gcc -std=c99
 
 #-------------------------------------------------------------------------------
 
-PROGS = igraph_small igraph_create igraph_get_shortest_paths \
-        igraph_get_shortest_paths_dijkstra 
+PROGS = igraph_small igraph_create \
+	shortest_paths  \
+        shortest_paths_dijkstra
 
 all:   $(PROGS)  
 
@@ -44,16 +45,16 @@ igraph_small: igraph_small.c
 igraph_create: igraph_create.c
 	$(GCC) ${FLAGS}  -o $@ ${IGRAPH_INCS} $< ${IGRAPH_LIBS} 
 
-igraph_get_shortest_paths: igraph_get_shortest_paths.c
+shortest_paths: shortest_paths.c
 	$(GCC) ${FLAGS}  -o $@ ${IGRAPH_INCS} $< ${IGRAPH_LIBS} 
 
-igraph_get_shortest_paths_dijkstra: igraph_get_shortest_paths_dijkstra.c
+shortest_paths_dijkstra: shortest_paths_dijkstra.c
 	$(GCC) ${FLAGS}  -o $@ ${IGRAPH_INCS} $< ${IGRAPH_LIBS} 
 
 #-------------------------------------------------------------------------------
 
 clean : 
-	rm -f T/*.o $(PROGS)
+	rm -f T/*.o *.dot $(PROGS)
 
 #-------------------------------------------------------------------------------
 # 
