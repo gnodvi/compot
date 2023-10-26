@@ -26,10 +26,10 @@ package require compot::common
 # source "f-prog.tl"  ;# 
 
 source "p-corE.tl"
+source "p-corF.tl"
 
 #source "g-diff.tl"
-
-source "p-grad.tl"
+#source "p-grad.tl"
 
 
 # /*******************************************************************************

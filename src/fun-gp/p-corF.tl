@@ -1,5 +1,240 @@
 # -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
 
+# //----------------------------------------------------------------------------
+
+# //****************************************************************************
+
+#source "p-detw.tl"
+
+#ga_deterministiccrowding.c
+
+# //****************************************************************************
+
+#   ga_deterministiccrowding - Deterministic crowding.
+
+#   synopsis:     Sets the deterministic crowding parameters for a
+# 		population.
+#   parameters:	population *pop		Population to set parameters of.
+# 		const GAcompare		Callback to compare two entities.
+#   return:	none
+# //------------------------------------------------------------------------------
+proc ga_population_set_deterministiccrowding_parameters {pop compare} \
+{
+
+  SET $pop dc_params_compare  $compare
+
+  return
+}
+# //------------------------------------------------------------------------------
+
+#   synopsis:	Performs optimisation of the given population by a
+# 		method known as determinstic crowding.
+# 		ga_genesis(), or equivalent, must be called prior to
+# 		this function.
+# 		This approach is useful when you desire a
+# 		significant amount of diversity in the resulting
+# 		population.
+# 		This was designed as a niching algorithm rather than
+# 		an optimisation algorithm.
+
+# 		During a generation, children potentially replace
+# 		their parents as soon as they are created, rather
+# 		than replacing them at the end of the generation.
+# 		This differs slightly from the canonical
+# 		deterministic crowding algorithm.
+
+# //------------------------------------------------------------------------------
+proc swap_i_rank {pop i rank} \
+{
+  
+  set this_entity [pop_get_entity_ $pop  $i]
+  
+  pop_set_entity_ $pop   $i [pop_get_entity_ $pop  $rank] 
+  
+  pop_set_entity_ $pop   $rank $this_entity
+
+  return
+}
+# //------------------------------------------------------------------------------
+proc swap_one_child {pop i parent child ind} \
+{
+
+  set rank [pop_get_entity_id  $pop $child]
+  
+  if {[item_get_fitn $child] < [item_get_fitn $parent]} \
+  {
+    swap_i_rank  $pop $ind $rank
+  }
+  
+  pop_del_entity_by_id $pop $rank
+  
+  return
+}
+# //------------------------------------------------------------------------------
+proc main_swap_childs {pop i father mother son daughter permutation} \
+{
+
+  swap_one_child  $pop $i $mother $daughter $i
+
+  swap_one_child  $pop $i $father $son     [lindex $permutation $i]
+
+  return
+}
+# //------------------------------------------------------------------------------
+proc mutation_step {pop task child} \
+{
+
+  if {[comm_random_boolean_prob [GET $pop mutation_ratio]]} \
+  {
+    
+    set this_entity [ga_get_free_entity $pop]
+    [GET $pop mutate]  $pop $task  $child $this_entity
+    
+    pop_del_entity  $pop $child
+    set child $this_entity
+  }
+  
+  return $child
+}
+# //------------------------------------------------------------------------------
+proc ga_deterministiccrowding {task pop max_generations} \
+{
+
+  set generation 0
+
+  set eval_proc      [GET $task "fit_func"]
+  set mutate_proc    [GET $pop  "mutate"]
+  set crossover_proc [GET $pop  "crossover"]
+
+  set compare_proc   [GET $pop  "dc_params_compare"]
+
+  if {$eval_proc      == "NULL"}  {die "Population's evaluation callback is undefined."}
+  if {$mutate_proc    == "NULL"}  {die "Population's mutation callback is undefined."}
+  if {$crossover_proc == "NULL"}  {die "Population's crossover callback is undefined."}  
+  if {$compare_proc   == "NULL"}  {die "Population's comparison callback is undefined."}
+  
+
+  SET $pop "generation" 0
+  
+  pop_initial_fill $pop $task
+  
+  set size [get_pop_size $pop]
+
+  for {set i 0} {$i < $size} {incr i} {
+    lappend  ordered $i
+  }
+  
+  # ---------------------------------------------------------------------
+  # 
+  while {1} \
+  {
+  
+    pop_calc_fitness_nov  $pop $task;# если какие-то недосчитаны, то посчитать фитнес
+    pop_sorting  $pop $task
+    
+    # --------------------------------------------------
+
+    if [is_check_generation_break  $pop $task \
+          $max_generations ] {
+      
+      return false
+    }
+  
+    # --------------------------------------------------
+
+    
+    if {$::is_print} {
+      puts "ordered     = $ordered"
+    }
+    
+    set permutation {}
+    comm_random_int_permutation  $size  ordered  permutation 
+    #
+    # сделаем как в оригинале пока, т.е. с изменением исходного ordered, но
+    # это довольно странно !
+    
+    if {$::is_print} {
+      puts "permutation = $permutation"
+    }
+
+    for {set i 0} {$i < $size} {incr i} \
+    {
+      set perm_i [lindex $permutation $i]
+      
+      set mother   [pop_get_entity_    $pop       $i];
+      set father   [pop_get_entity_    $pop  $perm_i];
+    
+      set son      [ga_get_free_entity $pop]
+      set daughter [ga_get_free_entity $pop]
+
+      $crossover_proc  $pop $task  $mother $father $daughter $son
+      
+      #  // Mutation step.
+      #  //
+      
+      set daughter [mutation_step  $pop $task $daughter]
+      set son      [mutation_step  $pop $task $son]
+      
+      #  // Apply environmental adaptations, score entities, sort entities, etc.
+      #  // FIXME: Currently no adaptation.
+      #  //
+      pop_eval_item  $pop $daughter $eval_proc $task
+      pop_eval_item  $pop $son      $eval_proc $task
+      
+      #  // Evaluate similarities.
+      #  //
+      set md [$compare_proc  $pop $mother $daughter]
+      set fs [$compare_proc  $pop $father $son]
+
+      set dist1 [expr {$md + $fs}]
+      
+      set ms [$compare_proc  $pop $mother $son]
+      set fd [$compare_proc  $pop $father $daughter]
+
+      set dist2 [expr {$ms + $fd}]
+      
+
+      if {$::is_print} {
+        puts [format "i= $i  dist1= %7.2f  dist2= %7.2f" $dist1 $dist2]
+      }
+
+      #  //
+      #  // Determine which entities will survive, and kill the others.
+      #  //
+      if {$dist1 < $dist2} \
+      {
+        main_swap_childs  $pop $i $father $mother $son $daughter $permutation
+      } else {
+        main_swap_childs  $pop $i $father $mother $daughter $son $permutation
+      }
+      
+    } ;# for {set i 0} {$i < $size} {incr i}
+
+    # --------------------------------------------------
+    
+    set generation [GET $pop "generation"]    
+    incr generation
+    SET $pop generation  $generation
+    
+  } ;# while
+  # 
+  # ---------------------------------------------------------------------
+  
+  #   // Ensure final ordering of population is correct.
+  #   //
+  pop_sorting  $pop $task
+  
+  
+  return $generation
+}
+
+
+# //****************************************************************************
+# //****************************************************************************
+# //****************************************************************************
+
+# source "p-diff.tl"
+
 #-------------------------------------------------------------------------------
 #
 if [info exists ::G_DIFF_TL] {
@@ -1548,6 +1783,1247 @@ proc de_run_one {task strategy_one label population_size max_generations len_chr
   
   return $pop
 }
+
 # //****************************************************************************
+# //****************************************************************************
+# //****************************************************************************
+# //****************************************************************************
+
+#source "p-grad.tl"
+
+# //****************************************************************************
+
+#
+if [info exists ::G_GRAD_TL] {
+  return
+} else {
+  set  ::G_GRAD_TL ""
+}
+
+# //------------------------------------------------------------------------------
+#   ga_gradient.c
+
+#   ga_gradient - Gradient methods for comparison and local search.
+
+#   Synopsis:     Gradient methods for comparison and local search.
+
+# 		Routines for local search and optimisation using
+# 		non-evolutionary methods.  These methods are all
+# 		first-order, that is, they require first derivatives.
+
+# 		Note that, these algorithms require that chromosomes
+# 		may be reversibly mapped to arrays of double-precision
+# 		floating-point array chromsomes.  If this is not
+# 		possible then, hmmm, tough luck.
+
+# 		You might want to think carefully about your convergence
+# 		criteria.
+
+#   References:
+
 #-------------------------------------------------------------------------------
+#
+# Gradient methods parameter structure.
+# 
+
+# dictrecord define GA_GR_T {
+
+#   dimensions  ;#   int	        : Size of double array
+#   step_size   ;#   double	: Step size, (or initial step size)
+#   alpha       ;#   double	: Step size scale-down factor
+#   beta        ;#   double	: Step size scale-up factor
+#   to_double   ;#   GAto_double	: Convert chromosome to double array
+#   from_double ;#   GAfrom_double: Convert chromosome from double array
+#   gradient    ;#   GAgradient	: Return gradients array
+
+# } 
+
+# /**********************************************************************
+#   synopsis:     Sets the gradient-search parameters for a population.
+#   parameters:	population *pop		Population to set parameters of.
+# 		const GAto_double	Map chromosomal data to array of doubles.
+# 		const GAfrom_double	Map array of doubles to chromosomal data.
+# 		const int		Number of dimensions for double array 
+#                                         (Needn't match dimensions of chromosome.)
+#   return:	none
+#  **********************************************************************/
+# //------------------------------------------------------------------------------
+# void 
+# ga_population_set_gradient_parameters (population		*pop,
+#                                         const GAto_double	to_double,
+#                                         const GAfrom_double	from_double,
+#                                         const GAgradient	gradient,
+# 					const int		dimensions,
+# 					const double		step_size)
+# //------------------------------------------------------------------------------
+proc ga_population_set_gradient_parameters {pop          
+                                            to_double    
+                                            from_double  
+                                            gradient     
+                                            dimensions   
+                                            step_size}   \
+{
+
+   set GR [dict_create]
+
+
+   SET $GR to_double    $to_double   ;#   GAto_double    /* Convert chromosome to double array.
+   SET $GR from_double  $from_double ;#   GAfrom_double  /* Convert chromosome from double array. 
+   SET $GR gradient     $gradient    ;#   GAgradient     /* Return gradients array. 
+   SET $GR step_size    $step_size   ;#   double  /* Step size, (or initial step size).
+   SET $GR dimensions   $dimensions  ;#   int     /* Size of double array. 
+   SET $GR alpha        0.5          ;# /* Step-size scale-down factor. */
+   SET $GR beta         1.2          ;# /* Step-size scale-up factor.   */
+   
+
+   SET $pop "gr_params"  $GR
+
+
+  return
+}
+# //------------------------------------------------------------------------------
+#   synopsis:	Performs optimisation on the passed entity by using a
+#   		steepest ascents method (i.e. steepest descent, except
+# 		maximising the fitness function).
+# 		The passed entity will have its data overwritten.  The
+# 		remainder of the population will be let untouched.
+# 		Note that it is safe to pass a NULL initial structure,
+# 		in which case a random starting structure wil be
+# 		generated, however the final solution will not be
+# 		available to the caller in any obvious way.
+# //------------------------------------------------------------------------------
+# entity *
+# check_starting_solution (population *pop, entity *current) 
+
+# //------------------------------------------------------------------------------
+proc check_starting_solution {pop task current} \
+{
+
+  if {$current == "NULL"} \
+  {
+    if {$::is_print} {
+    puts "Will perform gradient search with RANDOM starting solution. \n"
+    }
+    
+    set current [ga_get_free_entity  $pop]
+    ga_entity_seed  $pop $task $current
+
+  } else {   
+    if {$::is_print} {
+    puts "Will perform gradient search with SPECIFIED starting solution. \n"
+    }
+  }
+
+  return $current
+}
+# //------------------------------------------------------------------------------
+# int 
+# check_gradient_loop (population *pop, boolean force_terminate, entity *current,
+#                      int iteration, int max_iterations) 
+# //------------------------------------------------------------------------------
+proc check_gradient_loop {pop force_terminate current iteration max_iterations} \
+{
+
+  #   int ret =  (force_terminate == FALSE &&
+  #               (pop->iteration_hook?pop->iteration_hook(iteration, current):TRUE) &&
+  #               iteration < max_iterations );
+
+  set r1 [expr {$force_terminate == false}]
+
+  set hook_proc [GET $pop iteration_hook]
+
+  if {$hook_proc == "NULL"} {
+    set r2 true
+  } else {
+    set r2 [$hook_proc $iteration $current]
+  }
+
+  set r3 [expr {$iteration < $max_iterations}]
+
+  if {$::is_print} {
+    #puts "check_gradient_loop:  iteration= $iteration  max_iterations= $max_iterations"    
+  }
+
+  return [expr {$r1 && $r2 && $r3}]
+}
+# //------------------------------------------------------------------------------
+# /**********************************************************************
+#   synopsis:	Performs optimisation on the passed entity by using a
+#   		steepest ascents method (i.e. steepest descent, except
+# 		maximising the fitness function).
+# 		The passed entity will have its data overwritten.  The
+# 		remainder of the population will be let untouched.
+# 		Note that it is safe to pass a NULL initial structure,
+# 		in which case a random starting structure wil be
+# 		generated, however the final solution will not be
+# 		available to the caller in any obvious way.
+
+# 		Only double chromosomes may be used in this optimised
+# 		version of the algorithm.
+#  **********************************************************************/
+# //------------------------------------------------------------------------------
+# void
+# make_putative (population *pop, entity *current, double step_size, 
+#                double	*current_g, entity *putative)
+# //------------------------------------------------------------------------------
+proc make_putative {pop current step_size current_g putative} \
+{
+
+  #   int i;
+  
+  for {set i 0} {$i < [GET $pop lsrc]} {incr i} \
+  {
+    #  ((double *) putative->CH)[i] = ((double *) current->CH)[i] + 
+    #                                step_size * current_g[i];
+
+    set ci [item_get_chromo_gen $current $i]
+   
+    #$putative set_chromo_gen $i [expr $ci + ($step_size * [lindex $current_g $i])]
+    item_set_chromo_gen $putative $i [expr {$ci + ($step_size * [lindex $current_g $i])}]
+  }
+ 
+  return
+}
+# //------------------------------------------------------------------------------
+# int ga_steepestascent_double (population *pop,
+#                               entity     *current,
+#                               int  	  max_iterations)
+# //------------------------------------------------------------------------------
+proc ga_steepestascent_double {task pop current max_iterations} \
+{
+
+  set eval_proc [GET $task "fit_func"]
+
+
+  set GR [GET $pop gr_params]
+
+
+  #   int	iteration=0;		/* Current iteration number. */
+  set iteration 0
+
+  #   //int	i;			/* Index into arrays. */
+  #   double	*current_g;		/* Current iteration gradient array. */
+  #   entity	*putative;		/* New solution. */
+  #   entity	*tmpentity;		/* Used to swap working solutions. */
+  #   double	step_size;		/* Current step size. */
+  #   double	grms;			/* Current RMS gradient. */
+
+  #   boolean	force_terminate=FALSE;	/* Force optimisation to terminate. */
+  set force_terminate false
+  
+  #   //
+  #   // Checks ............................
+  #   // 
+  # check_pop_gradient $pop
+  
+  #   //
+  #   // Prepare working entity and gradient array.
+  #   //
+  #   if (! (current_g = s_malloc (sizeof(double) * pop->lsrc)))
+  #     die ("Unable to allocate memory");
+  
+  set putative [ga_get_free_entity $pop]
+  
+  #   // Do we need to generate a random starting solution? 
+  #   // 
+  set current [check_starting_solution  $pop $task $current]
+  
+  #   GAgradient gradient_proc = pop->gradient_params->gradient; /* Return gradients array. */
+  #   //
+  set gradient_proc [GET $GR gradient]
+  
+  #   //
+  #   // Get initial fitness and derivatives.
+  #   //
+
+  #set eval_proc [GET $pop evaluate]
+  
+  pop_eval_item $pop $current $eval_proc $task
+ 
+  set current_CH [item_CH $current]
+
+  set current_g ""
+
+  set grms [$gradient_proc  $pop $current $current_CH current_g]
+  
+  
+  #   plog (LOG_VERBOSE,
+  #        "Prior to the first iteration, the current solution has fitness score of %f and a RMS gradient of %f",
+  #        current->fitness, grms);
+  
+  #   // Adjust step size based on gradient.
+  #   // This scales the step size according to the initial gradient so that the
+  #   // calculation doesn't blow-up completely.
+  #   //
+  #   //  step_size = (pop->lsrc*pop->gradient_params->step_size) / grms;
+  
+  set step_size [GET $GR step_size]
+  
+  #   /*
+  #     * Do all the iterations:
+  #     *
+  #     * Stop when (a) max_iterations reached, or
+  #     *           (b) "pop->iteration_hook" returns FALSE.
+  #     * The iteration hook could evaluate the RMS gradient, or the maximum component
+  #     * of the gradient, or any other termination criteria that may be desirable.
+  #     */
+  
+  #if {$::is_print} {
+  #  $pop print
+  #  puts ""
+  #}
+
+  while {[check_gradient_loop  $pop $force_terminate $current $iteration $max_iterations]} \
+  {
+    #  iteration++;
+    incr iteration
+
+    if {$::is_print} {
+      #puts "iteration = $iteration"
+    }
+  
+    make_putative  $pop $current $step_size $current_g $putative
+    #$eval_proc  $pop $putative
+    pop_eval_item  $pop $putative $eval_proc $task
+    
+    if {[item_get_fitn $current] > [item_get_fitn $putative]} \
+    {	
+      #       // New solution is worse.
+      while {1} {
+
+        #         step_size *= pop->gradient_params->alpha;
+        set step_size [expr {$step_size * [GET $GR alpha]}]
+        
+        make_putative  $pop $current $step_size $current_g $putative
+        #$eval_proc  $pop $putative
+        pop_eval_item $pop $putative $eval_proc $task 
+        
+        if {[item_get_fitn $current] <= [item_get_fitn $putative]} {break} 
+        ;# // улучшили фитнес
+        if {$step_size  <= $::ApproxZero}  {break} ;# // 
+        
+      } 
+    
+      if { [expr  {$step_size <= $::ApproxZero && $grms <= $::ApproxZero}] } {
+        set force_terminate true
+      }
+      
+    } else {	
+      #       // New solution is an improvement.
+      #       // 
+      #       step_size *= pop->gradient_params->beta;
+      set step_size [expr {$step_size * [GET $GR beta]}]
+   }
+    
+    #  Store improved solution. 
+    # 
+    set tmpentity   $current
+    set current    $putative
+    set putative  $tmpentity
+    
+    #     grms = gradient_proc (pop, current, (double *)current->CH, current_g);
+    set grms [$gradient_proc  $pop $current [item_CH $current] current_g]
+    
+    #     //
+    #     // Use the iteration callback.
+    #     //
+    #     plog (LOG_VERBOSE,
+    #          "After iteration %d, the current solution has fitness score of %f and RMS gradient of %f (step_size = %f)",
+    #          iteration, current->fitness, grms, step_size);
+    
+  }  ;# /* Iteration loop. */
+  
+  #   //
+  #   // Cleanup.
+  #   //
+  pop_del_entity  $pop $putative
+  
+  return $iteration
+}
+# //****************************************************************************
+# //****************************************************************************
+# //****************************************************************************
+# //****************************************************************************
+
+#source "p-sima.tl"
+
+# //****************************************************************************
+
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+if [info exists ::G_SIMA_TL] {
+  return
+} else {
+  set  ::G_SIMA_TL ""
+}
+
+# ------------------------------------------------------------------------------
+# ga_sa.c
+
+# ga_sa - A simulated annealling algorithm for comparison and search.
+
+# Synopsis:     A simulated annealling algorithm for comparison and search.
+
+#-------------------------------------------------------------------------------
+# 
+# Simulated Annealling search parameter structure.
+#  
+
+# dictrecord define GA_SA_T {
+
+#   initial_temp ;#   double         : Initial temperature; 
+#   final_temp   ;#   double         : Final temperature; 
+#   temp_step    ;#   double         : Increment of temperature updates;
+#   temp_freq    ;#   int	temp_freq  : Frequency for temperature updates;
+#   #                                * (Or, -1 for smooth transition between Ti and Tf)
+#   temperature  ;#   double	   : Current temperature;
+#   sa_accept    ;#   GAsa_accept sa_accept : Acceptance criterion function;
+# }
+
+# //------------------------------------------------------------------------------
+# //  synopsis:     Simulated annealling acceptance criterion.
+# //------------------------------------------------------------------------------
+# boolean 
+# ga_sa_boltzmann_acceptance (population	*pop,
+# 			    entity	*original,
+# 			    entity	*putative)
+# //------------------------------------------------------------------------------
+proc ga_sa_boltzmann_acceptance {pop original putative} {
+
+  set SA [GET $pop sa_params]
+
+
+  set ofit [item_get_fitn $original]
+  set pfit [item_get_fitn $putative]
+
+  set d [expr {$::GA_BOLTZMANN_FACTOR * [GET $SA temperature]}]
+
+  if {$ofit < $pfit} {return true}
+
+  set rand_prob [comm_random_boolean_prob [expr {exp (($pfit - $ofit) / $d ) }]]
+
+  return $rand_prob
+
+  #   return ( original->fitness < putative->fitness ||
+  #           random_boolean_prob (exp((putative->fitness - original->fitness)
+  #                                   /(GA_BOLTZMANN_FACTOR*pop->sa_params->temperature))) );
+
+}
+# //------------------------------------------------------------------------------
+# //  synopsis:     Sets the simulated annealling parameters for a
+# //	    	  population.
+# //------------------------------------------------------------------------------
+# void 
+# ga_population_set_sa_parameters (population             *pop,
+#                                  GAsa_accept             sa_accept,
+#                                  const double            initial_temp,
+#                                  const double            final_temp,
+#                                  const double            temp_step,
+#                                  const int               temp_freq )
+# //------------------------------------------------------------------------------
+proc ga_population_set_sa_parameters { pop          
+                                      sa_accept     
+                                      initial_temp  
+                                      final_temp    
+                                      temp_step     
+                                      temp_freq}    \
+{
+
+  set SA [dict_create]
+
+  #----------------------------------------------
+
+  SET $SA sa_accept     $sa_accept
+  SET $SA initial_temp  $initial_temp
+  SET $SA final_temp    $final_temp
+  SET $SA temp_step     $temp_step
+  SET $SA temp_freq     $temp_freq
+  SET $SA temperature   0.0        ;#	/* Current temperature. */
+  
+  #----------------------------------------------
+
+  SET $pop "sa_params"  $SA
+
+}
+# //------------------------------------------------------------------------------
+# /**********************************************************************
+#   synopsis:	Performs optimisation on the passed entity by using a
+#   		simplistic simulated annealling protocol.  The local
+# 		search and fitness evaluations are performed using the
+# 		standard mutation and evaluation callback mechanisms,
+# 		respectively.
+
+# 		The passed entity will have its data overwritten.  The
+# 		remainder of the population will be let untouched.  Note
+# 		that it is safe to pass a NULL initial structure, in
+# 		which case a random starting structure wil be generated,
+# 		however the final solution will not be available to the
+# 		caller in any obvious way.
+
+# 		Custom cooling schemes may be introduced by using
+# 		ga_population_set_sa_temperature() from within
+# 		an iteration_hook callback.
+#  **********************************************************************/
+
+# ------------------------------------------------------------------------------
+# int 
+# ga_sa (population  *pop,
+#        entity	   *initial,
+#        const int    max_iterations)
+# ------------------------------------------------------------------------------
+proc  ga_sa {task pop 
+             initial 
+             max_iterations} {
+
+
+  set SA [GET $pop sa_params]
+
+  #   int	iteration = 0;		/* Current iteration number. */
+  set iteration 0
+
+  #   entity	*putative;		/* Current solution. */
+  #   entity	*best;			/* Current solution. */
+  #   entity	*tmp;			/* Used to swap working solutions. */
+  
+  if {$::is_print} {
+    puts ""
+    puts "ga_sa ............................................. "
+    puts ""
+  }
+  
+  #   // Checks. 
+  #   if (! pop)            die ("NULL pointer to population structure passed.");
+  #   if (! pop->evaluate)  die ("Population's evaluation callback is undefined.");
+  #   if (! pop->mutate)    die ("Population's mutation callback is undefined.");
+  #   if (! pop->sa_params) die ("ga_population_set_sa_params(), or similar, must be used prior to ga_sa().");
+  
+  # Prepare working entities ...
+
+  set putative [get_free_and_init $pop $task]
+
+  #set best     [ga_get_free_entity  $pop] ;#  2-й
+  set best     [get_free_and_init  $pop $task] ;#  2-й
+  #
+  #   // Do we need to generate a random starting solution?
+  #   if (! initial)
+
+  if {$initial == "NULL"} \
+  {
+    if {$::is_print} {
+      puts "Will perform simulated annealling with random starting solution. "
+    }
+    
+    set initial [get_free_and_init $pop $task] ;#  3-й
+    #set initial [ga_get_free_entity $pop] ;#  3-й
+    #ga_entity_seed  $pop $initial
+
+    #ga_entity_seed  $pop $best
+
+  } else {   
+    #     if (is_print)
+    #       printf ("> Will perform simulated annealling with specified starting solution. \n");
+
+    ga_entity_copy $pop  $best $initial ;# $best <-- $initial
+  }
+  
+  #   //
+  #   // Ensure that initial solution is scored.
+  #   //
+  #   if (best->fitness==GA_MIN_FITNESS) pop->evaluate(pop, best);
+  #
+
+  if {[string equal [item_get_fitn $best]  $::GA_NOT_FIT]} {item
+
+    puts "...... GA_MIN_FITNESS ......................"
+
+    set eval_proc [GET $task "fit_func"]
+    #$eval_proc  $pop $best
+    pop_eval_item $pop $best $eval_proc $task
+    
+  }
+#   if {[ent_get_fitness $initial] == $::GA_NOT_FIT} {
+#     [$pop.evaluate] $pop $initial
+#   }
+  
+  #   if (is_print)
+  #     printf ("> Prior to the first iteration, the current solution has fitness score of %f \n",
+  #             best->fitness);
+  
+  if {$::is_print} { 
+    puts ""
+    puts [format \
+            "Prior to the first iteration, the current solution has fitness score of %f " \
+            [item_get_fitn $best]]
+    puts ""
+
+    pop_print $pop
+  }
+
+  #   //
+  #   // Do all the iterations:
+  #   // 
+  #   // Stop when (a) max_iterations reached, or
+  #   //           (b) "pop->iteration_hook" returns FALSE.
+  #   //
+
+  SET $SA temperature   [GET $SA initial_temp]
+  
+  #   while ( (pop->iteration_hook?pop->iteration_hook(iteration, best):TRUE) &&
+  #          iteration<max_iterations )
+
+  while {1} {
+
+    if {$iteration >= $max_iterations} {break}
+    
+    incr iteration
+    #     iteration++;
+    
+    if {[GET $SA temp_freq] == -1} \
+    {
+      #       pop->sa_params->temperature = pop->sa_params->initial_temp
+      #         + ((double)iteration/max_iterations)
+      #         * (pop->sa_params->final_temp - pop->sa_params->initial_temp);
+
+      #puts stderr "55555555555555555555" ;# мы сюда не попадаем ????
+    } else {
+
+      #       if (    pop->sa_params->temperature > pop->sa_params->final_temp
+      #           && iteration%pop->sa_params->temp_freq == 0 )
+      #       {
+      #         pop->sa_params->temperature -= pop->sa_params->temp_step;
+      #       }
+
+      set t [GET $SA temperature]
+      set f [GET $SA final_temp]
+
+      set q [expr {$iteration % [GET $SA temp_freq]}]
+
+      if {$t > $f  && $q == 0} \
+      {
+        #[GET $SA temperature] = [expr {[GET $SA temperature] - $SA.temp_step}]
+        [GET $SA temperature] = [expr {[GET $SA temperature] - [GET $SA temp_step]}]
+      }
+
+      #puts stderr "6666666666666666666"
+    }
+    
+    #  
+    # Generate and score a new solution.
+    # 
+    #[GET $pop mutate]   $pop $best $putative
+    [GET $pop mutate]   $pop $task $best $putative
+    
+    #[GET $pop evaluate] $pop       $putative
+    
+    #set task      [GET $pop  "TASK"]
+    set eval_proc [GET $task "fit_func"]
+    #$eval_proc $pop       $putative
+    pop_eval_item $pop $putative $eval_proc $task
+
+    #
+    # Use the acceptance criterion to decide whether this new solution should
+    # be selected or discarded.
+    # 
+    if {[[GET $SA sa_accept] $pop  $best $putative]} \
+    {
+      set   tmp    $best
+      set  best    $putative
+      set putative $tmp
+    }
+    
+    # 
+    # Save the current best solution in the initial entity, if this
+    # is now the best found so far.
+    # 
+
+    if {[item_get_fitn $initial] < [item_get_fitn $best]} \
+    {
+      ga_entity_blank $pop $initial
+      ga_entity_copy  $pop $initial $best
+    }
+    
+    #     //
+    #     // Use the iteration callback.
+    #     //
+    #     if (is_print)
+    #       printf ("> After iteration %d, the current solution has fitness score of %f \n",
+    #               iteration,
+    #               best->fitness);
+    
+    if {$::is_print} { 
+      puts [format "After iteration %d, the current solution has fitness score of %f" \
+              $iteration [item_get_fitn $best]]
+    }
+
+  }  ;# // Iteration loop.
+  
+
+  if {$::is_print} { 
+    puts ""
+
+    pop_print $pop
+  }
+
+  #   //
+  #   // Cleanup.
+  #   //
+  pop_del_entity  $pop $best     ;#       //??
+  pop_del_entity  $pop $putative ;#
+  
+  return $iteration
+}
+# //******************************************************************************
+# // 
+# //------------------------------------------------------------------------------
+
+
+
+# //****************************************************************************
+# //****************************************************************************
+# //****************************************************************************
+
+#source "p-tabu.tl"
+
+# //****************************************************************************
+
+# -*-   mode: tcl  ; coding: koi8   -*- ----------------------------------------
+
+if [info exists ::G_TABU_TL] {
+  return
+} else {
+  set  ::G_TABU_TL ""
+}
+
+# ------------------------------------------------------------------------------
+
+#   ga_tabu.c
+#   ga_tabu - A tabu-search algorithm for comparison and local search.
+
+#   Synopsis:     A tabu-search algorithm for comparison and local search.
+
+#   		A novel population-based tabu-search is also provided.
+# 		(Or at least it will be!)
+
+
+#-------------------------------------------------------------------------------
+# 
+# Tabu-search parameter structure.
+# 
+
+# dictrecord define GA_TABU_T \
+# {
+#   list_length  ;# int	 /* Length of the tabu-list. */
+#   search_count ;# int	 /* Number of local searches initiated at each iteration. */
+#   tabu_accept  ;# GAtabu_accept /* Acceptance function. */
+# }
+
+# //------------------------------------------------------------------------------
+# //  synopsis:   Compares two solutions with integer chromosomes and
+# //	   	returns TRUE if, and only if, they are exactly
+# //		identical.
+# //------------------------------------------------------------------------------
+# boolean 
+# ga_tabu_check_integer (population *pop,
+#                        entity	  *putative,
+#                        entity	  *tabu)
+# //------------------------------------------------------------------------------
+# proc ga_tabu_check_integer {pop putative tabu} {
+
+
+#   set a [ent_get_chromosome_ $putative]
+#   set b [ent_get_chromosome_ $tabu]
+
+#   set len  [GET $pop lsrc]
+  
+#   for {set j 0} {$j < $len} {incr j} {
+
+#     set a_gen [lindex $a $j]
+#     set b_gen [lindex $b $j]
+
+#     if {$a_gen != $b_gen}  {return "FALSE"}
+#   }
+
+#   return "TRUE"
+# }
+# //------------------------------------------------------------------------------
+# //  synopsis:   Checks the tabu list verses the putative solutions and
+# //		chooses an acceptable solution.  Returns -1 if all
+# //		putative solutions are tabu.
+# //------------------------------------------------------------------------------
+# int 
+# gaul_check_tabu_list (population  *pop,
+#                       entity	  **putative,
+#                       entity	  **tabu)
+# //------------------------------------------------------------------------------
+proc  gaul_check_tabu_list {pop &putative tabu} {
+
+  #set tabu_params [$pop.tabu_params]
+  set tabu_params [GET $pop algo_params]
+
+
+  USE_REFS
+
+  #   int	    i;		/* Loop variable over putative solutions. */
+  #   int	    j;		/* Loop variable over tabu list.          */
+  #   boolean   is_tabu;	/* Whether current solution is tabu.      */
+  
+  for {set i 0} {$i < [GET $tabu_params search_count]} {incr i} \
+  {
+    set is_tabu "FALSE"
+    
+    for {set j 0} {1} {incr j} \
+    {
+      set t [lindex $tabu $j]
+      
+      #puts "gaul_check_tabu_list: t = $t"
+        
+      if {$j >= [GET $tabu_params list_length]} {break}
+      if {$t       ==  "NULL"} {break}
+      if {$is_tabu != "FALSE"} {break}
+      
+      set is_tabu [[GET $tabu_params tabu_accept] $pop $putative($i) $t]
+    }
+    
+    if {$is_tabu == "FALSE"} {
+      #  /* This solution is not tabu. */
+      return $i
+    }
+  }
+  
+  #   // All solutions are tabu.
+  #   // 
+
+  return -1  
+}
+# //------------------------------------------------------------------------------
+# //  synopsis:     Sets the tabu-search parameters for a population.
+# //------------------------------------------------------------------------------
+# void 
+# ga_population_set_tabu_parameters (population    *pop,
+#                                    GAtabu_accept  tabu_accept,
+#                                    const int      list_length,
+#                                    const int      search_count)
+# //------------------------------------------------------------------------------
+proc ga_population_set_tabu_parameters {pop
+                                        tabu_accept
+                                        list_length
+                                        search_count} \
+{
+  if {$::is_print} {
+    puts "> "
+    puts [format "> Population's tabu-search parameters: list_length = %d search_count = %d " \
+            $list_length $search_count]
+  }
+  
+
+  set tabu_params [dict_create]
+
+  #set tabu_params [GA_TABU_T \#auto]
+
+  #--------------------------------------------------
+
+  SET $tabu_params tabu_accept   $tabu_accept
+  SET $tabu_params list_length   $list_length
+  SET $tabu_params search_count  $search_count
+
+  #--------------------------------------------------
+
+  SET $pop algo_params   $tabu_params
+
+}
+# //------------------------------------------------------------------------------
+# void update_tabu_list (population *pop,
+#                        entity	**tabu_list,    
+#                        entity    *best, 
+#                        int    *p_tabu_list_pos 
+#                        )
+# //------------------------------------------------------------------------------
+proc update_tabu_list {pop  &tabu_list best &p_tabu_list_pos} {
+
+  #set tabu_params [$pop.tabu_params]
+  set tabu_params [GET $pop algo_params]
+
+  USE_REFS
+
+  set tabu_list_pos  $p_tabu_list_pos
+  
+  set t [lindex $tabu_list $tabu_list_pos] ;# это вообще-то "entity"
+
+  #puts ""
+  #puts "update_tabu_list:  tabu_list= $tabu_list"
+  #puts "update_tabu_list:  tabu_list_pos= $tabu_list_pos t= $t"
+  #puts ""
+
+  if {$t == "NULL"} \
+  {
+    lset tabu_list $tabu_list_pos [ga_entity_clone  $pop $best]
+  } else {
+    ga_entity_blank  $pop $t
+
+    ga_entity_copy   $pop  $t $best
+  }
+
+  incr tabu_list_pos
+  
+  if { $tabu_list_pos >= [GET $tabu_params list_length] } {
+    set tabu_list_pos  0
+  } 
+  
+  set p_tabu_list_pos $tabu_list_pos
+  
+  #   return;
+}
+# //------------------------------------------------------------------------------
+# entity *
+# swap_putative_to_index (entity   *best,
+#                     entity  **putative, int index
+# //------------------------------------------------------------------------------
+proc swap_putative_to_index {best &putative index} {
+
+  USE_REFS
+  #   entity   *tmp; 
+  
+  set tmp $best
+
+  #   best = putative[index];
+  set best $putative($index)
+
+  #   putative[index] = tmp;
+  set putative($index) $tmp
+  
+  return $best
+}
+# //------------------------------------------------------------------------------
+# //  synopsis:	Performs optimisation on the passed entity by using a
+# //  		simplistic tabu-search.  The local search and fitness
+# //	       	evaluations are performed using the standard mutation
+# //	       	and evaluation callback mechanisms, respectively.
+# //		The passed entity will have its data overwritten.  The
+# //		remainder of the population will be let untouched.
+# //		Note that it is safe to pass a NULL initial structure,
+# //		in which case a random starting structure wil be
+# //		generated, however the final solution will not be
+# //		available to the caller in any obvious way.
+# //------------------------------------------------------------------------------
+# int 
+# ga_tabu (population	*pop,
+#          entity		*initial,
+#          const int	 max_iterations )
+## //------------------------------------------------------------------------------
+proc ga_tabu {task pop initial max_iterations} {
+
+
+  set tabu_params [GET $pop algo_params]
+
+  set iteration 0 ;# 	/* Current iteration number. 
+
+  #   int	i, j;			/* Index into putative solution array. */
+  #   entity	*best;			/* Current best solution.              */
+  #   entity	**putative;		/* Current working solutions.          */
+  #   //entity	*tmp;			/* Used to swap working solutions.     */
+  #   entity	**tabu_list;		/* Tabu list.                          */
+
+  #   int	tabu_list_pos = 0;	/* Index into the tabu list.           */
+  set tabu_list_pos 0
+  
+  if {$::is_print} {
+      puts "> "
+      puts "> ga_tabu ..................................................... "
+      #puts "> max_iterations = $max_iterations"
+      puts "> "
+  }
+  
+  
+  #   // Prepare working entities. 
+  
+  #set best [ga_get_free_entity $pop] ;#   // The best solution so far.
+  set best [get_free_and_init $pop $task] ;#   // The best solution so far.
+  
+  set search_count [GET $tabu_params search_count]
+  set list_length  [GET $tabu_params list_length]
+
+  #   if (! (putative = s_malloc (sizeof(entity *) * pop->tabu_params->search_count)))
+  #     die ("Unable to allocate memory");
+  
+  for {set i 0} {$i < $search_count} {incr i} \
+  {
+    #set putative($i) [ga_get_free_entity $pop] ;#    // The 'working' solutions.
+    set putative($i) [get_free_and_init $pop $task] ;#    // The 'working' solutions.
+  }
+  
+  #   // Allocate and clear an array for the tabu list.
+  #   if (! (tabu_list = s_malloc (sizeof(vpointer) * pop->tabu_params->list_length)))
+  #     die ("Unable to allocate memory");
+  
+  for {set i 0} {$i < $list_length} {incr i} \
+  {
+    # tabu_list[i] = NULL;
+    #lappend  tabu_list  $i "NULL" ;# !!!????  tabu_list= 0 NULL 1 NULL 2 NULL 3 NULL
+    lappend  tabu_list "NULL"
+  }
+  
+  #   // Do we need to generate a random starting solution?
+  #   if (! initial)
+  if {$initial == "NULL"} \
+  {
+    if {$::is_print} {
+      puts "> Will perform tabu-search with random starting solution."
+    }
+    
+    #set initial [ga_get_free_entity $pop]
+    set initial [get_free_and_init $pop $task]
+    #ga_entity_seed  $pop $best
+
+  } else {   
+    if {$::s_print} { 
+      puts "> Will perform tabu-search with specified starting solution."
+    }
+  
+    ga_entity_copy $pop $best $initial
+  }
+  
+  set eval_proc [GET $task "fit_func"]
+  #-------------------------------------------------
+
+  #   //
+  #   // Ensure that initial solution is scored.
+  #   //
+  if {[string equal [item_get_fitn $best]  $::GA_NOT_FIT]} {
+    #pop->evaluate (pop, best);
+    #puts "!!!!!!!!!!!!!!!!!!!!!!!!"
+    #$eval_proc $pop $best
+    pop_eval_item $pop $best $eval_proc $task
+  }
+  
+  if {$::is_print} { 
+    puts "> "
+    puts [format \
+            "> Prior to the first iteration, the current solution has fitness score of %f " \
+            [item_get_fitn $best]]
+
+    pop_print $pop
+  }
+  
+  #   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #   //
+  #   // Do all the iterations:
+  #   //
+  #   // Stop when (a) max_iterations reached, or
+  #   //           (b) "pop->iteration_hook" returns FALSE.
+  #   //
+  #   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  while (1) {
+  
+    if {$::is_print} {
+      puts "> "
+      puts [format "> ITERATION LOOP ......... iteration = %d (%d)" \
+              $iteration $max_iterations]
+
+    } else {
+      
+      # //  pop->generation_hook?pop->generation_hook(generation, pop):TRUE; // печать через 10
+      # pop->iteration_hook?pop->iteration_hook (iteration, best):TRUE ;
+    }
+  
+    if {$iteration >= $max_iterations} {break}
+    
+    # iteration++;
+    incr iteration
+    
+    #     // 
+    #     // Generate and score new solutions.
+    #     //
+    for {set i 0} {$i < $search_count} {incr i} {
+
+      #[GET $pop mutate]   $pop $best $putative($i)
+      [GET $pop mutate]   $pop $task $best $putative($i)
+
+      #set eval_proc [GET $pop evaluate]
+      #$eval_proc  $pop  $putative($i)
+      pop_eval_item $pop  $putative($i) $eval_proc $task
+    }
+    
+#     if {$::is_print} { 
+#       puts ""
+#       puts "After MUTATE and EVALUATE: "
+#       puts ""
+      
+#       pop_print $pop
+#     }
+    
+    #     //
+    #     // Sort new solutions (putative[0] will have highest rank).
+    #     // We assume that there are only a small(ish) number of
+    #     // solutions and, therefore, a simple bubble sort is adequate.
+    #     //
+
+    set rank_proc [GET $pop rank]
+
+    for {set i 1} {$i < $search_count} {incr i} \
+    {
+      for {set j [expr {$search_count - 1}]} {$j >= $i} {incr j -1} \
+        {
+          #puts "i = $i  j = $j"
+          #         if (pop->rank (pop, putative[j], pop, putative[j-1]) > 0 )
+          if {[$rank_proc  $pop $putative($j) $pop $putative([expr {$j - 1}])] > 0 } \
+          {	
+            #           // Perform a swap.
+            #           putative[j] = swap_putative_to_index (putative[j], putative, j-1);
+            set putative($j) [swap_putative_to_index  $putative($j) putative [expr {$j - 1}] ]
+          }
+        }
+    }
+    
+#     if {$::is_print} { 
+#       puts ""
+#       puts "POP_PRINT 11111111111 : "
+#       puts ""
+      
+#       pop_print $pop
+#     }
+
+    #     //
+    #     // Save best solution if it is an improvement, otherwise
+    #     // select the best non-tabu solution (if any).
+    #     // If appropriate, update the tabu list.
+    #     //
+
+    #     if (pop->rank (pop, putative[0], pop, best) > 0 )
+    if {[$rank_proc  $pop $putative(0) $pop $best] > 0 } \
+    {
+      # best = swap_putative_to_index (best, putative, 0);
+      set best [swap_putative_to_index  $best putative 0]
+
+      # update_tabu_list (pop, tabu_list, best, &tabu_list_pos);
+      update_tabu_list  $pop tabu_list $best tabu_list_pos
+
+    } else {
+
+      #set ::is_print 1
+      #       if (-1 < (j = gaul_check_tabu_list (pop, putative, tabu_list)))
+      if {-1 < [set j [gaul_check_tabu_list  $pop putative $tabu_list]] } \
+      {
+        #  best = swap_putative_to_index (best, putative, j);
+        set best [swap_putative_to_index  $best putative $j]
+
+        #  update_tabu_list (pop, tabu_list, best, &tabu_list_pos);
+        update_tabu_list  $pop tabu_list $best tabu_list_pos
+
+        #puts "111111111111111111111111111111111111111 j = $j"
+        #puts "best = $best"
+        #puts "tabu_list = $tabu_list"
+      }
+    }
+    
+    if {$::is_print} { 
+      puts ""
+      puts "POP_PRINT 22222222222 : "
+      puts ""
+      
+      pop_print $pop
+    }
+
+    #     // Save the current best solution in the initial entity, if this
+    #     // is now the best found so far.
+    #     //
+
+    #     if (pop->rank (pop, best, pop, initial) > 0)
+    if {[$rank_proc  $pop $best  $pop $initial] > 0 } \
+    {
+      ga_entity_blank  $pop $initial
+      ga_entity_copy   $pop $initial $best
+    }
+    
+    if {$::is_print} { 
+      puts ""
+      puts "POP_PRINT 3333333333 : "
+      puts ""
+      
+      pop_print $pop
+    }
+
+
+    #     // Use the iteration callback.
+    #     //
+    if {$::is_print} { 
+      puts [format "> After iteration %d, the current solution has fitness score of %f" \
+              $iteration [item_get_fitn $best]]
+    }
+    
+    
+  } ;#  // Iteration loop. 
+  #   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  
+  if {$::is_print} { 
+    puts ""
+    puts "BEFORE CLEANUP: "
+    puts ""
+
+    pop_print $pop
+  }
+  #   //
+  #   // Cleanup.
+  #   //
+  
+  pop_del_entity  $pop $best
+  
+  for {set i 0} {$i < $search_count} {incr i} \
+  {
+    pop_del_entity $pop $putative($i)
+  }
+  
+  if {$::is_print} { 
+    puts ""
+    puts "AFTER  CLEANUP part1: "
+    puts ""
+
+    pop_print $pop
+  }
+
+  if {1} {
+  for {set i 0} {$i < $list_length} {incr i} \
+  {
+    #puts -nonewline [format "tabu_list: i= %2d  " $i ]
+
+    set t [lindex $tabu_list $i]
+
+    if {$t != "NULL"} {
+
+      #ent_print_ch_ $t 
+
+      pop_del_entity $pop $t
+
+  } else {
+    #puts -nonewline "t= NULL "
+  }
+    #puts ""
+
+  }
+  }
+
+  if {$::is_print} { 
+    puts ""
+    puts "AFTER  CLEANUP part2: "
+    puts ""
+
+    pop_print $pop
+  }
+
+  #   s_free (putative);
+  #   s_free (tabu_list);
+  
+  #   return iteration;
+}
+# //******************************************************************************
+# //
+# //------------------------------------------------------------------------------
+  
+  
+
+
+# //****************************************************************************
+# //----------------------------------------------------------------------------
+
 
