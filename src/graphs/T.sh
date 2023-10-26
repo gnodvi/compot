@@ -11,7 +11,7 @@ echo ""
 
 #-------------------------------------------------------------------------------
 
-#T_graphs.sh
+T_graphs.sh
 
 (cd IGRAPH;  make test)
 (cd CURVAT;  make test)
