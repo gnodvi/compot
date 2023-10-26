@@ -1899,6 +1899,8 @@ test_01 ()
   GrafSmin (pg, s, t, NULL);
   printf ("\n");
 
+  // а теперь еще и метрику посчитаем
+
   GrafMetrica (pg, &r, &d, &num_r, &num_d);
 
   printf ("r = %.1f  num_r = %d \n", r, num_r);

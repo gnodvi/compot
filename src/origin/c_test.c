@@ -22,12 +22,77 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+#include <igraph.h>
+
 /*-----------------------------------------------------------------------------*/ 
 
 #include "c-0000.h"
 
 //#include "e-graf.h"
 
+/*-----------------------------------------------------------------------------*/ 
+
+
+typedef struct {
+
+  int     nn;
+
+  //double *nodes;
+  //double *edges;
+
+  //WORKS  *wk;
+} IGRA /* GRAF */;
+
+
+/*-----------------------------------------------------------------------------*/ 
+void
+ig_test_01 ()
+{
+
+  GRAF *pg;
+  int   s, t, nn;
+  //double  r, d;
+  //int     num_r, num_d;
+
+  printf ("\n");
+  printf (".... ig_test_01 .................... \n");
+  printf ("\n");
+
+  pg = GrafCreate (4);
+  
+  GrafInit (pg, YRAND, 0.0, 0.0, YRAND, NOT, NOT);
+  
+  EDGE (pg, 0, 1) = 1;
+  EDGE (pg, 1, 2) = 1;
+  EDGE (pg, 2, 3) = 1;
+
+  EDGE (pg, 0, 3) = 4 /* 3.1 */ /* 2.9 */;
+  
+  s = 0;
+  t = 3;
+  
+  GrafPrint (pg);
+
+  GrafSmin (pg, s, t, NULL);
+  printf ("\n");
+
+
+  //IGRA *ig = IgraCreateFromGraf (pg);
+
+
+
+  //igraph_t graph;
+  //igraph_integer_t edges[] = { 0,1, 1,2, 2,3, 0,3 };
+
+  //VECTOR(edges)[0] = 1;
+
+  //igraph_add_edges (&graph, &edges, NULL);
+
+
+  printf ("\n");
+
+  return;
+}
 /*-----------------------------------------------------------------------------*/ 
 int
 main (int argc, char *argv[])
@@ -65,8 +130,12 @@ main (int argc, char *argv[])
 
   DAO_LOOP daoloop = dao_loop0; // по умолчанию запускаем 
   char c;
-  const char *name;
+  const char *name = "";
 
+
+  printf ("\n");
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // смотрим циклом все опции программы
   // 
   while ((c = getopt_long (argc, argv, "uha:p:i:n:o:vt:",
@@ -82,7 +151,6 @@ main (int argc, char *argv[])
       name = long_options[option_index].name;
       
       printf ("option %s", name);
-
       if (optarg)
         printf (" with arg %s", optarg);
       printf ("\n");
@@ -109,14 +177,17 @@ main (int argc, char *argv[])
     }
   }
 
+  // опции обработали, теперь приступаем непосредственно к вычислениям
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
   printf ("\n");
-  printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
+  //printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 
   printf ("test_num = %d \n", test_num);
   printf ("name     = %s \n", name);
 
-  printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
+  //printf ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
   printf ("\n");
 
   YT_PLOT *plot;
@@ -151,12 +222,20 @@ main (int argc, char *argv[])
     plot_print (plot, FALSE, TRUE);
     break;
 
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  case 20:
+    ig_test_01 ();
+    break;
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   default:
     break;
 
   }
 
-  printf ("\n");
+  //printf ("\n");
 
   //return 1;
   return (0); // Tcl's exec treats any non-zero exit status as an exceptional 

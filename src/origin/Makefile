@@ -14,7 +14,7 @@ SYS_LIBS = -lm #-lsocket
 
 #----------------------------------------------
 
-CC = LANG=C gcc -g
+CC = LANG=C gcc -g  
 
 
 OPTIM = -fno-exceptions -Wall
@@ -24,7 +24,7 @@ FLAGS = $(OPTIM) -D_UNIX -D_ENG
 
 #-------------------------------------------------------------------------------
 
-GCC  = LANG=C  gcc -g
+GCC  = LANG=C  gcc -fno-diagnostics-color -Wstringop-truncation ## -g
 
 GNUPLOTI_DIR = PLOTER
 GNUPLOTI_INC = -I$(GNUPLOTI_DIR) 
@@ -48,8 +48,8 @@ IGRAPH_LIBS = `pkg-config   --libs igraph`
 
 #------------------------------------------------------------------
 
-PROGS =  c_igra c_test T/e_tcl.so  T/e_jim.so T/e-0000.so  \
-	T/c-1111-notplot.o T/c-1111-gnuplot.o  ## d_test
+PROGS =  c_test T/e_tcl.so  T/e_jim.so T/e-0000.so  \
+	T/c-1111-notplot.o T/c-1111-gnuplot.o  ## d_test c_igra 
 
 all:  
 #	(cd IGRAPH; make)
@@ -89,7 +89,7 @@ T/c-1111-gnuplot.o: c-1111.c c-1111.h
 
 
 c_test :  c_test.c T/c-0000.o   T/c-1111-gnuplot.o                                 
-	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) -lm
+	$(GCC) -o $@ $^ $(GNUPLOTI_INC) $(GNUPLOTI_LIB) ${IGRAPH_INCS} ${IGRAPH_LIBS} -lm
 
 #T/e-0000.o : e-0000.c e-0000.h                                  
 ##	$(GCC) -D_GNUPLOT -o $@ -c $< $(GNUPLOTI_INC)
@@ -97,8 +97,8 @@ c_test :  c_test.c T/c-0000.o   T/c-1111-gnuplot.o
 
 #------------------------------------------------------------------
 
-c_igra :  c_igra.c                                    
-	$(GCC) -o $@ $^ ${IGRAPH_INCS} ${IGRAPH_LIBS} 
+#c_igra :  c_igra.c                                    
+#	$(GCC) -o $@ $^ ${IGRAPH_INCS} ${IGRAPH_LIBS} 
 
 #------------------------------------------------------------------
 
