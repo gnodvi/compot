@@ -17,13 +17,18 @@ ifdef UNIX_LINUX
 
   #FDIR_ROOT = ../../../../fltk-s
   #FDIR_ROOT = ../../FLTK-S
-  FDIR_ROOT = ../FLTK-S
+  #FDIR_ROOT = ../FLTK-S
+  FDIR_ROOT = ../../F
 
   FLTK_INCS = -I$(FDIR_ROOT)/include
   FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
 
-  CC    = gcc -O2
-  CPP   = c++ -O2
+  CC    = gcc -fno-diagnostics-color -Wstringop-truncation
+  #CC    = gcc -O2
+
+  #CPP   = c++ -O2
+  CPP   = c++ -fno-diagnostics-color -Wstringop-truncation
+
   FLAGS = $(OPTIM) -D_UNIX #-D_ENG
 
   DIAL_ICONS = 

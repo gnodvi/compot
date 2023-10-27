@@ -34,7 +34,7 @@ GAMERS_DIR = ../gamers
 
 
 all:  PLOTER__  COMMON_  FUN-GP_  LISOFT_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
-      GAMERS_ GRAPHS_ ORIGIN_ TESTER_ Y-ZONE__
+      GAMERS_ GRAPHS_ ORIGIN_ TESTER_ Y-ZONE_
 
 # RANDOM__  OLDJOY_
 # CAUL-S__ # LISPER__ ##OTHERS__  #repo01  ##   ## JIMTCL__ 
@@ -123,7 +123,7 @@ test:
 #-------------------------------------------------------------------------------
 
 clean : 
-	(cd ../ploter; make cleae)
+	(cd ../ploter; make clean)
 	(cd ../a-zone; make clean)
 	(cd     ../graphs; make clean)
 #	(cd $(OLDJOY_DIR); make clean)

@@ -11,7 +11,8 @@ exec tclsh "$0" ${1+"$@"}
  
 #-------------------------------------------------------------
 
-set auto_path [linsert $auto_path 0 "COMPOT/src/common"]
+#set auto_path [linsert $auto_path 0 "COMPOT/src/common"]
+set auto_path [linsert $auto_path 0 "../common"]
 
 package require compot::common 
 
@@ -153,10 +154,12 @@ proc generate_step_calc {} {
 if {$is_tk} {
 #-------------------------------------------------------------------------------
 
-  set auto_path [linsert $auto_path 0 "COMPOT/src/dialog"]
+  #set auto_path [linsert $auto_path 0 "COMPOT/src/dialog"]
+  set auto_path [linsert $auto_path 0 "../dialog"]
   package require compot::dialog 
 
-  set auto_path [linsert $auto_path 0 "COMPOT/src/tcl-tk/snit"]
+  #set auto_path [linsert $auto_path 0 "COMPOT/src/tcl-tk/snit"]
+  set auto_path [linsert $auto_path 0 "../tcl-tk/snit"]
   package require snit
 
   package require "Tk"

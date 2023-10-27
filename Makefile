@@ -23,14 +23,31 @@ cleanall:  clean
 #--------------------------------------------
 MIN = ../compot_min
 
-savemin:
+compot_min:
 	mkdir  -p   $(MIN)
 	cp -r ./P   $(MIN)
-	cp -r ./src/common/ $(MIN)/
-	cp -r ./src/fun-gp/ $(MIN)/
-	cp -r ./src/tester/ $(MIN)/
-	cp    ./Make.min    $(MIN)/Makefile
-	cp    ./src/common/Make.mak    $(MIN)/
+	cp -r ./src/common/          $(MIN)/
+	cp -r ./src/fun-gp/          $(MIN)/
+	cp -r ./src/origin/          $(MIN)/
+	cp -r ./src/dialog/          $(MIN)/
+	cp -r ./src/tcl-tk/          $(MIN)/
+
+	cp    ./Make.min             $(MIN)/Makefile
+	cp    ./src/common/Make.mak  $(MIN)/
+
+compot_min_clean:
+	rm -R -f $(MIN)
+
+#3       Compress the current subdirectory (tar.gz)
+#tgz:
+#        Pwd=`basename %d /`
+#        echo -n "Name of the compressed file (without extension) [$Pwd]: "
+#        read tar
+#        [ "$tar"x = x ] && tar="$Pwd"
+#        cd .. && \
+#        tar cf - "$Pwd" | gzip -f9 > "$tar.tar.gz" && \
+#        echo "../$tar.tar.gz created."
+
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
