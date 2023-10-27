@@ -8,7 +8,25 @@ exec jimsh "$0" ${1+"$@"}
 #
 #-------------------------------------------------------------------------------
 
+  global argc argv argv0
+  global argv
 
+  if  {$argc == 0} { 
+    puts "argc == 0"
+    exit
+  }
+  
+  set prog [lindex $argv 0] ;# 
+
+  set argv [lrange $argv 1 end]
+
+
+  if     {$prog == "test"    }   { p-test.jm $argv} \
+  else {
+    puts ""
+    puts "ERROR prog = $prog"
+    puts ""
+  }
 
 #-------------------------------------------------------------------------------
 #
