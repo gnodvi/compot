@@ -20,14 +20,21 @@ exec jimsh "$0" ${1+"$@"}
 
   set argv [lrange $argv 1 end]
 
+  #puts "argv = $argv"
 
-  if     {$prog == "test"    }   { p-test.jm $argv} \
+  if     {$prog == "test"}   {set ret [exec p-test.jm {*}$argv] } \
   else {
     puts ""
     puts "ERROR prog = $prog"
     puts ""
   }
 
+  #puts "ret = $ret"
+  puts "$ret"
+
 #-------------------------------------------------------------------------------
+#
+# p-test.jm      de_full -lpop 9 -nums 1
+# p-xxxx.jm test de_full -lpop 9 -nums 1
 #
 #-------------------------------------------------------------------------------

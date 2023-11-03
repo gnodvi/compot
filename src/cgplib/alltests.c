@@ -72,7 +72,7 @@ int test_averageBehaviour (int argc, char **argv) {
 
   setUpdateFrequency(params, updateFrequency);
 
-  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  trainingData = initialiseDataSetFromFile("./CGPLIB/dataSets/symbolic.data");
 
   rels = repeatCGP(params, trainingData, numGens, numRuns);
 
@@ -86,7 +86,7 @@ int test_averageBehaviour (int argc, char **argv) {
 
   printChromosome(chromo, 0);
 
-  saveResults(rels, "results.csv");
+  saveResults (rels, "results.csv");
 
   freeDataSet(trainingData);
   freeChromosome(chromo);
@@ -112,7 +112,7 @@ int test_createDataSet (int argc, char **argv) {
 
   struct dataSet *data = make_data_function (symbolicEq1, 101, -5.0, +5.0);
 
-  saveDataSet(data, "symbolic.data");
+  saveDataSet (data, "symbolic.data");
 
   freeDataSet(data);
 
@@ -273,7 +273,7 @@ int test_customReproductionScheme (int argc, char **argv) {
   setMu(params, mu);
   setLambda(params, lambda);
 	
-  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  trainingData = initialiseDataSetFromFile("./CGPLIB/dataSets/symbolic.data");
 	
   chromo = runCGP(params, trainingData, numGens);
 	
@@ -339,7 +339,7 @@ int test_customSelectionScheme (int argc, char **argv){
   
   setCustomSelectionScheme(params, tournament, "tournament");
   
-  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  trainingData = initialiseDataSetFromFile("./CGPLIB/dataSets/symbolic.data");
   
   chromo = runCGP (params, trainingData, numGens);
   
@@ -377,7 +377,7 @@ int test_manipulatingChromosomes (int argc, char **argv) {
 
   addNodeFunction(params, "add,sub,mul,sq,cube,sin");
 
-  trainingData = initialiseDataSetFromFile("./dataSets/symbolic.data");
+  trainingData = initialiseDataSetFromFile("./CGPLIB/dataSets/symbolic.data");
 
   chromoA = initialiseChromosome(params);
   chromoB = initialiseChromosome(params);
@@ -396,9 +396,9 @@ int test_manipulatingChromosomes (int argc, char **argv) {
   printf("chromoB without inactive nodes.\n");
   printChromosome(chromoB, 0);
 
-  saveChromosome(chromoB, "chromoB.chromo");
+  saveChromosome (chromoB, "chromoB.chromo");
 
-  chromoC = initialiseChromosomeFromFile("chromoB.chromo");
+  chromoC = initialiseChromosomeFromFile ("chromoB.chromo");
 
   testInputs[0] = 3;
 
@@ -585,7 +585,7 @@ int test_recurrentConnections (int argc, char **argv) {
 
   printParameters(params);
 
-  trainingData = initialiseDataSetFromFile("./dataSets/fibonacci.data");
+  trainingData = initialiseDataSetFromFile("./CGPLIB/dataSets/fibonacci.data");
 
   chromo = runCGP(params, trainingData, numGens);
 
@@ -620,7 +620,7 @@ int test_visualization (int argc, char **argv) {
   chromo = initialiseChromosome(params);
   
   printChromosome(chromo, 0);
-  saveChromosomeDot(chromo, 0, "chromo.dot");
+  saveChromosomeDot  (chromo, 0, "chromo.dot");
   saveChromosomeLatex(chromo, 0, "chromo.tex");
   
   freeChromosome(chromo);
@@ -662,7 +662,7 @@ int test_customES (int argc, char **argv) {
   setMutationType(params, "probabilistic");
   setMutationRate(params, 0.08);
 	
-  trainingData = initialiseDataSetFromFile("./dataSets/parity3bit.data");
+  trainingData = initialiseDataSetFromFile("./CGPLIB/dataSets/parity3bit.data");
 	
   for(i=0; i<POPULATIONSIZE; i++){
     population[i] = initialiseChromosome(params);
@@ -849,7 +849,7 @@ int test_gettingStarted (int argc, char **argv) {
     addNodeFunction    (params, "add,sub,mul,div,sin");
     // Note: you may need to check this path such that it is relative to your executable 
     // 
-    file = "./dataSets/symbolic.data";
+    file = "./CGPLIB/dataSets/symbolic.data";
     break;
 
   case 2:
