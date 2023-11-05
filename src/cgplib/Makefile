@@ -3,8 +3,11 @@
 #-------------------------------------------------------------------------------
 
 # GCC complier 
-#CC = LANG=C gcc ##-fno-diagnostics-color -Wstringop-truncation 
+ifdef GCC_COLORS 
 CC = LANG=C gcc -fno-diagnostics-color -Wstringop-truncation 
+else
+CC = LANG=C gcc 
+endif
 
 # GCC complier options
 # -pedantic		Issue all the warnings demanded by strict ISO C

@@ -23,11 +23,13 @@ ifdef UNIX_LINUX
   FLTK_INCS = -I$(FDIR_ROOT)/include
   FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
 
+ifdef GCC_COLORS
   CC    = gcc -fno-diagnostics-color -Wstringop-truncation
-  #CC    = gcc -O2
-
-  #CPP   = c++ -O2
   CPP   = c++ -fno-diagnostics-color -Wstringop-truncation
+else
+  CC    = gcc 
+  CPP   = c++ 
+endif
 
   FLAGS = $(OPTIM) -D_UNIX #-D_ENG
 
