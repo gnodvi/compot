@@ -4,7 +4,8 @@
 
 #MAIN_SRC_DIR = .
 
-include ../../../C/Make.mak
+#include ../../../C/Make.mak
+include ./Make.mak
 
 
 ASDF-L_DIR = ./ASDF

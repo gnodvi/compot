@@ -4,14 +4,14 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd freeglut; make)
+#	(cd freeglut; make)
 	(cd   jimtcl; make)
 	(cd metamath; make)
 
 #-------------------------------------------------------------------------------
 
 clean:  
-	(cd freeglut; make clean)
+#	(cd freeglut; make clean)
 	(cd   jimtcl; make clean)
 	(cd metamath; make clean)
 

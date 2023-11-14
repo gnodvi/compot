@@ -20,8 +20,10 @@ ifdef UNIX_LINUX
   #FDIR_ROOT = ../FLTK-S
   FDIR_ROOT = ../../F
 
-  FLTK_INCS = -I$(FDIR_ROOT)/include
-  FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
+  #FLTK_INCS = -I$(FDIR_ROOT)/include
+  #FLTK_LIBS = -L$(FDIR_ROOT)/lib -lfltk_forms -lfltk_images -lfltk $(IMAGELIBS)
+  FLTK_INCS = `fltk-config --cflags`
+  FLTK_LIBS = `fltk-config --ldflags` -lfltk_forms -lfltk_images 
 
 ifdef GCC_COLORS
   CC    = gcc -fno-diagnostics-color -Wstringop-truncation

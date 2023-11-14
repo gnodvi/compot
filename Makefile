@@ -21,6 +21,7 @@ cleanall:  clean
 	(cd ext;   make cleanall)
 
 #--------------------------------------------
+
 MIN = ../compot_min
 
 compot_min:
@@ -38,6 +39,22 @@ compot_min:
 compot_min_clean:
 	rm -R -f $(MIN)
 
+#--------------------------------------------
+
+MAX = ../comsrc
+
+comsrc:
+	mkdir  -p        $(MAX)
+	cp -r ./P        $(MAX)
+	cp -r ./src/     $(MAX)/
+	cp    ./Make.max             $(MAX)/Makefile
+	cp    ./src/common/Make.mak  $(MAX)/
+#	cp    ./lib.sh   $(MAX)/
+
+comsrc_clean:
+	rm -R -f $(MAX)
+
+#--------------------------------------------
 #3       Compress the current subdirectory (tar.gz)
 #tgz:
 #        Pwd=`basename %d /`

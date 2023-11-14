@@ -46,7 +46,7 @@ all:  PLOTER__  COMMON_  FUN-GP_  LISOFT_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
 PLOTER__ :
 #	(cd $(PLOTER_DIR); make)
 	(cd ../ploter; make)
-	(cd ../a-zone; make)
+#	(cd ../a-zone; make)
 
 Y-ZONE_ :
 	(cd ../y-zone; make)
@@ -125,7 +125,7 @@ test:
 
 clean : 
 	(cd ../ploter; make clean)
-	(cd ../a-zone; make clean)
+#	(cd ../a-zone; make clean)
 	(cd     ../graphs; make clean)
 #	(cd $(OLDJOY_DIR); make clean)
 #	(cd $(JIMTCL_DIR); make clean)

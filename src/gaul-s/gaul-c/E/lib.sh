@@ -1,1 +1,1 @@
-../../../C/lib.sh
+../../COMMON/E/lib.sh

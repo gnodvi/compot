@@ -1,1 +1,1 @@
-compot/Make.mak
+../../Make.mak

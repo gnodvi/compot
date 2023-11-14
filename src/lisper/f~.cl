@@ -7,8 +7,6 @@
 (defvar CUR_DIR "f")
 
 
-;(load "I/a-comm.cl")
-;(load "EXT/LSP/src/a-comm.cl")
 (load "a-comm.cl")
 
 ;-------------------------------------------------------------------------------
