@@ -58,7 +58,7 @@ PROGS =  c_test T/e_tcl.so  T/e_jim.so T/e-0000.so  \
 
 all:  
 	(cd IGRAPH; make)
-	(cd CURVAT; make)
+#	(cd CURVAT; make)
 	(cd .; make origin)
 
 origin: $(PROGS) 
@@ -148,7 +148,7 @@ clean:
 #	rm -f core 
 #	rm -f T/*.dot T/*.png T/*.file
 	(cd IGRAPH;   make clean)
-	(cd CURVAT;   make clean)
+#	(cd CURVAT;   make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

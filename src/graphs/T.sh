@@ -14,8 +14,8 @@ echo ""
 T_graphs.sh
 
 (cd IGRAPH;  make test)
-(cd CURVAT;  make test)
 
+#(cd CURVAT;  make test)
 #(cd CURVAT/GraphRicciCurvature; make test)
 
 #-------------------------------------------------------------------------------
