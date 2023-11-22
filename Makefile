@@ -4,21 +4,21 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd ext;   make)
-	(cd src/m; make)
+	(cd comext;   make)
+	(cd comsrc/m; make)
 
 test:  
-	(cd ext; make test)
+	(cd comext; make test)
 	T.sh
 
 #--------------------------------------------
 
 clean:  
-	(cd ext;   make clean)
-	(cd src/m; make clean)
+	(cd comext;   make clean)
+	(cd comsrc/m; make clean)
 
 cleanall:  clean
-	(cd ext;   make cleanall)
+	(cd comext;   make cleanall)
 
 #--------------------------------------------
 
@@ -27,14 +27,14 @@ MIN = ../compot_min
 compot_min:
 	mkdir  -p   $(MIN)
 	cp -r ./P   $(MIN)
-	cp -r ./src/common/          $(MIN)/
-	cp -r ./src/fun-gp/          $(MIN)/
-	cp -r ./src/origin/          $(MIN)/
-	cp -r ./src/dialog/          $(MIN)/
-	cp -r ./src/tcl-tk/          $(MIN)/
+	cp -r ./comsrc/common/          $(MIN)/
+	cp -r ./comsrc/fun-gp/          $(MIN)/
+	cp -r ./comsrc/origin/          $(MIN)/
+	cp -r ./comsrc/dialog/          $(MIN)/
+	cp -r ./comsrc/tcl-tk/          $(MIN)/
 
 	cp    ./Make.min             $(MIN)/Makefile
-	cp    ./src/common/Make.mak  $(MIN)/
+	cp    ./comsrc/common/Make.mak  $(MIN)/
 
 compot_min_clean:
 	rm -R -f $(MIN)
@@ -44,11 +44,11 @@ compot_min_clean:
 MAX = ../comsrc
 
 comsrc:
-	mkdir  -p        $(MAX)
-	cp -r ./P        $(MAX)
-	cp -r ./src/     $(MAX)/
-	cp    ./Make.max             $(MAX)/Makefile
-	cp    ./src/common/Make.mak  $(MAX)/
+	mkdir  -p         $(MAX)
+	cp -r ./P         $(MAX)
+	cp -r ./comsrc/   $(MAX)/
+	cp    ./Make.max  $(MAX)/Makefile
+	cp    ./comsrc/common/Make.mak  $(MAX)/
 #	cp    ./lib.sh   $(MAX)/
 
 comsrc_clean:

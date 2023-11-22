@@ -1,1 +1,1 @@
-src/common/E/lib.sh
+comsrc/common/E/lib.sh

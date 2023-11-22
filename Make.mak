@@ -1,1 +1,1 @@
-src/common/Make.mak
+comsrc/common/Make.mak
