@@ -1,0 +1,11 @@
+
+
+bnums  = 10
+bsize  = 15
+maxgs  = 2
+
+Best solution , score = 43.57 : 3 2 1 5 9 3 3 2 9 5 7 5 5 1 1 
+generation = 2
+Total number of fitness evaluations: 48
+
+

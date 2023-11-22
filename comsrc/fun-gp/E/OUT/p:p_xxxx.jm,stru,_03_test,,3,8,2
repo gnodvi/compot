@@ -1,0 +1,14 @@
+
+
+bnums  = 3
+bsize  = 15
+maxgs  = 8
+
+do_print_stop_criteria: ret = 8, max_generations = 8
+The evolution was stopped: maximum number of generations
+
+Best solution , score = 43.68 : 3 4 8 3 6 3 3 4 4 3 4 2 4 9 4 
+generation = 8
+Total number of fitness evaluations: 35
+
+
