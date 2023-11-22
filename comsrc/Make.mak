@@ -1,1 +1,1 @@
-../Make.mak
+common/Make.mak
