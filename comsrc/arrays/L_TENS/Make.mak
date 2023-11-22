@@ -1,1 +1,1 @@
-../../m/Make.mak
+../../Make.mak
