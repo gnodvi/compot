@@ -4,8 +4,9 @@
 #-------------------------------------------------------------------------------
 
 all:  
-	(cd comext;   make)
-	(cd comsrc/m; make)
+	(cd comext;  make)
+#	(cd comsrc/m; make)
+	(cd comsrc; make)
 
 test:  
 	(cd comext; make test)
@@ -14,8 +15,8 @@ test:
 #--------------------------------------------
 
 clean:  
-	(cd comext;   make clean)
-	(cd comsrc/m; make clean)
+	(cd comext;  make clean)
+	(cd comsrc;  make clean)
 
 cleanall:  clean
 	(cd comext;   make cleanall)

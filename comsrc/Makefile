@@ -4,31 +4,31 @@
 
 #MAIN_SRC_DIR = .
 
-include ../../Make.mak
+include .././Make.mak
 
 
-COMMON_DIR = ../common
-FUN-GP_DIR = ../fun-gp
+COMMON_DIR = ./common
+FUN-GP_DIR = ./fun-gp
 
-##JIMTCL_DIR = ../jimtcl		
-#OLDJOY_DIR = ../oldjoy		
-##RANDOM_DIR = ../random		
-PLOTER_DIR = ../ploter		
-LISOFT_DIR = ../lisoft	
-DIALOG_DIR = ../dialog
+##JIMTCL_DIR = ./jimtcl		
+#OLDJOY_DIR = ./oldjoy		
+##RANDOM_DIR = ./random		
+PLOTER_DIR = ./ploter		
+LISOFT_DIR = ./lisoft	
+DIALOG_DIR = ./dialog
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#OTHERS_DIR = ../others/m
-#TESTER_DIR = ../test-s
+#OTHERS_DIR = ./others/m
+#TESTER_DIR = ./test-s
 
-CAUL-S_DIR = ../gaul-s		
-CGPLIB_DIR = ../cgplib		
-LOGICS_DIR = ../logics		
+CAUL-S_DIR = ./gaul-s		
+CGPLIB_DIR = ./cgplib		
+LOGICS_DIR = ./logics		
 
-TENSOR_DIR = ../arrays		
-LISPER_DIR = ../lisper
-GAMERS_DIR = ../gamers
+TENSOR_DIR = ./arrays		
+LISPER_DIR = ./lisper
+GAMERS_DIR = ./gamers
 
 #-------------------------------------------------------------------------------
 
@@ -45,14 +45,14 @@ all:  PLOTER__  COMMON_  FUN-GP_  LISOFT_ DIALOG_ CGPLIB_ LOGICS_ TENSOR_ \
 
 PLOTER__ :
 #	(cd $(PLOTER_DIR); make)
-	(cd ../ploter; make)
-#	(cd ../a-zone; make)
+	(cd ./ploter; make)
+#	(cd ./a-zone; make)
 
 Y-ZONE_ :
-	(cd ../y-zone; make)
+	(cd ./y-zone; make)
 
 GRAPHS_ :
-	(cd ../graphs; make)
+	(cd ./graphs; make)
 
 #OLDJOY_ :
 #	(cd $(OLDJOY_DIR); make)
@@ -76,10 +76,10 @@ DIALOG_ :
 	(cd $(DIALOG_DIR); make)
 
 ORIGIN_ :
-	(cd ../origin; make)
+	(cd ./origin; make)
 
 SOLVER_ :
-	(cd ../solver; make)
+	(cd ./solver; make)
 
 
 #-------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ GAMERS_ :
 #---------------------------------------------
 
 repo01:
-	(cd ../repo01; make)
+	(cd ./repo01; make)
 
 
 #-------------------------------------------------------------------------------
@@ -124,9 +124,9 @@ test:
 #-------------------------------------------------------------------------------
 
 clean : 
-	(cd ../ploter; make clean)
-#	(cd ../a-zone; make clean)
-	(cd     ../graphs; make clean)
+	(cd ./ploter; make clean)
+#	(cd ./a-zone; make clean)
+	(cd     ./graphs; make clean)
 #	(cd $(OLDJOY_DIR); make clean)
 #	(cd $(JIMTCL_DIR); make clean)
 #	(cd $(RANDOM_DIR); make clean)
@@ -135,10 +135,10 @@ clean :
 	(cd $(COMMON_DIR); make clean)
 	(cd $(FUN-GP_DIR); make clean)
 	(cd $(DIALOG_DIR); make clean)
-	(cd ../origin; make clean)
-	(cd ../solver; make clean)
+	(cd ./origin; make clean)
+	(cd ./solver; make clean)
 
-#	(cd ../repo01; make clean)
+#	(cd ./repo01; make clean)
 
 #	(cd $(TESTER_DIR); make clean)
 ##	(cd $(OTHERS_DIR); make clean)
@@ -149,7 +149,7 @@ clean :
 	(cd $(TENSOR_DIR); make clean)
 	(cd $(GAMERS_DIR); make clean)
 	(cd $(LISPER_DIR); make clean)
-	(cd ../y-zone; make clean)
+	(cd ./y-zone; make clean)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
