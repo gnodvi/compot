@@ -98,7 +98,7 @@ typedef  double (*YT_MAKEFUNC) (double);
 
 struct dataSet *make_data_function (YT_MAKEFUNC makefunc, int nums, double x_min, double x_max); 
 
-extern int verbose;
+extern int verbose; // немного больше печатать
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

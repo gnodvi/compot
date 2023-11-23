@@ -1201,7 +1201,11 @@ DLL_EXPORT void saveChromosomeDot(struct chromosome *chromo, int weights, char c
 	See Also:
 		<saveChromosome> <saveChromosomeLatex>
 */
+
 DLL_EXPORT void saveChromosomeLatex(struct chromosome *chromo, int weights, char const *fileName);
+
+void SaveToLatex (FILE *fp, struct chromosome *chromo);
+void EqToLatex   (FILE *fp, struct chromosome *chromo, int output); 
 
 
 //------------------------------------------------------------------------------

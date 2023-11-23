@@ -86,7 +86,7 @@ int test_averageBehaviour (int argc, char **argv) {
 
   printChromosome(chromo, 0);
 
-  saveResults (rels, "results.csv");
+  saveResults (rels, "c_out.csv" /* "results.csv" */ );
 
   freeDataSet(trainingData);
   freeChromosome(chromo);
@@ -112,7 +112,7 @@ int test_createDataSet (int argc, char **argv) {
 
   struct dataSet *data = make_data_function (symbolicEq1, 101, -5.0, +5.0);
 
-  saveDataSet (data, "symbolic.data");
+  saveDataSet (data, "c_out.fun" /* "symbolic.data"  */);
 
   freeDataSet(data);
 
@@ -384,21 +384,27 @@ int test_manipulatingChromosomes (int argc, char **argv) {
 
   setChromosomeFitness(params, chromoA, trainingData);
 
-  mutateChromosome(params, chromoA);
+  mutateChromosome (params, chromoA);
 
-  copyChromosome(chromoB, chromoA);
+  copyChromosome   (chromoB, chromoA);
 
-  removeInactiveNodes(chromoB);
+  removeInactiveNodes (chromoB);
 
-  printf("chromoA with inactive nodes.\n");
-  printChromosome(chromoA, 0);
+  printf ("chromoA with inactive nodes.\n");
+  printChromosome (chromoA, 0);
 
-  printf("chromoB without inactive nodes.\n");
-  printChromosome(chromoB, 0);
+  printf ("chromoB without inactive nodes.\n");
+  printChromosome (chromoB, 0);
 
-  saveChromosome (chromoB, "chromoB.chromo");
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  chromoC = initialiseChromosomeFromFile ("chromoB.chromo");
+  //saveChromosome (chromoB, "chromoB.chromo");   
+  //chromoC = initialiseChromosomeFromFile ("chromoB.chromo");
+
+  saveChromosome (chromoB, "c_out.chr");
+  chromoC = initialiseChromosomeFromFile ("c_out.chr");
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   testInputs[0] = 3;
 
@@ -620,8 +626,8 @@ int test_visualization (int argc, char **argv) {
   chromo = initialiseChromosome(params);
   
   printChromosome(chromo, 0);
-  saveChromosomeDot  (chromo, 0, "chromo.dot");
-  saveChromosomeLatex(chromo, 0, "chromo.tex");
+  saveChromosomeDot  (chromo, 0, "c_out.dot" /* "chromo.dot"  */);
+  saveChromosomeLatex(chromo, 0, "c_out.tex" /* "chromo.tex"  */);
   
   freeChromosome(chromo);
   freeParameters(params);
@@ -751,10 +757,16 @@ double MonahovTest4 (double x) {
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//
-double SimpleFunc (double x){
 
-  return pow (x,2);
+double SimpleFunc2 (double x){
+
+  return pow (x, 2);
+
+}
+
+double SimpleFunc3 (double x){
+
+  return pow (x, 3);
 
 }
 //------------------------------------------------------------------------------
@@ -813,13 +825,13 @@ int test_gettingStarted (int argc, char **argv) {
   //---------------------------------
 
   get_options_CGP (argc, argv,  
-                   /* buf */NULL, 
-                   &seed,
-                   &d,  
-                   &updateFrequency,  
-                   &targetFitness,  
-                   &numGens,  
-                   &verbose   // -v
+                   /* buf */NULL,    // -t 
+                   &seed,            // -s 
+                   &d,               // -d
+                   &updateFrequency, // -u 
+                   &targetFitness,   // -f 
+                   &numGens,         // -n  
+                   &verbose          // -v
                    );
 
   params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
@@ -856,7 +868,7 @@ int test_gettingStarted (int argc, char **argv) {
     addNodeFunction    (params, "add,sub,mul,div,sin");
     data = make_data_function (symbolicEq2, 101, -5.0, +5.0);
 
-    file = "out_data.fun";
+    file = /* "out_data.fun" */ "c_out.fun" ;
 
     saveDataSet(data, file);
     freeDataSet(data);
@@ -867,26 +879,30 @@ int test_gettingStarted (int argc, char **argv) {
     addNodeFunction    (params, "add,sub,mul,div,sin");
     data = make_data_function (symbolicEq3, 101, -5.0, +5.0);
 
-    file = "out_data.fun";
+    file = "c_out.fun";
 
     saveDataSet(data, file);
     freeDataSet(data);
     break;
 
   case 9:
-    addNodeFunction    (params, "add, sub, mul, div, sin");
+    //addNodeFunction    (params, "add, sub, mul, div, sin");
+    addNodeFunction    (params, "add, mul");
 
     double x_min = -5.0 /* 0.0 */;
     double x_max = +5.0 /* 2.0 */;
     int nums = 21 /*101*/;
 
-    //data = make_data_function (SimpleFunc, nums, x_min, x_max);
-    //data = make_data_function (MonahovTest1, nums, x_min, x_max); // x^4 + x^3 + x^2 + x
-    //data = make_data_function (MonahovTest2, nums, x_min, x_max); // sin (x^2 + x^4)
-    //data = make_data_function (MonahovTest3, nums, x_min, x_max);   // sin exp sin exp sin
-   data = make_data_function (MonahovTest4, nums, x_min, x_max);   
+    //data = make_data_function (SimpleFunc2, nums, x_min, x_max);   // x^2
+    data = make_data_function (SimpleFunc3, nums, x_min, x_max);     // x^3
 
-    file = "out_data.fun";
+    //data = make_data_function (MonahovTest1, nums, x_min, x_max);   // x^4 + x^3 + x^2 + x
+    //data = make_data_function (MonahovTest2, nums, x_min, x_max);   // sin (x^2 + x^4)
+    //data = make_data_function (MonahovTest3, nums, x_min, x_max);   // sin exp sin exp sin
+    //data = make_data_function (MonahovTest4, nums, x_min, x_max);   // sin (x3) + exp(x) 
+
+    file = "c_out.fun";
+
     saveDataSet(data, file);
     freeDataSet(data);
 
@@ -911,8 +927,14 @@ int test_gettingStarted (int argc, char **argv) {
   
   //---------------------------------
 
-  saveChromosomeDot  (chromo, 0, "out_graf.dot");
-  saveChromosomeLatex(chromo, 0, "out_math.tex");
+  saveChromosomeDot  (chromo, 0, "c_out.dot"); // сохраним в формате графа
+  saveChromosomeLatex(chromo, 0, "c_out.tex"); // сохраним формулу
+
+  //SaveToLatex (stdout, chromo); // напечатаем в консоль 
+  EqToLatex (stdout, chromo, 0); 
+
+  printf ("\n\n"); // сбиваем работу консоли?
+  // а можно распечатать файл? system ("cat out_math.tex");
 
   freeDataSet    (trainingData);
   freeChromosome (chromo);
@@ -953,9 +975,15 @@ int main (int argc, char **argv) {
   return (ret);
 }
 //------------------------------------------------------------------------------
-// gettingStarted -t gettingStarted -s0 -d2 -u10
-// gettingStarted -t gettingStarted -s0 -d2 -u1 -n10 -v
 
 // alltests -t gettingStarted -d9 -v -u1   // печатать много на каждом шаге 
 
+// -t : тестовая функция
+// -d : номер выполняемого теста внутри функции
+// -v : немного больше печатать
+// -u : через сколько печатать
+// -n : сколько максимум итераций
+// -s : начальный рандом (seed)
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

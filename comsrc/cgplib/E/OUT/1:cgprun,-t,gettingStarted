@@ -45,3 +45,5 @@ Gen	fitness
 (15):	sub	12  8 *
 outputs: 15 
 
+f_0(x_0)=\left(\left(\left(\left(x_0 \times \left(x_0 \times x_0\right)\right) - \left(x_0 \times \left(x_0 \times x_0\right)\right)\right) + \left(x_0 \times x_0\right)\right) - \left(\left(\left(x_0 \times x_0\right) \times \left(x_0 \times x_0\right)\right) - \left(\left(x_0 \times \left(x_0 \times x_0\right)\right) \times \left(\left(x_0 \times \left(x_0 \times x_0\right)\right) - x_0\right)\right)\right)\right)
+

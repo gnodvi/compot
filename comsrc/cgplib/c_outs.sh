@@ -5,18 +5,23 @@
 #-------------------------------------------------------------------------------
 #
 
+cd P
 
-dot -Tpdf out_graf.dot -o out_graf.pdf
+# нарисуем вычислительный граф
 
-okular -geometry 1000x600+100+10 > /dev/null 2>&1 out_graf.pdf &
+dot -Tpdf ../out_graf.dot -o  out_graf.pdf
+
+okular -geometry 1000x600+100+10 > /dev/null 2>&1  out_graf.pdf &
 
 #---------------------------------------
 
-latex out_math.tex
+# нарисуем найденную формулу в LaTeX
+
+latex ../out_math.tex
 
 dvipdfm out_math.dvi
 
-okular -geometry 900x400+300+200 > /dev/null 2>&1 out_math.pdf &
+okular -geometry 900x400+300+200 > /dev/null 2>&1  out_math.pdf &
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
