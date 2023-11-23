@@ -111,7 +111,8 @@ get_options_CGP (int argc, char **argv,
                  int    *data,
                  int    *update,  // updateFrequency
                  double *fitness, 
-                 int    *nums, 
+                 int    *numGenes, 
+                 int    *numNodes,
                  int    *verbose 
                  );
 

@@ -319,7 +319,8 @@ get_options_CGP (int argc, char **argv,
                  int    *data,
                  int    *update,  // updateFrequency
                  double *fitness, 
-                 int    *nums, 
+                 int    *numGens, 
+                 int    *numNodes, 
                  int    *verbose 
                  )
 {
@@ -333,7 +334,7 @@ get_options_CGP (int argc, char **argv,
   // перебираем все параметры:
   // (в QNX эти параметры должны идти первыми)
 
-  while ((c = getopt (argc, argv, "hvt:b:s:d:u:f:n:")) != -1) { 
+  while ((c = getopt (argc, argv, "hvt:b:s:d:u:f:g:n:")) != -1) { 
 
     switch (c) {
 
@@ -357,8 +358,12 @@ get_options_CGP (int argc, char **argv,
       if (fitness) *fitness = atof (optarg); 
       break;
 
+    case 'g': 
+      if (numGens)    *numGens = atoi (optarg); 
+      break;
+
     case 'n': 
-      if (nums)    *nums = atoi (optarg); 
+      if (numNodes)   *numNodes = atoi (optarg); 
       break;
 
     case 'v':     // verbose - многословный

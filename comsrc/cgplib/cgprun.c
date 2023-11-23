@@ -60,7 +60,7 @@ int test_averageBehaviour (int argc, char **argv) {
   
   double averageFitness;
   
-  params = initialiseParameters(numInputs, numNodes, numOutputs, nodeArity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
   
   //---------------------------------
   setRandomNumberSeed (2021);
@@ -830,7 +830,8 @@ int test_gettingStarted (int argc, char **argv) {
                    &d,               // -d
                    &updateFrequency, // -u 
                    &targetFitness,   // -f 
-                   &numGens,         // -n  
+                   &numGens,         // -g  
+                   &numNodes,        // -n  
                    &verbose          // -v
                    );
 
@@ -953,7 +954,7 @@ int main (int argc, char **argv) {
 
   get_options_CGP (argc, argv,  
                    buf,   
-                   NULL, NULL, NULL, NULL, NULL, NULL);
+                   NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
   if      (! strcmp (buf, "gettingStarted"))           ret = test_gettingStarted          (argc, argv);
   else if (! strcmp (buf, "averageBehaviour"))         ret = test_averageBehaviour        (argc, argv);
@@ -976,13 +977,14 @@ int main (int argc, char **argv) {
 }
 //------------------------------------------------------------------------------
 
-// alltests -t gettingStarted -d9 -v -u1   // печатать много на каждом шаге 
+// cgprun -t gettingStarted -d9 -v -u1   // печатать много на каждом шаге 
 
 // -t : тестовая функция
 // -d : номер выполняемого теста внутри функции
 // -v : немного больше печатать
 // -u : через сколько печатать
-// -n : сколько максимум итераций
+// -g : numGenes - сколько максимум итераций 
+// -n : numNodes - узлов в хромосоме
 // -s : начальный рандом (seed)
 
 //------------------------------------------------------------------------------
