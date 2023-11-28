@@ -27,22 +27,22 @@ Gen	fitness
 0	212919.553510
 398	0.025230 - Solution Found
 
-(0):	input
-(1):	mul	 0  0 *
-(2):	mul	 1  1 *
-(3):	mul	 0  1 *
-(4):	sub	 3  0 *
-(5):	sub	 3  3 *
-(6):	sub	 2  5 
-(7):	mul	 3  4 *
-(8):	sub	 2  7 *
-(9):	sub	 5  5 
-(10):	add	 5  2 
-(11):	mul	10  8 
-(12):	add	 5  1 *
-(13):	add	12 12 
-(14):	sin	12 
-(15):	sub	12  8 *
+inputs : 0 
+ 0  0 	mul  -->  ( 1) *
+ 1  1 	mul  -->  ( 2) *
+ 0  1 	mul  -->  ( 3) *
+ 3  0 	sub  -->  ( 4) *
+ 3  3 	sub  -->  ( 5) *
+ 2  5 	sub  -->  ( 6) 
+ 3  4 	mul  -->  ( 7) *
+ 2  7 	sub  -->  ( 8) *
+ 5  5 	sub  -->  ( 9) 
+ 5  2 	add  -->  (10) 
+10  8 	mul  -->  (11) 
+ 5  1 	add  -->  (12) *
+12 12 	add  -->  (13) 
+12 	sin  -->  (14) 
+12  8 	sub  -->  (15) *
 outputs: 15 
 
 f_0(x_0)=\left(\left(\left(\left(x_0 \times \left(x_0 \times x_0\right)\right) - \left(x_0 \times \left(x_0 \times x_0\right)\right)\right) + \left(x_0 \times x_0\right)\right) - \left(\left(\left(x_0 \times x_0\right) \times \left(x_0 \times x_0\right)\right) - \left(\left(x_0 \times \left(x_0 \times x_0\right)\right) \times \left(\left(x_0 \times \left(x_0 \times x_0\right)\right) - x_0\right)\right)\right)\right)

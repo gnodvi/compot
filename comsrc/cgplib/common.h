@@ -113,7 +113,9 @@ get_options_CGP (int argc, char **argv,
                  double *fitness, 
                  int    *numGenes, 
                  int    *numNodes,
-                 int    *verbose 
+                 int    *verbose,
+
+                 int *Mu, int *Lambda
                  );
 
 //------------------------------------------------------------------------------

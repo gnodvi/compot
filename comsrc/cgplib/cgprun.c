@@ -162,7 +162,7 @@ int test_customFitnessFunction (int argc, char **argv) {
   int numOutputs = 1;
   int arity = 2;
 
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, arity);
 
   setCustomFitnessFunction(params, meanSquareError, "MSE");
 
@@ -199,7 +199,7 @@ int test_customNodeFunction (int argc, char **argv) {
   int numOutputs = 1;
   int arity = 3;
 
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, arity);
 
   addNodeFunction(params, "add,sub");
 
@@ -256,7 +256,7 @@ int test_customReproductionScheme (int argc, char **argv) {
   int updateFrequency = 1000;
   int numGens = 10000;
 	
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, arity);
   
   //---------------------------------
   setRandomNumberSeed (2021);
@@ -325,7 +325,7 @@ int test_customSelectionScheme (int argc, char **argv){
   int updateFrequency = 1000;
   int numGens = 10000;
 	
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, arity);
 	  
   //---------------------------------
   setRandomNumberSeed (2021);
@@ -425,8 +425,9 @@ int test_manipulatingChromosomes (int argc, char **argv) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 /*
-	Custom fitness function which just does some work and returns 10.
+   Custom fitness function which just does some work and returns 10.
 */
+//------------------------------------------------------------------------------
 double fitnessFunction 
   (struct parameters *params, struct chromosome *chromo, struct dataSet *data) {
 
@@ -435,7 +436,7 @@ double fitnessFunction
   int numExec = 10000;
 
   for (i = 0; i < numExec; i++) {
-    executeChromosome(chromo, inputs);
+    executeChromosome (chromo, inputs);
   }
 
   return 10;
@@ -535,7 +536,7 @@ int test_neuroEvolution (int argc, char **argv) {
   
   double weightRange = 5;
   
-  params = initialiseParameters(numInputs, numNodes, numOutputs, nodeArity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
   
   setRandomNumberSeed(123456789);
   
@@ -576,7 +577,7 @@ int test_recurrentConnections (int argc, char **argv) {
 
   double recurrentConnectionProbability = 0.10;
 
-  params = initialiseParameters(numInputs, numNodes, numOutputs, nodeArity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
   
   //---------------------------------
   //setRandomNumberSeed (1999);
@@ -610,12 +611,12 @@ int test_visualization (int argc, char **argv) {
   struct parameters *params = NULL;
   struct chromosome *chromo = NULL;
   
-  int numInputs = 1;
-  int numNodes = 8;
+  int numInputs  = 1;
+  int numNodes   = 8;
   int numOutputs = 1;
-  int nodeArity = 2;
+  int nodeArity  = 2;
   
-  params = initialiseParameters(numInputs, numNodes, numOutputs, nodeArity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
   
   //---------------------------------
   setRandomNumberSeed (2021);
@@ -824,6 +825,9 @@ int test_gettingStarted (int argc, char **argv) {
 
   //---------------------------------
 
+  int Mu     = 1; // родители
+  int Lambda = 4; // дети
+
   get_options_CGP (argc, argv,  
                    /* buf */NULL,    // -t 
                    &seed,            // -s 
@@ -832,11 +836,16 @@ int test_gettingStarted (int argc, char **argv) {
                    &targetFitness,   // -f 
                    &numGens,         // -g  
                    &numNodes,        // -n  
-                   &verbose          // -v
+                   &verbose,         // -v
+                   
+                   &Mu, &Lambda
                    );
 
-  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
+  //params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
   
+  params = initialiseParametersMore (numInputs, numNodes, 
+                                     numOutputs, nodeArity, Mu, Lambda);
+
   //printf ("seed = %d \n", seed);
 
   if (seed != 0) {
@@ -887,6 +896,7 @@ int test_gettingStarted (int argc, char **argv) {
     break;
 
   case 9:
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //addNodeFunction    (params, "add, sub, mul, div, sin");
     addNodeFunction    (params, "add, mul");
 
@@ -907,6 +917,7 @@ int test_gettingStarted (int argc, char **argv) {
     saveDataSet(data, file);
     freeDataSet(data);
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     break;
 
   default:
@@ -919,7 +930,7 @@ int test_gettingStarted (int argc, char **argv) {
   
   trainingData = initialiseDataSetFromFile (file);
   
-  chromo = runCGP (params, trainingData, numGens); // запускаем 
+  chromo = runCGP (params, trainingData, numGens); // запускаем  !!!
   
   //---------------------------------
 
@@ -954,7 +965,7 @@ int main (int argc, char **argv) {
 
   get_options_CGP (argc, argv,  
                    buf,   
-                   NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+                   NULL, NULL, NULL, NULL, NULL, NULL, NULL,    NULL, NULL);
 
   if      (! strcmp (buf, "gettingStarted"))           ret = test_gettingStarted          (argc, argv);
   else if (! strcmp (buf, "averageBehaviour"))         ret = test_averageBehaviour        (argc, argv);

@@ -232,7 +232,14 @@ struct results;
   <freeParameters>, <printParameters>
 */
 
-DLL_EXPORT struct parameters *initialiseParameters(const int numInputs, const int numNodes, const int numOutputs, const int arity);
+DLL_EXPORT struct parameters *initialiseParameters (const int numInputs, const int numNodes, 
+                                                    const int numOutputs, const int arity);
+
+DLL_EXPORT struct parameters *
+initialiseParametersMore (const int numInputs, const int numNodes, 
+                          const int numOutputs, 
+                          const int arity,
+                          int Mu, int Lambda);
 
 //------------------------------------------------------------------------------
 /*

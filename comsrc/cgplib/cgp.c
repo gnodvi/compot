@@ -234,18 +234,22 @@ static double medianDouble(const double *anArray, const int length);
   */
 //------------------------------------------------------------------------------
 DLL_EXPORT struct parameters *
-initialiseParameters (const int numInputs, const int numNodes, const int numOutputs, 
-                      const int arity) {
+initialiseParametersMore (const int numInputs, const int numNodes, 
+                          const int numOutputs, 
+                          const int arity,
+                          int Mu, int Lambda) {
 
   struct parameters *params;
 
   /* allocate memory for parameters */
-  params = (struct parameters*)malloc(sizeof(struct parameters));
+  params = (struct parameters*) malloc (sizeof(struct parameters));
 
-  /* Set default values */
-  params->mu = 1;
-  params->lambda = 4;
+  // Set default values
+ 
+  params->mu     = Mu;     // одна особь в популяции ?
+  params->lambda = Lambda; // родлаем потомков на каждом шаге?
   params->evolutionaryStrategy = '+';
+
   params->mutationRate = 0.05;
   params->recurrentConnectionProbability = 0.0;
   params->connectionWeightRange = 1;
@@ -281,6 +285,20 @@ initialiseParameters (const int numInputs, const int numNodes, const int numOutp
   srand (time(NULL));
 
   return params;
+}
+//------------------------------------------------------------------------------
+DLL_EXPORT struct parameters *
+initialiseParameters (const int numInputs, const int numNodes, const int numOutputs, 
+                      const int arity) 
+{
+
+  int Mu     = 1; // родители
+  int Lambda = 4; // дети
+
+  return (initialiseParametersMore (numInputs, numNodes, 
+                                    numOutputs, 
+                                    arity, Mu, Lambda));
+
 }
 //------------------------------------------------------------------------------
 /*
@@ -901,7 +919,8 @@ void setNumThreads (struct parameters *params, int numThreads) {
   Returns a pointer to an initialised chromosome with values obeying the given parameters.
   */
 //------------------------------------------------------------------------------
-DLL_EXPORT struct chromosome *initialiseChromosome(struct parameters *params) {
+DLL_EXPORT 
+struct chromosome *initialiseChromosome (struct parameters *params) {
 
   struct chromosome *chromo;
   int i;
@@ -913,7 +932,7 @@ DLL_EXPORT struct chromosome *initialiseChromosome(struct parameters *params) {
   }
 
   /* allocate memory for chromosome */
-  chromo = (struct chromosome*)malloc(sizeof(struct chromosome));
+  chromo = (struct chromosome*) malloc (sizeof(struct chromosome));
 
   /* allocate memory for nodes */
   chromo->nodes = (struct node**)malloc(params->numNodes * sizeof(struct node*));
@@ -928,20 +947,24 @@ DLL_EXPORT struct chromosome *initialiseChromosome(struct parameters *params) {
   chromo->outputValues = (double*)malloc(params->numOutputs * sizeof(double));
 
   /* Initialise each of the chromosomes nodes */
+
   for (i = 0; i < params->numNodes; i++) {
-    chromo->nodes[i] = initialiseNode(params->numInputs, params->numNodes, params->arity, params->funcSet->numFunctions, params->connectionWeightRange, params->recurrentConnectionProbability, i);
+    chromo->nodes[i] = initialiseNode (params->numInputs, params->numNodes, params->arity, 
+                                       params->funcSet->numFunctions, params->connectionWeightRange, 
+                                       params->recurrentConnectionProbability, i);
   }
 
   /* set each of the chromosomes outputs */
   for (i = 0; i < params->numOutputs; i++) {
-    chromo->outputNodes[i] = getRandomChromosomeOutput(params->numInputs, params->numNodes, params->shortcutConnections);
+    chromo->outputNodes[i] = getRandomChromosomeOutput (params->numInputs, params->numNodes, 
+                                                        params->shortcutConnections);
   }
 
   /* set the number of inputs, nodes and outputs */
-  chromo->numInputs = params->numInputs;
-  chromo->numNodes = params->numNodes;
+  chromo->numInputs  = params->numInputs;
+  chromo->numNodes   = params->numNodes;
   chromo->numOutputs = params->numOutputs;
-  chromo->arity = params->arity;
+  chromo->arity      = params->arity;
 
   /* set the number of active node to the number of nodes (all active) */
   chromo->numActiveNodes = params->numNodes;
@@ -954,10 +977,10 @@ DLL_EXPORT struct chromosome *initialiseChromosome(struct parameters *params) {
   copyFunctionSet(chromo->funcSet, params->funcSet);
 
   /* set the active nodes in the newly generated chromosome */
-  setChromosomeActiveNodes(chromo);
+  setChromosomeActiveNodes (chromo);
 
   /* used interally when exicuting chromosome */
-  chromo->nodeInputsHold = (double*)malloc(params->arity * sizeof(double));
+  chromo->nodeInputsHold = (double*) malloc (params->arity * sizeof(double));
 
   return chromo;
 }
@@ -1018,7 +1041,7 @@ DLL_EXPORT struct chromosome* initialiseChromosomeFromFile(char const *file) {
   arity = atoi(record);
 
   /* initialise parameters  */
-  params = initialiseParameters(numInputs, numNodes, numOutputs, arity);
+  params = initialiseParameters (numInputs, numNodes, numOutputs, arity);
 
   /* get and set node functions */
   line = fgets(buffer, sizeof(buffer), fp);
@@ -1184,7 +1207,7 @@ void freeChromosome (struct chromosome *chromo) {
 //  double (*functions[FUNCTIONSETSIZE])(const int numInputs, const double *inputs, 
 //                                       const double *connectionWeights);
 //};
-
+//----------------------------------------------
 void printFunctions (struct functionSet *funcSet) 
 {
 
@@ -1203,7 +1226,8 @@ void printFunctions (struct functionSet *funcSet)
   Prints the given chromosome to the screen
   */
 //------------------------------------------------------------------------------
-DLL_EXPORT void printChromosome (struct chromosome *chromo, int weights) {
+DLL_EXPORT 
+void printChromosome (struct chromosome *chromo, int weights) {
 
   int i, j;
 
@@ -1228,6 +1252,7 @@ DLL_EXPORT void printChromosome (struct chromosome *chromo, int weights) {
     int          *activeNodes;
     double fitness;
     double *outputValues;
+
     struct functionSet *funcSet;
     double *nodeInputsHold;
     int    generation;
@@ -1242,7 +1267,7 @@ DLL_EXPORT void printChromosome (struct chromosome *chromo, int weights) {
   fprintf (stderr, "fitness        = %f \n", chromo->fitness);
   fprintf (stderr, "generation     = %d \n", chromo->generation);
 
-  fprintf (stderr, "funcSet        = ");
+  fprintf (stderr, "funcSet        :   ");
   printFunctions (chromo->funcSet); 
   fprintf (stderr, "\n");
 
@@ -1254,47 +1279,51 @@ DLL_EXPORT void printChromosome (struct chromosome *chromo, int weights) {
   setChromosomeActiveNodes (chromo);
 
   // for all the chromo inputs
+  //for (i = 0; i < chromo->numInputs; i++) {
+  //  printf("(%d):\tinput\n", i);
+  //}
+
+  // печатаем номера всех входов ?
+  printf ("inputs : ");
   for (i = 0; i < chromo->numInputs; i++) {
-    printf("(%d):\tinput\n", i);
+    printf ("%d ", i);
   }
+  printf ("\n");
 
-  // for all the hidden nodes 
   for (i = 0; i < chromo->numNodes; i++) {
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~ идем циклом по всем узлам, печатая построчно 
 
-    // print the node function 
-    printf("(%d):\t%s\t", chromo->numInputs + i, chromo->funcSet->functionNames[chromo->nodes[i]->function]);
-
-    // for the arity of the node 
-    for (j = 0; j < getChromosomeNodeArity(chromo, i); j++) {
-
-      // print the node input information 
+    for (j = 0; j < getChromosomeNodeArity(chromo, i); j++) { // по арности печатаем входы
       if (weights == 1) {
-        //printf("%d,%+.1f\t", chromo->nodes[i]->inputs[j], chromo->nodes[i]->weights[j]);
-        printf("%2d, %+.1f  ", chromo->nodes[i]->inputs[j], chromo->nodes[i]->weights[j]);
+        printf ("%2d, %+.1f  ", chromo->nodes[i]->inputs[j], chromo->nodes[i]->weights[j]);
       }
       else {
-        printf("%2d ", chromo->nodes[i]->inputs[j]);
+        printf ("%2d ", chromo->nodes[i]->inputs[j]);
       }
     }
 
-    // Highlight active nodes
-    if (chromo->nodes[i]->active == 1) {
-      printf("*");
+    printf ("\t");
+    printf ("%6s  -->  ", chromo->funcSet->functionNames[chromo->nodes[i]->function]);
+    printf ("(%2d) ",     chromo->numInputs + i); // а почему здесь то сунмируется ?
+                                                  // этож должно явно указываться ? 
+  
+    if (chromo->nodes[i]->active == 1) { // подсвечиваем активные узлы
+      printf ("*");
     }
 
-    printf("\n");
-  }
+    printf ("\n");
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ конец основного цикла печати по всем узлам 
+  } 
 
-  // for all of the outputs 
-  printf("outputs: ");
+  // печатаем номера всех выходов (локацию)
+  printf ("outputs: ");
   for (i = 0; i < chromo->numOutputs; i++) {
-
-    // print the output node locations 
-    printf("%d ", chromo->outputNodes[i]);
+    printf ("%d ", chromo->outputNodes[i]);
   }
+  printf("\n");
 
-  printf("\n\n");
 
+  printf  ("\n");
   fprintf (stderr, "............................................ \n");
   fprintf (stderr, "\n");
 
@@ -1305,7 +1334,9 @@ DLL_EXPORT void printChromosome (struct chromosome *chromo, int weights) {
   Executes the given chromosome
   */
 //------------------------------------------------------------------------------
-DLL_EXPORT void executeChromosome (struct chromosome *chromo, const double *inputs) {
+DLL_EXPORT 
+void executeChromosome (struct chromosome *chromo, const double *inputs) 
+{
 
   int i, j;
   int nodeInputLocation;
@@ -1323,7 +1354,8 @@ DLL_EXPORT void executeChromosome (struct chromosome *chromo, const double *inpu
     exit(0);
   }
 
-  /* for all of the active nodes */
+  // идем циклом по всем активным узлам ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   for (i = 0; i < numActiveNodes; i++) {
 
     /* get the index of the current active node */
@@ -1346,11 +1378,16 @@ DLL_EXPORT void executeChromosome (struct chromosome *chromo, const double *inpu
       }
     }
 
-    /* get the functionality of the active node under evaluation */
+    // get the functionality of the active node under evaluation 
+
     currentActiveNodeFunction = chromo->nodes[currentActiveNode]->function;
 
-    /* calculate the output of the active node under evaluation */
-    chromo->nodes[currentActiveNode]->output = chromo->funcSet->functions[currentActiveNodeFunction](nodeArity, chromo->nodeInputsHold, chromo->nodes[currentActiveNode]->weights);
+    // calculate the output of the active node under evaluation 
+
+    chromo->nodes[currentActiveNode]->output = 
+      chromo->funcSet->functions[currentActiveNodeFunction](nodeArity, 
+              chromo->nodeInputsHold, 
+              chromo->nodes[currentActiveNode]->weights);
 
 
     /* deal with doubles becoming NAN */
@@ -1369,6 +1406,7 @@ DLL_EXPORT void executeChromosome (struct chromosome *chromo, const double *inpu
       }
     }
   }
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   /* Set the chromosome outputs */
   for (i = 0; i < numOutputs; i++) {
@@ -1380,8 +1418,9 @@ DLL_EXPORT void executeChromosome (struct chromosome *chromo, const double *inpu
       chromo->outputValues[i] = chromo->nodes[chromo->outputNodes[i] - numInputs]->output;
     }
   }
-}
 
+  return;
+}
 //------------------------------------------------------------------------------
 /*
   used to access the chromosome outputs after executeChromosome
@@ -2149,7 +2188,7 @@ compareChromosomesActiveNodesANN (struct chromosome *chromoA, struct chromosome 
   Mutates the given chromosome using the mutation method described in parameters
   */
 //------------------------------------------------------------------------------
-DLL_EXPORT void mutateChromosome(struct parameters *params, struct chromosome *chromo) {
+DLL_EXPORT void mutateChromosome (struct parameters *params, struct chromosome *chromo) {
 
   params->mutationType(params, chromo);
 
@@ -2227,19 +2266,22 @@ DLL_EXPORT void removeInactiveNodes(struct chromosome *chromo) {
   sets the fitness of the given chromosome
   */
 //------------------------------------------------------------------------------
-DLL_EXPORT void setChromosomeFitness (struct parameters *params, struct chromosome *chromo, struct dataSet *data) {
+DLL_EXPORT void setChromosomeFitness (struct parameters *params, 
+                                      struct chromosome *chromo, 
+                                      struct dataSet *data) {
 
   double fitness;
 
-  setChromosomeActiveNodes(chromo);
+  setChromosomeActiveNodes (chromo);
 
-  resetChromosome(chromo);
+  resetChromosome (chromo);
 
-  fitness = params->fitnessFunction(params, chromo, data);
+  fitness = params->fitnessFunction (params, chromo, data);
 
   chromo->fitness = fitness;
-}
 
+  return;
+}
 //------------------------------------------------------------------------------
 
 /*
@@ -3580,7 +3622,7 @@ initialiseNode (int numInputs, int numNodes, int arity,
   n->weights = (double*)malloc(arity * sizeof(double));
 
   /* set the node's function */
-  n->function = getRandomFunction(numFunctions);
+  n->function = getRandomFunction (numFunctions);
 
   /* set as active by default */
   n->active = 1;
@@ -4160,25 +4202,25 @@ supervisedLearning (struct parameters *params, struct chromosome *chromo,
 
   /* error checking */
   if (getNumChromosomeInputs(chromo) != getNumDataSetInputs(data)) {
-    printf("Error: the number of chromosome inputs must match the number of inputs specified in the dataSet.\n");
-    printf("Terminating CGP-Library.\n");
-    exit(0);
+    printf ("Error: the number of chromosome inputs must match the number of inputs specified in the dataSet.\n");
+    printf ("Terminating CGP-Library.\n");
+    exit (0);
   }
 
   if (getNumChromosomeOutputs(chromo) != getNumDataSetOutputs(data)) {
-    printf("Error: the number of chromosome outputs must match the number of outputs specified in the dataSet.\n");
-    printf("Terminating CGP-Library.\n");
-    exit(0);
+    printf ("Error: the number of chromosome outputs must match the number of outputs specified in the dataSet.\n");
+    printf ("Terminating CGP-Library.\n");
+    exit (0);
   }
 
   /* for each sample in data */
   for (i = 0 ; i < getNumDataSetSamples(data); i++) {
 
     /* calculate the chromosome outputs for the set of inputs  */
-    executeChromosome(chromo, getDataSetSampleInputs(data, i));
+    executeChromosome (chromo, getDataSetSampleInputs (data, i));
 
     /* for each chromosome output */
-    for (j = 0; j < getNumChromosomeOutputs(chromo); j++) {
+    for (j = 0; j < getNumChromosomeOutputs (chromo); j++) {
 
       error += fabs(getChromosomeOutput(chromo, j) - getDataSetSampleOutput(data, i, j));
     }
@@ -4330,13 +4372,16 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
   }
 
   //--------------------------------------------------------
+  // создаем пока начальные хромосомы (случайным образом с  фитнесом -1;)
 
-  // initialise parent chromosomes 
+
+  // основной массив родителей (по умолчанию он один, родитель !)
   parentChromos = (struct chromosome**) malloc (params->mu * sizeof(struct chromosome*));
 
-  for (i = 0; i < params->mu; i++) {
+  for (i = 0; i < params->mu; i++) { // размер популяции ?
     parentChromos[i] = initialiseChromosome (params);
   }
+
 
   // initialise children chromosomes 
   childrenChromos = (struct chromosome**) malloc (params->lambda * sizeof(struct chromosome*));
@@ -4349,7 +4394,8 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
   bestChromo = initialiseChromosome (params);
 
   //--------------------------------------------------------
-  /* determine the size of the Candidate Chromos based on the evolutionary Strategy */
+  // determine the size of the Candidate Chromos based on the evolutionary Strategy 
+  // кандидаты на отбор - родители с детьми или только дети?
 
   if (params->evolutionaryStrategy == '+') {
     numCandidateChromos = params->mu + params->lambda;
@@ -4364,7 +4410,8 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
   }
 
   /* initialise the candidateChromos */
-  candidateChromos = (struct chromosome**) malloc(numCandidateChromos * sizeof(struct chromosome*));
+  candidateChromos = (struct chromosome**) 
+    malloc (numCandidateChromos * sizeof(struct chromosome*));
 
   for (i = 0; i < numCandidateChromos; i++) {
 
@@ -4389,36 +4436,45 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
   }
 
   //--------------------------------------------------------!!!!!!!!!!!!!!!1
-  // for each generation 
+  // for each generation - основной цикл поколений
 
   for (gen = 0; gen < numGens; gen++) {
 
-    // set fitness of the children of the population 
     //#pragma omp parallel for default(none), shared(params, childrenChromos,data), schedule(dynamic), num_threads(params->numThreads)
 
-    for (i = 0; i < params->lambda; i++) {
+    // set fitness of the children of the population 
+    //
+    for (i = 0; i < params->lambda; i++) { // идем циклом по dctv tlnzv ?
 
       setChromosomeFitness (params, childrenChromos[i], data);
+
       if (verbose) fprintf (stderr, "set fitness of the children: i = %d \n", i); // !!!!!!
     }
+
     if (verbose) fprintf (stderr, "\n"); 
 
-    // get best chromosome 
-    getBestChromosome (parentChromos, childrenChromos, params->mu, params->lambda, bestChromo);
+    // get best chromosome (по массивам родителей и потомками их размерам)
+    getBestChromosome (parentChromos, childrenChromos, params->mu, params->lambda, 
+                       bestChromo);
 
     // check termination conditions 
     if (getChromosomeFitness (bestChromo) <= params->targetFitness) {
 
       if (params->updateFrequency != 0) {
-        printf("%d\t%f - Solution Found\n", gen, bestChromo->fitness);
+        printf ("%d\t%f - Solution Found\n", gen, bestChromo->fitness);
       }
 
-      break;
+      break; // вообще заканчиваем, выходим из генераций
     }
+    // пока не нашли лучшего, продолжаем....
+
 
     // display progress to the user at the update frequency specified 
     // 
-    if (params->updateFrequency != 0 && (gen % params->updateFrequency == 0 || gen >= numGens - 1) ) {
+    if (params->updateFrequency != 0 
+        && 
+        (gen % params->updateFrequency == 0 || gen >= numGens - 1) ) {
+
       printf("%d\t%f\n", gen, bestChromo->fitness);
     }
 
@@ -4440,9 +4496,10 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
       for (i = 0; i < numCandidateChromos; i++) {
 
         if (i < params->lambda) {  
-          copyChromosome (candidateChromos[i], childrenChromos[i] );  // dest  <---- src
+          // dest  <---- src
+          copyChromosome (candidateChromos[i], childrenChromos[i] );  // сначала едти 
         }
-        else {
+        else { // потом родители
           copyChromosome (candidateChromos[i], parentChromos[i - params->lambda] );
         }
       }
@@ -4451,25 +4508,30 @@ runCGP (struct parameters *params, struct dataSet *data, int numGens)
     else if (params->evolutionaryStrategy == ',') {
 
       for (i = 0; i < numCandidateChromos; i++) {
-        copyChromosome (candidateChromos[i], childrenChromos[i] );
+        copyChromosome (candidateChromos[i], childrenChromos[i] ); // в будущее берем только детей
       }
     }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // select the parents from the candidateChromos
     // 
-    params->selectionScheme (params, parentChromos, candidateChromos, params->mu, numCandidateChromos);
+    params->selectionScheme (params, parentChromos, 
+                             candidateChromos, params->mu, 
+                             numCandidateChromos);
 
     // create the children from the parents
     // 
-    params->reproductionScheme (params, parentChromos, childrenChromos, params->mu, params->lambda);
+    params->reproductionScheme (params, parentChromos, 
+                                childrenChromos, 
+                                params->mu, params->lambda);
   }
+  // закончился цикл поколений
   //--------------------------------------------------------!!!!!!!!!!!!!!!1
 
 
   /* deal with formatting for displaying progress */
   if (params->updateFrequency != 0) {
-    printf("\n");
+    printf ("\n");
   }
 
   /* copy the best best chromosome */

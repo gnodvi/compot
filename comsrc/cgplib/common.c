@@ -321,7 +321,9 @@ get_options_CGP (int argc, char **argv,
                  double *fitness, 
                  int    *numGens, 
                  int    *numNodes, 
-                 int    *verbose 
+                 int    *verbose, 
+
+                 int    *Mu, int *Lambda
                  )
 {
   char c;
@@ -334,7 +336,7 @@ get_options_CGP (int argc, char **argv,
   // перебираем все параметры:
   // (в QNX эти параметры должны идти первыми)
 
-  while ((c = getopt (argc, argv, "hvt:b:s:d:u:f:g:n:")) != -1) { 
+  while ((c = getopt (argc, argv, "hvt:b:s:d:u:f:g:n:m:l:")) != -1) { 
 
     switch (c) {
 
@@ -368,6 +370,15 @@ get_options_CGP (int argc, char **argv,
 
     case 'v':     // verbose - многословный
       if (verbose) *verbose  = 1; // подробная печать 
+      break;
+
+
+    case 'm': 
+      if (Mu)         *Mu = atoi (optarg); 
+      break;
+
+    case 'l': 
+      if (Lambda) *Lambda = atoi (optarg); 
       break;
 
     default:      
