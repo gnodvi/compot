@@ -239,20 +239,21 @@ proc TEST_biblio {args} {
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
-proc 0000 {} {
+# proc 0000 {} {
 
-  source "j-0000.tl"  ;# общие части
+#   source "j-0000.tl"  ;# общие части
 
-  global argc argv
+#   global argc argv
 
-  eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
+#   eval [lindex $argv 1] ;# вызываем вспомогательную секонд-функцию
 
-}
+# }
 #-------------------------------------------------------------------------------
 proc 1111 {} {
 
   source "j-0000.tl"  ;# общие части
-  source "j-1111.tl"  ;# надо будет подключить и ко всем примерам!!
+  #source "j-1111.tl"  ;# надо будет подключить и ко всем примерам!!
+  #source "j-2222.tl"  ;#  j~.tl 1111 TEST_more
 
   global argc argv
 
@@ -274,8 +275,8 @@ proc 1111 {} {
 proc 2222 {} {
 
   source "j-0000.tl"  ;# общие части
-  source "j-1111.tl"  
-  source "j-2222.tl"  
+  #source "j-1111.tl"  
+  #source "j-2222.tl"  
 
   global argc argv
 
@@ -305,6 +306,9 @@ proc 2222 {} {
 proc 3333 {} {
 
   source "j-0000.tl"  ;# общие части 
+  #source "j-1111.tl"  
+  #source "j-2222.tl" 
+
   source "j-3333.tl"
 
   #V3_INIT_01 ;# и!!
@@ -318,9 +322,9 @@ proc 3333 {} {
 proc MORE {} {
 
   source "j-0000.tl"  ;# общие части
-
-  source "j-1111.tl"  
-  source "j-2222.tl"  
+  #source "j-1111.tl"  
+  #source "j-2222.tl" 
+ 
   source "j-3333.tl"
 
   #V3_INIT_03  ;# куча дополнительных функций
@@ -334,12 +338,14 @@ proc MORE {} {
 proc TEST {} {
 
   source "j-0000.tl"  ;# общие части
-  source "j-1111.tl"  
-  source "j-2222.tl"  
-  source "j-3333.tl"
-  source "j-libs.tl"
-  
+  #source "j-1111.tl"  
+  #source "j-2222.tl" 
+ 
+  source "j-3333.tl"  
+
   source "j-prog.tl"
+
+  #source "j-libs.tl"
   source "j_test.tl"
 
   global argc argv

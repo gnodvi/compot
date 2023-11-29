@@ -140,7 +140,7 @@ struct results {
 */
 
 /* chromosome functions */
-static void setChromosomeActiveNodes(struct chromosome *chromo);
+static void setChromosomeActiveNodes (struct chromosome *chromo);
 static void recursivelySetActiveNodes(struct chromosome *chromo, int nodeIndex);
 static void sortChromosomeArray(struct chromosome **chromoArray, int numChromos);
 static void getBestChromosome(struct chromosome **parents, struct chromosome **children, int numParents, int numChildren, struct chromosome *best);
@@ -1096,7 +1096,7 @@ DLL_EXPORT struct chromosome* initialiseChromosomeFromFile(char const *file) {
   freeParameters(params);
 
   /* set the active nodes in the copied chromosome */
-  setChromosomeActiveNodes(chromo);
+  setChromosomeActiveNodes (chromo);
 
   return chromo;
 }
@@ -1161,7 +1161,7 @@ struct chromosome *initialiseChromosomeFromChromosome (struct chromosome *chromo
   copyFunctionSet(chromoNew->funcSet, chromo->funcSet);
 
   /* set the active nodes in the newly generated chromosome */
-  setChromosomeActiveNodes(chromoNew);
+  setChromosomeActiveNodes (chromoNew);
 
   /* used internally by exicute chromosome */
   chromoNew->nodeInputsHold = (double*)malloc(chromo->arity * sizeof(double));
@@ -2206,7 +2206,7 @@ DLL_EXPORT void removeInactiveNodes(struct chromosome *chromo) {
   int originalNumNodes = chromo->numNodes;
 
   /* set the active nodes */
-  setChromosomeActiveNodes(chromo);
+  setChromosomeActiveNodes (chromo);
 
   /* for all nodes */
   for (i = 0; i < chromo->numNodes - 1; i++) {
@@ -2259,7 +2259,7 @@ DLL_EXPORT void removeInactiveNodes(struct chromosome *chromo) {
   chromo->activeNodes = (int*)realloc(chromo->activeNodes, chromo->numNodes * sizeof(int));
 
   /* set the active nodes */
-  setChromosomeActiveNodes(chromo);
+  setChromosomeActiveNodes (chromo);
 }
 //------------------------------------------------------------------------------
 /*
@@ -2437,15 +2437,59 @@ DLL_EXPORT int getChromosomeGenerations(struct chromosome *chromo) {
 }
 //------------------------------------------------------------------------------
 /*
+  used by setActiveNodes to recursively search for active nodes
+  */
+//------------------------------------------------------------------------------
+static void 
+recursivelySetActiveNodes (struct chromosome *chromo, int nodeIndex) {
+
+  int i;
+  int Index = nodeIndex - chromo->numInputs;
+
+  // if the given node is an input, stop 
+  // 
+  if (Index < 0) {
+    return;
+  }
+
+  // if the given node has already been flagged as active 
+  // 
+  if (chromo->nodes[Index]->active == 1) {
+    return;
+  }
+
+  // log the node as active
+  // 
+  chromo->nodes[Index]->active = 1;
+  chromo->activeNodes[chromo->numActiveNodes] = Index;
+  chromo->numActiveNodes++;
+
+  // set the nodes actual arity
+  // 
+  chromo->nodes[Index]->actArity = getChromosomeNodeArity (chromo, Index);
+
+  // recursively log all the nodes to which the current nodes connect as active
+  // 
+  for (i = 0; i < chromo->nodes[Index]->actArity; i++) {
+    recursivelySetActiveNodes (chromo, 
+                               chromo->nodes[Index]->inputs[i]);
+  }
+
+  return;
+}
+//------------------------------------------------------------------------------
+/*
   set the active nodes in the given chromosome
   */
-static void setChromosomeActiveNodes(struct chromosome *chromo) {
+//------------------------------------------------------------------------------
+static void 
+setChromosomeActiveNodes (struct chromosome *chromo) {
 
   int i;
 
   /* error checking */
   if (chromo == NULL) {
-    printf("Error: chromosome has not been initialised and so the active nodes cannot be set.\n");
+    printf ("Error: chromosome has not been initialised and so the active nodes cannot be set.\n");
     return;
   }
 
@@ -2457,7 +2501,9 @@ static void setChromosomeActiveNodes(struct chromosome *chromo) {
     chromo->nodes[i]->active = 0;
   }
 
-  /* start the recursive search for active nodes from the output nodes for the number of output nodes */
+  // start the recursive search for active nodes from the output nodes for 
+  // the number of output nodes 
+  // 
   for (i = 0; i < chromo->numOutputs; i++) {
 
     /* if the output connects to a chromosome input, skip */
@@ -2466,43 +2512,12 @@ static void setChromosomeActiveNodes(struct chromosome *chromo) {
     }
 
     /* begin a recursive search for active nodes */
-    recursivelySetActiveNodes(chromo, chromo->outputNodes[i]);
+    recursivelySetActiveNodes (chromo, chromo->outputNodes[i]);
   }
 
   /* place active nodes in order */
-  sortIntArray(chromo->activeNodes, chromo->numActiveNodes);
-}
-//------------------------------------------------------------------------------
-/*
-  used by setActiveNodes to recursively search for active nodes
-  */
-//------------------------------------------------------------------------------
-static void recursivelySetActiveNodes(struct chromosome *chromo, int nodeIndex) {
+  sortIntArray (chromo->activeNodes, chromo->numActiveNodes);
 
-  int i;
-
-  /* if the given node is an input, stop */
-  if (nodeIndex < chromo->numInputs) {
-    return;
-  }
-
-  /* if the given node has already been flagged as active */
-  if (chromo->nodes[nodeIndex - chromo->numInputs]->active == 1) {
-    return;
-  }
-
-  /* log the node as active */
-  chromo->nodes[nodeIndex - chromo->numInputs]->active = 1;
-  chromo->activeNodes[chromo->numActiveNodes] = nodeIndex - chromo->numInputs;
-  chromo->numActiveNodes++;
-
-  /* set the nodes actual arity*/
-  chromo->nodes[nodeIndex - chromo->numInputs]->actArity = getChromosomeNodeArity(chromo, nodeIndex - chromo->numInputs);
-
-  /* recursively log all the nodes to which the current nodes connect as active */
-  for (i = 0; i < chromo->nodes[nodeIndex - chromo->numInputs]->actArity; i++) {
-    recursivelySetActiveNodes(chromo, chromo->nodes[nodeIndex - chromo->numInputs]->inputs[i]);
-  }
 }
 //------------------------------------------------------------------------------
 /*
@@ -2883,7 +2898,8 @@ DLL_EXPORT void saveResults(struct results *rels, char const *fileName) {
 
     chromoTemp = getChromosome(rels, i);
 
-    fprintf(fp, "%d,%f,%d,%d\n", i, chromoTemp->fitness, chromoTemp->generation, chromoTemp->numActiveNodes);
+    fprintf (fp, "%d,%f,%d,%d\n", i, chromoTemp->fitness, chromoTemp->generation, 
+             chromoTemp->numActiveNodes);
 
     freeChromosome(chromoTemp);
   }
