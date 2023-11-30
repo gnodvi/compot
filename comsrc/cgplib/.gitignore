@@ -10,7 +10,7 @@
 *.fun
 *.pdf
 
-alltests
+cgprun
 
 averageBehaviour
 createDataSet

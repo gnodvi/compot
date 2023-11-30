@@ -3679,7 +3679,7 @@ static void freeNode(struct node *n) {
   returns a random connection weight value
   */
 //------------------------------------------------------------------------------
-static double getRandomConnectionWeight(double weightRange) {
+static double getRandomConnectionWeight (double weightRange) {
 
   return (randDecimal() * 2 * weightRange) - weightRange;
 }
@@ -4158,9 +4158,9 @@ static double _softsign(const int numInputs, const double *inputs, const double 
   double weightedInputSum;
   double out;
 
-  weightedInputSum = sumWeigtedInputs(numInputs, inputs, connectionWeights);
+  weightedInputSum = sumWeigtedInputs (numInputs, inputs, connectionWeights);
 
-  out = weightedInputSum / (1 + fabs(weightedInputSum));
+  out = weightedInputSum / (1 + fabs (weightedInputSum));
 
   return out;
 }
@@ -4175,9 +4175,9 @@ static double _hyperbolicTangent(const int numInputs, const double *inputs, cons
   double weightedInputSum;
   double out;
 
-  weightedInputSum = sumWeigtedInputs(numInputs, inputs, connectionWeights);
+  weightedInputSum = sumWeigtedInputs (numInputs, inputs, connectionWeights);
 
-  out = tanh(weightedInputSum);
+  out = tanh (weightedInputSum);
 
   return out;
 }

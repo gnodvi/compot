@@ -497,70 +497,6 @@ int test_multipleThreads (int argc, char **argv) {
 }
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-double sinWave(struct parameters *params, struct chromosome *chromo, struct dataSet *data) {
-
-  double i;
-
-  double error = 0;
-  double range = 6;
-  double stepSize = 0.5;
-
-  double inputs[1];
-
-  for (i = 0; i < range; i += stepSize) {
-
-    inputs[0] = i;
-
-    executeChromosome(chromo, inputs);
-
-    error += fabs(getChromosomeOutput(chromo, 0) - sin(i));
-  }
-
-  return error;
-}
-//------------------------------------------------------------------------------
-int test_neuroEvolution (int argc, char **argv) {
-
-  struct parameters *params = NULL;
-  struct chromosome *chromo = NULL;
-  
-  int numInputs = 1;
-  int numNodes = 20;
-  int numOutputs = 1;
-  int nodeArity = 5;
-  
-  int numGens = 25000;
-  double targetFitness = 0.5;
-  int updateFrequency = 500;
-  
-  double weightRange = 5;
-  
-  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
-  
-  setRandomNumberSeed(123456789);
-  
-  setTargetFitness(params, targetFitness);
-  
-  setUpdateFrequency(params, updateFrequency);
-  
-  setConnectionWeightRange(params, weightRange);
-  
-  setCustomFitnessFunction(params, sinWave, "sinWave");
-  
-  addNodeFunction(params, "tanh,softsign");
-  
-  chromo = runCGP(params, NULL, numGens);
-  
-  printChromosome(chromo, 1);
-  
-  freeChromosome(chromo);
-  freeParameters(params);
-  
-  return 0;
-}
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 int test_recurrentConnections (int argc, char **argv) {
 
   struct parameters *params = NULL;
@@ -954,6 +890,76 @@ int test_gettingStarted (int argc, char **argv) {
   
   return 0;
 }
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+double sinWave(struct parameters *params, struct chromosome *chromo, struct dataSet *data) {
+
+  double i;
+
+  double error = 0;
+  double range = 6;
+  double stepSize = 0.5;
+
+  double inputs[1];
+
+  for (i = 0; i < range; i += stepSize) {
+
+    inputs[0] = i;
+
+    executeChromosome (chromo, inputs);
+
+    error += fabs (getChromosomeOutput (chromo, 0) - sin (i));
+  }
+
+  return error;
+}
+//------------------------------------------------------------------------------
+int test_neuroEvolution (int argc, char **argv) {
+
+  struct parameters *params = NULL;
+  struct chromosome *chromo = NULL;
+  
+  int numInputs = 1;
+  int numNodes = 20;
+  int numOutputs = 1;
+  int nodeArity = 5;
+  
+  int numGens = 25000; // шагов эволюции
+  double targetFitness = 0.5;
+  int updateFrequency  = 500;
+  
+  double weightRange = 5;
+  
+  params = initialiseParameters (numInputs, numNodes, numOutputs, nodeArity);
+  
+  setRandomNumberSeed (123456789);
+  
+  setTargetFitness(params, targetFitness);
+  
+  setUpdateFrequency (params, updateFrequency);
+  
+  setConnectionWeightRange (params, weightRange);
+  
+  setCustomFitnessFunction (params, sinWave, "sinWave");
+  
+  addNodeFunction (params, "tanh,softsign");
+
+  // Node function tanh. returns the tanh function of the sum of weighted inputs.
+  // range: [-1,1]
+  // Node function step. returns the step function of the sum of weighted inputs.
+  // range: [-1,1]
+  
+  chromo = runCGP (params, NULL, numGens);
+  
+  printChromosome(chromo, 1);
+  
+  freeChromosome(chromo);
+  freeParameters(params);
+  
+  return 0;
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 int main (int argc, char **argv) {
