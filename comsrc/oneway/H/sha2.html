@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Tclers wiki">
+<meta name="author" content>
+<link rel="icon" href="/img/favicon.ico">
+<title>sha2</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/nikit.css" type="text/css">
+<link rel="stylesheet" href="/css/sh_style.css" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/css/theme.bootstrap_3.min.css" type="text/css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+</head>
+<body onload="sh_highlightDocument(); nikitUser();">
+<nav class="navbar navbar-fixed-top navbar-inverse">
+<div class="container">
+<div class="navbar-header">
+<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<ul class="nav navbar-nav">
+<li class="dropdown">
+<a class="dropdown-toggle" data-toggle="dropdown" href="#">&nbsp;Tcler&#39;s Wiki<span class="caret"></span></a>
+<ul class="dropdown-menu scrollable-menu" role="menu"><li><a href="/welcome">Home</a></li>
+<li><a rel="nofollow" href="/recent">Changes</a></li>
+<li><a rel="nofollow" href="/_random">Random page</a></li>
+<li><a rel="nofollow" href="/_new">New page</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="collapse navbar-collapse" id="myNavbar">
+<ul class="nav navbar-nav">
+<li class="dropdown" id="li_idPageEdit" style="display:none">
+<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="name_idPageEdit">Page</span><span class="caret"></span></a>
+<ul class="dropdown-menu scrollable-menu" role="menu"><li><a rel="nofollow" href="/_edit/sha2?A=1">Comment</a></li>
+<li><a rel="nofollow" hidden="true" href="/_edit/sha2">Edit</a></li>
+<li><a rel="nofollow" href="/_upload/sha2">Upload</a></li>
+<li><a rel="nofollow" href="/ref/sha2">References</a></li>
+<li><a rel="nofollow" href="/history/sha2">History</a></li>
+</ul>
+</li>
+<li class="dropdown" id="li_idPageNoEdit" style="display:none">
+<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="name_idPageNoEdit">Page</span><span class="caret"></span></a>
+<ul class="dropdown-menu scrollable-menu" role="menu"><li><a rel="nofollow" href="/ref/sha2">References</a></li>
+<li><a rel="nofollow" href="/history/sha2">History</a></li>
+</ul>
+</li>
+<li><a href="/page/Showcase">Showcase</a></li>
+<li><a href="/page/Tcl+Tutorial+Lesson+0">Tutorial</a></li>
+<li><a href="/page/Articles">Articles</a></li>
+<li><a href="/page/Tcl+Playground">Playground</a></li>
+<li class="dropdown">
+<a class="dropdown-toggle" data-toggle="dropdown" href="#">&nbsp;Help<span class="caret"></span></a>
+<ul class="dropdown-menu scrollable-menu" role="menu"><li><a rel="nofollow" href="/page/Help">Page Markup</a></li>
+<li><a rel="nofollow" href="/page/How+do+Wiki+Categories+work">Wiki Categories</a></li>
+<li><a rel="nofollow" href="/page/Contents">Topics</a></li>
+<li><a rel="nofollow" target="_blank" href="https://chiselapp.com/user/stevel/repository/nikit/ticket">Report Problems</a></li>
+<li><a rel="nofollow" href="/privacy">Privacy</a></li>
+<li><a rel="nofollow" href="/license">License</a></li>
+</ul>
+</li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li class="dropdown">
+<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="name_SMenu">User</span><span class="caret"></span></a>
+<ul class="dropdown-menu" id="ul_SMenu">
+</ul>
+</li>
+</ul>
+<form class="navbar-form navbar-right" method="post" action="/search" id="searchform">
+<input name="Q" type="text" class="form-control" placeholder="Search..." />
+<input type="hidden" name="sites" value="wiki.tcl-lang.org" />
+</form>
+</div>
+</div>
+</nav>
+<div class="container">
+<div class="row">
+<div class="col-xs-12">
+<h2>sha2</h2>
+</div>
+</div>
+<div class="row">
+<div class="col-xs-12">
+<p class="mkup_p">There is no such thing as <i class="mkup_i">sha2</i>. The title is intended to cover the family of hashing algorithms <i class="mkup_i">beyond <a class="mkup_a mkup_known" href="/page/sha1">sha1</a></i>.</p><p class="mkup_p">The <a class="mkup_a mkup_known" href="/page/sha1">sha1</a> secure hash algorithm produces a digest of 160 bits. This provides 80 bits of security against collisions given the birthday attack (ref). An updated document from NIST [<a rel="nofollow" class="mkup_a" href="http://csrc.nist.gov/cryptval/shs/sha256-384-512.pdf">L1 <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a>] specifies a new family of secure hashing algorithms with longer digest lengths, specifically SHA-256, SHA-384, and SHA-512. An additional update also specifies SHA-224 [<a rel="nofollow" class="mkup_a" href="http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf">L2 <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a>].</p><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/Tcllib">tcllib</a> now includes a pure-tcl implementation of SHA-224 and SHA-256. For comparison, here are some timing data for the pure-Tcl implementation of all the digests in <a class="mkup_a mkup_known" href="/page/Tcllib">tcllib</a></p><pre class="mkup_pre"> md4    time: 248 microseconds per iteration using tcl
+ md5    time: 275 microseconds per iteration using tcl
+ sha1   time: 409 microseconds per iteration using tcl
+ rmd128 time: 410 microseconds per iteration using tcl
+ rmd160 time: 679 microseconds per iteration using tcl
+ sha224 time: 880 microseconds per iteration using tcl
+ sha256 time: 894 microseconds per iteration using tcl</pre><hr class="mkup_hr"><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/bll">bll</a> 2018-8-20: I have an implementation (in C) available that does SHA-512, SHA-384, SHA-512/256 and SHA-512/224. It can also be compiled to SHA-256, SHA-224 (already available in Tcllib). Pre-built libraries (for the 512 bit versions) are available at: <a rel="nofollow" class="mkup_a" href="https://sourceforge.net/projects/tcl-sha/files/">https://sourceforge.net/projects/tcl-sha/files/ <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a></p><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/bll">bll</a> 2020-5-6: Updated the tcl-sha package to version 1.0 and reworked the API. Repackaged so that it easier for people to install: <a rel="nofollow" class="mkup_a" href="https://sourceforge.net/projects/tcl-sha/files/">https://sourceforge.net/projects/tcl-sha/files/ <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a></p><hr class="mkup_hr"><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/RLH">RLH</a> - I have the latest ActiveTcl 8.4.9 and I do not see anything about SHA-256/384/512 in the docs. Were those added after the 8.4.9 release? addendum: I installed 8.5 and no sign in the docs about the other SHA stuff.</p><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/PT">PT</a> 22-Feb-2005: When I say 'now' above I actually mean today - 22 Feb 2005. You can grab the CVS sources from </p><pre class="mkup_pre">  cvs -d:pserver:anon<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88f1e5e7fdfbc8ebfefba6fbe7fdfaebedeee7faefeda6e6edfc">[email&#160;protected]</a>:/cvsroot/tcllib co tcllib/modules/sha1</pre><p class="mkup_p">until we create a new release.</p><hr class="mkup_hr"><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/LV">LV</a> 2007 Jan 31 In the latest tcllib, I see a file called tcllib/modules/sha2/sha256.tcl . The top of the page talks about sha1, and the code appears to implement the 224 and 256 bit algorithms. The longer codes don't appear to be there yet. I also don't see anything in the doc pages. Of course, right now, a competition for sha3 is in the works, so perhaps someone stopped because the older stuff have been challenged.</p><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/AMG">AMG</a>: 2018-9-19: SHA-3 is complete and resulted in FIPS 202 [<a rel="nofollow" class="mkup_a" href="https://en.wikipedia.org/wiki/SHA-3">L3 <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a>]. Is anyone working on a Tcl implementation?</p><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/bll">bll</a>: 2018-9-19: I just finished the SHA-2 implementation [<a rel="nofollow" class="mkup_a" href="https://sourceforge.net/projects/tcl-sha/files/">L4 <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a>]. SHA-3 looked rather more complicated, and is it even necessary? SHA-2 is pretty good. See also: [<a rel="nofollow" class="mkup_a" href="https://security.stackexchange.com/questions/21112/what-is-sha-3-and-why-did-we-change-it#21116">L5 <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a>].</p><p class="mkup_p"><a class="mkup_a mkup_known" href="/page/AMG">AMG</a>: SHA-3 is intended to be different in structure than SHA-1/2. As for wanting SHA-3, the point is being interoperable with other systems using SHA-3, in my case <a class="mkup_a mkup_known" href="/page/Fossil">Fossil</a>.</p><hr class="mkup_hr"><p class="mkup_p">See also <a class="mkup_a mkup_known" href="/page/sha1">sha1</a>, <a class="mkup_a mkup_known" href="/page/MD4">md4</a>, <a class="mkup_a mkup_known" href="/page/md5">md5</a>, <a class="mkup_a mkup_known" href="/page/RIPEMD">ripemd</a>, <a class="mkup_a mkup_known" href="/page/Cryptkit">cryptkit</a></p><hr class="mkup_hr"><p class="mkup_p">See <a rel="nofollow" class="mkup_a" href="http://code.wikia.com/wiki/SHA_checksum">http://code.wikia.com/wiki/SHA_checksum <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a> for a place where a Tcl enthusist might consider adding an example of the use of the tcllib module to calculate a sha checksum.</p><p class="mkup_p">Documentation: <a rel="nofollow" class="mkup_a" href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/md/tcllib/files/modules/sha1/sha256.md">https://core.tcl-lang.org/tcllib/doc/trunk/embedded/md/tcllib/files/modules/sha1/sha256.md <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a></p><hr class="mkup_hr"><p class="mkup_p"><b class="mkup_b"><a class="mkup_a mkup_known" href="/page/EL">EL</a> - 2017-08-08 18:53:04</b></p><p class="mkup_p">Missing parts of sha and crypto in general can easily be added in with <a rel="nofollow" class="mkup_a" href="https://github.com/prs-de/ffidl">ffidl <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a> and <a rel="nofollow" class="mkup_a" href="https://www.openssl.org/">openssl <span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a> (or any other C based crypto library). I did this for HMAC-SHA512, with the following lines:</p><p class="mkup_p">file: openssl_hmac-0.1.tm</p><div class="sh_sourceCode"><button class="copybtn btn pull-right" data-clipboard-target="#mkup_code_0" title="Click to copy code snippet to clipboard"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button><pre id="mkup_code_0" class="sh_tcl sh_sourceCode">#
+# ffidl wrapper for openssl hmac512 algorithm
+#
+package require Tcl 8.6
+package require Ffidl 0.7
+package require Ffidlrt 0.2
+
+namespace eval openssl {
+
+#
+# library hooks and definitions
+#
+namespace eval dll {
+
+variable CRYPTODLL [if {$::tcl_platform(platform) eq &quot;windows&quot;} {
+    subst libeay32.dll
+} else {
+    subst libcrypto[info sharedlibext]
+}]
+
+ffidl::callout evp_sha512 {} pointer [ffidl::symbol $CRYPTODLL EVP_sha512]
+ffidl::callout hmac \
+    {pointer pointer-byte int pointer-byte int pointer-var pointer-var} {unsigned char} \
+        [ffidl::symbol $CRYPTODLL HMAC]
+
+} ;# namespace openssl::dll
+
+#
+# procedures
+#
+
+## computes the hmac512 of given data with given key
+proc hmac512 {key data args} {
+    set mdPtr [binary format x64]
+    set mdlenPtr [binary format x[ffidl::info sizeof int]]
+    
+    set key [binary format a* $key]
+    set data [binary format a* $data]
+    set r [dll::hmac [dll::evp_sha512] $key [string len $key] $data [string len $data] mdPtr mdlenPtr]
+    binary scan $r [ffidl::info format {unsigned char}] ret
+    if {$ret == 0} {
+        throw {OPENSSL HMAC} &quot;hmac512 returned NULL&quot;
+    }
+    binary scan $mdlenPtr [ffidl::info format unsigned] mdlen
+    binary scan $mdPtr a[set mdlen] md
+    if {[lsearch $args -b64] &lt; 0} {
+        return $md
+    }
+    binary encode base64 $md
+}
+
+} ;# namespace openssl</pre></div><p class="mkup_p">Usage:</p><div class="sh_sourceCode"><button class="copybtn btn pull-right" data-clipboard-target="#mkup_code_1" title="Click to copy code snippet to clipboard"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button><pre id="mkup_code_1" class="sh_tcl sh_sourceCode">
+package require openssl_hmac 0.1
+set base64_encoded_hmac_hash [openssl::hmac512 key data -b64]
+</pre></div><p class="mkup_p">Of course there is much more that can be done, i.e. other sha algorithms, certificates, ...</p><hr><div class="mkup_centered"><table class="mkup_categories"><tr><td class="mkup_td"><a class="mkup_a" href="/page/Category+Package">Category Package</a></td><td class="mkup_td"><a class="mkup_a" href="/page/Category+tcllib">Category tcllib</a></td><td class="mkup_td"><a class="mkup_a" href="/page/Category+Cryptography">Category Cryptography</a></td></tr></table></div>
+</div>
+</div>
+<div class="row">
+<div class="col-xs-12">
+<div class="Footer">Updated 2020-05-06 19:22:08</div>
+</div>
+</div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.combined.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/scripts/nikit.js"></script>
+<script type="text/javascript" src="/scripts/sh_main.js"></script>
+<script type="text/javascript" src="/scripts/sh_tcl.js"></script>
+<script type="text/javascript" src="/scripts/sh_c.js"></script>
+<script type="text/javascript" src="/scripts/sh_cpp.js"></script>
+
+<script src="https://hcaptcha.com/1/api.js"></script>
+<script>var clipboard = new ClipboardJS('.copybtn', {
+  text: function(trigger) {
+    return document.querySelector(trigger.getAttribute('data-clipboard-target')).textContent + '\n';
+  }
+});
+sort_tables();
+</script>
+</body>
+</html>
