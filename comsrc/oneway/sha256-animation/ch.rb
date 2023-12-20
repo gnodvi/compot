@@ -15,9 +15,18 @@ require_relative "sha256lib.rb"
 #   * If x is 0 choose z
 
 #-------------------------------------------------------------------------------
+def ch_bits (x, y, z)
+
+  return bits( (x & y) ^ (~x & z) )
+  
+end
+#-------------------------------------------------------------------------------
 # Animation
 #-------------------------------------------------------------------------------
-def animation (x, y, z)
+def ch_animation (x, y, z)
+  
+  ret = ch_bits x, y, z # сначала посчитали реузльтат
+
   
   32.downto(1) do |i|
 
@@ -30,15 +39,33 @@ def animation (x, y, z)
     puts "z: #{bits(z)} #{bits(x)[i-1] == '1' ? '' : '◄'}"
     puts "   #{'-'*32}"
 
-    puts bits( (x & y) ^ (~x & z) ) [i-1..-1].rjust(35, " ")
+    #puts bits( (x & y) ^ (~x & z) ) [i-1..-1].rjust(35, " ")
+    puts ret [i-1..-1].rjust(35, " ") # а теперь результат анимируем
 
     sleep (0.1)
   end
 
 end
 #-------------------------------------------------------------------------------
-def main ()
+def ch_onlyprint (x, y, z)
+  
 
+  puts "x: #{bits(x)} " 
+  puts "y: #{bits(y)} "
+  puts "z: #{bits(z)} "
+  puts "   #{'-'*32}"
+
+  ret = ch_bits x, y, z
+  
+  puts "   #{ret}"
+
+
+end
+#-------------------------------------------------------------------------------
+def main (is_anim=0, a2="", a3="", a4="")
+
+  #puts "is_anim = #{is_anim}"
+  
   # -----
   # Input
   # -----
@@ -55,27 +82,53 @@ def main ()
     z = ARGV[2].to_i(2)
   end
 
-  animation x, y, z
-  sleep 1
+  #puts "is_anim = |#{is_anim}|"
+  
+  
+  if is_anim == 1
+    #puts "..................... 1"
+    ch_animation x, y, z
+    sleep 1
+  else
+    puts ""
+    #puts "..................... 0"
+    ch_onlyprint x, y, z
+    puts ""
+  end
 
 end
 #-------------------------------------------------------------------------------
-def test ()
+def test (a1="", a2="", a3="", a4="")
 
-  #i = 5
-
-  puts "▼" # специальный символ стрелочка?
-  puts "▼".rjust( 10, " ")
-  puts "◄"
+  puts "test ............... "
+  
   puts ""
 
-
 end
 #-------------------------------------------------------------------------------
 
-#main
+#puts "ARGV.size = #{ARGV.size}"
 
-test
+
+if ARGV.size == 0
+  
+  main 0 # без анимации
+else
+  
+  #puts ""
+  #puts "arguments: #{ARGV[0]} #{ARGV[1]} #{ARGV[2]} #{ARGV[3]} #{ARGV[4]} "
+  #puts ""
+  
+  #send ARGV[0], ARGV[1], ARGV[2]
+
+  if ARGV[0] == "anim"
+    main 1
+  end
+  
+end
+
+#main
+#test
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

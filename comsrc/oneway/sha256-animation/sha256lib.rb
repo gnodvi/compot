@@ -11,9 +11,11 @@
 #-------------------------------------------------------------------------------
 # Convert integer to binary string (32 bits)
 #-------------------------------------------------------------------------------
-def bits(x, n = 32)
+def bits (x, n = 32)
+  
   if x >= 0
     return "%0#{n}b" % x
+    
   else
     # Note: Ruby NOT function returns a negative number, and .to_s(2) displays this mathematical representation in base 2.
   	# Note: So to get the expected unsigned notation you need to get the individual bits instead.
