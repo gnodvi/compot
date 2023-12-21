@@ -23,14 +23,16 @@ end
 #-------------------------------------------------------------------------------
 # Animation
 #-------------------------------------------------------------------------------
-def ch_animation (x, y, z)
+def ch_animation (is_clear, x, y, z, sleep_time)
   
   ret = ch_bits x, y, z # сначала посчитали реузльтат
 
   
   32.downto(1) do |i|
-
-    system "clear"
+    
+    if is_clear
+      system "clear"
+    end
 
     puts "▼".rjust(i+3, " ")
 
@@ -62,42 +64,6 @@ def ch_onlyprint (x, y, z)
 
 end
 #-------------------------------------------------------------------------------
-def main (is_anim=0, a2="", a3="", a4="")
-
-  #puts "is_anim = #{is_anim}"
-  
-  # -----
-  # Input
-  # -----
-  # defaults
-
-  x = 0b00000000111111110000000011111111 # 0x428a2f98
-  y = 0b00000000000000001111111111111111 # 0x71374491
-  z = 0b11111111111111110000000000000000 # 0xb5c0fbcf
-
-  # arguments passed
-  if ARGV.size == 3
-    x = ARGV[0].to_i(2) # переводим строку битовое целое
-    y = ARGV[1].to_i(2)
-    z = ARGV[2].to_i(2)
-  end
-
-  #puts "is_anim = |#{is_anim}|"
-  
-  
-  if is_anim == 1
-    #puts "..................... 1"
-    ch_animation x, y, z
-    sleep 1
-  else
-    puts ""
-    #puts "..................... 0"
-    ch_onlyprint x, y, z
-    puts ""
-  end
-
-end
-#-------------------------------------------------------------------------------
 def test (a1="", a2="", a3="", a4="")
 
   puts "test ............... "
@@ -109,26 +75,45 @@ end
 
 #puts "ARGV.size = #{ARGV.size}"
 
+  
+#   #puts ""
+#   #puts "arguments: #{ARGV[0]} #{ARGV[1]} #{ARGV[2]} #{ARGV[3]} #{ARGV[4]} "
+#   #puts ""
+  
+#   #send ARGV[0], ARGV[1], ARGV[2]
 
-if ARGV.size == 0
-  
-  main 0 # без анимации
-else
-  
-  #puts ""
-  #puts "arguments: #{ARGV[0]} #{ARGV[1]} #{ARGV[2]} #{ARGV[3]} #{ARGV[4]} "
-  #puts ""
-  
-  #send ARGV[0], ARGV[1], ARGV[2]
 
-  if ARGV[0] == "anim"
-    main 1
-  end
-  
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Input
+# -----
+# defaults
+
+x = 0b00000000111111110000000011111111 # 0x428a2f98
+y = 0b00000000000000001111111111111111 # 0x71374491
+z = 0b11111111111111110000000000000000 # 0xb5c0fbcf
+
+# arguments passed
+
+if ARGV.size == 3
+  x = ARGV[0].to_i(2) # переводим строку битовое целое
+  y = ARGV[1].to_i(2)
+  z = ARGV[2].to_i(2)
 end
 
-#main
-#test
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+arg0 = ARGV[0]
+
+if arg0 == "anim"
+  ch_animation x, y, z
+else
+  puts ""
+  puts "arg0 = #{arg0}"
+  puts ""
+  ch_onlyprint x, y, z
+  puts ""
+end
+
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
