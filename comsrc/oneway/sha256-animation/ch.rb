@@ -44,7 +44,8 @@ def ch_animation (is_clear, x, y, z, sleep_time)
     #puts bits( (x & y) ^ (~x & z) ) [i-1..-1].rjust(35, " ")
     puts ret [i-1..-1].rjust(35, " ") # а теперь результат анимируем
 
-    sleep (0.1)
+    #sleep (0.1)
+    sleep (sleep_time)
   end
 
 end
@@ -105,7 +106,7 @@ end
 arg0 = ARGV[0]
 
 if arg0 == "anim"
-  ch_animation x, y, z
+  ch_animation  true,  x, y, z, 1.0
 else
   puts ""
   puts "arg0 = #{arg0}"
