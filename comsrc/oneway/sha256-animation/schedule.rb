@@ -1,6 +1,7 @@
 # coding: utf-8
 require_relative "sha256lib.rb"
 
+
 # -------
 # Default
 # -------
@@ -23,6 +24,8 @@ if defined? $block
   $block_number = $block_number
 end
 
+
+
 # ----------------
 # Message Schedule
 # ----------------
@@ -40,6 +43,8 @@ memory = Array.new(16) # leave first 16 blank because they were not calculated f
   $schedule << add(sigma1($schedule[i - 2]), $schedule[i - 7], sigma0($schedule[i - 15]), $schedule[i - 16])
   memory << [sigma1($schedule[i - 2]), $schedule[i - 7], sigma0($schedule[i - 15]), $schedule[i - 16]] # store the values used in the calculation as we go
 end
+
+
 
 # --------
 # Settings

@@ -1,3 +1,6 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
 # coding: utf-8
 require_relative "sha256lib.rb"
 

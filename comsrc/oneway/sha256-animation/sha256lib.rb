@@ -18,9 +18,9 @@ def bits (x, n = 32)
     
   else
     # Note: Ruby NOT function returns a negative number, and .to_s(2) displays this mathematical representation in base 2.
-  	# Note: So to get the expected unsigned notation you need to get the individual bits instead.
-  	# Note: When doing so, ignore the first bit because that's the sign bit.
-  	# https://www.calleerlandsson.com/rubys-bitwise-operators/
+    # Note: So to get the expected unsigned notation you need to get the individual bits instead.
+    # Note: When doing so, ignore the first bit because that's the sign bit.
+    # https://www.calleerlandsson.com/rubys-bitwise-operators/
     return (n - 1).downto(0).map { |i| x[i] }.join
   end
 end
@@ -28,23 +28,26 @@ end
 #-------------------------------------------------------------------------------
 # Convert integer to hexadecimal string (32 bits)
 #-------------------------------------------------------------------------------
-def hex(i)
+def hex (i)
   return i.to_s(16).rjust(8, "0")
 end
 
 #-------------------------------------------------------------------------------
 # Convert string to binary string
 #-------------------------------------------------------------------------------
-def bitstring(string)
+def bitstring (string)
+  
   bytes = string.bytes              # convert ascii characters to bytes (integers)
   binary = bytes.map { |x| bits(x, 8) } # convert bytes to binary strings (8 bits in a byte)
+
   return binary.join
 end
 
 #-------------------------------------------------------------------------------
 # Use standard delay times between frames
 #-------------------------------------------------------------------------------
-def delay(speed)
+def delay (speed)
+  
   if $delay == "enter"
     STDIN.gets # gets on its own will try and read the contents of files passed in through ARGV (then use STDIN if not)
   elsif $delay == "nodelay"
@@ -59,6 +62,7 @@ def delay(speed)
     end
 
     case speed
+        
     when :fastest
       sleep 0.1 * multiplier
     when :fast
@@ -75,42 +79,44 @@ def delay(speed)
       sleep speed
     end
   end
+  
 end
-
 #-------------------------------------------------------------------------------
 # Detect input type base on prefix (i.e. binary, hex, or otherwise just a string)
 #-------------------------------------------------------------------------------
-def input_type(input)
+def input_type (input)
+  
   # Check if input is referencing a file
   if(File.file?(input))
-  	return "file"
+    return "file"
   else
-	  # Check for hex or binary prefix
-	  case input[0..1]
-	  when "0b"
-		# check it's a valid binary string
-		if input[2..-1] =~ /[^0-1]/ # only 1s and 0s
-		  puts "Invalid binary string: #{input}"
-		  exit
-		end
-		return "binary"
-	  when "0x"
-		# check it's a valid hex string
-		if input[2..-1] !~ /^[0-9A-F]+$/i # only hex chars (case-insensitive)
-		  puts "Invalid hex string: #{input}"
-		  exit
-		end
-		return "hex"
-	  else
-		return "string"
-	  end
+    # Check for hex or binary prefix
+    case input[0..1]
+    when "0b"
+      # check it's a valid binary string
+      if input[2..-1] =~ /[^0-1]/ # only 1s and 0s
+	puts "Invalid binary string: #{input}"
+	exit
+      end
+      return "binary"
+    when "0x"
+      # check it's a valid hex string
+      if input[2..-1] !~ /^[0-9A-F]+$/i # only hex chars (case-insensitive)
+	puts "Invalid hex string: #{input}"
+	exit
+      end
+      return "hex"
+    else
+      return "string"
+    end
   end
+  
 end
-
 #-------------------------------------------------------------------------------
 # Convert input (hex, ascii) to array of bytes
 #-------------------------------------------------------------------------------
-def bytes(input, type)
+def bytes (input, type)
+  
   case type
   when "binary"
     bin = input[2..-1] # trim 0b prefix
@@ -137,15 +143,18 @@ end
 #-------------------------------------------------------------------------------
 # Addition modulo 2**32
 #-------------------------------------------------------------------------------
-def add(*x)
+def add (*x)
+  
   total = x.inject(:+)
+
   return total % 2 ** 32 # limits result of addition to 32 bits
 end
 
 #-------------------------------------------------------------------------------
 # Rotate right (circular right shift)
 #-------------------------------------------------------------------------------
-def rotr(n, x)
+def rotr (n, x)
+  
   right = (x >> n)              # right shift
   left = (x << 32 - n)          # left shift
   result = right | left         # combine to create rotation effect
@@ -195,15 +204,19 @@ end
 # Preprocessing
 # -------------
 # Pad binary string message to multiple of 512 bits
-def padding(message)
+def padding (message)
+  
   l = message.size  # size of message (in bits)
   k = (448 - l - 1) % 512 # pad with zeros up to 448 bits (64 bits short of 512 bits)
   l64 = bits(l, 64) # binary representation of message size (64 bits in length)
+
   return message + "1" + ("0" * k) + l64 # don't forget "1" bit between message and padding
 end
 
+
 # Cut padded message in to 512-bit message blocks
-def split(message, size = 512)
+def split (message, size = 512)
+
   return message.scan(/.{#{size}}/)
 end
 
@@ -211,7 +224,7 @@ end
 # Message Schedule
 # ----------------
 # Calculate the 64 words for the message schedule from the message block
-def calculate_schedule(block)
+def calculate_schedule (block)
   # The message block provides the first 16 words for the message schedule (512 bits / 32 bits = 16 words)
   schedule = block.scan(/.{32}/).map { |w| w.to_i(2) } # convert from binary string to integer for calculations
 
@@ -235,8 +248,9 @@ K = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
 # Initial Hash Values = Square roots of the first 8 prime numbers (first 32 bits of the fractional part)
 IV = [2, 3, 5, 7, 11, 13, 17, 19].map { |prime| prime ** (1 / 2.0) }.map { |i| (i - i.floor) }.map { |i| (i * 2 ** 32).floor }
 
-def compression(initial, schedule, constants)
+def compression (initial, schedule, constants)
   # state register - set initial values ready for the compression function
+  
   h = initial[7]
   g = initial[6]
   f = initial[5]
@@ -273,6 +287,7 @@ def compression(initial, schedule, constants)
   hash[2] = add(initial[2], c)
   hash[1] = add(initial[1], b)
   hash[0] = add(initial[0], a)
+  
   #hash = initial.zip(updated).map {|i, u| add(i, u)} # succinct method for adding one array on top of another (but not as readable)
 
   # return final state
@@ -282,7 +297,7 @@ end
 # -------
 # SHA-256 - Complete SHA-256 function
 # -------
-def sha256(string)
+def sha256 (string)
   # 0. Convert String to Binary
   # ---------------------------
   message = bitstring(string)
@@ -315,6 +330,7 @@ def sha256(string)
   # 3. Result
   # ---------
   # Convert hash values to hexadecimal and concatenate
+  
   return hash.map { |w| "%08x" % w }.join
 end
 
