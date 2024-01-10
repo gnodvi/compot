@@ -2,7 +2,11 @@
 require_relative "sha256lib.rb"
 
 
-# -------
+#-------------------------------------------------------------------------------
+def r_schedule ()
+# ------------------------------------------
+
+
 # Default
 # -------
 if !defined? $input
@@ -13,9 +17,12 @@ if !defined? $input
   $blocks = split($padded, 512)
   $block_number = 0               # message block number
   $block = $blocks[$block_number]
-  
+
+  flag     = dict_parse ARGV, "-flag",  "true"
+  is_clear = if flag == "true" then true else false end
+
   # argument passed
-  $block = ARGV[0] if ARGV[0] # accept 512 bit binary string as message block
+  # $block = ARGV[0] if ARGV[0] # accept 512 bit binary string as message block
 end
 
 # Set variables (these are global variables given to us by the parent sha256.rb script)
@@ -33,15 +40,19 @@ end
 size = $block.size
 
 # The message block provides the first 16 words for the message schedule (512 bits / 32 bits = 16 words)
-$schedule = $block.scan(/.{32}/).map { |w| w.to_i(2) } # convert from binary string to integer for calculations
+# convert from binary string to integer for calculations:
+
+$schedule = $block.scan(/.{32}/).map { |w| w.to_i(2) }
 
 # Remember the values used to calculate each word from 16 to 63
 memory = Array.new(16) # leave first 16 blank because they were not calculated from previous values
 
 # Calculate remaining 48 words
+# 
 16.upto(63) do |i|
   $schedule << add(sigma1($schedule[i - 2]), $schedule[i - 7], sigma0($schedule[i - 15]), $schedule[i - 16])
-  memory << [sigma1($schedule[i - 2]), $schedule[i - 7], sigma0($schedule[i - 15]), $schedule[i - 16]] # store the values used in the calculation as we go
+  memory << [sigma1($schedule[i - 2]), $schedule[i - 7], sigma0($schedule[i - 15]), $schedule[i - 16]]
+  # store the values used in the calculation as we go
 end
 
 
@@ -56,7 +67,9 @@ indent = " " * 2
 # ---------
 
 # Frame
-system "clear"
+#system "clear"
+  is_CLEAR is_clear
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-------"
 puts "#{indent}block #{$block_number}:"
@@ -65,7 +78,9 @@ puts "#{indent}#{$block}"
 delay(:slowest)
 
 # Frame
-system "clear"
+#system "clear"
+  is_CLEAR is_clear
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-------"
 puts "#{indent}block #{$block_number}:"
@@ -79,7 +94,9 @@ delay(:slowest)
 
 # Frame
 64.times do |i|
-  system "clear"
+  #system "clear"
+  is_CLEAR is_clear
+  
   puts $state + "\n" if defined? $state
   puts "#{indent}-------"
   puts "#{indent}block #{$block_number}:"
@@ -129,7 +146,9 @@ end
 delay(:normal)
 
 # Frame
-system "clear"
+#system "clear"
+  is_CLEAR is_clear
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-------"
 puts "#{indent}block #{$block_number}:"
@@ -174,5 +193,15 @@ $state = <<-FRAME
 #{indent}W#{63.to_s.ljust(2, " ")} #{bits($schedule[63])}
 FRAME
 
-system "clear"
+#system "clear"
+  is_CLEAR is_clear
+
 puts $state
+
+# -------------------------------------------------------------------------------
+end
+
+
+## r_schedule 
+
+# -------------------------------------------------------------------------------

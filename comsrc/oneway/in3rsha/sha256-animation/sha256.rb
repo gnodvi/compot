@@ -1,12 +1,15 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 require_relative "sha256lib.rb"
+
+load "schedule.rb"
 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #-------------------------------------------------------------------------------
-def prepare_default ()
+def p_default ()
   
 
   # Default
@@ -14,15 +17,20 @@ def prepare_default ()
   if !defined? $input
     
     # Command Line Arguments
-    $input = ARGV[0] || "abc"    # "string"|"0xaabbcc"|"0b10110100"
-    $delay = ARGV[1] || "normal" # [enter|normal|fast|nodelay]
+    
+    #$input = ARGV[0] || "abc"    # "string"|"0xaabbcc"|"0b10110100"
+    #$delay = ARGV[1] || "normal" # [enter|normal|fast|nodelay]
+    
+    $input = dict_parse ARGV, "-input",  "abc"
+    $delay = dict_parse ARGV, "-delay",  "nodelay" #"fast" ##"normal"
+
 
     # Detect input type (binary, hex, or string)
-    $type = input_type($input)
+    $type = input_type ($input)
 
     # Read file if file is given
     if $type == "file"
-      $input = File.read($input)
+      $input = File.read ($input)
     end
 
     # Convert input to bytes (if possible)
@@ -41,6 +49,7 @@ def prepare_default ()
 
     # Note about hitting enter to step
     if $delay == "enter"
+      puts ""
       puts "Hit enter to step through."
       STDIN.gets
     end
@@ -50,6 +59,21 @@ def prepare_default ()
       exit
     end
   end
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  puts ""
+  puts "~~~~~~~~~~~~~ p_default ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  puts ""
+  puts "delay   = #{$delay}"
+  #puts "input   = #{$input}"
+  #puts "type    = #{$type}"
+  puts "input   = #{$input} (#{$type})"
+  #puts "bytes   = #{$bytes}"
+  puts "bytes   = #{$bytes.inspect}" if defined? $bytes
+  puts "message = #{$message}"
+  #puts ""
+
 
 end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,7 +86,8 @@ def is_CLEAR (is_clear)
 
 end
 #-------------------------------------------------------------------------------
-def run_message (is_clear)
+#def r_message (is_clear)
+def r_message ()
   
   # 1. Message
   #load "message.rb"
@@ -72,6 +97,13 @@ def run_message (is_clear)
   # puts string.bytes.map{|x| x.to_s(2)}.inspect  # ["1100001", "1100010", "1100011"]
   # puts string.unpack("B*")                      # 011000010110001001100011
 
+  if !defined? $input
+    p_default 
+    flag     = dict_parse ARGV, "-flag",  "true"
+    is_clear = if flag == "true" then true else false end
+
+  end
+  
   # ---------
   # Animation
   # ---------
@@ -130,11 +162,23 @@ FRAME
 end
 
 #-------------------------------------------------------------------------------
-def run_padding (is_clear)
+def r_padding ()
   
   # 2. Padding
   # load "padding.rb"
 
+  if !defined? $input
+    p_default
+    
+    #flag     = dict_parse ARGV, "-flag",  "true"
+    #$is_clear = if flag == "true" then true else false end
+  end
+
+  if !defined? $is_clear
+    flag     = dict_parse ARGV, "-flag",  "true"
+    $is_clear = if flag == "true" then true else false end
+  end
+  
   # -------
   # Padding
   # -------
@@ -151,11 +195,13 @@ def run_padding (is_clear)
 
   $padded = $message + "1" + ("0" * $k) + $l.to_s(2).rjust(64, "0")
 
+
+  
   # ---------
   # Animation
   # ---------
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "-------"
@@ -164,7 +210,7 @@ def run_padding (is_clear)
   delay(:normal)
 
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "-------"
@@ -174,7 +220,7 @@ def run_padding (is_clear)
   delay(:normal)
 
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "-------"
@@ -184,7 +230,7 @@ def run_padding (is_clear)
   delay(:normal)
 
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "-------"
@@ -192,7 +238,8 @@ def run_padding (is_clear)
   puts "-------"
   print "message: #{$message}1"
   
-  if $delay == "enter" || $delay == "nodelay" # show all padded zeros in one go if we're stepping through with keyboard
+  if $delay == "enter" || $delay == "nodelay"
+    # show all padded zeros in one go if we're stepping through with keyboard
     puts "0" * $k
   else
     $k.times do |i|
@@ -203,7 +250,7 @@ def run_padding (is_clear)
   delay(:normal)
 
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "-------"
@@ -212,8 +259,10 @@ def run_padding (is_clear)
   print "message: #{$message}1#{"0" * $k}"
   delay(:normal)
 
+
+  
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "-------"
@@ -235,35 +284,45 @@ FRAME
 end
 
 #-------------------------------------------------------------------------------
-def run_blocks (is_clear)
+def r_blocks ()
   
   # 3. Message Blocks
   #load "blocks.rb"
 
-  # -------
+
+  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Default
   # -------
   if !defined? $input
     # default
     $input = "abc"
     $message = $input.unpack("B*")[0]
-    # argument passed
-    $message = ARGV[0] if ARGV[0] # accept binary message string
+    
+    ### argument passed
+    ##$message = ARGV[0] if ARGV[0] # accept binary message string
     
     # calculate padded message
     $padded = padding($message)
   end
 
+  if !defined? $is_clear
+    flag     = dict_parse ARGV, "-flag",  "true"
+    $is_clear = if flag == "true" then true else false end
+  end
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  
   # --------------
   # Message Blocks
   # --------------
-  $blocks = split($padded, 512)
+  $blocks = split( $padded, 512)
 
   # ---------
   # Animation
   # ---------
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "--------------"
@@ -272,26 +331,37 @@ def run_blocks (is_clear)
   delay(:normal)
 
   #system "clear"
-  is_CLEAR is_clear
+  is_CLEAR $is_clear
   
   puts $state + "\n" if defined? $state
   puts "--------------"
   puts "message blocks:"
   puts "--------------"
+
+
   
   $blocks.each.with_index do |block, i|
+    
     puts "#{i}: #{block}"
-    delay(:normal)
+    delay (:normal)
   end
+  
   delay(:slow)
 
-  # Save Final State
+  
+  # Save Final State - TODO - почему в предыдущем цикле было бы это не сделать?
+  # 
   contents = "" # contruct string with each block so we can use it inside the final frame
+  
   $blocks.each.with_index do |block, i|
+    
     contents << "#{i}: #{block}"
     contents << "\n" if i < $blocks.size - 1 # do not add extra new line after last block
   end
 
+  # а зачем нам этот финальный фрейм сохранять?
+  # 
+  
   $state = <<-FRAME
 #{$state}
 --------------
@@ -300,9 +370,17 @@ message blocks:
 #{contents}
 FRAME
 
+  puts $state
+
 end
 #-------------------------------------------------------------------------------
-def run_final (is_clear)
+#def run_final (is_clear, *args)
+def r_final ()
+
+  
+  flag     = dict_parse ARGV, "-flag",  "true"
+  flag     = if flag == "true" then true else false end
+  is_clear = flag
 
   puts "run_final ....................... 01 "
   
@@ -401,57 +479,7 @@ def run_final (is_clear)
 end
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-def calc_sha256 (is_clear)
-  
-
-  prepare_default
-  
-
-  run_message is_clear
-
-  run_padding is_clear
-
-  run_blocks  is_clear
-
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # For each block
-
-  $blocks.each.with_index do |block, i|
-    # make variables global so scripts can access them
-    $block = block
-    $block_number = i
-
-    # 4. Message Schedule
-    load "schedule.rb"
-
-    # 5. Compression (Initial Hash Values)
-    load "initial.rb" if $block_number == 0 # Only set initial hash values on first run
-
-    # 5. Compression
-    load "compression.rb" # Use hash values from previous compression otherwise
-  end
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  run_final is_clear
-
-end
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-arg0 = ARGV[0]
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-if arg0 == "anim"
-  #usigma0_animation  true, x, 0.2
-  calc_sha256 true
-
-elsif arg0 == "final"
-  run_final true
-
-elsif arg0 == "test01"
+def find_00 ()
 
   puts ""
   puts sha256 ("abc")
@@ -467,19 +495,89 @@ elsif arg0 == "test01"
         printf("%7s : %s \n",  str, sha)
       end
   end
+
   
-else
-  puts ""
-  puts "arg0 = #{arg0}"
-  puts ""
-  #usigma0_animation  false, x, 0.0
-  calc_sha256 false
+end
+#-------------------------------------------------------------------------------
+def sha_256 ()
+  
+
+  #main = dict_parse ARGV, "-main",  "final"
+  #time = dict_parse ARGV, "-time",  "1.0"
+  flag = dict_parse ARGV, "-flag",  "true"
+
+  $is_clear = if flag == "true" then true else false end
+
+
+  p_default
+  
+
+  #r_message ##is_clear
+
+  r_padding   ##$is_clear
+
+  r_blocks  ##$is_clear
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # For each block
+  
+  $blocks.each.with_index do |block, i|
+    
+    # make variables global so scripts can access them
+    $block = block
+    $block_number = i
+
+    # 4. Message Schedule
+    #load "schedule.rb"
+    r_schedule 
+
+    # 5. Compression (Initial Hash Values)
+    load "initial.rb" if $block_number == 0 # Only set initial hash values on first run
+
+    # 5. Compression
+    load "compression.rb" # Use hash values from previous compression otherwise
+  end
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  r_final ##is_clear
 
 end
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#main = ARGV[0]
+
+# time = dict_parse ARGV, "-time",  "1.0"
+# flag = dict_parse ARGV, "-flag",  "true"
+
+# flag = if flag == "true" then true else false end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+main = dict_parse ARGV, "-main",  "sha_256"
+
+send main
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# if    main == "sha_256"  then   send main  #calc_sha256 #true
+# elsif main == "r_final"  then   send main  ##run_final   ##*ARGV #"-test" "test"
+# elsif main == "find_00"  then   send main  #find_00 
+
+# else
+#   puts ""
+#   #puts "arg0 = #{arg0}"
+#   puts "????????????????"
+#   #puts ""
+#   #calc_sha256 false
+
+# end
 
 
 puts ""
-puts ""
+#puts ""
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

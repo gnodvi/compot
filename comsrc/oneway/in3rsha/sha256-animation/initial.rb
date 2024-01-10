@@ -2,6 +2,10 @@
 require_relative "sha256lib.rb"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
 # -------------------
 # Initial Hash Values - H0
 # -------------------
@@ -32,6 +36,7 @@ indent = " " * 2
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression:"
@@ -44,6 +49,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0)"
@@ -55,6 +61,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -66,6 +73,7 @@ delay(:slowest)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -77,6 +85,7 @@ delay(:slowest)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -88,6 +97,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -99,6 +109,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -110,6 +121,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -121,6 +133,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0) (initial hash value)"
@@ -132,6 +145,7 @@ delay(:slow)
 
 # Frame
 system "clear"
+
 puts $state + "\n" if defined? $state
 puts "#{indent}-----------"
 puts "#{indent}compression: (H0)"
@@ -139,6 +153,8 @@ puts "#{indent}-----------"
 8.times do |i|
   puts "#{indent}#{registers[i]} = #{bits(((Math.sqrt(primes[i]) - Math.sqrt(primes[i]).floor) * 2 ** 32).floor)}"
 end
+
+
 delay(:end)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -49,7 +49,8 @@ end
 def delay (speed)
   
   if $delay == "enter"
-    STDIN.gets # gets on its own will try and read the contents of files passed in through ARGV (then use STDIN if not)
+    STDIN.gets
+  # gets on its own will try and read the contents of files passed in through ARGV (then use STDIN if not)
   elsif $delay == "nodelay"
     sleep 0
   else
